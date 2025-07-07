@@ -1,4 +1,4 @@
-import type { JSX } from "react"
+import type { JSX, ReactNode } from "react"
 import { cx } from "../../../../styled-system/css"
 import {
 	type TypographyVariantProps,
@@ -6,7 +6,7 @@ import {
 } from "../../../../styled-system/recipes"
 
 type BaseProps = {
-	children: JSX.Element
+	children: ReactNode
 	textStyle?: TypographyVariantProps["textStyle"]
 	color?: TypographyVariantProps["color"]
 	weight?: TypographyVariantProps["weight"]

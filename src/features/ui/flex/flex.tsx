@@ -4,7 +4,6 @@ import { type FlexVariantProps, flex } from "../../../../styled-system/recipes"
 
 type FlexProps = {
 	as?: keyof JSX.IntrinsicElements
-	class?: string
 } & FlexVariantProps &
 	JSX.IntrinsicElements["div"]
 

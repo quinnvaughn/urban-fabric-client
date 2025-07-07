@@ -29,7 +29,7 @@ export function Input(props: Props) {
 		<Flex
 			direction="column"
 			gap="sm"
-			class={cx(css({ width: "100%" }), props.class)}
+			className={cx(css({ width: "100%" }), props.class)}
 		>
 			{props.label && (
 				<label

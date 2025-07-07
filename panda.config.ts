@@ -5,6 +5,7 @@ export default defineConfig({
 		recipes: {
 			flex: ["*"],
 			typography: ["*"],
+			container: ["*"],
 		},
 	},
 	// Whether to use css reset
@@ -27,6 +28,23 @@ export default defineConfig({
 	// Useful for theme customization
 	theme: {
 		recipes: {
+			container: {
+				base: {
+					width: "100%",
+					mx: "auto",
+				},
+				className: "container",
+				variants: {
+					size: {
+						sm: { maxWidth: "{sizes.sm}" },
+						md: { maxWidth: "{sizes.md}" },
+						lg: { maxWidth: "{sizes.lg}" },
+					},
+				},
+				defaultVariants: {
+					size: "lg",
+				},
+			},
 			button: {
 				className: "button",
 				base: {
@@ -224,6 +242,11 @@ export default defineConfig({
 			},
 		},
 		tokens: {
+			sizes: {
+				sm: { value: "400px" },
+				md: { value: "600px" },
+				lg: { value: "1200px" },
+			},
 			radii: {
 				none: { value: "0" },
 				sm: { value: "0.125rem" },
@@ -281,6 +304,11 @@ export default defineConfig({
 		},
 	},
 	utilities: {
+		maxWidth: {
+			className: "maxWidth",
+			values: "sizes",
+			transform: (value) => ({ maxWidth: value }),
+		},
 		borderColor: {
 			className: "border",
 			values: "colors",

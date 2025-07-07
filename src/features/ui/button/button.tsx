@@ -1,4 +1,4 @@
-import type { JSX } from "react"
+import type { JSX, ReactNode } from "react"
 import { cx } from "../../../../styled-system/css"
 import {
 	type ButtonVariantProps,
@@ -7,8 +7,7 @@ import {
 
 type Props = {
 	type?: "button" | "submit" | "reset"
-	class?: string
-	children?: JSX.Element
+	children?: ReactNode
 } & ButtonVariantProps &
 	JSX.IntrinsicElements["button"]
 
@@ -23,7 +22,7 @@ export function Button({
 	return (
 		<button
 			type={type}
-			class={cx(button({ variant, size }), propsClass)}
+			className={cx(button({ variant, size }), propsClass)}
 			{...rest}
 		>
 			{children}

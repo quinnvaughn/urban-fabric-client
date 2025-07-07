@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router"
 import type { ReactNode } from "react"
 import { CurrentUserDocument } from "../graphql/generated"
+import css from "../index.css?url"
 
 export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
 	beforeLoad: async ({ context: { apolloClient } }) => {
@@ -26,6 +27,12 @@ export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
 			},
 			{
 				title: "Urban Fabric",
+			},
+		],
+		links: [
+			{
+				rel: "stylesheet",
+				href: css,
 			},
 		],
 	}),

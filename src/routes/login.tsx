@@ -1,0 +1,42 @@
+import { useMutation } from "@apollo/client/index.js"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useState } from "react"
+import { match } from "ts-pattern"
+import { css } from "../../styled-system/css"
+import { AuthForm } from "../features/auth"
+import { Container } from "../features/ui"
+import { LoginDocument } from "../graphql/generated"
+
+export const Route = createFileRoute("/login")({
+	component: RouteComponent,
+})
+
+function RouteComponent() {
+	const [login] = useMutation(LoginDocument)
+	const navigate = useNavigate()
+	const [error, setError] = useState<string | undefined>(undefined)
+	return (
+		<Container as="main" className={css({ minHeight: "100vh", bg: "surface" })}>
+			<AuthForm
+				mode="login"
+				error={error}
+				onSubmit={async ({ email, password }) => {
+					const result = await login({
+						variables: { input: { email, password } },
+					})
+
+					match(result.data?.login)
+						.with({ __typename: "AuthError" }, (error) => {
+							setError(error.message || "An unknown error occurred")
+						})
+						.with({ __typename: "User" }, () => {
+							navigate({ to: "/" })
+						})
+						.otherwise(() => {
+							setError("An unknown error occurred")
+						})
+				}}
+			/>
+		</Container>
+	)
+}
