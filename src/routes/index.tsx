@@ -1,4 +1,3 @@
-import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { CurrentUserDocument } from "../graphql/generated"
 
