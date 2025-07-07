@@ -1,62 +1,66 @@
-import type { JSX } from "react"
+import { type JSX, type ReactNode, useRef } from "react"
 import { css, cx } from "../../../../styled-system/css"
+import { input } from "../../../../styled-system/recipes"
 import { Flex } from "../flex"
 
 type Props = {
 	label?: string
 	id?: string
 	error?: string
-	class?: string
+	endAdornment?: ReactNode
 } & JSX.IntrinsicElements["input"]
 
-export function Input(props: Props) {
-	const inputClass = css({
-		width: "100%",
-		px: "md",
-		py: "sm",
-		fontSize: "md",
-		border: "1px solid",
-		borderRadius: "lg",
-		bg: "surface",
-		color: "text",
-		outline: "none",
-		_focus: { borderColor: "primary" },
-		_disabled: { bg: "muted", color: "textSecondary", cursor: "not-allowed" },
-		transition: "border-color 0.2s ease",
-	})
-
+export function Input({ className, id, label, error, ...rest }: Props) {
+	const inputRef = useRef<HTMLInputElement>(null)
 	return (
 		<Flex
 			direction="column"
 			gap="sm"
-			className={cx(css({ width: "100%" }), props.class)}
+			className={cx(css({ width: "100%" }), className)}
 		>
-			{props.label && (
+			{label && (
 				<label
-					htmlFor={props.id}
+					htmlFor={id}
 					className={css({
 						display: "block",
 						fontWeight: "medium",
 						color: "text",
 					})}
 				>
-					{props.label}
+					{label}
 				</label>
 			)}
-			<input
-				id={props.id}
-				{...props}
+			<fieldset
 				className={cx(
-					inputClass,
-					props.error
-						? css({ borderColor: "danger" })
-						: css({ borderColor: "muted" }),
+					input({ error: !!error }),
+					css({ display: "flex", alignItems: "center", gap: "sm" }),
 				)}
-			/>
-			{props.error && (
-				<span className={css({ color: "danger", fontSize: "sm" })}>
-					{props.error}
-				</span>
+				onMouseDown={(e) => {
+					if (e.target === e.currentTarget) {
+						e.preventDefault()
+						inputRef.current?.focus()
+					}
+				}}
+			>
+				<input
+					id={id}
+					ref={inputRef}
+					{...rest}
+					className={css({
+						width: "100%",
+						height: "100%",
+						flex: 1,
+						border: "none",
+						outline: "none",
+						bg: "transparent",
+					})}
+				/>
+				{rest.endAdornment}
+			</fieldset>
+			{error && (
+				<em className={css({ color: "danger", fontSize: "sm" })} role="alert">
+					{error}
+				</em>
 			)}
 		</Flex>
 	)

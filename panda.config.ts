@@ -6,6 +6,7 @@ export default defineConfig({
 			flex: ["*"],
 			typography: ["*"],
 			container: ["*"],
+			input: ["*"],
 		},
 	},
 	// Whether to use css reset
@@ -24,10 +25,40 @@ export default defineConfig({
 		visited: "&:visited",
 		checked: "&:checked",
 		focusVisible: "&:focus-visible",
+		focusWithin: "&:focus-within",
 	},
 	// Useful for theme customization
 	theme: {
 		recipes: {
+			input: {
+				className: "input",
+				base: {
+					width: "100%",
+					px: "md",
+					py: "sm",
+					fontSize: "md",
+					border: "1px solid",
+					borderRadius: "lg",
+					bg: "{colors.surface}",
+					color: "{colors.text}",
+					borderColor: "{colors.muted}",
+					outline: "none",
+					_focus: { borderColor: "{colors.primary}" },
+					_focusWithin: { borderColor: "{colors.primary}" },
+					_disabled: {
+						bg: "{colors.muted}",
+						color: "{colors.textSecondary}",
+						cursor: "not-allowed",
+					},
+					transition: "border-color 0.2s ease",
+				},
+				variants: {
+					error: {
+						true: { borderColor: "{colors.danger}" },
+						false: {},
+					},
+				},
+			},
 			container: {
 				base: {
 					width: "100%",

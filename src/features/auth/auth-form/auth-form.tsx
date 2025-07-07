@@ -1,10 +1,18 @@
 import { useForm } from "@tanstack/react-form"
+import { match } from "ts-pattern"
 import { css } from "../../../../styled-system/css"
-import { Button, Container, Flex, Input, Typography } from "../../ui"
+import {
+	Button,
+	Container,
+	Flex,
+	Input,
+	PasswordField,
+	Typography,
+} from "../../ui"
 
 type Props = {
 	mode: "login" | "register"
-	onSubmit: (data: { email: string; password: string }) => void
+	onSubmit: (data: { email: string; password: string }) => Promise<void>
 	error?: string
 }
 
@@ -14,17 +22,13 @@ export function AuthForm(props: Props) {
 			email: "",
 			password: "",
 		},
-		onSubmit: (data) => {
-			props.onSubmit({
+		onSubmit: async (data) => {
+			await props.onSubmit({
 				email: data.value.email,
 				password: data.value.password,
 			})
 		},
 	})
-
-	const autocomplete = () => {
-		return props.mode === "login" ? "current-password" : "new-password"
-	}
 
 	return (
 		<Container
@@ -60,6 +64,7 @@ export function AuthForm(props: Props) {
 								label="Email"
 								value={field.state.value}
 								onInput={(e) => field.handleChange(e.currentTarget.value)}
+								error={field.state.meta.errors.join(", ")}
 								required
 								autoComplete="username"
 							/>
@@ -67,14 +72,15 @@ export function AuthForm(props: Props) {
 					</form.Field>
 					<form.Field name="password">
 						{(field) => (
-							<Input
+							<PasswordField
 								id={field.name}
-								type="password"
 								label="Password"
 								value={field.state.value}
 								onInput={(e) => field.handleChange(e.currentTarget.value)}
 								required
-								autoComplete={autocomplete()}
+								autoComplete={
+									props.mode === "login" ? "current-password" : "new-password"
+								}
 							/>
 						)}
 					</form.Field>
@@ -83,14 +89,25 @@ export function AuthForm(props: Props) {
 							{props.error}
 						</Typography.Text>
 					)}
-					<Button
-						type="submit"
-						variant="primary"
-						size={"md"}
-						disabled={form.state.isSubmitting || form.state.isValidating}
+					<form.Subscribe
+						selector={(state) => [state.canSubmit, state.isSubmitting]}
 					>
-						{props.mode === "login" ? "Login" : "Register"}
-					</Button>
+						{([canSubmit, isSubmitting]) => (
+							<Button
+								type="submit"
+								variant="primary"
+								size={"md"}
+								disabled={!canSubmit || isSubmitting}
+							>
+								{match([props.mode, isSubmitting])
+									.with(["login", true], () => "Logging in...")
+									.with(["register", true], () => "Registering...")
+									.with(["login", false], () => "Login")
+									.with(["register", false], () => "Register")
+									.otherwise(() => "Submit")}
+							</Button>
+						)}
+					</form.Subscribe>
 				</Flex>
 			</form>
 		</Container>
