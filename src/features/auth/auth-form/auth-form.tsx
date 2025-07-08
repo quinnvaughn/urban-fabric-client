@@ -1,8 +1,11 @@
 import { useForm } from "@tanstack/react-form"
 import { match } from "ts-pattern"
+import z from "zod"
 import { css } from "../../../../styled-system/css"
 import {
+	AppLink,
 	Button,
+	Card,
 	Container,
 	Flex,
 	Input,
@@ -16,11 +19,20 @@ type Props = {
 	error?: string
 }
 
+const AuthSchema = z.object({
+	email: z.string().email("Invalid email address"),
+	password: z.string().min(6, "Password must be at least 6 characters long"),
+})
+
 export function AuthForm(props: Props) {
 	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
+		},
+		validators: {
+			onChangeAsync: AuthSchema,
+			onChangeAsyncDebounceMs: 300,
 		},
 		onSubmit: async (data) => {
 			await props.onSubmit({
@@ -35,11 +47,11 @@ export function AuthForm(props: Props) {
 			as="section"
 			maxWidth="sm"
 			className={css({
-				px: "xl",
 				py: "2xl",
 			})}
 		>
-			<form
+			<Card
+				as="form"
 				autoComplete="off"
 				onSubmit={(e) => {
 					e.preventDefault()
@@ -58,16 +70,23 @@ export function AuthForm(props: Props) {
 					</Typography.Heading>
 					<form.Field name="email">
 						{(field) => (
-							<Input
-								id={field.name}
-								type="email"
-								label="Email"
-								value={field.state.value}
-								onInput={(e) => field.handleChange(e.currentTarget.value)}
-								error={field.state.meta.errors.join(", ")}
-								required
-								autoComplete="username"
-							/>
+							<>
+								<Input
+									id={field.name}
+									type="email"
+									label="Email"
+									value={field.state.value}
+									onInput={(e) => field.handleChange(e.currentTarget.value)}
+									onBlur={field.handleBlur}
+									error={field.state.meta.errors
+										.map((e) => e?.message)
+										.join(", ")}
+									required
+									touched={field.state.meta.isTouched}
+									placeholder="m@example.com"
+									autoComplete="username"
+								/>
+							</>
 						)}
 					</form.Field>
 					<form.Field name="password">
@@ -77,6 +96,11 @@ export function AuthForm(props: Props) {
 								label="Password"
 								value={field.state.value}
 								onInput={(e) => field.handleChange(e.currentTarget.value)}
+								onBlur={field.handleBlur}
+								touched={field.state.meta.isTouched}
+								error={field.state.meta.errors
+									.map((e) => e?.message)
+									.join(", ")}
 								required
 								autoComplete={
 									props.mode === "login" ? "current-password" : "new-password"
@@ -95,7 +119,7 @@ export function AuthForm(props: Props) {
 						{([canSubmit, isSubmitting]) => (
 							<Button
 								type="submit"
-								variant="primary"
+								intent="primary"
 								size={"md"}
 								disabled={!canSubmit || isSubmitting}
 							>
@@ -108,8 +132,15 @@ export function AuthForm(props: Props) {
 							</Button>
 						)}
 					</form.Subscribe>
+					<Flex direction="row" justify={"center"} grow={"1"}>
+						{props.mode === "login" ? (
+							<AppLink to="/register">Register</AppLink>
+						) : (
+							<AppLink to="/login">Login</AppLink>
+						)}
+					</Flex>
 				</Flex>
-			</form>
+			</Card>
 		</Container>
 	)
 }

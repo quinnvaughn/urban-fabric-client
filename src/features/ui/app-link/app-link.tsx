@@ -1,11 +1,9 @@
 import { createLink, type LinkComponent } from "@tanstack/react-router"
 import type { JSX } from "react"
-import { css, cx } from "../../../../styled-system/css"
+import { cx } from "../../../../styled-system/css"
+import { type LinkVariantProps, link } from "../../../../styled-system/recipes"
 
-type BaseLinkProps = JSX.IntrinsicElements["a"] & {
-	variant?: "primary" | "secondary"
-	size?: "sm" | "md" | "lg"
-}
+type BaseLinkProps = JSX.IntrinsicElements["a"] & LinkVariantProps
 
 const BasicLink = ({
 	variant,
@@ -14,27 +12,8 @@ const BasicLink = ({
 	className: propsClass,
 	...rest
 }: BaseLinkProps) => {
-	const base = css({
-		textDecoration: "none",
-		cursor: "pointer",
-		fontWeight: "medium",
-	})
-	const variantClasses =
-		variant === "primary"
-			? css({ color: "primary", _hover: { textDecoration: "underline" } })
-			: variant === "secondary"
-				? css({ color: "secondary" })
-				: ""
-
-	const sizeClasses =
-		size === "sm"
-			? css({ fontSize: "sm" })
-			: size === "lg"
-				? css({ fontSize: "lg" })
-				: css({ fontSize: "md" })
-
 	return (
-		<a {...rest} className={cx(base, variantClasses, sizeClasses, propsClass)}>
+		<a {...rest} className={cx(link({ size, variant }), propsClass)}>
 			{children}
 		</a>
 	)

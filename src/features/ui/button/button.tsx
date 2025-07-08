@@ -12,9 +12,10 @@ type Props = {
 	JSX.IntrinsicElements["button"]
 
 export function Button({
-	variant = "primary",
-	size = "md",
-	type = "button",
+	variant,
+	size,
+	type,
+	intent,
 	className: propsClass,
 	children,
 	...rest
@@ -22,7 +23,7 @@ export function Button({
 	return (
 		<button
 			type={type}
-			className={cx(button({ variant, size }), propsClass)}
+			className={cx(button({ variant, size, intent }), propsClass)}
 			{...rest}
 		>
 			{children}

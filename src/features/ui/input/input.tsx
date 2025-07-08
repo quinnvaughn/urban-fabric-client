@@ -8,10 +8,22 @@ type Props = {
 	id?: string
 	error?: string
 	endAdornment?: ReactNode
+	touched?: boolean
 } & JSX.IntrinsicElements["input"]
 
-export function Input({ className, id, label, error, ...rest }: Props) {
+export function Input({
+	className,
+	id,
+	label,
+	error,
+	touched = true,
+	required,
+	endAdornment,
+	...rest
+}: Props) {
 	const inputRef = useRef<HTMLInputElement>(null)
+
+	const showError = Boolean(error) && touched
 	return (
 		<Flex
 			direction="column"
@@ -22,17 +34,24 @@ export function Input({ className, id, label, error, ...rest }: Props) {
 				<label
 					htmlFor={id}
 					className={css({
-						display: "block",
+						display: "flex",
 						fontWeight: "medium",
 						color: "text",
+						gap: "xxs",
 					})}
 				>
+					<span className={css({ color: "text" })}></span>
 					{label}
+					{required && (
+						<span aria-hidden className={css({ color: "danger" })}>
+							*
+						</span>
+					)}
 				</label>
 			)}
 			<fieldset
 				className={cx(
-					input({ error: !!error }),
+					input({ error: showError }),
 					css({ display: "flex", alignItems: "center", gap: "sm" }),
 				)}
 				onMouseDown={(e) => {
@@ -55,9 +74,9 @@ export function Input({ className, id, label, error, ...rest }: Props) {
 						bg: "transparent",
 					})}
 				/>
-				{rest.endAdornment}
+				{endAdornment}
 			</fieldset>
-			{error && (
+			{showError && (
 				<em className={css({ color: "danger", fontSize: "sm" })} role="alert">
 					{error}
 				</em>

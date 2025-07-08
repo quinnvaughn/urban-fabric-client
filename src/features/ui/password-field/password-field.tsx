@@ -1,16 +1,11 @@
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react"
-import { type JSX, useState } from "react"
+import { type ComponentProps, useState } from "react"
 import { css } from "../../../../styled-system/css"
 import { Input } from "../input"
 
-type Props = {
-	label?: string
-	id?: string
-	error?: string
-	class?: string
-} & Omit<JSX.IntrinsicElements["input"], "type">
+type Props = Omit<ComponentProps<typeof Input>, "type">
 
-export function PasswordField({ error, ...rest }: Props) {
+export function PasswordField(props: Props) {
 	const [isShowingPassword, setIsShowingPassword] = useState(false)
 
 	const endAdornment = (
@@ -22,7 +17,7 @@ export function PasswordField({ error, ...rest }: Props) {
 				background: "transparent",
 				border: "none",
 				cursor: "pointer",
-				color: "textSecondary",
+				color: "neutral.500",
 				display: "flex",
 				alignItems: "center",
 			})}
@@ -40,7 +35,7 @@ export function PasswordField({ error, ...rest }: Props) {
 		<Input
 			type={isShowingPassword ? "text" : "password"}
 			endAdornment={endAdornment}
-			{...rest}
+			{...props}
 		/>
 	)
 }

@@ -2,12 +2,12 @@ import { useMutation } from "@apollo/client/index.js"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 import { match } from "ts-pattern"
-import { css } from "../../styled-system/css"
-import { AuthForm } from "../features/auth"
-import { Container } from "../features/ui"
-import { LoginDocument } from "../graphql/generated"
+import { css } from "../../../styled-system/css"
+import { AuthForm } from "../../features/auth"
+import { Container } from "../../features/ui"
+import { LoginDocument } from "../../graphql/generated"
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/_public/login")({
 	component: RouteComponent,
 })
 
@@ -32,7 +32,7 @@ function RouteComponent() {
 	}, [error])
 
 	return (
-		<Container as="main" className={css({ minHeight: "100vh", bg: "surface" })}>
+		<Container>
 			<AuthForm
 				mode="login"
 				error={error}

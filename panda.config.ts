@@ -7,6 +7,8 @@ export default defineConfig({
 			typography: ["*"],
 			container: ["*"],
 			input: ["*"],
+			button: ["*"],
+			link: ["*"],
 		},
 	},
 	// Whether to use css reset
@@ -30,6 +32,37 @@ export default defineConfig({
 	// Useful for theme customization
 	theme: {
 		recipes: {
+			link: {
+				className: "link",
+				base: {
+					textDecoration: "none",
+					cursor: "pointer",
+					fontWeight: "medium",
+					_hover: { textDecoration: "underline" },
+				},
+				variants: {
+					variant: {
+						primary: {
+							color: "{colors.primary}",
+						},
+						secondary: {
+							color: "{colors.secondary}",
+						},
+						text: {
+							color: "{colors.neutral.900}",
+						},
+					},
+					size: {
+						sm: { fontSize: "{fontSizes.sm}" },
+						md: { fontSize: "{fontSizes.md}" },
+						lg: { fontSize: "{fontSizes.lg}" },
+					},
+				},
+				defaultVariants: {
+					variant: "text",
+					size: "md",
+				},
+			},
 			input: {
 				className: "input",
 				base: {
@@ -40,14 +73,14 @@ export default defineConfig({
 					border: "1px solid",
 					borderRadius: "lg",
 					bg: "{colors.surface}",
-					color: "{colors.text}",
-					borderColor: "{colors.muted}",
+					color: "{colors.neutral.900}",
+					borderColor: "{colors.neutral.200}",
 					outline: "none",
 					_focus: { borderColor: "{colors.primary}" },
 					_focusWithin: { borderColor: "{colors.primary}" },
 					_disabled: {
-						bg: "{colors.muted}",
-						color: "{colors.textSecondary}",
+						bg: "{colors.neutral.100}",
+						color: "{colors.neutral.500}",
 						cursor: "not-allowed",
 					},
 					transition: "border-color 0.2s ease",
@@ -60,51 +93,47 @@ export default defineConfig({
 				},
 			},
 			container: {
+				className: "container",
 				base: {
 					width: "100%",
 					mx: "auto",
 				},
-				className: "container",
 				variants: {
 					size: {
+						full: { maxWidth: "100%" },
 						sm: { maxWidth: "{sizes.sm}" },
 						md: { maxWidth: "{sizes.md}" },
 						lg: { maxWidth: "{sizes.lg}" },
 					},
 				},
-				defaultVariants: {
-					size: "lg",
-				},
+				defaultVariants: { size: "lg" },
 			},
 			button: {
 				className: "button",
 				base: {
 					cursor: "pointer",
 					transition: "background-color 0.2s ease, color 0.2s ease",
+					borderRadius: "xl",
+					px: "{spacing.xl}",
+					py: "{spacing.md}",
+					color: "{colors.neutral.50}", // default white text for solid
 				},
 				variants: {
 					variant: {
-						primary: {
-							bg: "{colors.primary}",
-							color: "{colors.surface}",
-							fontWeight: "{fontWeights.bold}",
-							borderRadius: "xl",
-							textDecoration: "none",
-							px: "{spacing.xl}",
-							py: "{spacing.md}",
-							_hover: { bg: "{colors.secondary}" },
-						},
-						secondary: {
+						solid: {},
+						outline: {
 							bg: "transparent",
-							color: "{colors.primary}",
-							fontWeight: "{fontWeights.bold}",
-							border: "2px solid {colors.primary}",
-							borderRadius: "xl",
-							textDecoration: "none",
-							px: "{spacing.xl}",
-							py: "{spacing.md}",
-							_hover: { bg: "{colors.muted}" },
+							border: "1px solid",
+							color: "{colors.neutral.900}",
 						},
+						ghost: { bg: "transparent" },
+					},
+					intent: {
+						primary: {},
+						secondary: {},
+						danger: {},
+						success: {},
+						warning: {},
 					},
 					size: {
 						sm: { fontSize: "{fontSizes.sm}" },
@@ -112,8 +141,246 @@ export default defineConfig({
 						lg: { fontSize: "{fontSizes.lg}" },
 					},
 				},
+				compoundVariants: [
+					// ────────────────── SOLID VARIANTS ──────────────────
+					{
+						variant: "solid",
+						intent: "primary",
+						css: {
+							bg: "{colors.primary}",
+							_hover: { bg: "{colors.primary.light}" },
+							_active: { bg: "{colors.primary.dark}" },
+							_disabled: { bg: "{colors.primary}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "solid",
+						intent: "secondary",
+						css: {
+							bg: "{colors.secondary}",
+							_hover: { bg: "{colors.secondary.light}" },
+							_active: { bg: "{colors.secondary.dark}" },
+							_disabled: { bg: "{colors.secondary}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "solid",
+						intent: "danger",
+						css: {
+							bg: "{colors.danger}",
+							_hover: { bg: "{colors.danger.light}" },
+							_active: { bg: "{colors.danger.dark}" },
+							_disabled: { bg: "{colors.danger}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "solid",
+						intent: "success",
+						css: {
+							bg: "{colors.success}",
+							_hover: { bg: "{colors.success.light}" },
+							_active: { bg: "{colors.success.dark}" },
+							_disabled: { bg: "{colors.success}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "solid",
+						intent: "warning",
+						css: {
+							bg: "{colors.warning}",
+							_hover: { bg: "{colors.warning.light}" },
+							_active: { bg: "{colors.warning.dark}" },
+							_disabled: { bg: "{colors.warning}", opacity: 0.6 },
+						},
+					},
+
+					// ───────────────── OUTLINE VARIANTS ─────────────────
+					{
+						variant: "outline",
+						intent: "primary",
+						css: {
+							borderColor: "{colors.primary}",
+							color: "{colors.primary}",
+							_hover: {
+								bg: "{colors.primary.light}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.primary.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: {
+								borderColor: "{colors.primary}",
+								color: "{colors.neutral.500}",
+							},
+						},
+					},
+					{
+						variant: "outline",
+						intent: "secondary",
+						css: {
+							borderColor: "{colors.secondary}",
+							color: "{colors.secondary}",
+							_hover: {
+								bg: "{colors.secondary.light}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.secondary.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: {
+								borderColor: "{colors.secondary}",
+								color: "{colors.neutral.500}",
+							},
+						},
+					},
+					{
+						variant: "outline",
+						intent: "danger",
+						css: {
+							borderColor: "{colors.danger}",
+							color: "{colors.danger}",
+							_hover: {
+								bg: "{colors.danger.light}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.danger.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: {
+								borderColor: "{colors.danger}",
+								color: "{colors.neutral.500}",
+							},
+						},
+					},
+					{
+						variant: "outline",
+						intent: "success",
+						css: {
+							borderColor: "{colors.success}",
+							color: "{colors.success}",
+							_hover: {
+								bg: "{colors.success.light}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.success.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: {
+								borderColor: "{colors.success}",
+								color: "{colors.neutral.500}",
+							},
+						},
+					},
+					{
+						variant: "outline",
+						intent: "warning",
+						css: {
+							borderColor: "{colors.warning}",
+							color: "{colors.warning}",
+							_hover: {
+								bg: "{colors.warning.light}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.warning.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: {
+								borderColor: "{colors.warning}",
+								color: "{colors.neutral.500}",
+							},
+						},
+					},
+
+					// ────────────────── GHOST VARIANTS ──────────────────
+					{
+						variant: "ghost",
+						intent: "primary",
+						css: {
+							color: "{colors.primary}",
+							_hover: {
+								bg: "{colors.primary}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.primary.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: { color: "{colors.primary}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "ghost",
+						intent: "secondary",
+						css: {
+							color: "{colors.secondary}",
+							_hover: {
+								bg: "{colors.secondary}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.secondary.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: { color: "{colors.secondary}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "ghost",
+						intent: "danger",
+						css: {
+							color: "{colors.danger}",
+							_hover: {
+								bg: "{colors.danger}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.danger.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: { color: "{colors.danger}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "ghost",
+						intent: "success",
+						css: {
+							color: "{colors.success}",
+							_hover: {
+								bg: "{colors.success}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.success.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: { color: "{colors.success}", opacity: 0.6 },
+						},
+					},
+					{
+						variant: "ghost",
+						intent: "warning",
+						css: {
+							color: "{colors.warning}",
+							_hover: {
+								bg: "{colors.warning}",
+								color: "{colors.neutral.50}",
+							},
+							_active: {
+								bg: "{colors.warning.dark}",
+								color: "{colors.neutral.50}",
+							},
+							_disabled: { color: "{colors.warning}", opacity: 0.6 },
+						},
+					},
+				],
 				defaultVariants: {
-					variant: "primary",
+					variant: "solid",
+					intent: "primary",
 					size: "md",
 				},
 			},
@@ -153,6 +420,32 @@ export default defineConfig({
 						xl: { gap: "{spacing.xl}" },
 						"2xl": { gap: "{spacing.2xl}" },
 						"3xl": { gap: "{spacing.3xl}" },
+					},
+					grow: {
+						0: { flexGrow: 0 },
+						1: { flexGrow: 1 },
+						2: { flexGrow: 2 },
+					},
+					shrink: {
+						0: { flexShrink: 0 },
+						1: { flexShrink: 1 },
+						2: { flexShrink: 2 },
+					},
+					basis: {
+						auto: { flexBasis: "auto" },
+						full: { flexBasis: "100%" },
+						content: { flexBasis: "content" },
+					},
+					flex: {
+						initial: { flex: "0 1 auto" },
+						auto: { flex: "1 1 auto" },
+						none: { flex: "none" },
+						full: { flex: "1 1 100%" },
+					},
+					wrap: {
+						noWrap: { flexWrap: "nowrap" },
+						wrap: { flexWrap: "wrap" },
+						"wrap-reverse": { flexWrap: "wrap-reverse" },
 					},
 				},
 				defaultVariants: {
@@ -201,9 +494,10 @@ export default defineConfig({
 						bold: { fontWeight: "{fontWeights.bold}" },
 					},
 					color: {
-						text: { color: "{colors.text}" },
-						secondary: { color: "{colors.textSecondary}" },
+						text: { color: "{colors.neutral.900}" },
+						muted: { color: "{colors.neutral.500}" },
 						primary: { color: "{colors.primary}" },
+						secondary: { color: "{colors.secondary}" },
 						danger: { color: "{colors.danger}" },
 					},
 				},
@@ -273,6 +567,11 @@ export default defineConfig({
 			},
 		},
 		tokens: {
+			shadows: {
+				sm: { value: "0 1px 2px rgba(0,0,0,0.05)" },
+				md: { value: "0 1px 3px rgba(0,0,0,0.1)" },
+				lg: { value: "0 4px 6px rgba(0,0,0,0.1)" },
+			},
 			sizes: {
 				sm: { value: "400px" },
 				md: { value: "600px" },
@@ -289,16 +588,44 @@ export default defineConfig({
 				full: { value: "9999px" },
 			},
 			colors: {
-				primary: { value: "#10B981" },
-				secondary: { value: "#6366F1" },
-				background: { value: "#F8FAFC" },
-				surface: { value: "#FFFFFF" },
-				muted: { value: "#E5E7EB" },
-				text: { value: "#111827" },
-				textSecondary: { value: "#6B7280" },
-				highlight: { value: "#F59E42" },
-				danger: { value: "#EF4444" },
-				info: { value: "#0EA5E9" },
+				primary: {
+					DEFAULT: { value: "#10B981" },
+					light: { value: "#34D399" },
+					dark: { value: "#059669" },
+				},
+				secondary: {
+					DEFAULT: { value: "#6366F1" },
+					light: { value: "#818CF8" },
+					dark: { value: "#4F46E5" },
+				},
+				neutral: {
+					0: { value: "#FFFFFF" },
+					50: { value: "#FAFAFA" },
+					100: { value: "#F5F5F5" },
+					200: { value: "#E5E7EB" },
+					300: { value: "#D1D5DB" },
+					400: { value: "#9CA3AF" },
+					500: { value: "#6B7280" },
+					600: { value: "#4B5563" },
+					700: { value: "#374151" },
+					800: { value: "#1F2937" },
+					900: { value: "#111827" },
+				},
+				danger: {
+					DEFAULT: { value: "#EF4444" },
+					light: { value: "#F87171" },
+					dark: { value: "#B91C1C" },
+				},
+				success: {
+					DEFAULT: { value: "#22C55E" },
+					light: { value: "#4ADE80" },
+					dark: { value: "#15803D" },
+				},
+				warning: {
+					DEFAULT: { value: "#F59E0B" },
+					light: { value: "#FBBF24" },
+					dark: { value: "#B45309" },
+				},
 			},
 			fontWeights: {
 				regular: { value: "400" },
@@ -335,6 +662,16 @@ export default defineConfig({
 		},
 	},
 	utilities: {
+		borderBottomColor: {
+			className: "borderBottom",
+			values: "colors",
+			transform: (value) => ({ borderBottomColor: value }),
+		},
+		boxShadow: {
+			className: "shadow",
+			values: "shadows",
+			transform: (value) => ({ boxShadow: value }),
+		},
 		maxWidth: {
 			className: "maxWidth",
 			values: "sizes",
@@ -383,6 +720,16 @@ export default defineConfig({
 				marginRight: value,
 			}),
 		},
+		p: {
+			className: "p",
+			values: "spacing",
+			transform: (value) => ({
+				paddingTop: value,
+				paddingRight: value,
+				paddingBottom: value,
+				paddingLeft: value,
+			}),
+		},
 		paddingX: {
 			className: "px",
 			values: "spacing",
@@ -408,6 +755,11 @@ export default defineConfig({
 				paddingTop: value,
 				paddingBottom: value,
 			}),
+		},
+		gap: {
+			className: "gap",
+			values: "spacing",
+			transform: (value) => ({ gap: value }),
 		},
 	},
 	eject: true,

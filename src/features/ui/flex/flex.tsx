@@ -13,6 +13,11 @@ export function Flex({
 	align,
 	justify,
 	gap,
+	grow,
+	flex: flexProp,
+	wrap,
+	shrink,
+	basis,
 	className: propsClass,
 	children,
 }: FlexProps) {
@@ -24,6 +29,11 @@ export function Flex({
 			align,
 			justify,
 			gap,
+			grow,
+			flex: flexProp,
+			wrap,
+			shrink,
+			basis,
 		}),
 		propsClass,
 	)
