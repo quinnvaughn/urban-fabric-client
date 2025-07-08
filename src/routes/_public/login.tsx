@@ -5,7 +5,7 @@ import { match } from "ts-pattern"
 import { css } from "../../../styled-system/css"
 import { AuthForm } from "../../features/auth"
 import { Container } from "../../features/ui"
-import { LoginDocument } from "../../graphql/generated"
+import { CurrentUserDocument, LoginDocument } from "../../graphql/generated"
 
 export const Route = createFileRoute("/_public/login")({
 	component: RouteComponent,
@@ -39,6 +39,8 @@ function RouteComponent() {
 				onSubmit={async ({ email, password }) => {
 					const result = await login({
 						variables: { input: { email, password } },
+						refetchQueries: [{ query: CurrentUserDocument }],
+						awaitRefetchQueries: true,
 					})
 
 					match(result.data?.login)
