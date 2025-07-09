@@ -2,7 +2,7 @@ import { match } from "ts-pattern"
 import z from "zod"
 import { css } from "../../../../styled-system/css"
 import { useAppForm } from "../../form"
-import { AppLink, Button, Card, Container, Flex, Typography } from "../../ui"
+import { AppLink, Card, Container, Flex, Typography } from "../../ui"
 
 type Props = {
 	mode: "login" | "register"
