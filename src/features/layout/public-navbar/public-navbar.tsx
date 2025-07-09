@@ -1,13 +1,10 @@
 import { Link, useRouteContext } from "@tanstack/react-router"
+import { match } from "ts-pattern"
 import { css } from "../../../../styled-system/css"
 import { AppLink, Container, Flex, LinkButton } from "../../ui"
 import { LogoutButton } from "./logout-button"
 
-type Props = {
-	showAuthLinks?: boolean
-}
-
-export function Navbar({ showAuthLinks = true }: Props) {
+export function PublicNavbar() {
 	const { user } = useRouteContext({ from: "__root__" })
 	return (
 		<Container
@@ -32,22 +29,23 @@ export function Navbar({ showAuthLinks = true }: Props) {
 				>
 					Urban Fabric
 				</Link>
-				{showAuthLinks && !user && (
-					<Flex gap="md" align="center" as="nav">
-						<AppLink to="/login" variant="text">
-							Login
-						</AppLink>
-						<LinkButton to={"/register"} variant={"ghost"} intent="primary">
-							Sign Up
-						</LinkButton>
-					</Flex>
-				)}
-				{user && (
-					<Flex gap="md" align="center" as="nav">
-						<AppLink to="/profile">Profile</AppLink>
-						<LogoutButton />
-					</Flex>
-				)}
+				{match(user)
+					.with(null, () => (
+						<Flex gap="md" align="center" as="nav">
+							<AppLink to="/login" variant="text">
+								Login
+							</AppLink>
+							<LinkButton to={"/register"} variant={"ghost"} intent="primary">
+								Sign Up
+							</LinkButton>
+						</Flex>
+					))
+					.otherwise(() => (
+						<Flex gap="md" align="center" as="nav">
+							<AppLink to="/profile">Profile</AppLink>
+							<LogoutButton />
+						</Flex>
+					))}
 			</Flex>
 		</Container>
 	)
