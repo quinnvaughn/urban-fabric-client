@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Input } from "../../ui"
 import { useFieldContext } from "../helpers"
 
@@ -12,7 +13,6 @@ export function FormInputField({
 	required = false,
 	placeholder,
 }: FormInputFieldProps) {
-	// hook into your form and apply the blur-then-change Zod validator
 	const field = useFieldContext<string>()
 	const {
 		state: {
@@ -21,11 +21,19 @@ export function FormInputField({
 		},
 		handleChange,
 		handleBlur,
+		form,
 		validate,
 		name,
 	} = field
 
-	const displayError = isBlurred
+	useEffect(() => {
+		if (form.state.submissionAttempts > 0) {
+			validate("submit")
+		}
+	}, [form.state.submissionAttempts, validate])
+
+	const showErrors = isBlurred || form.state.submissionAttempts > 0
+	const displayError = showErrors
 		? errors.map((e) => e.message).join(", ")
 		: undefined
 

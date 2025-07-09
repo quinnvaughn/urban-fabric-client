@@ -10,20 +10,16 @@ type Props = {
 	error?: string
 }
 
-const AuthSchema = z.object({
-	email: z.string().email("Invalid email address"),
-	password: z.string().min(6, "Password must be at least 6 characters long"),
-})
+const emailSchema = z.string().email("Invalid email address")
+const passwordSchema = z
+	.string()
+	.min(6, "Password must be at least 6 characters long")
 
 export function AuthForm(props: Props) {
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
 			password: "",
-		},
-		validators: {
-			onChangeAsync: AuthSchema,
-			onChangeAsyncDebounceMs: 300,
 		},
 		onSubmit: async (data) => {
 			await props.onSubmit({
@@ -59,10 +55,22 @@ export function AuthForm(props: Props) {
 					>
 						{props.mode === "login" ? "Login" : "Register"}
 					</Typography.Heading>
-					<form.AppField name="email">
+					<form.AppField
+						name="email"
+						validators={{
+							onChangeAsync: emailSchema,
+							onChangeAsyncDebounceMs: 300,
+						}}
+					>
 						{(field) => <field.InputField label="Email" />}
 					</form.AppField>
-					<form.AppField name="password">
+					<form.AppField
+						name="password"
+						validators={{
+							onChangeAsync: passwordSchema,
+							onChangeAsyncDebounceMs: 300,
+						}}
+					>
 						{(field) => <field.PasswordField label="Password" />}
 					</form.AppField>
 					{props.error && (
@@ -70,25 +78,18 @@ export function AuthForm(props: Props) {
 							{props.error}
 						</Typography.Text>
 					)}
-					<form.Subscribe
-						selector={(state) => [state.canSubmit, state.isSubmitting]}
-					>
-						{([canSubmit, isSubmitting]) => (
-							<Button
-								type="submit"
-								intent="primary"
-								size={"md"}
-								disabled={!canSubmit || isSubmitting}
-							>
-								{match([props.mode, isSubmitting])
+					<form.AppForm>
+						<form.SubmitButton
+							label={(_, isSubmitting) =>
+								match([props.mode, isSubmitting])
 									.with(["login", true], () => "Logging in...")
 									.with(["register", true], () => "Registering...")
 									.with(["login", false], () => "Login")
 									.with(["register", false], () => "Register")
-									.otherwise(() => "Submit")}
-							</Button>
-						)}
-					</form.Subscribe>
+									.otherwise(() => "Submit")
+							}
+						/>
+					</form.AppForm>
 					<Flex direction="row" justify={"center"} grow={"1"}>
 						{props.mode === "login" ? (
 							<AppLink to="/register">Register</AppLink>
