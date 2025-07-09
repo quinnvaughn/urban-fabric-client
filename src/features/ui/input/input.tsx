@@ -8,22 +8,18 @@ type Props = {
 	id?: string
 	error?: string
 	endAdornment?: ReactNode
-	touched?: boolean
 } & JSX.IntrinsicElements["input"]
 
 export function Input({
 	className,
 	id,
 	label,
-	error,
-	touched = true,
+	error = "",
 	required,
 	endAdornment,
 	...rest
 }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null)
-
-	const showError = Boolean(error) && touched
 	return (
 		<Flex
 			direction="column"
@@ -51,7 +47,7 @@ export function Input({
 			)}
 			<fieldset
 				className={cx(
-					input({ error: showError }),
+					input({ error: !!error }),
 					css({ display: "flex", alignItems: "center", gap: "sm" }),
 				)}
 				onMouseDown={(e) => {
@@ -76,7 +72,7 @@ export function Input({
 				/>
 				{endAdornment}
 			</fieldset>
-			{showError && (
+			{Boolean(error) && (
 				<em className={css({ color: "danger", fontSize: "sm" })} role="alert">
 					{error}
 				</em>

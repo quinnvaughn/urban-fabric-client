@@ -1,17 +1,8 @@
-import { useForm } from "@tanstack/react-form"
 import { match } from "ts-pattern"
 import z from "zod"
 import { css } from "../../../../styled-system/css"
-import {
-	AppLink,
-	Button,
-	Card,
-	Container,
-	Flex,
-	Input,
-	PasswordField,
-	Typography,
-} from "../../ui"
+import { useAppForm } from "../../form"
+import { AppLink, Button, Card, Container, Flex, Typography } from "../../ui"
 
 type Props = {
 	mode: "login" | "register"
@@ -25,7 +16,7 @@ const AuthSchema = z.object({
 })
 
 export function AuthForm(props: Props) {
-	const form = useForm({
+	const form = useAppForm({
 		defaultValues: {
 			email: "",
 			password: "",
@@ -68,46 +59,12 @@ export function AuthForm(props: Props) {
 					>
 						{props.mode === "login" ? "Login" : "Register"}
 					</Typography.Heading>
-					<form.Field name="email">
-						{(field) => (
-							<>
-								<Input
-									id={field.name}
-									type="email"
-									label="Email"
-									value={field.state.value}
-									onInput={(e) => field.handleChange(e.currentTarget.value)}
-									onBlur={field.handleBlur}
-									error={field.state.meta.errors
-										.map((e) => e?.message)
-										.join(", ")}
-									required
-									touched={field.state.meta.isTouched}
-									placeholder="m@example.com"
-									autoComplete="username"
-								/>
-							</>
-						)}
-					</form.Field>
-					<form.Field name="password">
-						{(field) => (
-							<PasswordField
-								id={field.name}
-								label="Password"
-								value={field.state.value}
-								onInput={(e) => field.handleChange(e.currentTarget.value)}
-								onBlur={field.handleBlur}
-								touched={field.state.meta.isTouched}
-								error={field.state.meta.errors
-									.map((e) => e?.message)
-									.join(", ")}
-								required
-								autoComplete={
-									props.mode === "login" ? "current-password" : "new-password"
-								}
-							/>
-						)}
-					</form.Field>
+					<form.AppField name="email">
+						{(field) => <field.InputField label="Email" />}
+					</form.AppField>
+					<form.AppField name="password">
+						{(field) => <field.PasswordField label="Password" />}
+					</form.AppField>
 					{props.error && (
 						<Typography.Text color="danger" textStyle={"sm"}>
 							{props.error}
