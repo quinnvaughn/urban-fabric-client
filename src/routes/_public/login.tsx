@@ -43,9 +43,13 @@ function RouteComponent() {
 					})
 
 					match(result.data?.login)
-						.with({ __typename: "AuthError" }, (error) => {
-							setError(error.message || "An unknown error occurred")
-						})
+						.with(
+							{ __typename: "ForbiddenError" },
+							{ __typename: "UnauthorizedError" },
+							(error) => {
+								setError(error.message || "An unknown error occurred")
+							},
+						)
 						.with({ __typename: "User" }, () => {
 							navigate({ to: "/" })
 						})

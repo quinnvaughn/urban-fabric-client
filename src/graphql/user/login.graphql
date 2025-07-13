@@ -1,11 +1,11 @@
 mutation Login($input: LoginInput!) {
   login(input: $input) {
     __typename
-    ... on AuthError {
-      message
-    }
     ... on User {
       id
+    }
+    ... on ApplicationError {
+      message
     }
   }
 }
