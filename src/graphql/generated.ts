@@ -22,7 +22,7 @@ export type ApplicationError = {
   message: Scalars['String']['output'];
 };
 
-export type BikeLaneFeature = ScenarioFeature & {
+export type BikeLaneFeature = Feature & {
   __typename?: 'BikeLaneFeature';
   buffer: Scalars['String']['output'];
   connectsTo: Array<Scalars['String']['output']>;
@@ -31,9 +31,10 @@ export type BikeLaneFeature = ScenarioFeature & {
   geometry: Scalars['GeoJSON']['output'];
   gradeSeparated: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
+  oneWay: Scalars['Boolean']['output'];
+  option: FeatureOption;
   parkingAdjacent: Scalars['Boolean']['output'];
-  scenarioId: Scalars['ID']['output'];
-  type: Scalars['String']['output'];
+  scenario: Scenario;
   updatedAt: Scalars['DateTime']['output'];
   width: Scalars['Float']['output'];
 };
@@ -51,6 +52,15 @@ export type Canvas = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type Category = {
+  __typename?: 'Category';
+  featureOptions: Array<FeatureOption>;
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+};
+
 export type ConflictError = ApplicationError & {
   __typename?: 'ConflictError';
   message: Scalars['String']['output'];
@@ -61,16 +71,25 @@ export type CreateCanvasInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateScenarioFeatureInput = {
-  geometry: Scalars['GeoJSON']['input'];
-  properties: Scalars['JSON']['input'];
-  scenarioId: Scalars['ID']['input'];
-  type: Scalars['String']['input'];
-};
-
 export type CreateScenarioInput = {
   canvasId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+export type Feature = {
+  createdAt: Scalars['DateTime']['output'];
+  geometry: Scalars['GeoJSON']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type FeatureOption = {
+  __typename?: 'FeatureOption';
+  description?: Maybe<Scalars['String']['output']>;
+  geometryType: GeometryType;
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  propertiesSchema: Scalars['JSON']['output'];
 };
 
 export type FieldError = {
@@ -84,6 +103,15 @@ export type ForbiddenError = ApplicationError & {
   message: Scalars['String']['output'];
 };
 
+export enum GeometryType {
+  LineString = 'LineString',
+  MultiLineString = 'MultiLineString',
+  MultiPoint = 'MultiPoint',
+  MultiPolygon = 'MultiPolygon',
+  Point = 'Point',
+  Polygon = 'Polygon'
+}
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -93,11 +121,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   createCanvas: MutationCreateCanvasResult;
   createScenario: MutationCreateScenarioResult;
-  createScenarioFeature: MutationCreateScenarioFeatureResult;
   login: MutationLoginResult;
   logout: Scalars['Boolean']['output'];
   register: MutationRegisterResult;
   renameScenario: MutationRenameScenarioResult;
+  upsertFeature: MutationUpsertFeatureResult;
 };
 
 
@@ -108,11 +136,6 @@ export type MutationCreateCanvasArgs = {
 
 export type MutationCreateScenarioArgs = {
   input: CreateScenarioInput;
-};
-
-
-export type MutationCreateScenarioFeatureArgs = {
-  input: CreateScenarioFeatureInput;
 };
 
 
@@ -130,14 +153,12 @@ export type MutationRenameScenarioArgs = {
   input: RenameScenarioInput;
 };
 
-export type MutationCreateCanvasResult = Canvas | UnauthorizedError;
 
-export type MutationCreateScenarioFeatureResult = ForbiddenError | MutationCreateScenarioFeatureSuccess | NotFoundError | UnauthorizedError;
-
-export type MutationCreateScenarioFeatureSuccess = {
-  __typename?: 'MutationCreateScenarioFeatureSuccess';
-  data: ScenarioFeature;
+export type MutationUpsertFeatureArgs = {
+  input: UpsertFeatureInput;
 };
+
+export type MutationCreateCanvasResult = Canvas | UnauthorizedError;
 
 export type MutationCreateScenarioResult = Scenario | UnauthorizedError;
 
@@ -147,6 +168,13 @@ export type MutationRegisterResult = ForbiddenError | User | ValidationError;
 
 export type MutationRenameScenarioResult = ForbiddenError | NotFoundError | Scenario | UnauthorizedError | ValidationError;
 
+export type MutationUpsertFeatureResult = ForbiddenError | MutationUpsertFeatureSuccess | NotFoundError | UnauthorizedError;
+
+export type MutationUpsertFeatureSuccess = {
+  __typename?: 'MutationUpsertFeatureSuccess';
+  data: Feature;
+};
+
 export type NotFoundError = ApplicationError & {
   __typename?: 'NotFoundError';
   message: Scalars['String']['output'];
@@ -155,7 +183,11 @@ export type NotFoundError = ApplicationError & {
 export type Query = {
   __typename?: 'Query';
   canvas: QueryCanvasResult;
+  categories: Array<Category>;
+  category: QueryCategoryResult;
   currentUser?: Maybe<User>;
+  featureOption: QueryFeatureOptionResult;
+  featureOptions: Array<FeatureOption>;
   user: QueryUserResult;
 };
 
@@ -165,11 +197,25 @@ export type QueryCanvasArgs = {
 };
 
 
+export type QueryCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryFeatureOptionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
 export type QueryCanvasResult = Canvas | ForbiddenError | NotFoundError | UnauthorizedError;
+
+export type QueryCategoryResult = Category | NotFoundError;
+
+export type QueryFeatureOptionResult = FeatureOption | NotFoundError;
 
 export type QueryUserResult = NotFoundError | User;
 
@@ -189,25 +235,23 @@ export type Scenario = {
   __typename?: 'Scenario';
   canvas: Canvas;
   createdAt: Scalars['DateTime']['output'];
-  features: Array<ScenarioFeature>;
+  features: Array<Feature>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   position: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type ScenarioFeature = {
-  createdAt: Scalars['DateTime']['output'];
-  geometry: Scalars['GeoJSON']['output'];
-  id: Scalars['ID']['output'];
-  scenarioId: Scalars['ID']['output'];
-  type: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
 export type UnauthorizedError = ApplicationError & {
   __typename?: 'UnauthorizedError';
   message: Scalars['String']['output'];
+};
+
+export type UpsertFeatureInput = {
+  geometry: Scalars['GeoJSON']['input'];
+  optionId: Scalars['ID']['input'];
+  properties: Scalars['JSON']['input'];
+  scenarioId: Scalars['ID']['input'];
 };
 
 export type User = {
@@ -224,6 +268,11 @@ export type ValidationError = ApplicationError & {
   errors?: Maybe<Array<FieldError>>;
   message: Scalars['String']['output'];
 };
+
+export type UserCanvasesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserCanvasesQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, canvases: Array<{ __typename?: 'Canvas', id: string, name: string }> } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -243,6 +292,7 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
 
+export const UserCanvasesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserCanvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"canvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<UserCanvasesQuery, UserCanvasesQueryVariables>;
 export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;

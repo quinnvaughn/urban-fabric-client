@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthRouteImport } from './routes/_auth'
@@ -15,7 +17,10 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
-import { Route as AuthDashboardIndexRouteImport } from './routes/_auth/dashboard/index'
+import { Route as AuthDashboardShellRouteImport } from './routes/_auth/dashboard/_shell'
+import { Route as AuthDashboardShellIndexRouteImport } from './routes/_auth/dashboard/_shell/index'
+
+const AuthDashboardRouteImport = createFileRoute('/_auth/dashboard')()
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -24,6 +29,11 @@ const PublicRoute = PublicRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthRoute,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
@@ -45,10 +55,14 @@ const AuthProfileRoute = AuthProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthDashboardIndexRoute = AuthDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => AuthRoute,
+const AuthDashboardShellRoute = AuthDashboardShellRouteImport.update({
+  id: '/_shell',
+  getParentRoute: () => AuthDashboardRoute,
+} as any)
+const AuthDashboardShellIndexRoute = AuthDashboardShellIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthDashboardShellRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -56,14 +70,15 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AuthDashboardIndexRoute
+  '/dashboard': typeof AuthDashboardShellRouteWithChildren
+  '/dashboard/': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRoutesByTo {
   '/profile': typeof AuthProfileRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof AuthDashboardIndexRoute
+  '/dashboard': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -73,11 +88,19 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_public/': typeof PublicIndexRoute
-  '/_auth/dashboard/': typeof AuthDashboardIndexRoute
+  '/_auth/dashboard': typeof AuthDashboardRouteWithChildren
+  '/_auth/dashboard/_shell': typeof AuthDashboardShellRouteWithChildren
+  '/_auth/dashboard/_shell/': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/profile' | '/login' | '/register' | '/' | '/dashboard'
+  fullPaths:
+    | '/profile'
+    | '/login'
+    | '/register'
+    | '/'
+    | '/dashboard'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to: '/profile' | '/login' | '/register' | '/' | '/dashboard'
   id:
@@ -88,7 +111,9 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/_public/register'
     | '/_public/'
-    | '/_auth/dashboard/'
+    | '/_auth/dashboard'
+    | '/_auth/dashboard/_shell'
+    | '/_auth/dashboard/_shell/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -111,6 +136,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_public/': {
       id: '/_public/'
@@ -140,24 +172,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProfileRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/dashboard/': {
-      id: '/_auth/dashboard/'
+    '/_auth/dashboard/_shell': {
+      id: '/_auth/dashboard/_shell'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthDashboardIndexRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AuthDashboardShellRouteImport
+      parentRoute: typeof AuthDashboardRoute
+    }
+    '/_auth/dashboard/_shell/': {
+      id: '/_auth/dashboard/_shell/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthDashboardShellIndexRouteImport
+      parentRoute: typeof AuthDashboardShellRoute
     }
   }
 }
 
+interface AuthDashboardShellRouteChildren {
+  AuthDashboardShellIndexRoute: typeof AuthDashboardShellIndexRoute
+}
+
+const AuthDashboardShellRouteChildren: AuthDashboardShellRouteChildren = {
+  AuthDashboardShellIndexRoute: AuthDashboardShellIndexRoute,
+}
+
+const AuthDashboardShellRouteWithChildren =
+  AuthDashboardShellRoute._addFileChildren(AuthDashboardShellRouteChildren)
+
+interface AuthDashboardRouteChildren {
+  AuthDashboardShellRoute: typeof AuthDashboardShellRouteWithChildren
+}
+
+const AuthDashboardRouteChildren: AuthDashboardRouteChildren = {
+  AuthDashboardShellRoute: AuthDashboardShellRouteWithChildren,
+}
+
+const AuthDashboardRouteWithChildren = AuthDashboardRoute._addFileChildren(
+  AuthDashboardRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthProfileRoute: typeof AuthProfileRoute
-  AuthDashboardIndexRoute: typeof AuthDashboardIndexRoute
+  AuthDashboardRoute: typeof AuthDashboardRouteWithChildren
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthProfileRoute: AuthProfileRoute,
-  AuthDashboardIndexRoute: AuthDashboardIndexRoute,
+  AuthDashboardRoute: AuthDashboardRouteWithChildren,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

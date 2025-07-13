@@ -1,0 +1,9 @@
+query UserCanvases {
+  currentUser {
+    id
+    canvases {
+      id
+      name
+    }
+  }
+}
