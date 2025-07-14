@@ -3,5 +3,5 @@ dist/
 build/
 src/generated/
 **/*.test.ts
-src/styled-system
+src/styled-system/
 src/routeTree.gen.ts

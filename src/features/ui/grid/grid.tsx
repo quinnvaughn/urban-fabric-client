@@ -1,5 +1,5 @@
 import type { JSX } from "react"
-import { css, cx } from "../../../../styled-system/css"
+import { cx } from "../../../../styled-system/css"
 import { type GridVariantProps, grid } from "../../../../styled-system/recipes"
 
 type GridProps = {
@@ -44,15 +44,19 @@ export function Grid({
 		justifyItems,
 	})
 
-	const extraStyles = css({
+	const extraStyles = {
 		gridTemplateColumns: templateColumns,
 		gridTemplateRows: templateRows,
 		gridTemplateAreas: templateAreas,
 		gridAutoRows: autoRows,
 		gridAutoColumns: autoColumns,
-	})
+	}
 
-	const className = cx(recipeClass, extraStyles, propsClass)
+	const className = cx(recipeClass, propsClass)
 
-	return <Component className={className}>{children}</Component>
+	return (
+		<Component className={className} style={extraStyles}>
+			{children}
+		</Component>
+	)
 }
