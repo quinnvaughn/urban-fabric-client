@@ -18,6 +18,7 @@ import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
 import { Route as AuthDashboardShellRouteImport } from './routes/_auth/dashboard/_shell'
+import { Route as AuthDashboardCanvasIdRouteImport } from './routes/_auth/dashboard/$canvasId'
 import { Route as AuthDashboardShellIndexRouteImport } from './routes/_auth/dashboard/_shell/index'
 
 const AuthDashboardRouteImport = createFileRoute('/_auth/dashboard')()
@@ -59,6 +60,11 @@ const AuthDashboardShellRoute = AuthDashboardShellRouteImport.update({
   id: '/_shell',
   getParentRoute: () => AuthDashboardRoute,
 } as any)
+const AuthDashboardCanvasIdRoute = AuthDashboardCanvasIdRouteImport.update({
+  id: '/dashboard/$canvasId',
+  path: '/dashboard/$canvasId',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthDashboardShellIndexRoute = AuthDashboardShellIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
+  '/dashboard/$canvasId': typeof AuthDashboardCanvasIdRoute
   '/dashboard': typeof AuthDashboardShellRouteWithChildren
   '/dashboard/': typeof AuthDashboardShellIndexRoute
 }
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
+  '/dashboard/$canvasId': typeof AuthDashboardCanvasIdRoute
   '/dashboard': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_public/': typeof PublicIndexRoute
+  '/_auth/dashboard/$canvasId': typeof AuthDashboardCanvasIdRoute
   '/_auth/dashboard': typeof AuthDashboardRouteWithChildren
   '/_auth/dashboard/_shell': typeof AuthDashboardShellRouteWithChildren
   '/_auth/dashboard/_shell/': typeof AuthDashboardShellIndexRoute
@@ -99,10 +108,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/'
+    | '/dashboard/$canvasId'
     | '/dashboard'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/profile' | '/login' | '/register' | '/' | '/dashboard'
+  to:
+    | '/profile'
+    | '/login'
+    | '/register'
+    | '/'
+    | '/dashboard/$canvasId'
+    | '/dashboard'
   id:
     | '__root__'
     | '/_auth'
@@ -111,6 +127,7 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/_public/register'
     | '/_public/'
+    | '/_auth/dashboard/$canvasId'
     | '/_auth/dashboard'
     | '/_auth/dashboard/_shell'
     | '/_auth/dashboard/_shell/'
@@ -179,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDashboardShellRouteImport
       parentRoute: typeof AuthDashboardRoute
     }
+    '/_auth/dashboard/$canvasId': {
+      id: '/_auth/dashboard/$canvasId'
+      path: '/dashboard/$canvasId'
+      fullPath: '/dashboard/$canvasId'
+      preLoaderRoute: typeof AuthDashboardCanvasIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/dashboard/_shell/': {
       id: '/_auth/dashboard/_shell/'
       path: '/'
@@ -214,11 +238,13 @@ const AuthDashboardRouteWithChildren = AuthDashboardRoute._addFileChildren(
 
 interface AuthRouteChildren {
   AuthProfileRoute: typeof AuthProfileRoute
+  AuthDashboardCanvasIdRoute: typeof AuthDashboardCanvasIdRoute
   AuthDashboardRoute: typeof AuthDashboardRouteWithChildren
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthProfileRoute: AuthProfileRoute,
+  AuthDashboardCanvasIdRoute: AuthDashboardCanvasIdRoute,
   AuthDashboardRoute: AuthDashboardRouteWithChildren,
 }
 

@@ -13,26 +13,38 @@ type BaseProps = {
 	className?: string
 }
 
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
+
 type HeadingProps = BaseProps & {
-	level?: 1 | 2 | 3 | 4 | 5 | 6
+	level?: HeadingLevel
 }
 
 function Heading({
 	color = "text",
 	level = 1,
-	textStyle = "2xl",
+	textStyle,
 	weight = "bold",
 	className: propClass,
 	children,
 }: HeadingProps) {
+	const defaultTextStyle = {
+		1: "3xl",
+		2: "2xl",
+		3: "xl",
+		4: "lg",
+		5: "md",
+		6: "sm",
+	} as Record<HeadingLevel, TypographyVariantProps["textStyle"]>
+
 	const className = cx(
 		typography({
-			textStyle,
+			textStyle: textStyle ?? defaultTextStyle[level],
 			weight,
 			color,
 		}),
 		propClass,
 	)
+
 	const Tag = `h${level}` as keyof JSX.IntrinsicElements
 	return <Tag className={className}>{children}</Tag>
 }

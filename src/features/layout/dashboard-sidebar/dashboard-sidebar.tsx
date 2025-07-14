@@ -6,7 +6,6 @@ const navItems = [
 		label: "Projects",
 		href: "/dashboard",
 	},
-	{ label: "Account", href: "/dashboard/account" },
 ]
 
 export function DashboardSidebar() {
@@ -18,7 +17,7 @@ export function DashboardSidebar() {
 				p: "lg",
 				width: "240px",
 				borderRight: "1px solid",
-				borderColor: "neutral.200",
+				borderRightColor: "neutral.200",
 				height: "100%",
 				overflowY: "auto",
 				bg: "neutral.0",
@@ -40,7 +39,6 @@ export function DashboardSidebar() {
 						activeProps={{
 							className: css({
 								fontWeight: "bold",
-								color: "primary",
 								bg: "neutral.100",
 								textDecoration: "none",
 							}),

@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { css } from "../../../../styled-system/css"
-import { DashboardSidebar } from "../../../features/layout"
+import { DashboardNavbar, DashboardSidebar } from "../../../features/layout"
 import { Flex } from "../../../features/ui"
 
 export const Route = createFileRoute("/_auth/dashboard/_shell")({
@@ -10,14 +10,13 @@ export const Route = createFileRoute("/_auth/dashboard/_shell")({
 function DashboardLayout() {
 	return (
 		<Flex direction="column" className={css({ height: "100vh" })}>
-			{/** TODO: Navbar */}
-			<div>Navbar</div>
+			<DashboardNavbar />
 			<Flex flex={"auto"} className={css({ overflow: "hidden" })}>
-				{/** TODO: sidebar */}
 				<DashboardSidebar />
 				<Flex
 					as="main"
 					flex="auto"
+					direction={"column"}
 					className={css({ overflowY: "auto", p: "lg" })}
 				>
 					<Outlet />

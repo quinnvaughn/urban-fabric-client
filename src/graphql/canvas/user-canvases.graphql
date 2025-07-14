@@ -4,6 +4,9 @@ query UserCanvases {
     canvases {
       id
       name
+      description
+      updatedAt
+      published
     }
   }
 }

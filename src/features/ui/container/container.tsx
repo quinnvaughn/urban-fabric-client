@@ -17,7 +17,7 @@ type ContainerOwnProps = {
 
 export function Container<C extends ElementType = "div">({
 	as,
-	maxWidth = "lg",
+	maxWidth = "4xl",
 	className: propsClass,
 	children,
 	...rest

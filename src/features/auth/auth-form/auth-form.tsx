@@ -32,7 +32,7 @@ export function AuthForm(props: Props) {
 	return (
 		<Container
 			as="section"
-			maxWidth="sm"
+			maxWidth="md"
 			className={css({
 				py: "2xl",
 			})}

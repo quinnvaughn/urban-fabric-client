@@ -9,7 +9,7 @@ type FlexProps = {
 
 export function Flex({
 	as = "div",
-	direction,
+	direction = "row",
 	align,
 	justify,
 	gap,
@@ -24,6 +24,7 @@ export function Flex({
 	const Component = as
 
 	const className = cx(
+		flex({}),
 		flex({
 			direction,
 			align,

@@ -1,7 +1,7 @@
 import { Link, useRouteContext } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { css } from "../../../../styled-system/css"
-import { AppLink, Container, Flex, LinkButton } from "../../ui"
+import { AppLink, BrandLink, Container, Flex, LinkButton } from "../../ui"
 import { LogoutButton } from "./logout-button"
 
 export function PublicNavbar() {
@@ -18,17 +18,7 @@ export function PublicNavbar() {
 			})}
 		>
 			<Flex align="center" justify="between">
-				<Link
-					to="/"
-					className={css({
-						color: "primary",
-						textDecoration: "none",
-						fontWeight: "bold",
-						fontSize: "xl",
-					})}
-				>
-					Urban Fabric
-				</Link>
+				<BrandLink />
 				{match(user)
 					.with(null, () => (
 						<Flex gap="md" align="center" as="nav">

@@ -150,16 +150,22 @@ export default defineConfig({
 				base: {
 					width: "100%",
 					mx: "auto",
+					px: { base: "md", md: "lg" },
 				},
 				variants: {
 					size: {
-						full: { maxWidth: "100%" },
+						xs: { maxWidth: "{sizes.xs}" },
 						sm: { maxWidth: "{sizes.sm}" },
 						md: { maxWidth: "{sizes.md}" },
 						lg: { maxWidth: "{sizes.lg}" },
+						xl: { maxWidth: "{sizes.xl}" },
+						"2xl": { maxWidth: "{sizes.2xl}" },
+						"3xl": { maxWidth: "{sizes.3xl}" },
+						"4xl": { maxWidth: "{sizes.4xl}" },
+						full: { maxWidth: "100%" },
 					},
 				},
-				defaultVariants: { size: "lg" },
+				defaultVariants: { size: "4xl" },
 			},
 			button: {
 				className: "button",
@@ -539,6 +545,14 @@ export default defineConfig({
 							fontSize: "{fontSizes.3xl}",
 							lineHeight: "{lineHeights.tight}",
 						},
+						"4xl": {
+							fontSize: "{fontSizes.4xl}",
+							lineHeight: "{lineHeights.tight}",
+						},
+						"5xl": {
+							fontSize: "{fontSizes.5xl}",
+							lineHeight: "{lineHeights.tight}",
+						},
 					},
 					weight: {
 						regular: { fontWeight: "{fontWeights.regular}" },
@@ -618,6 +632,20 @@ export default defineConfig({
 					fontWeight: "{fontWeights.bold}",
 				},
 			},
+			"4xl": {
+				value: {
+					fontSize: "{fontSizes.4xl}",
+					lineHeight: "{lineHeights.tight}",
+					fontWeight: "{fontWeights.bold}",
+				},
+			},
+			"5xl": {
+				value: {
+					fontSize: "{fontSizes.5xl}",
+					lineHeight: "{lineHeights.tight}",
+					fontWeight: "{fontWeights.bold}",
+				},
+			},
 		},
 		tokens: {
 			shadows: {
@@ -626,9 +654,15 @@ export default defineConfig({
 				lg: { value: "0 4px 6px rgba(0,0,0,0.1)" },
 			},
 			sizes: {
-				sm: { value: "400px" },
-				md: { value: "600px" },
-				lg: { value: "1200px" },
+				xs: { value: "280px" }, // good for narrow sidebars, small cards
+				sm: { value: "336px" }, // 21rem, nice for smaller cards or form sections
+				md: { value: "400px" }, // standard cards, modals
+				lg: { value: "512px" }, // larger cards/modals
+				xl: { value: "640px" }, // wider modals or dialogs
+				"2xl": { value: "768px" }, // full-width content on small screens
+				"3xl": { value: "960px" }, // article width
+				"4xl": { value: "1140px" }, // wide layout max
+				full: { value: "100%" },
 			},
 			radii: {
 				none: { value: "0" },
@@ -704,8 +738,8 @@ export default defineConfig({
 				xl: { value: "1.5rem" }, // 24px
 				"2xl": { value: "2rem" }, // 32px
 				"3xl": { value: "2.5rem" }, // 40px
-				"4xl": { value: "3rem" }, // 48px
-				"5xl": { value: "4rem" }, // 64px
+				"4xl": { value: "2.75rem" }, // 44px
+				"5xl": { value: "3.5rem" }, // 56px
 			},
 			lineHeights: {
 				tight: { value: "1.25" },
@@ -715,6 +749,11 @@ export default defineConfig({
 		},
 	},
 	utilities: {
+		borderRightColor: {
+			className: "borderRight",
+			values: "colors",
+			transform: (value) => ({ borderRightColor: value }),
+		},
 		borderBottomColor: {
 			className: "borderBottom",
 			values: "colors",
