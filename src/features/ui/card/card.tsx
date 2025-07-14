@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ElementType, ReactNode } from "react"
+import type { ComponentPropsWithRef, ReactNode } from "react"
 import React from "react"
 import { css, cx } from "../../../../styled-system/css"
 import { Flex } from "../flex"

@@ -2,14 +2,7 @@ import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { css } from "../../../../../styled-system/css"
-import {
-	AppLink,
-	Card,
-	Flex,
-	Grid,
-	Icon,
-	Typography,
-} from "../../../../features/ui"
+import { Card, Flex, Grid, Typography } from "../../../../features/ui"
 import { IconButton } from "../../../../features/ui/icon-button"
 import { UserCanvasesDocument } from "../../../../graphql/generated"
 import { formatTimeAgo, truncate } from "../../../../utils"
