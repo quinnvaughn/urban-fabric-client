@@ -2,7 +2,13 @@ import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { css } from "../../../../../styled-system/css"
-import { Card, Flex, Grid, Typography } from "../../../../features/ui"
+import {
+	Card,
+	ContextMenu,
+	Flex,
+	Grid,
+	Typography,
+} from "../../../../features/ui"
 import { IconButton } from "../../../../features/ui/icon-button"
 import { UserCanvasesDocument } from "../../../../graphql/generated"
 import { formatTimeAgo, truncate } from "../../../../utils"
@@ -52,14 +58,23 @@ function DashboardPage() {
 											</Card.Description>
 										)}
 										<Card.Action>
-											<IconButton
-												icon="DotsThreeVertical"
-												onClick={(e) => {
-													e.stopPropagation()
-													// TODO: Implement canvas actions
-													console.log("Clicked")
-												}}
-											/>
+											<ContextMenu placement="bottom-end">
+												<ContextMenu.Trigger asChild>
+													<IconButton icon="DotsThreeVertical" />
+												</ContextMenu.Trigger>
+												<ContextMenu.Content>
+													<ContextMenu.Item
+														onSelect={() => console.log("Rename")}
+													>
+														Rename
+													</ContextMenu.Item>
+													<ContextMenu.Item
+														onSelect={() => console.log("Delete")}
+													>
+														Delete
+													</ContextMenu.Item>
+												</ContextMenu.Content>
+											</ContextMenu>
 										</Card.Action>
 									</Card.Header>
 									<Card.Footer className={css({ alignItems: "flex-start" })}>
