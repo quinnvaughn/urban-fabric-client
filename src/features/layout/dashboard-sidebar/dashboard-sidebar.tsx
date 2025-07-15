@@ -43,7 +43,7 @@ export function DashboardSidebar() {
 				})
 				.otherwise(() => {
 					// we get an unauthorized error if the user is not logged in
-					navigate({ to: "/login" })
+					navigate({ to: "/login", replace: true })
 				})
 		} catch (error) {
 			// TODO: add toasts for errors

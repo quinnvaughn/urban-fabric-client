@@ -1,0 +1,10 @@
+mutation DeleteCanvas($input: DeleteCanvasInput!) {
+  deleteCanvas(input: $input) {
+    ... on DeleteCanvasResponse {
+      data
+    }
+    ... on ApplicationError {
+      message
+    }
+  }
+}

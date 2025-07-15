@@ -2,6 +2,7 @@ import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { css } from "../../../../../styled-system/css"
+import { CanvasContextMenu } from "../../../../features/canvas"
 import {
 	Card,
 	ContextMenu,
@@ -58,23 +59,7 @@ function DashboardPage() {
 											</Card.Description>
 										)}
 										<Card.Action>
-											<ContextMenu placement="bottom-end">
-												<ContextMenu.Trigger asChild>
-													<IconButton icon="DotsThreeVertical" />
-												</ContextMenu.Trigger>
-												<ContextMenu.Content>
-													<ContextMenu.Item
-														onSelect={() => console.log("Rename")}
-													>
-														Rename
-													</ContextMenu.Item>
-													<ContextMenu.Item
-														onSelect={() => console.log("Delete")}
-													>
-														Delete
-													</ContextMenu.Item>
-												</ContextMenu.Content>
-											</ContextMenu>
+											<CanvasContextMenu id={canvas.id} />
 										</Card.Action>
 									</Card.Header>
 									<Card.Footer className={css({ alignItems: "flex-start" })}>

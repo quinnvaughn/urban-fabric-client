@@ -52,6 +52,8 @@ export type Canvas = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type CanvasResult = Canvas | ForbiddenError | NotFoundError | UnauthorizedError;
+
 export type Category = {
   __typename?: 'Category';
   featureOptions: Array<FeatureOption>;
@@ -60,6 +62,8 @@ export type Category = {
   label: Scalars['String']['output'];
   order?: Maybe<Scalars['Int']['output']>;
 };
+
+export type CategoryResult = Category | NotFoundError;
 
 export type ConflictError = ApplicationError & {
   __typename?: 'ConflictError';
@@ -71,10 +75,25 @@ export type CreateCanvasInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateCanvasResult = Canvas | UnauthorizedError;
+
 export type CreateScenarioInput = {
   canvasId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
+
+export type CreateScenarioResult = Scenario | UnauthorizedError;
+
+export type DeleteCanvasInput = {
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteCanvasResponse = {
+  __typename?: 'DeleteCanvasResponse';
+  data: Scalars['Boolean']['output'];
+};
+
+export type DeleteCanvasResult = DeleteCanvasResponse | ForbiddenError | NotFoundError | UnauthorizedError;
 
 export type Feature = {
   createdAt: Scalars['DateTime']['output'];
@@ -91,6 +110,8 @@ export type FeatureOption = {
   label: Scalars['String']['output'];
   propertiesSchema: Scalars['JSON']['output'];
 };
+
+export type FeatureOptionResult = FeatureOption | NotFoundError;
 
 export type FieldError = {
   __typename?: 'FieldError';
@@ -117,15 +138,18 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type LoginResult = ForbiddenError | UnauthorizedError | User;
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createCanvas: MutationCreateCanvasResult;
-  createScenario: MutationCreateScenarioResult;
-  login: MutationLoginResult;
+  createCanvas: CreateCanvasResult;
+  createScenario: CreateScenarioResult;
+  deleteCanvas: DeleteCanvasResult;
+  login: LoginResult;
   logout: Scalars['Boolean']['output'];
-  register: MutationRegisterResult;
-  renameScenario: MutationRenameScenarioResult;
-  upsertFeature: MutationUpsertFeatureResult;
+  register: RegisterResult;
+  renameScenario: RenameScenarioResult;
+  upsertFeature: UpsertFeatureResult;
 };
 
 
@@ -136,6 +160,11 @@ export type MutationCreateCanvasArgs = {
 
 export type MutationCreateScenarioArgs = {
   input: CreateScenarioInput;
+};
+
+
+export type MutationDeleteCanvasArgs = {
+  input: DeleteCanvasInput;
 };
 
 
@@ -158,23 +187,6 @@ export type MutationUpsertFeatureArgs = {
   input: UpsertFeatureInput;
 };
 
-export type MutationCreateCanvasResult = Canvas | UnauthorizedError;
-
-export type MutationCreateScenarioResult = Scenario | UnauthorizedError;
-
-export type MutationLoginResult = ForbiddenError | UnauthorizedError | User;
-
-export type MutationRegisterResult = ForbiddenError | User | ValidationError;
-
-export type MutationRenameScenarioResult = ForbiddenError | NotFoundError | Scenario | UnauthorizedError | ValidationError;
-
-export type MutationUpsertFeatureResult = ForbiddenError | MutationUpsertFeatureSuccess | NotFoundError | UnauthorizedError;
-
-export type MutationUpsertFeatureSuccess = {
-  __typename?: 'MutationUpsertFeatureSuccess';
-  data: Feature;
-};
-
 export type NotFoundError = ApplicationError & {
   __typename?: 'NotFoundError';
   message: Scalars['String']['output'];
@@ -182,13 +194,13 @@ export type NotFoundError = ApplicationError & {
 
 export type Query = {
   __typename?: 'Query';
-  canvas: QueryCanvasResult;
+  canvas: CanvasResult;
   categories: Array<Category>;
-  category: QueryCategoryResult;
+  category: CategoryResult;
   currentUser?: Maybe<User>;
-  featureOption: QueryFeatureOptionResult;
+  featureOption: FeatureOptionResult;
   featureOptions: Array<FeatureOption>;
-  user: QueryUserResult;
+  user: UserResult;
 };
 
 
@@ -211,14 +223,6 @@ export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type QueryCanvasResult = Canvas | ForbiddenError | NotFoundError | UnauthorizedError;
-
-export type QueryCategoryResult = Category | NotFoundError;
-
-export type QueryFeatureOptionResult = FeatureOption | NotFoundError;
-
-export type QueryUserResult = NotFoundError | User;
-
 export type RegisterInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -226,10 +230,14 @@ export type RegisterInput = {
   role?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type RegisterResult = ForbiddenError | User | ValidationError;
+
 export type RenameScenarioInput = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
+
+export type RenameScenarioResult = ForbiddenError | NotFoundError | Scenario | UnauthorizedError | ValidationError;
 
 export type Scenario = {
   __typename?: 'Scenario';
@@ -254,6 +262,13 @@ export type UpsertFeatureInput = {
   scenarioId: Scalars['ID']['input'];
 };
 
+export type UpsertFeatureResponse = {
+  __typename?: 'UpsertFeatureResponse';
+  data: Feature;
+};
+
+export type UpsertFeatureResult = ForbiddenError | NotFoundError | UnauthorizedError | UpsertFeatureResponse;
+
 export type User = {
   __typename?: 'User';
   canvases: Array<Canvas>;
@@ -262,6 +277,8 @@ export type User = {
   name?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
 };
+
+export type UserResult = NotFoundError | User;
 
 export type ValidationError = ApplicationError & {
   __typename?: 'ValidationError';
@@ -275,6 +292,13 @@ export type CreateCanvasMutationVariables = Exact<{
 
 
 export type CreateCanvasMutation = { __typename?: 'Mutation', createCanvas: { __typename: 'Canvas', id: string } | { __typename: 'UnauthorizedError', message: string } };
+
+export type DeleteCanvasMutationVariables = Exact<{
+  input: DeleteCanvasInput;
+}>;
+
+
+export type DeleteCanvasMutation = { __typename?: 'Mutation', deleteCanvas: { __typename?: 'DeleteCanvasResponse', data: boolean } | { __typename?: 'ForbiddenError', message: string } | { __typename?: 'NotFoundError', message: string } | { __typename?: 'UnauthorizedError', message: string } };
 
 export type UserCanvasesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -300,6 +324,7 @@ export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
 
 export const CreateCanvasDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCanvas"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCanvasInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCanvas"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Canvas"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCanvasMutation, CreateCanvasMutationVariables>;
+export const DeleteCanvasDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCanvas"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteCanvasInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCanvas"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteCanvasResponse"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteCanvasMutation, DeleteCanvasMutationVariables>;
 export const UserCanvasesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserCanvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"canvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"published"}}]}}]}}]}}]} as unknown as DocumentNode<UserCanvasesQuery, UserCanvasesQueryVariables>;
 export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
