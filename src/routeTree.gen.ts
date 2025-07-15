@@ -19,7 +19,7 @@ import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
 import { Route as AuthDashboardShellRouteImport } from './routes/_auth/dashboard/_shell'
 import { Route as AuthDashboardShellIndexRouteImport } from './routes/_auth/dashboard/_shell/index'
-import { Route as AuthDashboardCanvasCanvasIdRouteImport } from './routes/_auth/dashboard/canvas/$canvasId'
+import { Route as AuthDashboardSimulationSimulationIdRouteImport } from './routes/_auth/dashboard/simulation/$simulationId'
 
 const AuthDashboardRouteImport = createFileRoute('/_auth/dashboard')()
 
@@ -65,10 +65,10 @@ const AuthDashboardShellIndexRoute = AuthDashboardShellIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthDashboardShellRoute,
 } as any)
-const AuthDashboardCanvasCanvasIdRoute =
-  AuthDashboardCanvasCanvasIdRouteImport.update({
-    id: '/canvas/$canvasId',
-    path: '/canvas/$canvasId',
+const AuthDashboardSimulationSimulationIdRoute =
+  AuthDashboardSimulationSimulationIdRouteImport.update({
+    id: '/simulation/$simulationId',
+    path: '/simulation/$simulationId',
     getParentRoute: () => AuthDashboardRoute,
   } as any)
 
@@ -78,7 +78,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardShellRouteWithChildren
-  '/dashboard/canvas/$canvasId': typeof AuthDashboardCanvasCanvasIdRoute
+  '/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdRoute
   '/dashboard/': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRoutesByTo {
@@ -87,7 +87,7 @@ export interface FileRoutesByTo {
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardShellIndexRoute
-  '/dashboard/canvas/$canvasId': typeof AuthDashboardCanvasCanvasIdRoute
+  '/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,7 +99,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_auth/dashboard': typeof AuthDashboardRouteWithChildren
   '/_auth/dashboard/_shell': typeof AuthDashboardShellRouteWithChildren
-  '/_auth/dashboard/canvas/$canvasId': typeof AuthDashboardCanvasCanvasIdRoute
+  '/_auth/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdRoute
   '/_auth/dashboard/_shell/': typeof AuthDashboardShellIndexRoute
 }
 export interface FileRouteTypes {
@@ -110,7 +110,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/dashboard'
-    | '/dashboard/canvas/$canvasId'
+    | '/dashboard/simulation/$simulationId'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,7 +119,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/dashboard'
-    | '/dashboard/canvas/$canvasId'
+    | '/dashboard/simulation/$simulationId'
   id:
     | '__root__'
     | '/_auth'
@@ -130,7 +130,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_auth/dashboard'
     | '/_auth/dashboard/_shell'
-    | '/_auth/dashboard/canvas/$canvasId'
+    | '/_auth/dashboard/simulation/$simulationId'
     | '/_auth/dashboard/_shell/'
   fileRoutesById: FileRoutesById
 }
@@ -204,11 +204,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDashboardShellIndexRouteImport
       parentRoute: typeof AuthDashboardShellRoute
     }
-    '/_auth/dashboard/canvas/$canvasId': {
-      id: '/_auth/dashboard/canvas/$canvasId'
-      path: '/canvas/$canvasId'
-      fullPath: '/dashboard/canvas/$canvasId'
-      preLoaderRoute: typeof AuthDashboardCanvasCanvasIdRouteImport
+    '/_auth/dashboard/simulation/$simulationId': {
+      id: '/_auth/dashboard/simulation/$simulationId'
+      path: '/simulation/$simulationId'
+      fullPath: '/dashboard/simulation/$simulationId'
+      preLoaderRoute: typeof AuthDashboardSimulationSimulationIdRouteImport
       parentRoute: typeof AuthDashboardRoute
     }
   }
@@ -227,12 +227,13 @@ const AuthDashboardShellRouteWithChildren =
 
 interface AuthDashboardRouteChildren {
   AuthDashboardShellRoute: typeof AuthDashboardShellRouteWithChildren
-  AuthDashboardCanvasCanvasIdRoute: typeof AuthDashboardCanvasCanvasIdRoute
+  AuthDashboardSimulationSimulationIdRoute: typeof AuthDashboardSimulationSimulationIdRoute
 }
 
 const AuthDashboardRouteChildren: AuthDashboardRouteChildren = {
   AuthDashboardShellRoute: AuthDashboardShellRouteWithChildren,
-  AuthDashboardCanvasCanvasIdRoute: AuthDashboardCanvasCanvasIdRoute,
+  AuthDashboardSimulationSimulationIdRoute:
+    AuthDashboardSimulationSimulationIdRoute,
 }
 
 const AuthDashboardRouteWithChildren = AuthDashboardRoute._addFileChildren(

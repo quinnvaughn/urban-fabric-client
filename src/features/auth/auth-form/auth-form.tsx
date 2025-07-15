@@ -1,8 +1,17 @@
 import { match } from "ts-pattern"
 import z from "zod"
 import { css } from "../../../../styled-system/css"
-import { useAppForm } from "../../form"
-import { AppLink, Card, Container, Flex, Typography } from "../../ui"
+import { useForm } from "../../../lib"
+import {
+	AppLink,
+	Button,
+	Card,
+	Container,
+	Flex,
+	Input,
+	PasswordField,
+	Typography,
+} from "../../ui"
 
 type Props = {
 	mode: "login" | "register"
@@ -16,16 +25,17 @@ const passwordSchema = z
 	.min(6, "Password must be at least 6 characters long")
 
 export function AuthForm(props: Props) {
-	const form = useAppForm({
+	const form = useForm({
+		schema: z.object({
+			email: emailSchema,
+			password: passwordSchema,
+		}),
 		defaultValues: {
 			email: "",
 			password: "",
 		},
-		onSubmit: async (data) => {
-			await props.onSubmit({
-				email: data.value.email,
-				password: data.value.password,
-			})
+		onSubmit: async (values) => {
+			await props.onSubmit(values)
 		},
 	})
 
@@ -55,41 +65,39 @@ export function AuthForm(props: Props) {
 						>
 							{props.mode === "login" ? "Login" : "Register"}
 						</Typography.Heading>
-						<form.AppField
-							name="email"
-							validators={{
-								onChangeAsync: emailSchema,
-								onChangeAsyncDebounceMs: 300,
-							}}
-						>
-							{(field) => <field.InputField label="Email" />}
-						</form.AppField>
-						<form.AppField
-							name="password"
-							validators={{
-								onChangeAsync: passwordSchema,
-								onChangeAsyncDebounceMs: 300,
-							}}
-						>
-							{(field) => <field.PasswordField label="Password" />}
-						</form.AppField>
+						<form.Field name="email">
+							{(field) => (
+								<Input {...field} label="Email" error={field.meta.error} />
+							)}
+						</form.Field>
+						<form.Field name="password">
+							{(field) => (
+								<PasswordField
+									{...field}
+									label="Password"
+									error={field.meta.error}
+								/>
+							)}
+						</form.Field>
 						{props.error && (
 							<Typography.Text color="danger" textStyle={"sm"}>
 								{props.error}
 							</Typography.Text>
 						)}
-						<form.AppForm>
-							<form.SubmitButton
-								label={(_, isSubmitting) =>
-									match([props.mode, isSubmitting])
+						<form.Subscribe
+							selector={(s) => [s.meta.isSubmitting, s.meta.canSubmit]}
+						>
+							{([isSubmitting, canSubmit]) => (
+								<Button type="submit" disabled={!canSubmit || isSubmitting}>
+									{match([props.mode, isSubmitting])
 										.with(["login", true], () => "Logging in...")
 										.with(["register", true], () => "Registering...")
 										.with(["login", false], () => "Login")
 										.with(["register", false], () => "Register")
-										.otherwise(() => "Submit")
-								}
-							/>
-						</form.AppForm>
+										.otherwise(() => "Submit")}
+								</Button>
+							)}
+						</form.Subscribe>
 						<Flex direction="row" justify={"center"} grow={"1"}>
 							{props.mode === "login" ? (
 								<AppLink to="/register">Register</AppLink>

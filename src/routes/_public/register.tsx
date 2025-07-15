@@ -1,15 +1,44 @@
+import { useMutation } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
+import { match } from "ts-pattern"
 import { AuthForm } from "../../features/auth"
 import { Container } from "../../features/ui"
+import { RegisterDocument } from "../../graphql/generated"
 
 export const Route = createFileRoute("/_public/register")({
 	component: RouteComponent,
 })
 
 function RouteComponent() {
+	const [register] = useMutation(RegisterDocument)
+	const navigate = Route.useNavigate()
 	return (
 		<Container>
-			<AuthForm mode="register" onSubmit={async (data) => {}} />
+			<AuthForm
+				mode="register"
+				onSubmit={async (data) => {
+					const result = await register({ variables: { input: data } })
+
+					console.log("Register result:", result.data?.register.__typename)
+
+					match(result.data?.register)
+						.with({ __typename: "User" }, () => {
+							navigate({ to: "/dashboard", replace: true })
+						})
+						.with({ __typename: "ValidationError" }, ({ errors }) => {
+							// errors?.forEach((error) => {
+							// 	helpers.setFieldError(error.field, error.message)
+							// })
+						})
+						.with({ __typename: "ForbiddenError" }, (error) => {
+							// todo: toast
+							console.error("Forbidden error:", error.message)
+						})
+						.otherwise(() => {
+							console.error("Unexpected response from register mutation")
+						})
+				}}
+			/>
 		</Container>
 	)
 }

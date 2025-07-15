@@ -4,8 +4,8 @@ import { useState } from "react"
 import { match } from "ts-pattern"
 import { css } from "../../../../styled-system/css"
 import {
-	CreateCanvasDocument,
-	UserCanvasesDocument,
+	CreateSimulationDocument,
+	UserSimulationsDocument,
 } from "../../../graphql/generated"
 import { Route as DashboardRoute } from "../../../routes/_auth/dashboard/_shell/index"
 import { AppLink, Button, Flex, Typography } from "../../ui"
@@ -23,22 +23,22 @@ const navItems: NavItem[] = [
 ]
 
 export function DashboardSidebar() {
-	const [createCanvas] = useMutation(CreateCanvasDocument)
+	const [createCanvas] = useMutation(CreateSimulationDocument)
 	const navigate = useNavigate()
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	async function handleCreateCanvas() {
+	async function handleCreateSimulation() {
 		setIsSubmitting(true)
 		try {
 			const result = await createCanvas({
-				variables: { input: { name: "Untitled Canvas" } },
-				refetchQueries: [{ query: UserCanvasesDocument }],
+				variables: { input: { name: "Untitled Simulation" } },
+				refetchQueries: [{ query: UserSimulationsDocument }],
 			})
-			match(result.data?.createCanvas)
-				.with({ __typename: "Canvas" }, (canvas) => {
+			match(result.data?.createSimulation)
+				.with({ __typename: "Simulation" }, (simulation) => {
 					navigate({
-						to: "/dashboard/canvas/$canvasId",
-						params: { canvasId: canvas.id },
+						to: "/dashboard/simulation/$simulationId",
+						params: { simulationId: simulation.id },
 					})
 				})
 				.otherwise(() => {
@@ -47,7 +47,7 @@ export function DashboardSidebar() {
 				})
 		} catch (error) {
 			// TODO: add toasts for errors
-			console.error("Error creating canvas:", error)
+			console.error("Error creating simulation:", error)
 		} finally {
 			setIsSubmitting(false)
 		}
@@ -97,9 +97,9 @@ export function DashboardSidebar() {
 					variant="solid"
 					intent="primary"
 					disabled={isSubmitting}
-					onClick={handleCreateCanvas}
+					onClick={handleCreateSimulation}
 				>
-					+ Create Canvas
+					+ Create Simulation
 				</Button>
 			</Flex>
 		</Flex>

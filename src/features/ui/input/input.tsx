@@ -6,9 +6,12 @@ import { Flex } from "../flex"
 type Props = {
 	label?: string
 	id?: string
-	error?: string
+	error: string | null
 	endAdornment?: ReactNode
-} & JSX.IntrinsicElements["input"]
+	value: string
+	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+	onBlur: () => void
+} & Omit<JSX.IntrinsicElements["input"], "value" | "onChange" | "onBlur">
 
 export function Input({
 	className,
@@ -17,6 +20,9 @@ export function Input({
 	error = "",
 	required,
 	endAdornment,
+	onChange,
+	onBlur,
+	value,
 	...rest
 }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -60,6 +66,10 @@ export function Input({
 				<input
 					id={id}
 					ref={inputRef}
+					type="text"
+					value={value}
+					onChange={onChange}
+					onBlur={onBlur}
 					{...rest}
 					className={css({
 						width: "100%",

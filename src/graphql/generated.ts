@@ -39,21 +39,6 @@ export type BikeLaneFeature = Feature & {
   width: Scalars['Float']['output'];
 };
 
-export type Canvas = {
-  __typename?: 'Canvas';
-  author: User;
-  createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  published: Scalars['Boolean']['output'];
-  scenarios: Array<Scenario>;
-  slug?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type CanvasResult = Canvas | ForbiddenError | NotFoundError | UnauthorizedError;
-
 export type Category = {
   __typename?: 'Category';
   featureOptions: Array<FeatureOption>;
@@ -70,13 +55,6 @@ export type ConflictError = ApplicationError & {
   message: Scalars['String']['output'];
 };
 
-export type CreateCanvasInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-export type CreateCanvasResult = Canvas | UnauthorizedError;
-
 export type CreateScenarioInput = {
   canvasId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
@@ -84,16 +62,23 @@ export type CreateScenarioInput = {
 
 export type CreateScenarioResult = Scenario | UnauthorizedError;
 
-export type DeleteCanvasInput = {
+export type CreateSimulationInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type CreateSimulationResult = Simulation | UnauthorizedError;
+
+export type DeleteSimulationInput = {
   id: Scalars['ID']['input'];
 };
 
-export type DeleteCanvasResponse = {
-  __typename?: 'DeleteCanvasResponse';
+export type DeleteSimulationResponse = {
+  __typename?: 'DeleteSimulationResponse';
   data: Scalars['Boolean']['output'];
 };
 
-export type DeleteCanvasResult = DeleteCanvasResponse | ForbiddenError | NotFoundError | UnauthorizedError;
+export type DeleteSimulationResult = DeleteSimulationResponse | ForbiddenError | NotFoundError | UnauthorizedError;
 
 export type Feature = {
   createdAt: Scalars['DateTime']['output'];
@@ -142,9 +127,9 @@ export type LoginResult = ForbiddenError | UnauthorizedError | User;
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createCanvas: CreateCanvasResult;
   createScenario: CreateScenarioResult;
-  deleteCanvas: DeleteCanvasResult;
+  createSimulation: CreateSimulationResult;
+  deleteSimulation: DeleteSimulationResult;
   login: LoginResult;
   logout: Scalars['Boolean']['output'];
   register: RegisterResult;
@@ -153,18 +138,18 @@ export type Mutation = {
 };
 
 
-export type MutationCreateCanvasArgs = {
-  input: CreateCanvasInput;
-};
-
-
 export type MutationCreateScenarioArgs = {
   input: CreateScenarioInput;
 };
 
 
-export type MutationDeleteCanvasArgs = {
-  input: DeleteCanvasInput;
+export type MutationCreateSimulationArgs = {
+  input: CreateSimulationInput;
+};
+
+
+export type MutationDeleteSimulationArgs = {
+  input: DeleteSimulationInput;
 };
 
 
@@ -194,18 +179,13 @@ export type NotFoundError = ApplicationError & {
 
 export type Query = {
   __typename?: 'Query';
-  canvas: CanvasResult;
   categories: Array<Category>;
   category: CategoryResult;
   currentUser?: Maybe<User>;
   featureOption: FeatureOptionResult;
   featureOptions: Array<FeatureOption>;
+  simulation: SimulationResult;
   user: UserResult;
-};
-
-
-export type QueryCanvasArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -219,13 +199,17 @@ export type QueryFeatureOptionArgs = {
 };
 
 
+export type QuerySimulationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
 export type RegisterInput = {
   email: Scalars['String']['input'];
-  name: Scalars['String']['input'];
   password: Scalars['String']['input'];
   role?: InputMaybe<Scalars['String']['input']>;
 };
@@ -241,14 +225,29 @@ export type RenameScenarioResult = ForbiddenError | NotFoundError | Scenario | U
 
 export type Scenario = {
   __typename?: 'Scenario';
-  canvas: Canvas;
   createdAt: Scalars['DateTime']['output'];
   features: Array<Feature>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   position: Scalars['Int']['output'];
+  simulation: Simulation;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export type Simulation = {
+  __typename?: 'Simulation';
+  author: User;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  published: Scalars['Boolean']['output'];
+  scenarios: Array<Scenario>;
+  slug?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type SimulationResult = ForbiddenError | NotFoundError | Simulation | UnauthorizedError;
 
 export type UnauthorizedError = ApplicationError & {
   __typename?: 'UnauthorizedError';
@@ -271,11 +270,11 @@ export type UpsertFeatureResult = ForbiddenError | NotFoundError | UnauthorizedE
 
 export type User = {
   __typename?: 'User';
-  canvases: Array<Canvas>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
+  simulations: Array<Simulation>;
 };
 
 export type UserResult = NotFoundError | User;
@@ -286,24 +285,24 @@ export type ValidationError = ApplicationError & {
   message: Scalars['String']['output'];
 };
 
-export type CreateCanvasMutationVariables = Exact<{
-  input: CreateCanvasInput;
+export type CreateSimulationMutationVariables = Exact<{
+  input: CreateSimulationInput;
 }>;
 
 
-export type CreateCanvasMutation = { __typename?: 'Mutation', createCanvas: { __typename: 'Canvas', id: string } | { __typename: 'UnauthorizedError', message: string } };
+export type CreateSimulationMutation = { __typename?: 'Mutation', createSimulation: { __typename: 'Simulation', id: string } | { __typename: 'UnauthorizedError', message: string } };
 
-export type DeleteCanvasMutationVariables = Exact<{
-  input: DeleteCanvasInput;
+export type DeleteSimulationMutationVariables = Exact<{
+  input: DeleteSimulationInput;
 }>;
 
 
-export type DeleteCanvasMutation = { __typename?: 'Mutation', deleteCanvas: { __typename?: 'DeleteCanvasResponse', data: boolean } | { __typename?: 'ForbiddenError', message: string } | { __typename?: 'NotFoundError', message: string } | { __typename?: 'UnauthorizedError', message: string } };
+export type DeleteSimulationMutation = { __typename?: 'Mutation', deleteSimulation: { __typename?: 'DeleteSimulationResponse', data: boolean } | { __typename?: 'ForbiddenError', message: string } | { __typename?: 'NotFoundError', message: string } | { __typename?: 'UnauthorizedError', message: string } };
 
-export type UserCanvasesQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserSimulationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserCanvasesQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, canvases: Array<{ __typename?: 'Canvas', id: string, name: string, description?: string | null, updatedAt: string, published: boolean }> } | null };
+export type UserSimulationsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, simulations: Array<{ __typename?: 'Simulation', id: string, name: string, description?: string | null, updatedAt: string, published: boolean }> } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -322,10 +321,18 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
+export type RegisterMutationVariables = Exact<{
+  input: RegisterInput;
+}>;
 
-export const CreateCanvasDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCanvas"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCanvasInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCanvas"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Canvas"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCanvasMutation, CreateCanvasMutationVariables>;
-export const DeleteCanvasDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCanvas"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteCanvasInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCanvas"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteCanvasResponse"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteCanvasMutation, DeleteCanvasMutationVariables>;
-export const UserCanvasesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserCanvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"canvases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"published"}}]}}]}}]}}]} as unknown as DocumentNode<UserCanvasesQuery, UserCanvasesQueryVariables>;
+
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename: 'ForbiddenError', message: string } | { __typename: 'User', id: string } | { __typename: 'ValidationError', message: string, errors?: Array<{ __typename?: 'FieldError', message: string, field: string }> | null } };
+
+
+export const CreateSimulationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSimulation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSimulationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSimulation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Simulation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<CreateSimulationMutation, CreateSimulationMutationVariables>;
+export const DeleteSimulationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSimulation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteSimulationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteSimulation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteSimulationResponse"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteSimulationMutation, DeleteSimulationMutationVariables>;
+export const UserSimulationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserSimulations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"simulations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"published"}}]}}]}}]}}]} as unknown as DocumentNode<UserSimulationsQuery, UserSimulationsQueryVariables>;
 export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ApplicationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
+export const RegisterDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Register"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"register"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForbiddenError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ValidationError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"field"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>;

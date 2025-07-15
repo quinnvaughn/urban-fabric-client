@@ -1,7 +1,7 @@
-query UserCanvases {
+query UserSimulations {
   currentUser {
     id
-    canvases {
+    simulations {
       id
       name
       description

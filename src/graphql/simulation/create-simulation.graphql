@@ -1,0 +1,11 @@
+mutation CreateSimulation($input: CreateSimulationInput!) {
+  createSimulation(input: $input) {
+    __typename
+    ... on Simulation {
+      id
+    }
+    ... on ApplicationError {
+      message
+    }
+  }
+}
