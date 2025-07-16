@@ -1,7 +1,7 @@
 import { match } from "ts-pattern"
 import z from "zod"
 import { css } from "../../../../styled-system/css"
-import { useForm } from "../../../lib"
+import { type FormHelpersFromSchema, useForm } from "../../../lib"
 import {
 	AppLink,
 	Button,
@@ -13,29 +13,30 @@ import {
 	Typography,
 } from "../../ui"
 
+const schema = z.object({
+	email: z.string().email("Invalid email address"),
+	password: z.string().min(6, "Password must be at least 6 characters long"),
+})
+
+type AuthHelpers = FormHelpersFromSchema<typeof schema>
+
 type Props = {
 	mode: "login" | "register"
-	onSubmit: (data: { email: string; password: string }) => Promise<void>
-	error?: string
+	onSubmit: (
+		data: { email: string; password: string },
+		helpers: AuthHelpers,
+	) => Promise<void>
 }
-
-const emailSchema = z.string().email("Invalid email address")
-const passwordSchema = z
-	.string()
-	.min(6, "Password must be at least 6 characters long")
 
 export function AuthForm(props: Props) {
 	const form = useForm({
-		schema: z.object({
-			email: emailSchema,
-			password: passwordSchema,
-		}),
+		schema,
 		defaultValues: {
 			email: "",
 			password: "",
 		},
-		onSubmit: async (values) => {
-			await props.onSubmit(values)
+		onSubmit: async (values, helpers) => {
+			await props.onSubmit(values, helpers)
 		},
 	})
 
@@ -79,11 +80,13 @@ export function AuthForm(props: Props) {
 								/>
 							)}
 						</form.Field>
-						{props.error && (
-							<Typography.Text color="danger" textStyle={"sm"}>
-								{props.error}
-							</Typography.Text>
-						)}
+						<form.Subscribe selector={(s) => s.meta.formError}>
+							{(formError) => (
+								<Typography.Text color="danger" textStyle={"sm"}>
+									{formError}
+								</Typography.Text>
+							)}
+						</form.Subscribe>
 						<form.Subscribe
 							selector={(s) => [s.meta.isSubmitting, s.meta.canSubmit]}
 						>

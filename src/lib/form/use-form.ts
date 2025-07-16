@@ -1,8 +1,29 @@
 import { useStore } from "@tanstack/react-store"
 import { Store } from "@tanstack/store"
 import type React from "react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { z } from "zod"
+
+export interface UseFormHelpers<Values> {
+	/** Reset the form back to its initial values (or override) */
+	reset(valuesOverride?: Partial<Values>): void
+	/** Imperatively set one field’s value */
+	setValue<K extends keyof Values>(name: K, value: Values[K]): void
+	/** Imperatively set one field’s error */
+	setError<K extends keyof Values>(name: K, message: string | null): void
+	/** Batch‐set multiple field errors at once */
+	setErrors(errorsMap: Partial<Record<keyof Values, string | null>>): void
+	/** Clear all errors */
+	clearErrors(): void
+	/** Set a form-level error message */
+	setFormError(message: string | null, timeoutInMs?: number): void
+	/** Clear the form-level error */
+	clearFormError(): void
+}
+
+export type FormHelpersFromSchema<S extends z.ZodObject<any>> = UseFormHelpers<
+	z.infer<S>
+>
 
 type FormState<Values> = {
 	values: Values
@@ -13,24 +34,39 @@ type FormState<Values> = {
 		submitCount: number
 		canSubmit: boolean
 		isDirty: boolean
+		formError: string | null
 	}
 }
 
 export function useForm<Schema extends z.ZodObject<any>>(opts: {
 	schema: Schema
 	defaultValues?: Partial<z.infer<Schema>>
-	onSubmit: (values: z.infer<Schema>) => Promise<void> | void
+	onSubmit: (
+		values: z.infer<Schema>,
+		helpers: FormHelpersFromSchema<Schema>,
+	) => Promise<void> | void
 }) {
 	type Values = z.infer<Schema>
 
+	const defaultValuesRef = useRef<Partial<Values> | undefined>(
+		opts.defaultValues,
+	)
+
+	// keep a ref to the latest onSubmit, so store isn't recreated on every render
+	const onSubmitRef = useRef(opts.onSubmit)
+	useEffect(() => {
+		onSubmitRef.current = opts.onSubmit
+	}, [opts.onSubmit])
+
 	const formApi = useMemo(() => {
 		const shape = opts.schema.shape
+		const defaults = defaultValuesRef.current ?? {}
 
 		// Initial values/errors/touched
 		const initialValues = Object.fromEntries(
 			Object.keys(shape).map((key) => [
 				key,
-				(opts.defaultValues?.[key as keyof Values] ??
+				(defaults[key as keyof typeof defaults] ??
 					(() => {
 						const field = shape[key as keyof typeof shape]
 						if (field instanceof z.ZodString) return ""
@@ -44,7 +80,18 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 		) as Values
 
 		const initialErrors = Object.fromEntries(
-			Object.keys(shape).map((key) => [key, null]),
+			(Object.entries(shape) as [keyof Values, z.ZodTypeAny][]).map(
+				([key, fieldSchema]) => {
+					const defaultVal = defaults[key as keyof typeof defaults]
+					const result = fieldSchema.safeParse(defaultVal)
+					return [
+						key,
+						result.success
+							? null
+							: (result.error.issues[0]?.message ?? "Invalid"),
+					] as const
+				},
+			),
 		) as { [K in keyof Values]: string | null }
 
 		const initialTouched = Object.fromEntries(
@@ -61,12 +108,22 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 				submitCount: 0,
 				canSubmit: false,
 				isDirty: false,
+				formError: null,
 			},
 		})
 
+		const computeCanSubmit = (state: FormState<Values>) =>
+			!Object.values(state.errors).some((e) => e != null)
+
+		const computeIsDirty = (state: FormState<Values>) =>
+			Object.keys(initialValues).some(
+				(k) =>
+					state.values[k as keyof Values] !== initialValues[k as keyof Values],
+			)
+
 		// Field validation
 		const validateField = async (name: keyof Values) => {
-			const fieldSchema = opts.schema.shape[name as string]
+			const fieldSchema = shape[name as string]
 			const state = store.state
 			const result = fieldSchema.safeParse(state.values[name])
 			const errorMsg = result.success
@@ -81,7 +138,6 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 
 		// Submission handler
 		const handleSubmit = async () => {
-			// touch & validate all
 			for (const name of Object.keys(shape) as (keyof Values)[]) {
 				store.setState((prev) => ({
 					...prev,
@@ -95,24 +151,36 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 
 			store.setState((prev) => ({
 				...prev,
-				isSubmitting: true,
-				submitCount: prev.meta.submitCount + 1,
+				meta: {
+					...prev.meta,
+					isSubmitting: true,
+					submitCount: prev.meta.submitCount + 1,
+				},
 			}))
 
 			try {
-				await opts.onSubmit(state.values)
+				await onSubmitRef.current(state.values, {
+					reset,
+					setValue,
+					setError,
+					setErrors,
+					clearErrors,
+					setFormError,
+					clearFormError,
+				})
 			} finally {
-				store.setState((prev) => ({ ...prev, isSubmitting: false }))
+				store.setState((prev) => ({
+					...prev,
+					meta: { ...prev.meta, isSubmitting: false },
+				}))
 			}
 		}
 
+		// Programmatic helpers
 		const reset = (valuesOverride?: Partial<Values>) => {
 			store.setState((prev) => ({
 				...prev,
-				values: {
-					...prev.values,
-					...valuesOverride,
-				},
+				values: { ...initialValues, ...valuesOverride },
 				errors: initialErrors,
 				touched: initialTouched,
 				meta: {
@@ -120,45 +188,90 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 					submitCount: 0,
 					canSubmit: false,
 					isDirty: false,
+					formError: null,
 				},
 			}))
 		}
 
-		// Subscribe component
-		function Subscribe<TSelected>(props: {
-			selector: (state: {
-				values: Values
-				errors: { [K in keyof Values]: string | null }
-				touched: { [K in keyof Values]: boolean }
-				meta: {
-					isSubmitting: boolean
-					submitCount: number
-					canSubmit: boolean
-					isDirty: boolean
-				}
-			}) => TSelected
-			children: (sel: TSelected) => React.ReactNode
-		}) {
-			const selected = useStore(store, (state) => {
-				const canSubmit =
-					// no validation errors
-					!Object.values(state.errors).some((e) => e != null) &&
-					// every field has been touched
-					Object.values(state.touched).every((t) => t)
-				const isDirty = Object.keys(initialValues).some(
-					(k) =>
-						state.values[k as keyof Values] !==
-						initialValues[k as keyof Values],
-				)
-				return props.selector({
-					values: state.values,
-					errors: state.errors,
-					touched: state.touched,
+		const setValue = (name: keyof Values, value: Values[keyof Values]) => {
+			store.setState((prev) => ({
+				...prev,
+				values: { ...prev.values, [name]: value },
+				meta: { ...prev.meta, isDirty: computeIsDirty(prev) },
+			}))
+		}
+
+		const setError = (name: keyof Values, errorMsg: string | null) => {
+			store.setState((prev) => {
+				const newErrors = { ...prev.errors, [name]: errorMsg }
+				return {
+					...prev,
+					errors: newErrors,
 					meta: {
-						isSubmitting: state.meta.isSubmitting,
-						submitCount: state.meta.submitCount,
-						canSubmit,
-						isDirty,
+						...prev.meta,
+						canSubmit: computeCanSubmit({ ...prev, errors: newErrors }),
+					},
+				}
+			})
+		}
+
+		const setErrors = (
+			errorsMap: Partial<{ [K in keyof Values]: string | null }>,
+		) => {
+			store.setState((prev) => {
+				const newErrors = { ...prev.errors, ...errorsMap }
+				return {
+					...prev,
+					errors: newErrors,
+					meta: {
+						...prev.meta,
+						canSubmit: computeCanSubmit({ ...prev, errors: newErrors }),
+					},
+				}
+			})
+		}
+
+		const clearErrors = () => {
+			store.setState((prev) => ({
+				...prev,
+				errors: initialErrors,
+				meta: {
+					...prev.meta,
+					canSubmit: computeCanSubmit({ ...prev, errors: initialErrors }),
+				},
+			}))
+		}
+
+		const setFormError = (message: string | null, timeoutInMs?: number) => {
+			store.setState((prev) => ({
+				...prev,
+				meta: { ...prev.meta, formError: message },
+			}))
+
+			if (timeoutInMs) {
+				setTimeout(() => {
+					clearFormError()
+				}, timeoutInMs)
+			}
+		}
+
+		const clearFormError = () => setFormError(null)
+
+		function Subscribe<T>(props: {
+			selector: (s: FormState<Values>) => T
+			children: (sel: T) => React.ReactNode
+		}) {
+			const selected = useStore(store, (s) => {
+				return props.selector({
+					values: s.values,
+					errors: s.errors,
+					touched: s.touched,
+					meta: {
+						isSubmitting: s.meta.isSubmitting,
+						submitCount: s.meta.submitCount,
+						canSubmit: computeCanSubmit(s),
+						isDirty: computeIsDirty(s),
+						formError: s.meta.formError,
 					},
 				})
 			})
@@ -182,7 +295,6 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 				error: s.errors[name],
 				touched: s.touched[name],
 			}))
-
 			return children({
 				name,
 				value,
@@ -192,16 +304,15 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 						...prev,
 						values: { ...prev.values, [name]: v },
 					}))
-					if (touched) void validateField(name)
+					void validateField(name)
 				},
 				onBlur: () => {
 					store.setState((prev) => ({
 						...prev,
 						touched: { ...prev.touched, [name]: true },
 					}))
-					void validateField(name)
 				},
-				meta: { error, touched },
+				meta: { error: touched ? error : null, touched },
 			})
 		}
 
@@ -213,25 +324,29 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 			return {
 				isSubmitting: s.meta.isSubmitting,
 				submitCount: s.meta.submitCount,
-				canSubmit: !Object.values(s.errors).some((e) => e != null),
-				isDirty: Object.keys(initialValues).some(
-					(k) =>
-						s.values[k as keyof Values] !== initialValues[k as keyof Values],
-				),
+				canSubmit: computeCanSubmit(s),
+				isDirty: computeIsDirty(s),
+				formError: s.meta.formError,
 			}
 		}
 
 		return {
 			Field,
 			Subscribe,
+			reset,
+			setValue,
+			setError,
+			setErrors,
+			clearErrors,
 			validateField,
 			values,
 			errors,
 			meta,
 			handleSubmit,
-			reset,
+			setFormError,
+			clearFormError,
 		}
-	}, [opts.schema, opts.defaultValues, opts.onSubmit])
+	}, [opts.schema])
 
 	return formApi
 }

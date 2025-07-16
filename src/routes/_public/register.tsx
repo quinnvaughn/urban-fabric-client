@@ -16,19 +16,19 @@ function RouteComponent() {
 		<Container>
 			<AuthForm
 				mode="register"
-				onSubmit={async (data) => {
+				onSubmit={async (data, helpers) => {
 					const result = await register({ variables: { input: data } })
-
-					console.log("Register result:", result.data?.register.__typename)
-
 					match(result.data?.register)
 						.with({ __typename: "User" }, () => {
 							navigate({ to: "/dashboard", replace: true })
 						})
 						.with({ __typename: "ValidationError" }, ({ errors }) => {
-							// errors?.forEach((error) => {
-							// 	helpers.setFieldError(error.field, error.message)
-							// })
+							errors?.forEach((error) => {
+								helpers.setError(
+									error.field as keyof typeof data,
+									error.message,
+								)
+							})
 						})
 						.with({ __typename: "ForbiddenError" }, (error) => {
 							// todo: toast
