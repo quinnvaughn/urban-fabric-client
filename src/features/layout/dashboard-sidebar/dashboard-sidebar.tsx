@@ -96,6 +96,7 @@ export function DashboardSidebar() {
 				<Button
 					variant="solid"
 					intent="primary"
+					size="lg"
 					disabled={isSubmitting}
 					onClick={handleCreateSimulation}
 				>

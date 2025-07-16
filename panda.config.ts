@@ -173,8 +173,6 @@ export default defineConfig({
 					cursor: "pointer",
 					transition: "background-color 0.2s ease, color 0.2s ease",
 					borderRadius: "xl",
-					px: "{spacing.xl}",
-					py: "{spacing.md}",
 					color: "{colors.neutral.50}", // default white text for solid
 				},
 				variants: {
@@ -195,9 +193,21 @@ export default defineConfig({
 						warning: {},
 					},
 					size: {
-						sm: { fontSize: "{fontSizes.sm}" },
-						md: { fontSize: "{fontSizes.md}" },
-						lg: { fontSize: "{fontSizes.lg}" },
+						sm: {
+							fontSize: "{fontSizes.sm}",
+							px: "{spacing.sm}",
+							py: "{spacing.xs}",
+						},
+						md: {
+							fontSize: "{fontSizes.md}",
+							px: "{spacing.md}",
+							py: "{spacing.sm}",
+						},
+						lg: {
+							fontSize: "{fontSizes.md}",
+							px: "{spacing.lg}",
+							py: "{spacing.md}",
+						},
 					},
 				},
 				compoundVariants: [
@@ -721,14 +731,14 @@ export default defineConfig({
 				bold: { value: "700" },
 			},
 			spacing: {
-				xxs: { value: "0.25rem" }, // 4px
-				xs: { value: "0.5rem" }, // 8px
-				sm: { value: "0.75rem" }, // 12px
-				md: { value: "1rem" }, // 16px
-				lg: { value: "1.5rem" }, // 24px
-				xl: { value: "2rem" }, // 32px
-				"2xl": { value: "3rem" }, // 48px
-				"3xl": { value: "4rem" }, // 64px
+				xxs: { value: "0.125rem" }, // 2px
+				xs: { value: "0.25rem" }, // 4px
+				sm: { value: "0.5rem" }, // 8px
+				md: { value: "0.75rem" }, // 12px
+				lg: { value: "1rem" }, // 16px
+				xl: { value: "1.25rem" }, // 20px
+				"2xl": { value: "1.5rem" }, // 24px
+				"3xl": { value: "2rem" }, // 32px
 			},
 			fontSizes: {
 				xs: { value: "0.75rem" }, // 12px
