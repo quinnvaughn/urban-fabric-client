@@ -13,7 +13,7 @@ type Props = {
 
 export function Button({
 	variant,
-	size = "md",
+	size,
 	type,
 	intent,
 	className: propsClass,

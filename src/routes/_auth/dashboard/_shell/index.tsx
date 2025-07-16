@@ -25,12 +25,16 @@ function DashboardPage() {
 	return (
 		<Flex direction="column" gap="lg">
 			<Typography.Heading level={1}>Dashboard</Typography.Heading>
-			<Grid gap="md" templateColumns="repeat(auto-fill, minmax(300px, 1fr))">
-				{match(simulations)
-					.when(
-						(simulations) => simulations.length > 0,
-						(simulations) =>
-							simulations.map((simulation) => (
+
+			{match(simulations)
+				.when(
+					(simulations) => simulations.length > 0,
+					(simulations) => (
+						<Grid
+							gap="md"
+							templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
+						>
+							{simulations.map((simulation) => (
 								// biome-ignore lint/a11y/useSemanticElements: ignored
 								<Card
 									key={simulation.id}
@@ -70,14 +74,15 @@ function DashboardPage() {
 										)}
 									</Card.Footer>
 								</Card>
-							)),
-					)
-					.otherwise(() => (
-						<Typography.Text color="muted">
-							Loading simulations...
-						</Typography.Text>
-					))}
-			</Grid>
+							))}
+						</Grid>
+					),
+				)
+				.otherwise(() => (
+					<Typography.Text color="muted">
+						You have no simulations yet. Create one to get started.
+					</Typography.Text>
+				))}
 		</Flex>
 	)
 }

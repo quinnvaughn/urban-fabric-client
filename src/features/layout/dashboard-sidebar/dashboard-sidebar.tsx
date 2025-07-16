@@ -17,7 +17,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
 	{
-		label: "Civic Canvases",
+		label: "Simulations",
 		to: DashboardRoute.to,
 	},
 ]
@@ -96,7 +96,6 @@ export function DashboardSidebar() {
 				<Button
 					variant="solid"
 					intent="primary"
-					size="lg"
 					disabled={isSubmitting}
 					onClick={handleCreateSimulation}
 				>
