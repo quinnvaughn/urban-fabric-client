@@ -36,7 +36,7 @@ function RouteComponent() {
 							navigate({ to: "/" })
 						})
 						.otherwise(() => {
-							setFormError("An unknown error occurred")
+							setFormError("An unknown error occurred", 3000)
 						})
 				}}
 			/>
