@@ -1,6 +1,6 @@
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react"
 import { type ComponentProps, useState } from "react"
-import { css } from "../../../../styled-system/css"
+import { css } from "../../../styles/styled-system/css"
 import { Input } from "../input"
 
 type Props = Omit<ComponentProps<typeof Input>, "type">

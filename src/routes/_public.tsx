@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { css } from "../../styled-system/css"
 import { Footer, PublicNavbar } from "../features/layout"
 import { Flex } from "../features/ui"
+import { css } from "../styles/styled-system/css"
 
 export const Route = createFileRoute("/_public")({
 	component: Layout,

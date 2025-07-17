@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { css } from "../../../styled-system/css"
 import {
 	Card,
 	Container,
@@ -7,6 +6,7 @@ import {
 	LinkButton,
 	Typography,
 } from "../../features/ui"
+import { css } from "../../styles/styled-system/css"
 
 export const Route = createFileRoute("/_public/")({
 	component: Home,

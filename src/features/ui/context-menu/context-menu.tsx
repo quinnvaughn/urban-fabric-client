@@ -11,7 +11,7 @@ import {
 	useState,
 } from "react"
 import { match } from "ts-pattern"
-import { css, cx } from "../../../../styled-system/css"
+import { css, cx } from "../../../styles/styled-system/css"
 
 type Placement =
 	| "bottom-start"

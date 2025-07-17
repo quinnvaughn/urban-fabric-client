@@ -2,12 +2,12 @@ import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { match } from "ts-pattern"
-import { css } from "../../../../styled-system/css"
 import {
 	CreateSimulationDocument,
 	UserSimulationsDocument,
 } from "../../../graphql/generated"
 import { Route as DashboardRoute } from "../../../routes/_auth/dashboard/_shell/index"
+import { css } from "../../../styles/styled-system/css"
 import { AppLink, Button, Flex, Typography } from "../../ui"
 
 type NavItem = {

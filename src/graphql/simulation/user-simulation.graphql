@@ -6,7 +6,6 @@ query UserSimulations {
       name
       description
       updatedAt
-      published
     }
   }
 }

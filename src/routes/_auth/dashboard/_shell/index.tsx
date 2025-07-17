@@ -1,10 +1,10 @@
 import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
-import { css } from "../../../../../styled-system/css"
 import { SimulationContextMenu } from "../../../../features/simulation"
 import { Card, Flex, Grid, Typography } from "../../../../features/ui"
 import { UserSimulationsDocument } from "../../../../graphql/generated"
+import { css } from "../../../../styles/styled-system/css"
 import { formatTimeAgo, truncate } from "../../../../utils"
 
 export const Route = createFileRoute("/_auth/dashboard/_shell/")({
@@ -63,15 +63,6 @@ function DashboardPage() {
 										<Typography.Text color="muted" textStyle={"sm"}>
 											Last edited {formatTimeAgo(simulation.updatedAt)}
 										</Typography.Text>
-										{simulation.published && (
-											<Typography.Text
-												color="primary"
-												weight="medium"
-												textStyle={"sm"}
-											>
-												Published
-											</Typography.Text>
-										)}
 									</Card.Footer>
 								</Card>
 							))}

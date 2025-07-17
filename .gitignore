@@ -1,5 +1,6 @@
 node_modules
 
 ## Panda
-styled-system
-styled-system-studio
+src/styles/styled-system/*
+src/styles/styled-system-studio
+.env*

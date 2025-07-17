@@ -16,7 +16,7 @@ export default defineConfig({
 	preflight: true,
 
 	// Where to look for your css declarations
-	include: ["./src/**/*.{js,jsx,ts,tsx}"],
+	include: ["../src/**/*.{js,jsx,ts,tsx}"],
 
 	// Files to exclude
 	exclude: [],
@@ -759,6 +759,11 @@ export default defineConfig({
 		},
 	},
 	utilities: {
+		backgroundColor: {
+			className: "bg",
+			values: "colors",
+			transform: (value) => ({ backgroundColor: value }),
+		},
 		borderRightColor: {
 			className: "borderRight",
 			values: "colors",
@@ -867,5 +872,5 @@ export default defineConfig({
 	eject: true,
 	presets: [],
 	// The output directory for your css system
-	outdir: "styled-system",
+	outdir: "src/styles/styled-system",
 })

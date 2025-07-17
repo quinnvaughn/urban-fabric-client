@@ -1,6 +1,6 @@
 import { type JSX, type ReactNode, useRef } from "react"
-import { css, cx } from "../../../../styled-system/css"
-import { input } from "../../../../styled-system/recipes"
+import { css, cx } from "../../../styles/styled-system/css"
+import { input } from "../../../styles/styled-system/recipes"
 import { Flex } from "../flex"
 
 type Props = {

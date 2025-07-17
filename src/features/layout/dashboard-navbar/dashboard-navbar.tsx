@@ -1,4 +1,4 @@
-import { css } from "../../../../styled-system/css"
+import { css } from "../../../styles/styled-system/css"
 import { BrandLink, Flex, Icon } from "../../ui"
 
 export function DashboardNavbar() {
