@@ -1,6 +1,9 @@
 import type { JSX } from "react"
-import { cx } from "../../../../styled-system/css"
-import { type GridVariantProps, grid } from "../../../../styled-system/recipes"
+import { cx } from "../../../styles/styled-system/css"
+import {
+	type GridVariantProps,
+	grid,
+} from "../../../styles/styled-system/recipes"
 
 type GridProps = {
 	as?: keyof JSX.IntrinsicElements

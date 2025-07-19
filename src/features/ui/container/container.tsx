@@ -1,9 +1,9 @@
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react"
-import { cx } from "../../../../styled-system/css"
+import { cx } from "../../../styles/styled-system/css"
 import {
 	type ContainerVariantProps,
 	container,
-} from "../../../../styled-system/recipes"
+} from "../../../styles/styled-system/recipes"
 
 type PolymorphicProps<C extends ElementType, Props> = Props &
 	Omit<ComponentPropsWithoutRef<C>, keyof Props> & {

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepare": "pnpm run panda",
-    "panda": "panda codegen --config ./src/styles/panda.config.ts",
+    "panda": "panda codegen --config src/styles/panda.config.ts",
     "dev": "vite dev",
     "start": "vite start",
     "build": "vite build"

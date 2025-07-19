@@ -1,5 +1,7 @@
 module.exports = {
-  plugins: {
-    '@pandacss/dev/postcss': {},
-  },
+	plugins: {
+		"@pandacss/dev/postcss": {
+			configPath: "./src/styles/panda.config.ts",
+		},
+	},
 }

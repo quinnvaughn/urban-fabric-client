@@ -1,8 +1,8 @@
 import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
 import { match } from "ts-pattern"
-import { link } from "../../../../styled-system/recipes"
 import { LogoutDocument } from "../../../graphql/generated"
+import { link } from "../../../styles/styled-system/recipes"
 
 export function LogoutButton() {
 	// todo: add logout mutation.

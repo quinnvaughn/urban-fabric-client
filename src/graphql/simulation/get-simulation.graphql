@@ -1,0 +1,15 @@
+query GetSimulation($simulationId: ID!) {
+  simulation(id: $simulationId) {
+    ... on ApplicationError {
+      message
+    }
+    ... on Simulation {
+      id 
+      name
+      scenarios {
+        id 
+        name
+      }
+    }
+  }
+}

@@ -1,7 +1,10 @@
 import { createLink, type LinkComponent } from "@tanstack/react-router"
 import type { JSX } from "react"
-import { cx } from "../../../../styled-system/css"
-import { type LinkVariantProps, link } from "../../../../styled-system/recipes"
+import { cx } from "../../../styles/styled-system/css"
+import {
+	type LinkVariantProps,
+	link,
+} from "../../../styles/styled-system/recipes"
 
 type BaseLinkProps = JSX.IntrinsicElements["a"] & LinkVariantProps
 

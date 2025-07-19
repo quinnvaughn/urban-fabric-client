@@ -1,23 +1,15 @@
 import { defineConfig } from "@pandacss/dev"
-import { recipes } from "./recipes"
+import { recipes, staticCssRecipes } from "./recipes"
 
 export default defineConfig({
 	staticCss: {
-		recipes: {
-			flex: ["*"],
-			typography: ["*"],
-			container: ["*"],
-			input: ["*"],
-			button: ["*"],
-			link: ["*"],
-			grid: ["*"],
-		},
+		recipes: staticCssRecipes,
 	},
 	// Whether to use css reset
 	preflight: true,
 
 	// Where to look for your css declarations
-	include: ["../src/**/*.{js,jsx,ts,tsx}"],
+	include: ["./src/**/*.{js,jsx,ts,tsx}"],
 
 	// Files to exclude
 	exclude: [],
@@ -321,6 +313,11 @@ export default defineConfig({
 			className: "gap",
 			values: "spacing",
 			transform: (value) => ({ gap: value }),
+		},
+		fill: {
+			className: "fill",
+			values: "colors",
+			transform: (value) => ({ fill: value }),
 		},
 	},
 	eject: true,

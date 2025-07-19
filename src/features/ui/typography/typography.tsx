@@ -1,9 +1,9 @@
 import type { JSX, ReactNode } from "react"
-import { cx } from "../../../../styled-system/css"
+import { cx } from "../../../styles/styled-system/css"
 import {
 	type TypographyVariantProps,
 	typography,
-} from "../../../../styled-system/recipes"
+} from "../../../styles/styled-system/recipes"
 
 type BaseProps = {
 	children: ReactNode

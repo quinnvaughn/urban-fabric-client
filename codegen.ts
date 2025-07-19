@@ -8,6 +8,7 @@ const config: CodegenConfig = {
 			plugins: ["typescript", "typescript-operations", "typed-document-node"],
 			config: {
 				scalars: { DateTime: "string" },
+				nonOptionalTypename: true,
 			},
 		},
 	},
