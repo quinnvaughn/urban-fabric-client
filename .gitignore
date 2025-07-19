@@ -4,3 +4,4 @@ node_modules
 src/styles/styled-system/*
 src/styles/styled-system-studio
 .env*
+.DS_Store
