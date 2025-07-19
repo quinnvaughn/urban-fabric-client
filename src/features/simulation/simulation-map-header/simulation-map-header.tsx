@@ -1,6 +1,5 @@
-import { useState } from "react"
 import { css } from "../../../styles/styled-system/css"
-import { BrandLink, Button, ContextMenu, Flex, Icon } from "../../ui"
+import { BrandLink, Button, DropdownMenu, Flex, Icon } from "../../ui"
 
 type Props = {
 	name: string
@@ -25,8 +24,8 @@ export function SimulationMapHeader({ name, id }: Props) {
 		>
 			<Flex align="center" gap="sm">
 				<BrandLink />
-				<ContextMenu placement="bottom-start">
-					<ContextMenu.Trigger asChild>
+				<DropdownMenu placement="bottom-start">
+					<DropdownMenu.Trigger asChild>
 						<button
 							type="button"
 							className={css({
@@ -40,13 +39,13 @@ export function SimulationMapHeader({ name, id }: Props) {
 							<span>{name}</span>
 							<Icon name="CaretDown" size={16} />
 						</button>
-					</ContextMenu.Trigger>
-					<ContextMenu.Content>
-						<ContextMenu.Item>Edit name</ContextMenu.Item>
-						<ContextMenu.Separator />
-						<ContextMenu.Item>Edit description</ContextMenu.Item>
-					</ContextMenu.Content>
-				</ContextMenu>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>
+						<DropdownMenu.Item>Edit name</DropdownMenu.Item>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item>Edit description</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu>
 			</Flex>
 			<Button variant="ghost" size="sm">
 				Share

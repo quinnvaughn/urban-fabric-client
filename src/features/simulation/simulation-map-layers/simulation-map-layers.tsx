@@ -1,6 +1,11 @@
+import type { AllCategoriesFragment } from "../../../graphql/generated"
 import { css } from "../../../styles/styled-system/css"
 
-export function SimulationMapLayers() {
+type Props = {
+	categories: AllCategoriesFragment[]
+}
+
+export function SimulationMapLayers({ categories }: Props) {
 	return (
 		<div
 			className={css({
@@ -13,7 +18,16 @@ export function SimulationMapLayers() {
 				left: 20,
 			})}
 		>
-			Here is some content.
+			{categories.map((category) => (
+				<div key={category.id}>
+					<h3>{category.label}</h3>
+					<ul>
+						{category.layerTemplates.map((template) => (
+							<li key={template.id}>{template.label}</li>
+						))}
+					</ul>
+				</div>
+			))}
 		</div>
 	)
 }
