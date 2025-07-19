@@ -2,14 +2,14 @@ import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { DeleteSimulationDocument } from "../../../graphql/generated"
-import { ContextMenu } from "../../ui"
+import { DropdownMenu } from "../../ui"
 import { IconButton } from "../../ui/icon-button"
 
 type Props = {
 	id: string // Simulation ID to delete
 }
 
-export function SimulationContextMenu({ id }: Props) {
+export function SimulationDropdownMenu({ id }: Props) {
 	const [deleteSimulation] = useMutation(DeleteSimulationDocument)
 	const navigate = useNavigate()
 
@@ -48,16 +48,16 @@ export function SimulationContextMenu({ id }: Props) {
 	}
 
 	return (
-		<ContextMenu placement="bottom-end">
-			<ContextMenu.Trigger asChild>
+		<DropdownMenu placement="bottom-end">
+			<DropdownMenu.Trigger asChild>
 				<IconButton icon="DotsThreeVertical" />
-			</ContextMenu.Trigger>
-			<ContextMenu.Content>
-				<ContextMenu.Item onSelect={() => console.log("Rename")}>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content>
+				<DropdownMenu.Item onSelect={() => console.log("Rename")}>
 					Rename
-				</ContextMenu.Item>
-				<ContextMenu.Item onSelect={handleDelete}>Delete</ContextMenu.Item>
-			</ContextMenu.Content>
-		</ContextMenu>
+				</DropdownMenu.Item>
+				<DropdownMenu.Item onSelect={handleDelete}>Delete</DropdownMenu.Item>
+			</DropdownMenu.Content>
+		</DropdownMenu>
 	)
 }

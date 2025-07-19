@@ -5,3 +5,5 @@ src/generated/
 **/*.test.ts
 src/styled-system/
 src/routeTree.gen.ts
+
+src/graphql/

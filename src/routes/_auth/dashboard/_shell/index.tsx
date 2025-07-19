@@ -1,7 +1,7 @@
 import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
-import { SimulationContextMenu } from "../../../../features/simulation"
+import { SimulationDropdownMenu } from "../../../../features/simulation"
 import { Card, Flex, Grid, Typography } from "../../../../features/ui"
 import { UserSimulationsDocument } from "../../../../graphql/generated"
 import { css } from "../../../../styles/styled-system/css"
@@ -56,7 +56,7 @@ function DashboardPage() {
 											</Card.Description>
 										)}
 										<Card.Action>
-											<SimulationContextMenu id={simulation.id} />
+											<SimulationDropdownMenu id={simulation.id} />
 										</Card.Action>
 									</Card.Header>
 									<Card.Footer className={css({ alignItems: "flex-start" })}>

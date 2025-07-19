@@ -50,7 +50,7 @@ function RouteComponent() {
 						/>
 						<SimulationMapProvider>
 							<SimulationMapHeader name={simulation.name} id={simulation.id} />
-							<SimulationMapLayers />
+							<SimulationMapLayers categories={data.categories} />
 							<SimulationMapFooter />
 						</SimulationMapProvider>
 					</FabricMap>
