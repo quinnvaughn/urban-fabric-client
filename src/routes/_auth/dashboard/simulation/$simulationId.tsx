@@ -5,6 +5,7 @@ import { SimulationMapProvider } from "../../../../context"
 import {
 	SimulationMapFooter,
 	SimulationMapHeader,
+	SimulationMapLayers,
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
 import { GetSimulationDocument } from "../../../../graphql/generated"
@@ -48,7 +49,8 @@ function RouteComponent() {
 							}}
 						/>
 						<SimulationMapProvider>
-							<SimulationMapHeader simulationName={simulation.name} />
+							<SimulationMapHeader name={simulation.name} id={simulation.id} />
+							<SimulationMapLayers />
 							<SimulationMapFooter />
 						</SimulationMapProvider>
 					</FabricMap>

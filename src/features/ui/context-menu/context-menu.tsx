@@ -158,6 +158,7 @@ ContextMenu.Content = function ContextMenuContent({
 		<div
 			ref={contentRef}
 			inert={!open}
+			role="menu"
 			className={cx(
 				css({
 					position: "absolute",
@@ -204,6 +205,7 @@ ContextMenu.Item = function ContextMenuItem({
 
 	return (
 		<button
+			role="menuitem"
 			type="button"
 			onClick={(e) => {
 				e.stopPropagation()
@@ -229,6 +231,21 @@ ContextMenu.Item = function ContextMenuItem({
 	)
 }
 
+ContextMenu.Separator = function ContextMenuSeparator({
+	className,
+}: {
+	className?: string
+}) {
+	const separatorStyles = css({
+		height: "1px",
+		color: "neutral.200",
+		my: "xs",
+	})
+	return <hr className={cx(separatorStyles, className)} />
+}
+
+const OFFSET = 8
+
 function getPlacementCoords(
 	placement: Placement,
 	trigger: DOMRect,
@@ -236,22 +253,22 @@ function getPlacementCoords(
 ): Position {
 	return match(placement)
 		.with("bottom-start", () => ({
-			top: trigger.bottom + window.scrollY,
+			top: trigger.bottom + window.scrollY + OFFSET,
 			left: trigger.left + window.scrollX,
 			transform: "translateY(0)",
 		}))
 		.with("bottom-end", () => ({
-			top: trigger.bottom + window.scrollY,
+			top: trigger.bottom + window.scrollY + OFFSET,
 			left: trigger.right + window.scrollX - content.width,
 			transform: "translateY(0)",
 		}))
 		.with("top-start", () => ({
-			top: trigger.top + window.scrollY - content.height,
+			top: trigger.top + window.scrollY - content.height - OFFSET,
 			left: trigger.left + window.scrollX,
 			transform: "translateY(0)",
 		}))
 		.with("top-end", () => ({
-			top: trigger.top + window.scrollY - content.height,
+			top: trigger.top + window.scrollY - content.height - OFFSET,
 			left: trigger.right + window.scrollX - content.width,
 			transform: "translateY(0)",
 		}))

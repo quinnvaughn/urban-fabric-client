@@ -1,55 +1,56 @@
 import { useState } from "react"
-import { match } from "ts-pattern"
-import { useSimulationMapContext } from "../../../context"
 import { css } from "../../../styles/styled-system/css"
-import { Flex } from "../../ui"
+import { BrandLink, Button, ContextMenu, Flex, Icon } from "../../ui"
 
 type Props = {
-	simulationName: string
+	name: string
+	id: string
 }
 
-export function SimulationMapHeader({
-	simulationName: initialSimulationName,
-}: Props) {
-	const { isInEditMode } = useSimulationMapContext()
-	const [simulationName, setSimulationName] = useState(initialSimulationName)
-
-	function submitNameChange(event: React.FormEvent<HTMLFormElement>) {
-		event.preventDefault()
-		// TODO: send the updated name to the server
-	}
-
+export function SimulationMapHeader({ name, id }: Props) {
 	return (
 		<Flex
 			as="header"
-			justify={"between"}
+			justify="between"
+			align={"center"}
 			className={css({
-				p: "md",
-				bg: "neutral.0",
-				borderBottom: "1px solid",
-				borderColor: "neutral.200",
 				position: "absolute",
 				top: 0,
 				left: 0,
 				width: "100%",
+				p: "sm",
+				bg: "neutral.0",
 			})}
+			gap="md"
 		>
-			{match(isInEditMode)
-				.with(true, () => (
-					<form onSubmit={submitNameChange}>
-						<input
-							type="text"
-							value={simulationName}
-							onChange={(e) => setSimulationName(e.target.value)}
-						/>
-					</form>
-				))
-				.with(false, () => (
-					<h1 className={css({ fontSize: "lg", fontWeight: "bold" })}>
-						{simulationName}
-					</h1>
-				))
-				.exhaustive()}
+			<Flex align="center" gap="sm">
+				<BrandLink />
+				<ContextMenu placement="bottom-start">
+					<ContextMenu.Trigger asChild>
+						<button
+							type="button"
+							className={css({
+								display: "flex",
+								alignItems: "center",
+								gap: "xs",
+								fontSize: "md",
+								cursor: "pointer",
+							})}
+						>
+							<span>{name}</span>
+							<Icon name="CaretDown" size={16} />
+						</button>
+					</ContextMenu.Trigger>
+					<ContextMenu.Content>
+						<ContextMenu.Item>Edit name</ContextMenu.Item>
+						<ContextMenu.Separator />
+						<ContextMenu.Item>Edit description</ContextMenu.Item>
+					</ContextMenu.Content>
+				</ContextMenu>
+			</Flex>
+			<Button variant="ghost" size="sm">
+				Share
+			</Button>
 		</Flex>
 	)
 }

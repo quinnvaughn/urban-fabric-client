@@ -1,10 +1,6 @@
-import { createContext, useContext, useState } from "react"
-import { useKeyBindings } from "../../hooks"
+import { createContext, useContext } from "react"
 
-type SimulationMapContext = {
-	isInEditMode: boolean
-	toggleEditMode: () => void
-}
+type SimulationMapContext = {}
 
 const SimulationMapContext = createContext<SimulationMapContext | undefined>(
 	undefined,
@@ -24,19 +20,8 @@ export function SimulationMapProvider({
 }: {
 	children: React.ReactNode
 }) {
-	const [isInEditMode, setIsInEditMode] = useState(false)
-
-	const toggleEditMode = () => {
-		setIsInEditMode((prev) => !prev)
-	}
-
-	useKeyBindings([
-		{ key: "E", shift: true, handler: toggleEditMode },
-		{ key: "S", shift: true, handler: () => console.log("Save simulation") },
-	])
-
 	return (
-		<SimulationMapContext.Provider value={{ isInEditMode, toggleEditMode }}>
+		<SimulationMapContext.Provider value={{}}>
 			{children}
 		</SimulationMapContext.Provider>
 	)

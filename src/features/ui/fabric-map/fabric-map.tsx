@@ -135,25 +135,27 @@ FabricMap.Layer = function MapLayer({ before, ...layer }: Props) {
 	const map = useMapboxContext()
 	const addedRef = useRef(false)
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: we only want to add the layer once
 	useEffect(() => {
 		if (!map || map.getLayer(layer.id)) return
 
+		let scheduled = false
 		const tryAddLayer = () => {
-			if (map.getLayer(layer.id)) return
-			map.addLayer(structuredClone(layer), before)
-			addedRef.current = true
+			if (!map.getLayer(layer.id)) {
+				map.addLayer(structuredClone(layer), before)
+				addedRef.current = true
+			}
 		}
 
 		if (map.isStyleLoaded()) {
 			tryAddLayer()
 		} else {
 			map.once("style.load", tryAddLayer)
+			scheduled = true
 		}
 
 		return () => {
-			if (addedRef.current && map.getLayer(layer.id)) {
-				map.removeLayer(layer.id)
+			if (scheduled) {
+				map.off("style.load", tryAddLayer)
 			}
 		}
 	}, [map, before, layer.id])

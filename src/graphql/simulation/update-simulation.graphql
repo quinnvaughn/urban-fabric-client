@@ -1,0 +1,18 @@
+mutation UpdateSimulation($input: UpdateSimulationInput!) {
+  updateSimulation(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on ValidationError {
+      errors {
+        field
+        message
+      }
+    }
+    ... on Simulation {
+      id 
+      name 
+      description
+    }
+  }
+}

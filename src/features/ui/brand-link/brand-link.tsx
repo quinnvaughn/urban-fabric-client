@@ -12,6 +12,7 @@ export function BrandLink() {
 				textDecoration: "none",
 				fontWeight: "bold",
 				fontSize: "xl",
+				lineHeight: "tight",
 			})}
 		>
 			Urban Fabric

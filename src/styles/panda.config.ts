@@ -319,6 +319,14 @@ export default defineConfig({
 			values: "colors",
 			transform: (value) => ({ fill: value }),
 		},
+		my: {
+			className: "my",
+			values: "spacing",
+			transform: (value) => ({
+				marginTop: value,
+				marginBottom: value,
+			}),
+		},
 	},
 	eject: true,
 	presets: [],

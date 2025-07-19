@@ -5,8 +5,8 @@ export const button = defineRecipe({
 	base: {
 		cursor: "pointer",
 		transition: "background-color 0.2s ease, color 0.2s ease",
-		borderRadius: "xl",
 		color: "{colors.neutral.50}", // default white text for solid
+		fontWeight: "{fontWeights.semibold}",
 	},
 	variants: {
 		variant: {
@@ -41,6 +41,15 @@ export const button = defineRecipe({
 				px: "{spacing.lg}",
 				py: "{spacing.md}",
 			},
+		},
+		borderRadius: {
+			sm: { borderRadius: "{radii.sm}" },
+			md: { borderRadius: "{radii.md}" },
+			lg: { borderRadius: "{radii.lg}" },
+			xl: { borderRadius: "{radii.xl}" },
+			"2xl": { borderRadius: "{radii.2xl}" },
+			"3xl": { borderRadius: "{radii.3xl}" },
+			full: { borderRadius: "9999px" },
 		},
 	},
 	compoundVariants: [
@@ -284,5 +293,6 @@ export const button = defineRecipe({
 		variant: "solid",
 		intent: "primary",
 		size: "md",
+		borderRadius: "md",
 	},
 })
