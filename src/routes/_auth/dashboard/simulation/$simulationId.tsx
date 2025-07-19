@@ -7,10 +7,7 @@ import {
 	SimulationMapHeader,
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
-import {
-	GetSimulationDocument,
-	GetSimulationQuery,
-} from "../../../../graphql/generated"
+import { GetSimulationDocument } from "../../../../graphql/generated"
 import { css } from "../../../../styles/styled-system/css"
 
 export const Route = createFileRoute(
