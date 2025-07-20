@@ -1,6 +1,17 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
+import type { SelectedTemplateFragment } from "../../graphql/generated"
+import type { PropertiesSchema } from "./types"
 
-type SimulationMapContext = {}
+type SimulationMapContext = {
+	selectedTemplate: SelectedTemplateFragment | null
+	openTemplate: (template: SelectedTemplateFragment) => void
+	propertiesSchema: PropertiesSchema | null
+	currentProperties: Record<string, any> | null
+	setProperties: (props: Record<string, any>) => void
+	updateProperty: (key: string, value: any) => void
+	// openInstance: (instance: LayerInstance) => void
+	closePanel: () => void
+}
 
 const SimulationMapContext = createContext<SimulationMapContext | undefined>(
 	undefined,
@@ -20,8 +31,55 @@ export function SimulationMapProvider({
 }: {
 	children: React.ReactNode
 }) {
+	const [selectedTemplate, setSelectedTemplate] =
+		useState<SelectedTemplateFragment | null>(null)
+	const [currentProperties, setCurrentProperties] = useState<Record<
+		string,
+		any
+	> | null>(null)
+	const [propertiesSchema, setPropertiesSchema] =
+		useState<PropertiesSchema | null>(null)
+
+	function openTemplate(template: SelectedTemplateFragment) {
+		setSelectedTemplate(template)
+		// setSelectedInstance(null)
+		setCurrentProperties(
+			Object.fromEntries(
+				Object.entries(template.propertiesSchema).map(([k, v]: any) => [
+					k,
+					v.default,
+				]),
+			),
+		)
+		setPropertiesSchema(template.propertiesSchema)
+	}
+
+	function closePanel() {
+		setSelectedTemplate(null)
+		// setSelectedInstance(null)
+		setCurrentProperties(null)
+	}
+
+	function updateProperty(key: string, value: any) {
+		setCurrentProperties((prev) => (prev ? { ...prev, [key]: value } : prev))
+	}
+
+	useEffect(() => {
+		console.log("Current properties schema:", propertiesSchema)
+	}, [propertiesSchema])
+
 	return (
-		<SimulationMapContext.Provider value={{}}>
+		<SimulationMapContext.Provider
+			value={{
+				selectedTemplate,
+				openTemplate,
+				currentProperties,
+				setProperties: setCurrentProperties,
+				updateProperty,
+				closePanel,
+				propertiesSchema,
+			}}
+		>
 			{children}
 		</SimulationMapContext.Provider>
 	)

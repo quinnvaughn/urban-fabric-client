@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
 import {
+	LayerPropertiesPanel,
 	SimulationMapFooter,
 	SimulationMapHeader,
 	SimulationMapLayers,
@@ -51,6 +52,7 @@ function RouteComponent() {
 						<SimulationMapProvider>
 							<SimulationMapHeader name={simulation.name} id={simulation.id} />
 							<SimulationMapLayers categories={data.categories} />
+							<LayerPropertiesPanel />
 							<SimulationMapFooter />
 						</SimulationMapProvider>
 					</FabricMap>

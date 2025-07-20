@@ -1,6 +1,7 @@
 import type { ComponentPropsWithRef, ReactNode } from "react"
 import React from "react"
 import { css, cx } from "../../../styles/styled-system/css"
+import type { FlexVariantProps } from "../../../styles/styled-system/recipes"
 import { Flex } from "../flex"
 import { Grid } from "../grid"
 import { Typography } from "../typography"
@@ -14,6 +15,7 @@ export function Card({ children, ...props }: Props) {
 		borderWidth: "1px",
 		borderColor: "neutral.200",
 		borderRadius: "lg",
+		bg: "neutral.0",
 		p: "md",
 		boxShadow: "md",
 		display: "flex",
@@ -53,9 +55,17 @@ Card.Header = function CardHeader({ children, className }: CardChildrenProps) {
 	)
 }
 
-Card.Title = function Title({ children, className }: CardChildrenProps) {
+type CardTitleProps = CardChildrenProps & {
+	level?: 1 | 2 | 3 | 4 | 5 | 6
+}
+
+Card.Title = function Title({
+	children,
+	className,
+	level = 5,
+}: CardTitleProps) {
 	return (
-		<Typography.Heading level={5} className={className}>
+		<Typography.Heading level={level} className={className}>
 			{children}
 		</Typography.Heading>
 	)
@@ -102,9 +112,27 @@ Card.Content = function CardContent({
 	)
 }
 
-Card.Footer = function CardFooter({ children, className }: CardChildrenProps) {
+type FooterProps = CardChildrenProps & {
+	direction?: FlexVariantProps["direction"]
+	align?: FlexVariantProps["align"]
+	justify?: FlexVariantProps["justify"]
+}
+
+Card.Footer = function CardFooter({
+	children,
+	className,
+	align = "center",
+	justify = "start",
+	direction = "row",
+}: FooterProps) {
 	return (
-		<Flex direction={"column"} gap="sm" align={"center"} className={className}>
+		<Flex
+			gap="sm"
+			align={align}
+			justify={justify}
+			className={className}
+			direction={direction}
+		>
 			{children}
 		</Flex>
 	)

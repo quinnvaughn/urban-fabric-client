@@ -327,6 +327,16 @@ export default defineConfig({
 				marginBottom: value,
 			}),
 		},
+		pb: {
+			className: "pb",
+			values: "spacing",
+			transform: (value) => ({ paddingBottom: value }),
+		},
+		paddingBottom: {
+			className: "paddingBottom",
+			values: "spacing",
+			transform: (value) => ({ paddingBottom: value }),
+		},
 	},
 	eject: true,
 	presets: [],

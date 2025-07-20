@@ -23,10 +23,15 @@ fragment AllCategories on Category {
   order
   label
   layerTemplates {
-    id
-    label
-    propertiesSchema
-    geometryType
-    description
+    ...SelectedTemplate
   }
+}
+
+fragment SelectedTemplate on LayerTemplate {
+  id
+  label
+  propertiesSchema
+  geometryType
+  description
+  icon
 }
