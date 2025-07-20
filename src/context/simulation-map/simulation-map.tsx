@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useState } from "react"
 import type { SelectedTemplateFragment } from "../../graphql/generated"
 import type { PropertiesSchema } from "./types"
 
@@ -63,10 +63,6 @@ export function SimulationMapProvider({
 	function updateProperty(key: string, value: any) {
 		setCurrentProperties((prev) => (prev ? { ...prev, [key]: value } : prev))
 	}
-
-	useEffect(() => {
-		console.log("Current properties schema:", propertiesSchema)
-	}, [propertiesSchema])
 
 	return (
 		<SimulationMapContext.Provider

@@ -206,17 +206,17 @@ export default defineConfig({
 			transform: (value) => ({ outlineColor: value }),
 		},
 		backgroundColor: {
-			className: "bg",
+			className: "backgroundColor",
 			values: "colors",
 			transform: (value) => ({ backgroundColor: value }),
 		},
 		borderRightColor: {
-			className: "borderRight",
+			className: "borderRightColor",
 			values: "colors",
 			transform: (value) => ({ borderRightColor: value }),
 		},
 		borderBottomColor: {
-			className: "borderBottom",
+			className: "borderBottomColor",
 			values: "colors",
 			transform: (value) => ({ borderBottomColor: value }),
 		},
@@ -231,7 +231,7 @@ export default defineConfig({
 			transform: (value) => ({ maxWidth: value }),
 		},
 		borderColor: {
-			className: "border",
+			className: "borderColor",
 			values: "colors",
 			transform: (value) => ({ borderColor: value }),
 		},
@@ -284,12 +284,12 @@ export default defineConfig({
 			}),
 		},
 		paddingX: {
-			className: "px",
+			className: "paddingX",
 			values: "spacing",
 			transform: (value) => ({ paddingLeft: value, paddingRight: value }),
 		},
 		paddingY: {
-			className: "py",
+			className: "paddingY",
 			values: "spacing",
 			transform: (value) => ({
 				paddingTop: value,

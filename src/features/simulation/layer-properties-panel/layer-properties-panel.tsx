@@ -1,7 +1,8 @@
 import { match } from "ts-pattern"
 import { useSimulationMapContext } from "../../../context"
 import type { PropertiesSchema } from "../../../context/simulation-map/types"
-import { Checkbox, Input } from "../../ui"
+import { capitalize } from "../../../utils"
+import { Checkbox, Input, Select } from "../../ui"
 import { IconButton } from "../../ui/icon-button"
 import { FloatingPanel } from "../floating-panel"
 
@@ -30,6 +31,25 @@ function renderForm(
 					/>
 					<Checkbox.Label>{schema.label}</Checkbox.Label>
 				</Checkbox>
+			))
+			.with({ type: "enum" }, (schema) => (
+				<Select
+					options={schema.options.map((option) => ({
+						value: option,
+						label: capitalize(option),
+					}))}
+					value={values[key]}
+					onChange={(value) => update(key, value)}
+				>
+					<Select.Trigger>{schema.label}</Select.Trigger>
+					<Select.Content>
+						{schema.options.map((option) => (
+							<Select.Item key={option} value={option}>
+								{capitalize(option)}
+							</Select.Item>
+						))}
+					</Select.Content>
+				</Select>
 			))
 			.otherwise(() => null)
 	})
