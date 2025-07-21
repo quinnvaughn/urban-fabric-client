@@ -7,6 +7,17 @@ import { CurrentUserDocument, LoginDocument } from "../../graphql/generated"
 
 export const Route = createFileRoute("/_public/login")({
 	component: RouteComponent,
+	head: () => ({
+		meta: [
+			{
+				name: "description",
+				content: "Login to your account",
+			},
+			{
+				title: "Login - Urban Fabric",
+			},
+		],
+	}),
 })
 
 function RouteComponent() {
