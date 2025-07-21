@@ -1,13 +1,16 @@
 import React, {
 	cloneElement,
 	createContext,
+	type Dispatch,
 	isValidElement,
 	type KeyboardEvent,
 	type ReactElement,
 	type ReactNode,
 	type RefObject,
+	type SetStateAction,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react"
@@ -20,12 +23,12 @@ export type SelectOption = { value: string; label: ReactNode }
 type SelectContextType = {
 	open: boolean
 	value?: string
-	setOpen: (open: boolean) => void
-	setValue: (value: string) => void
+	setOpen: Dispatch<SetStateAction<boolean>>
+	setValue: Dispatch<SetStateAction<string>>
 	triggerRef: RefObject<HTMLButtonElement | null>
 	contentRef: RefObject<HTMLDivElement | null>
 	highlightedIndex: number
-	setHighlightedIndex: (idx: number) => void
+	setHighlightedIndex: Dispatch<SetStateAction<number>>
 	options: SelectOption[]
 	placeholder: string
 }
@@ -210,7 +213,7 @@ Select.Content = function SelectContent({
 	children,
 	className,
 }: {
-	children: ReactNode
+	children: ReactElement<SelectItemProps> | ReactElement<SelectItemProps>[]
 	className?: string
 }) {
 	const { open, contentRef } = useSelectContext()
@@ -238,11 +241,22 @@ Select.Content = function SelectContent({
 		>
 			{React.Children.map(children, (child, idx) =>
 				isValidElement(child)
-					? cloneElement(child, { index: idx, key: idx })
+					? cloneElement(child, {
+							index: idx,
+							key: `option-${child.props.value}`,
+						})
 					: child,
 			)}
 		</div>
 	)
+}
+
+type SelectItemProps = {
+	value: string
+	children: ReactNode
+	className?: string
+	index?: number
+	closeOnSelect?: boolean
 }
 
 Select.Item = function SelectItem({
@@ -251,41 +265,53 @@ Select.Item = function SelectItem({
 	className,
 	index,
 	closeOnSelect = true,
-}: {
-	value: string
-	children: ReactNode
-	className?: string
-	index?: number
-	closeOnSelect?: boolean
-}) {
-	const { setOpen, setValue, highlightedIndex, setHighlightedIndex } =
-		useSelectContext()
+}: SelectItemProps) {
+	const {
+		setOpen,
+		setValue,
+		highlightedIndex,
+		setHighlightedIndex,
+		value: selectedValue,
+	} = useSelectContext()
 	const itemBase = css({ px: "sm", py: "xs", cursor: "pointer" })
 	const highlightedBg = css({ bg: "neutral.100" })
-	const isHighlighted = index === highlightedIndex
-
-	console.log(
-		"isHighlighted",
-		isHighlighted,
-		"value",
-		value,
-		"index",
-		index,
-		"highlightedIndex",
-		highlightedIndex,
+	const isHighlighted = useMemo(
+		() => highlightedIndex === index,
+		[highlightedIndex, index],
 	)
+	const isSelected = useMemo(
+		() => selectedValue === value,
+		[selectedValue, value],
+	)
+	const selectedBg = css({ bg: "neutral.200" })
 
 	return (
 		<div
 			role="option"
 			tabIndex={0}
 			data-value={value}
-			className={cx(itemBase, isHighlighted && highlightedBg, className)}
+			className={cx(
+				itemBase,
+				isHighlighted && highlightedBg,
+				isSelected && selectedBg,
+				className,
+			)}
+			onKeyDown={(e: React.KeyboardEvent) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault()
+					setValue(value)
+					if (closeOnSelect) setOpen(false)
+				}
+			}}
 			onClick={() => {
 				setValue(value)
 				if (closeOnSelect) setOpen(false)
 			}}
-			onMouseEnter={() => setHighlightedIndex(index!)}
+			onMouseEnter={() => {
+				if (index !== undefined) {
+					setHighlightedIndex(index)
+				}
+			}}
 		>
 			{children}
 		</div>
