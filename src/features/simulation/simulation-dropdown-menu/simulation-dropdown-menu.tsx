@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { DeleteSimulationDocument } from "../../../graphql/generated"
+import { useToast } from "../../../hooks"
 import { DropdownMenu } from "../../ui"
 import { IconButton } from "../../ui/icon-button"
 
@@ -12,6 +13,7 @@ type Props = {
 export function SimulationDropdownMenu({ id }: Props) {
 	const [deleteSimulation] = useMutation(DeleteSimulationDocument)
 	const navigate = useNavigate()
+	const { addToast } = useToast()
 
 	async function handleDelete() {
 		try {
@@ -21,14 +23,12 @@ export function SimulationDropdownMenu({ id }: Props) {
 					cache.evict({ id: `Simulation:${id}` })
 				},
 			})
-			console.log("Delete result:", result)
 			match(result.data?.deleteSimulation)
 				.with(
 					{ __typename: "ForbiddenError" },
 					{ __typename: "NotFoundError" },
 					(error) => {
-						// todo: toast for error.
-						console.error("Error deleting simulation:", error.message)
+						addToast({ message: error.message, intent: "danger" })
 					},
 				)
 				.with({ __typename: "UnauthorizedError" }, () => {
@@ -36,14 +36,16 @@ export function SimulationDropdownMenu({ id }: Props) {
 					navigate({ to: "/login", replace: true })
 				})
 				.with({ __typename: "DeleteSimulationResponse" }, () => {
-					// todo: toast for success.
-					console.log("Simulation deleted successfully")
+					addToast({
+						message: "Simulation deleted successfully",
+						intent: "success",
+					})
 				})
 				.otherwise(() => {
-					console.error("Unexpected response from deleteSimulation mutation")
+					addToast({ message: "Failed to delete simulation", intent: "danger" })
 				})
-		} catch (error) {
-			console.error("Error deleting simulation:", error)
+		} catch {
+			addToast({ message: "Error deleting simulation", intent: "danger" })
 		}
 	}
 

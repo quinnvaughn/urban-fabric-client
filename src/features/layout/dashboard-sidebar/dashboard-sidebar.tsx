@@ -6,6 +6,7 @@ import {
 	CreateSimulationDocument,
 	UserSimulationsDocument,
 } from "../../../graphql/generated"
+import { useToast } from "../../../hooks"
 import { Route as DashboardRoute } from "../../../routes/_auth/dashboard/_shell/index"
 import { css } from "../../../styles/styled-system/css"
 import { AppLink, Button, Flex, Typography } from "../../ui"
@@ -26,6 +27,7 @@ export function DashboardSidebar() {
 	const [createCanvas] = useMutation(CreateSimulationDocument)
 	const navigate = useNavigate()
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const { addToast } = useToast()
 
 	async function handleCreateSimulation() {
 		setIsSubmitting(true)
@@ -45,9 +47,8 @@ export function DashboardSidebar() {
 					// we get an unauthorized error if the user is not logged in
 					navigate({ to: "/login", replace: true })
 				})
-		} catch (error) {
-			// TODO: add toasts for errors
-			console.error("Error creating simulation:", error)
+		} catch {
+			addToast({ message: "Failed to create simulation", intent: "danger" })
 		} finally {
 			setIsSubmitting(false)
 		}

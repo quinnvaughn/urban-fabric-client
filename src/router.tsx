@@ -31,7 +31,6 @@ export function createRouter() {
 	const router = createTanStackRouter({
 		routeTree,
 		scrollRestoration: true,
-		// biome-ignore lint/suspicious/noExplicitAny: any is needed here for the context
 		context: {} as any,
 	})
 

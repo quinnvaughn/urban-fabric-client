@@ -2,12 +2,13 @@ import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { LogoutDocument } from "../../../graphql/generated"
+import { useToast } from "../../../hooks"
 import { link } from "../../../styles/styled-system/recipes"
 
 export function LogoutButton() {
-	// todo: add logout mutation.
 	const [logout] = useMutation(LogoutDocument)
 	const navigate = useNavigate()
+	const { addToast } = useToast()
 	return (
 		<form
 			onSubmit={async (e) => {
@@ -20,7 +21,7 @@ export function LogoutButton() {
 						navigate({ to: "/" })
 					})
 					.otherwise(() => {
-						// todo: add toast
+						addToast({ message: "Failed to logout", intent: "danger" })
 					})
 			}}
 		>

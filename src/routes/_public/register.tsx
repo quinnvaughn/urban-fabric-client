@@ -4,6 +4,7 @@ import { match } from "ts-pattern"
 import { AuthForm } from "../../features/auth"
 import { Container } from "../../features/ui"
 import { RegisterDocument } from "../../graphql/generated"
+import { useToast } from "../../hooks"
 
 export const Route = createFileRoute("/_public/register")({
 	component: RouteComponent,
@@ -24,6 +25,7 @@ function RouteComponent() {
 	const client = useApolloClient()
 	const [register] = useMutation(RegisterDocument)
 	const navigate = Route.useNavigate()
+	const { addToast } = useToast()
 	return (
 		<Container>
 			<AuthForm
@@ -44,11 +46,13 @@ function RouteComponent() {
 							})
 						})
 						.with({ __typename: "ForbiddenError" }, (error) => {
-							// todo: toast
-							console.error("Forbidden error:", error.message)
+							addToast({ message: error.message, intent: "danger" })
 						})
 						.otherwise(() => {
-							console.error("Unexpected response from register mutation")
+							addToast({
+								message: "Unexpected response from register mutation",
+								intent: "danger",
+							})
 						})
 				}}
 			/>

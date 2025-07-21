@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router"
 import type { ReactNode } from "react"
 import { CurrentUserDocument } from "../graphql/generated"
+import { ToastProvider } from "../hooks"
 import css from "../index.css?url"
 
 export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
@@ -42,7 +43,9 @@ export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
 function RootComponent() {
 	return (
 		<RootDocument>
-			<Outlet />
+			<ToastProvider>
+				<Outlet />
+			</ToastProvider>
 		</RootDocument>
 	)
 }
