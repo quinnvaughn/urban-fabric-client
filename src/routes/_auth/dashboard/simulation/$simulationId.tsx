@@ -1,4 +1,3 @@
-import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
@@ -16,24 +15,80 @@ export const Route = createFileRoute(
 	"/_auth/dashboard/simulation/$simulationId",
 )({
 	component: RouteComponent,
-	loader: async ({ params, context: { preloadQuery } }) => {
+	loader: async ({ params, context: { apolloClient } }) => {
 		const { simulationId } = params
 		if (!simulationId) {
 			throw new Error("Simulation ID is required")
 		}
-		const queryRef = preloadQuery(GetSimulationDocument, {
+		const { data } = await apolloClient.query({
+			query: GetSimulationDocument,
 			variables: { simulationId },
 		})
-		return { queryRef }
+		return {
+			simulation: data.simulation,
+			categories: data.categories,
+		}
+	},
+	head: ({ loaderData }) => {
+		if (!loaderData) {
+			return {
+				meta: [
+					{
+						name: "description",
+						content: "Loading simulation...",
+					},
+					{
+						title: "Loading - Urban Fabric",
+					},
+				],
+			}
+		}
+		const { simulation } = loaderData
+		if (!simulation) {
+			return {
+				meta: [
+					{
+						name: "description",
+						content: "Simulation not found",
+					},
+					{
+						title: "Simulation Not Found - Urban Fabric",
+					},
+				],
+			}
+		}
+		if (simulation.__typename !== "Simulation") {
+			return {
+				meta: [
+					{
+						name: "description",
+						content: "Invalid simulation",
+					},
+					{
+						title: "Invalid Simulation - Urban Fabric",
+					},
+				],
+			}
+		}
+		return {
+			meta: [
+				{
+					name: "description",
+					content: `Simulation: ${simulation.name}`,
+				},
+				{
+					title: `${simulation.name} - Urban Fabric`,
+				},
+			],
+		}
 	},
 })
 
 function RouteComponent() {
-	const { queryRef } = Route.useLoaderData()
-	const { data } = useReadQuery(queryRef)
+	const { simulation, categories } = Route.useLoaderData()
 	return (
 		<div className={css({ height: "100vh", overflow: "hidden" })}>
-			{match(data.simulation)
+			{match(simulation)
 				.with({ __typename: "Simulation" }, (simulation) => (
 					<FabricMap>
 						<FabricMap.Layer
@@ -51,7 +106,7 @@ function RouteComponent() {
 						/>
 						<SimulationMapProvider>
 							<SimulationMapHeader name={simulation.name} id={simulation.id} />
-							<SimulationMapLayers categories={data.categories} />
+							<SimulationMapLayers categories={categories} />
 							<LayerPropertiesPanel />
 							<SimulationMapFooter />
 						</SimulationMapProvider>

@@ -15,6 +15,17 @@ export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 			queryRef,
 		}
 	},
+	head: () => ({
+		meta: [
+			{
+				name: "description",
+				content: "Your dashboard for managing simulations",
+			},
+			{
+				title: "Dashboard - Urban Fabric",
+			},
+		],
+	}),
 })
 
 function DashboardPage() {
@@ -35,7 +46,6 @@ function DashboardPage() {
 							templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
 						>
 							{simulations.map((simulation) => (
-								// biome-ignore lint/a11y/useSemanticElements: ignored
 								<Card
 									key={simulation.id}
 									role="button"
