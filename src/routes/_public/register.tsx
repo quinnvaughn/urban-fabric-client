@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/index.js"
+import { useApolloClient, useMutation } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { AuthForm } from "../../features/auth"
@@ -7,9 +7,21 @@ import { RegisterDocument } from "../../graphql/generated"
 
 export const Route = createFileRoute("/_public/register")({
 	component: RouteComponent,
+	head: () => ({
+		meta: [
+			{
+				name: "description",
+				content: "Register for a new account",
+			},
+			{
+				title: "Register - Urban Fabric",
+			},
+		],
+	}),
 })
 
 function RouteComponent() {
+	const client = useApolloClient()
 	const [register] = useMutation(RegisterDocument)
 	const navigate = Route.useNavigate()
 	return (
@@ -19,7 +31,8 @@ function RouteComponent() {
 				onSubmit={async (data, helpers) => {
 					const result = await register({ variables: { input: data } })
 					match(result.data?.register)
-						.with({ __typename: "User" }, () => {
+						.with({ __typename: "User" }, async () => {
+							await client.resetStore()
 							navigate({ to: "/dashboard", replace: true })
 						})
 						.with({ __typename: "ValidationError" }, ({ errors }) => {
