@@ -44,7 +44,7 @@ function RouteComponent() {
 							},
 						)
 						.with({ __typename: "User" }, () => {
-							navigate({ to: "/" })
+							navigate({ to: "/dashboard", replace: true })
 						})
 						.otherwise(() => {
 							setFormError("An unknown error occurred", 3000)
