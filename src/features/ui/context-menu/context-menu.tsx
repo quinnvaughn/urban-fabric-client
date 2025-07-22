@@ -6,4 +6,5 @@ export function ContextMenu(props: Omit<MenuProps, "openOn">) {
 ContextMenu.Trigger = Menu.Trigger
 ContextMenu.Content = Menu.Content
 ContextMenu.Item = Menu.Item
+ContextMenu.Link = Menu.Link
 ContextMenu.Separator = Menu.Separator

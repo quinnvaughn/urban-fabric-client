@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import {
 	cloneElement,
 	createContext,
@@ -222,7 +223,7 @@ Menu.Content = function MenuContent({
 					border: "1px solid",
 					borderColor: "neutral.300",
 					boxShadow: "lg",
-					py: "xs",
+					py: "sm",
 					borderRadius: "md",
 					minWidth: "160px",
 					zIndex: 20,
@@ -271,8 +272,8 @@ Menu.Item = function MenuItem({
 			}}
 			className={cx(
 				css({
-					px: "sm",
-					py: "xs",
+					px: "md",
+					py: "sm",
 					textAlign: "left",
 					width: "100%",
 					fontSize: "sm",
@@ -288,11 +289,50 @@ Menu.Item = function MenuItem({
 	)
 }
 
+Menu.Link = function MenuLink({
+	children,
+	to,
+	className,
+	closeOnSelect = true,
+}: {
+	children: ReactNode
+	to: string
+	className?: string
+	closeOnSelect?: boolean
+}) {
+	const { setOpen } = useMenu()
+	return (
+		<Link
+			to={to}
+			onClick={(e) => {
+				e.stopPropagation()
+				if (closeOnSelect) setOpen(false)
+			}}
+			className={cx(
+				css({
+					display: "block",
+					px: "md",
+					py: "sm",
+					textAlign: "left",
+					width: "100%",
+					fontSize: "sm",
+					color: "neutral.900",
+					cursor: "pointer",
+					_hover: { bg: "neutral.100" },
+				}),
+				className,
+			)}
+		>
+			{children}
+		</Link>
+	)
+}
+
 Menu.Separator = function MenuSeparator({ className }: { className?: string }) {
 	return (
 		<hr
 			className={cx(
-				css({ height: "1px", color: "neutral.200", my: "xs" }),
+				css({ height: "1px", color: "neutral.200", my: "sm", mx: "sm" }),
 				className,
 			)}
 		/>

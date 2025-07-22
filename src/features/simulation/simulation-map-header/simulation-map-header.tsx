@@ -1,5 +1,6 @@
+import { useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
-import { BrandLink, Button, DropdownMenu, Flex, Icon } from "../../ui"
+import { Button, DropdownMenu, Flex, Icon } from "../../ui"
 
 type Props = {
 	name: string
@@ -7,6 +8,7 @@ type Props = {
 }
 
 export function SimulationMapHeader({ name, id }: Props) {
+	const logout = useLogout()
 	return (
 		<Flex
 			as="header"
@@ -23,7 +25,31 @@ export function SimulationMapHeader({ name, id }: Props) {
 			gap="md"
 		>
 			<Flex align="center" gap="sm">
-				<BrandLink />
+				<DropdownMenu placement="bottom-start">
+					<DropdownMenu.Trigger asChild>
+						<button
+							type="button"
+							className={css({
+								display: "flex",
+								alignItems: "center",
+								gap: "xs",
+								cursor: "pointer",
+							})}
+						>
+							<span className={css({ color: "neutral.900", textStyle: "lg" })}>
+								Urban Fabric
+							</span>
+							<Icon name="CaretDown" size={16} color={"neutral.900"} />
+						</button>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>
+						<DropdownMenu.Link to="/dashboard">Home</DropdownMenu.Link>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item onSelect={async () => await logout()}>
+							Logout
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu>
 				<DropdownMenu placement="bottom-start">
 					<DropdownMenu.Trigger asChild>
 						<button

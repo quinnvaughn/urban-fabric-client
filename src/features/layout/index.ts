@@ -1,4 +1,5 @@
 export * from "./dashboard-navbar"
 export * from "./dashboard-sidebar"
 export * from "./footer"
+export * from "./logout-button"
 export * from "./public-navbar"

@@ -2,7 +2,7 @@ import { useRouteContext } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { css } from "../../../styles/styled-system/css"
 import { AppLink, BrandLink, Container, Flex, LinkButton } from "../../ui"
-import { LogoutButton } from "./logout-button"
+import { LogoutButton } from "../logout-button"
 
 export function PublicNavbar() {
 	const { user } = useRouteContext({ from: "__root__" })
