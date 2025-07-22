@@ -10,6 +10,7 @@ import React, {
 	useContext,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react"
@@ -42,7 +43,6 @@ function useSelectContext() {
 }
 
 type SelectProps = {
-	options: SelectOption[]
 	value?: string
 	onChange: (value: string) => void
 	placeholder?: string
@@ -51,7 +51,6 @@ type SelectProps = {
 }
 
 export function Select({
-	options,
 	value,
 	onChange,
 	placeholder = "Select...",
@@ -63,6 +62,21 @@ export function Select({
 	const [portalPos, setPortalPos] = useState({ top: 0, left: 0, width: 0 })
 	const triggerRef = useRef<HTMLButtonElement>(null)
 	const contentRef = useRef<HTMLDivElement>(null)
+
+	const options: SelectOption[] = useMemo(() => {
+		const contentEl = React.Children.toArray(children).find(
+			(el) => isValidElement(el) && el.type === Select.Content,
+		) as ReactElement<any> | undefined
+
+		if (!contentEl) return []
+
+		return React.Children.toArray(contentEl.props.children)
+			.filter(isValidElement)
+			.map((itemEl: ReactElement<SelectItemProps>) => ({
+				value: itemEl.props.value,
+				label: itemEl.props.children,
+			}))
+	}, [children])
 
 	// close on outside click
 	useEffect(() => {
@@ -295,19 +309,20 @@ Select.Content = function SelectContent({
 	return createPortal(el, document.body)
 }
 
+type SelectItemProps = {
+	value: string
+	children: ReactNode
+	className?: string
+	index?: number
+	closeOnSelect?: boolean
+}
 Select.Item = function SelectItem({
 	value,
 	children,
 	className,
 	index,
 	closeOnSelect = true,
-}: {
-	value: string
-	children: ReactNode
-	className?: string
-	index?: number
-	closeOnSelect?: boolean
-}) {
+}: SelectItemProps) {
 	const {
 		setOpen,
 		setValue,

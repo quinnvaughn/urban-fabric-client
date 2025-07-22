@@ -36,10 +36,6 @@ function renderForm(
 			.with({ type: "enum" }, (schema) => (
 				<Select
 					key={key}
-					options={schema.options.map((option) => ({
-						value: option,
-						label: capitalize(option),
-					}))}
 					value={values[key]}
 					onChange={(value) => update(key, value)}
 					className={css({ width: "180px" })}
