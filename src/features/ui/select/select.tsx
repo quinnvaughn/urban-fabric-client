@@ -3,17 +3,17 @@ import React, {
 	createContext,
 	type Dispatch,
 	isValidElement,
-	type KeyboardEvent,
 	type ReactElement,
 	type ReactNode,
 	type RefObject,
 	type SetStateAction,
 	useContext,
 	useEffect,
-	useMemo,
+	useLayoutEffect,
 	useRef,
 	useState,
 } from "react"
+import { createPortal } from "react-dom"
 import { match } from "ts-pattern"
 import { css, cx } from "../../../styles/styled-system/css"
 import { Icon } from "../icon"
@@ -31,12 +31,13 @@ type SelectContextType = {
 	setHighlightedIndex: Dispatch<SetStateAction<number>>
 	options: SelectOption[]
 	placeholder: string
+	portalPos: { top: number; left: number; width: number }
 }
 
 const SelectContext = createContext<SelectContextType | null>(null)
 function useSelectContext() {
 	const ctx = useContext(SelectContext)
-	if (!ctx) throw new Error("Select.* components must be used within <Select>")
+	if (!ctx) throw new Error("Select.* must be inside <Select>")
 	return ctx
 }
 
@@ -59,6 +60,7 @@ export function Select({
 }: SelectProps) {
 	const [open, setOpen] = useState(false)
 	const [highlightedIndex, setHighlightedIndex] = useState(-1)
+	const [portalPos, setPortalPos] = useState({ top: 0, left: 0, width: 0 })
 	const triggerRef = useRef<HTMLButtonElement>(null)
 	const contentRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +96,6 @@ export function Select({
 				}
 				return
 			}
-
 			match(e.key)
 				.with("ArrowDown", () => {
 					e.preventDefault()
@@ -108,10 +109,9 @@ export function Select({
 					e.preventDefault()
 					if (items[highlightedIndex]) {
 						const val = items[highlightedIndex].getAttribute("data-value")
-						if (val) {
-							onChange(val)
-						}
+						if (val) onChange(val)
 					}
+					setOpen(false)
 				})
 				.with("Escape", () => {
 					e.preventDefault()
@@ -119,10 +119,21 @@ export function Select({
 				})
 				.otherwise(() => {})
 		}
-
 		document.addEventListener("keydown", onKeyDown as any)
 		return () => document.removeEventListener("keydown", onKeyDown as any)
 	}, [open, highlightedIndex, options, value, onChange])
+
+	// measure trigger when opening
+	useLayoutEffect(() => {
+		if (open && triggerRef.current) {
+			const rect = triggerRef.current.getBoundingClientRect()
+			setPortalPos({
+				top: rect.bottom + window.scrollY,
+				left: rect.left + window.scrollX,
+				width: rect.width,
+			})
+		}
+	}, [open])
 
 	return (
 		<SelectContext.Provider
@@ -137,6 +148,7 @@ export function Select({
 				setHighlightedIndex,
 				options,
 				placeholder,
+				portalPos,
 			}}
 		>
 			<div
@@ -180,6 +192,7 @@ Select.Trigger = function SelectTrigger({
 		borderRadius: "md",
 		bg: "neutral.0",
 		cursor: "pointer",
+		fontSize: "sm",
 	})
 
 	const content = (
@@ -218,13 +231,28 @@ Select.Content = function SelectContent({
 	children,
 	className,
 }: {
-	children: ReactElement<SelectItemProps> | ReactElement<SelectItemProps>[]
+	children:
+		| ReactElement<{
+				value: string
+				children: ReactNode
+				className?: string
+				index?: number
+				closeOnSelect?: boolean
+		  }>
+		| ReactElement<{
+				value: string
+				children: ReactNode
+				className?: string
+				index?: number
+				closeOnSelect?: boolean
+		  }>[]
 	className?: string
 }) {
-	const { open, contentRef } = useSelectContext()
+	const { open, contentRef, portalPos } = useSelectContext()
+
 	const contentStyles = css({
 		position: "absolute",
-		top: "110%",
+		top: 0,
 		left: 0,
 		width: "100%",
 		zIndex: 1000,
@@ -237,12 +265,21 @@ Select.Content = function SelectContent({
 		overflowY: "auto",
 	})
 
-	return (
+	if (!open) return null
+
+	const style: React.CSSProperties = {
+		position: "absolute",
+		top: portalPos.top,
+		left: portalPos.left,
+		width: portalPos.width,
+	}
+
+	const el = (
 		<div
 			ref={contentRef}
 			role="listbox"
 			className={cx(contentStyles, className)}
-			style={{ display: open ? "block" : "none" }}
+			style={style}
 		>
 			{React.Children.map(children, (child, idx) =>
 				isValidElement(child)
@@ -254,14 +291,8 @@ Select.Content = function SelectContent({
 			)}
 		</div>
 	)
-}
 
-type SelectItemProps = {
-	value: string
-	children: ReactNode
-	className?: string
-	index?: number
-	closeOnSelect?: boolean
+	return createPortal(el, document.body)
 }
 
 Select.Item = function SelectItem({
@@ -270,7 +301,13 @@ Select.Item = function SelectItem({
 	className,
 	index,
 	closeOnSelect = true,
-}: SelectItemProps) {
+}: {
+	value: string
+	children: ReactNode
+	className?: string
+	index?: number
+	closeOnSelect?: boolean
+}) {
 	const {
 		setOpen,
 		setValue,
@@ -278,30 +315,27 @@ Select.Item = function SelectItem({
 		setHighlightedIndex,
 		value: selectedValue,
 	} = useSelectContext()
-	const itemBase = css({ px: "sm", py: "xs", cursor: "pointer" })
+
+	const itemBase = css({
+		px: "sm",
+		py: "xs",
+		cursor: "pointer",
+		fontSize: "sm",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	})
 	const highlightedBg = css({ bg: "neutral.100" })
-	const isHighlighted = useMemo(
-		() => highlightedIndex === index,
-		[highlightedIndex, index],
-	)
-	const isSelected = useMemo(
-		() => selectedValue === value,
-		[selectedValue, value],
-	)
-	const selectedBg = css({ bg: "neutral.200" })
+	const isHighlighted = highlightedIndex === index
+	const isSelected = selectedValue === value
 
 	return (
 		<div
 			role="option"
 			tabIndex={0}
 			data-value={value}
-			className={cx(
-				itemBase,
-				isHighlighted && highlightedBg,
-				isSelected && selectedBg,
-				className,
-			)}
-			onKeyDown={(e: React.KeyboardEvent) => {
+			className={cx(itemBase, isHighlighted && highlightedBg, className)}
+			onKeyDown={(e) => {
 				if (e.key === "Enter" || e.key === " ") {
 					e.preventDefault()
 					setValue(value)
@@ -313,12 +347,17 @@ Select.Item = function SelectItem({
 				if (closeOnSelect) setOpen(false)
 			}}
 			onMouseEnter={() => {
-				if (index !== undefined) {
-					setHighlightedIndex(index)
-				}
+				if (index !== undefined) setHighlightedIndex(index)
 			}}
 		>
 			{children}
+			{isSelected && (
+				<Icon
+					name="Check"
+					size={16}
+					className={css({ color: "neutral.500" })}
+				/>
+			)}
 		</div>
 	)
 }
