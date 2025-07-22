@@ -1,6 +1,6 @@
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { match } from "ts-pattern"
 import { useSimulationMapContext } from "../../../context"
 import { UpdateSimulationDocument } from "../../../graphql/generated"
@@ -17,6 +17,15 @@ export function SimulationName() {
 	const { addToast } = useToast()
 	const ref = useRef<HTMLInputElement>(null)
 
+	const [localName, setLocalName] = useState(name)
+	const escapePressed = useRef(false)
+
+	// Sync localName with context name when edit mode starts or name changes externally
+	useEffect(() => {
+		if (isEditing) {
+			setLocalName(name)
+		}
+	}, [isEditing, name])
 	async function handleNameChange(newName: string) {
 		setName(newName)
 		const result = await updateSimulation({
@@ -26,6 +35,7 @@ export function SimulationName() {
 		match(result.data?.updateSimulation)
 			.with({ __typename: "Simulation" }, () => {
 				ref.current?.blur()
+				document.title = `${newName} - Urban Fabric`
 			})
 			.with({ __typename: "UnauthorizedError" }, () => {
 				// navigate to login
@@ -46,6 +56,23 @@ export function SimulationName() {
 			})
 	}
 
+	function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (e.key === "Escape") {
+			e.preventDefault()
+			escapePressed.current = true
+			setLocalName(name)
+			ref.current?.blur()
+		}
+	}
+
+	async function onBlur() {
+		if (escapePressed.current) {
+			escapePressed.current = false
+			return
+		}
+		await handleNameChange(localName)
+	}
+
 	const styles = css({
 		p: "xs",
 		textStyle: "md",
@@ -53,16 +80,18 @@ export function SimulationName() {
 
 	return isEditing ? (
 		<form
-			onSubmit={(e) => {
+			onSubmit={async (e) => {
 				e.preventDefault()
-				handleNameChange(name)
+				await handleNameChange(name)
 			}}
 		>
 			<input
 				type="text"
 				ref={ref}
-				value={name}
-				onChange={(e) => setName(e.target.value)}
+				value={localName}
+				onKeyDown={onKeyDown}
+				onChange={(e) => setLocalName(e.target.value)}
+				onBlur={onBlur}
 				className={cx(styles, css({ outlineColor: "secondary" }))}
 			/>
 		</form>

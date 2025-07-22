@@ -1,5 +1,4 @@
 import { useSimulationMapContext } from "../../../context"
-import type { AllCategoriesFragment } from "../../../graphql/generated"
 import { css, cx } from "../../../styles/styled-system/css"
 import { Collapsible, Flex, Icon, Typography } from "../../ui"
 import { FloatingPanel } from "../floating-panel"
