@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { css, cx } from "../../../styles/styled-system/css"
-import { Card } from "../../ui/card"
 
 type Props = {
 	children: ReactNode
@@ -22,9 +21,15 @@ export function FloatingPanel({
 	maxHeightOffset,
 }: Props) {
 	return (
-		<Card
+		<div
 			className={cx(
 				css({
+					borderWidth: "1px",
+					borderColor: "neutral.200",
+					borderRadius: "lg",
+					bg: "neutral.0",
+					p: "md",
+					boxShadow: "md",
 					position: "absolute",
 					overflowY: "auto",
 				}),
@@ -39,13 +44,6 @@ export function FloatingPanel({
 			}}
 		>
 			{children}
-		</Card>
+		</div>
 	)
 }
-
-FloatingPanel.Description = Card.Description
-FloatingPanel.Header = Card.Header
-FloatingPanel.Action = Card.Action
-FloatingPanel.Content = Card.Content
-FloatingPanel.Footer = Card.Footer
-FloatingPanel.Title = Card.Title

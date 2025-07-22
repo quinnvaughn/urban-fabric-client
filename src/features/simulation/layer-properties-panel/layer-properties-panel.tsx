@@ -2,7 +2,7 @@ import { match } from "ts-pattern"
 import { useSimulationMapContext } from "../../../context"
 import type { PropertiesSchema } from "../../../context/simulation-map/types"
 import { capitalize } from "../../../utils"
-import { Checkbox, Input, Select } from "../../ui"
+import { Checkbox, Flex, Input, Select, Typography } from "../../ui"
 import { IconButton } from "../../ui/icon-button"
 import { FloatingPanel } from "../floating-panel"
 
@@ -65,23 +65,29 @@ export function LayerPropertiesPanel() {
 
 	return (
 		<FloatingPanel top={60} right={20} width={300} maxHeightOffset={100}>
-			<FloatingPanel.Header>
-				<FloatingPanel.Title>{selectedTemplate.label}</FloatingPanel.Title>
-				<FloatingPanel.Description>
-					{selectedTemplate.description}
-				</FloatingPanel.Description>
-				<FloatingPanel.Action>
-					<IconButton icon="X" size={16} onClick={() => closePanel()} />
-				</FloatingPanel.Action>
-			</FloatingPanel.Header>
-			<FloatingPanel.Content>
-				<FloatingPanel.Title level={6}>Properties</FloatingPanel.Title>
-				{renderForm(
-					selectedTemplate.propertiesSchema,
-					currentProperties as Record<string, any>,
-					updateProperty,
-				)}
-			</FloatingPanel.Content>
+			<Flex direction="column" gap="md">
+				<Flex direction="column" gap="sm">
+					<Flex justify="between" align={"center"}>
+						<Typography.Heading level={5}>
+							{selectedTemplate.label}
+						</Typography.Heading>
+						<IconButton icon="X" size={16} onClick={() => closePanel()} />
+					</Flex>
+					<Typography.Text color="muted" textStyle="sm">
+						{selectedTemplate.description}
+					</Typography.Text>
+				</Flex>
+				<Flex direction={"column"} gap="sm">
+					<Typography.Heading level={6}>Properties</Typography.Heading>
+					<Flex direction="column" gap="xs">
+						{renderForm(
+							selectedTemplate.propertiesSchema,
+							currentProperties as Record<string, any>,
+							updateProperty,
+						)}
+					</Flex>
+				</Flex>
+			</Flex>
 		</FloatingPanel>
 	)
 }

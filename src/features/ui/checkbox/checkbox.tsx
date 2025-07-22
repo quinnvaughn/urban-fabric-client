@@ -71,14 +71,13 @@ Checkbox.Input = function Input(props: InputProps) {
 			{props.checked && (
 				<Icon
 					name="Check"
-					size={16}
+					size={18}
 					className={css({
 						position: "absolute",
 						top: "50%",
 						left: "50%",
-						fill: "primary",
+						fill: "secondary",
 						transform: "translate(-50%, -50%)",
-						fontSize: "0.75rem",
 						pointerEvents: "none",
 					})}
 				/>

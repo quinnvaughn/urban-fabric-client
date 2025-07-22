@@ -10,6 +10,7 @@ export const iconButton = defineRecipe({
 		cursor: "pointer",
 		p: "xs",
 		backgroundColor: "transparent",
+		transition: "background-color 0.2s ease, color 0.2s ease",
 		_hover: {
 			bg: "neutral.100",
 		},
