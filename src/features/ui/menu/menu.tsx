@@ -1,8 +1,9 @@
-import { Link } from "@tanstack/react-router"
+import { createLink, type LinkComponent } from "@tanstack/react-router"
 import {
 	cloneElement,
 	createContext,
 	isValidElement,
+	type JSX,
 	type ReactElement,
 	type ReactNode,
 	type RefObject,
@@ -289,25 +290,14 @@ Menu.Item = function MenuItem({
 	)
 }
 
-Menu.Link = function MenuLink({
-	children,
-	to,
+const BaseMenuLink = ({
 	className,
-	closeOnSelect = true,
-}: {
-	children: ReactNode
-	to: string
-	className?: string
-	closeOnSelect?: boolean
-}) {
-	const { setOpen } = useMenu()
+	children,
+	...rest
+}: JSX.IntrinsicElements["a"] & { closeOnSelect?: boolean }) => {
 	return (
-		<Link
-			to={to}
-			onClick={(e) => {
-				e.stopPropagation()
-				if (closeOnSelect) setOpen(false)
-			}}
+		<a
+			{...rest}
 			className={cx(
 				css({
 					display: "block",
@@ -324,9 +314,30 @@ Menu.Link = function MenuLink({
 			)}
 		>
 			{children}
-		</Link>
+		</a>
 	)
 }
+
+const MenuLinkInternal = createLink(BaseMenuLink)
+
+const AppLink: LinkComponent<typeof BaseMenuLink> = (props) => {
+	const { setOpen } = useMenu()
+	return (
+		<MenuLinkInternal
+			preload="intent"
+			onClick={(e) => {
+				e.stopPropagation()
+				props.onClick?.(e)
+				if (props.closeOnSelect !== false) {
+					setOpen(false)
+				}
+			}}
+			{...props}
+		/>
+	)
+}
+
+Menu.Link = AppLink
 
 Menu.Separator = function MenuSeparator({ className }: { className?: string }) {
 	return (

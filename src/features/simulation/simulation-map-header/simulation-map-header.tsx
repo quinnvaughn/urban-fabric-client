@@ -7,7 +7,7 @@ type Props = {
 	id: string
 }
 
-export function SimulationMapHeader({ name, id }: Props) {
+export function SimulationMapHeader({ name }: Props) {
 	const logout = useLogout()
 	return (
 		<Flex
