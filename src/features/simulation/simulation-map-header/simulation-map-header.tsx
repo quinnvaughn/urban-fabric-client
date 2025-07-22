@@ -20,7 +20,8 @@ export function SimulationMapHeader() {
 				top: 0,
 				left: 0,
 				width: "100%",
-				p: "sm",
+				py: "sm",
+				px: "md",
 				bg: "neutral.0",
 			})}
 			gap="md"

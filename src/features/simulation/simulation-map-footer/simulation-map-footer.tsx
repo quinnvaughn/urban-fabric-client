@@ -48,7 +48,6 @@ export function SimulationMapFooter() {
 				>
 					Mapbox
 				</a>
-				.
 			</div>
 			<Flex gap="sm">
 				<IconButton
