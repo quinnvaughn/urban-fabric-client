@@ -1,6 +1,7 @@
 import { match } from "ts-pattern"
 import { useSimulationMapContext } from "../../../context"
 import type { PropertiesSchema } from "../../../context/simulation-map/types"
+import { css } from "../../../styles/styled-system/css"
 import { capitalize } from "../../../utils"
 import { Checkbox, Flex, Input, Select, Typography } from "../../ui"
 import { IconButton } from "../../ui/icon-button"
@@ -34,12 +35,14 @@ function renderForm(
 			))
 			.with({ type: "enum" }, (schema) => (
 				<Select
+					key={key}
 					options={schema.options.map((option) => ({
 						value: option,
 						label: capitalize(option),
 					}))}
 					value={values[key]}
 					onChange={(value) => update(key, value)}
+					className={css({ width: "180px" })}
 				>
 					<Select.Trigger>{schema.label}</Select.Trigger>
 					<Select.Content>

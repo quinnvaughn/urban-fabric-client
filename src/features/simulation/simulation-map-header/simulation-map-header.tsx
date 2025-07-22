@@ -1,14 +1,15 @@
-import { useLogout } from "../../../hooks"
+import { useSimulationMapContext } from "../../../context"
+import { useKeyBindings, useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
 import { Button, DropdownMenu, Flex, Icon } from "../../ui"
+import { SimulationName } from "../simulation-name"
 
-type Props = {
-	name: string
-	id: string
-}
-
-export function SimulationMapHeader({ name }: Props) {
+export function SimulationMapHeader() {
 	const logout = useLogout()
+	const { isEditing, toggleEditing } = useSimulationMapContext()
+
+	useKeyBindings([{ key: "E", shift: true, handler: toggleEditing }])
+
 	return (
 		<Flex
 			as="header"
@@ -50,32 +51,16 @@ export function SimulationMapHeader({ name }: Props) {
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu>
-				<DropdownMenu placement="bottom-start">
-					<DropdownMenu.Trigger asChild>
-						<button
-							type="button"
-							className={css({
-								display: "flex",
-								alignItems: "center",
-								gap: "xs",
-								fontSize: "md",
-								cursor: "pointer",
-							})}
-						>
-							<span>{name}</span>
-							<Icon name="CaretDown" size={16} />
-						</button>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>
-						<DropdownMenu.Item>Edit name</DropdownMenu.Item>
-						<DropdownMenu.Separator />
-						<DropdownMenu.Item>Edit description</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu>
+				<SimulationName />
 			</Flex>
-			<Button variant="ghost" size="sm">
-				Share
-			</Button>
+			<Flex gap="sm">
+				<Button variant="ghost" intent="secondary" size="sm">
+					Publish
+				</Button>
+				<Button variant="solid" size="sm" onClick={toggleEditing}>
+					{isEditing ? "Done" : "Edit Map"}
+				</Button>
+			</Flex>
 		</Flex>
 	)
 }

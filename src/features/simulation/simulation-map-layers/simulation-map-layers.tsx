@@ -4,12 +4,9 @@ import { css, cx } from "../../../styles/styled-system/css"
 import { Collapsible, Flex, Icon, Typography } from "../../ui"
 import { FloatingPanel } from "../floating-panel"
 
-type Props = {
-	categories: AllCategoriesFragment[]
-}
-
-export function SimulationMapLayers({ categories }: Props) {
-	const { openTemplate, selectedTemplate } = useSimulationMapContext()
+export function SimulationMapLayers() {
+	const { openTemplate, selectedTemplate, categories } =
+		useSimulationMapContext()
 	return (
 		<FloatingPanel top={60} left={20} width={300} maxHeightOffset={100}>
 			<Flex direction="column">

@@ -1,5 +1,10 @@
-import { createContext, useContext, useState } from "react"
-import type { SelectedTemplateFragment } from "../../graphql/generated"
+import { createContext, useContext, useMemo, useState } from "react"
+import type {
+	AllCategoriesFragment,
+	SelectedTemplateFragment,
+	SimulationInfoFragment,
+	SimulationScenarioFragment,
+} from "../../graphql/generated"
 import type { PropertiesSchema } from "./types"
 
 type SimulationMapContext = {
@@ -11,6 +16,13 @@ type SimulationMapContext = {
 	updateProperty: (key: string, value: any) => void
 	// openInstance: (instance: LayerInstance) => void
 	closePanel: () => void
+	isEditing: boolean
+	toggleEditing: () => void
+	name: string
+	setName: (name: string) => void
+	selectedScenario: SimulationScenarioFragment
+	selectScenario: (index: number) => void
+	categories: AllCategoriesFragment[]
 }
 
 const SimulationMapContext = createContext<SimulationMapContext | undefined>(
@@ -28,8 +40,12 @@ export function useSimulationMapContext() {
 }
 export function SimulationMapProvider({
 	children,
+	simulation,
+	categories,
 }: {
 	children: React.ReactNode
+	simulation: SimulationInfoFragment
+	categories: AllCategoriesFragment[]
 }) {
 	const [selectedTemplate, setSelectedTemplate] =
 		useState<SelectedTemplateFragment | null>(null)
@@ -39,6 +55,18 @@ export function SimulationMapProvider({
 	> | null>(null)
 	const [propertiesSchema, setPropertiesSchema] =
 		useState<PropertiesSchema | null>(null)
+
+	const [isEditing, setIsEditing] = useState(false)
+	const [name, setName] = useState(simulation.name)
+	const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0)
+
+	const selectedScenario = useMemo(() => {
+		return simulation.scenarios[selectedScenarioIndex]
+	}, [simulation.scenarios, selectedScenarioIndex])
+
+	function toggleEditing() {
+		setIsEditing((prev) => !prev)
+	}
 
 	function openTemplate(template: SelectedTemplateFragment) {
 		setSelectedTemplate(template)
@@ -64,6 +92,10 @@ export function SimulationMapProvider({
 		setCurrentProperties((prev) => (prev ? { ...prev, [key]: value } : prev))
 	}
 
+	function selectScenario(index: number) {
+		setSelectedScenarioIndex(index)
+	}
+
 	return (
 		<SimulationMapContext.Provider
 			value={{
@@ -74,6 +106,13 @@ export function SimulationMapProvider({
 				updateProperty,
 				closePanel,
 				propertiesSchema,
+				isEditing,
+				toggleEditing,
+				name,
+				setName,
+				selectedScenario,
+				selectScenario,
+				categories,
 			}}
 		>
 			{children}

@@ -46,6 +46,7 @@ type SelectProps = {
 	onChange: (value: string) => void
 	placeholder?: string
 	children: ReactNode
+	className?: string
 }
 
 export function Select({
@@ -54,6 +55,7 @@ export function Select({
 	onChange,
 	placeholder = "Select...",
 	children,
+	className,
 }: SelectProps) {
 	const [open, setOpen] = useState(false)
 	const [highlightedIndex, setHighlightedIndex] = useState(-1)
@@ -138,11 +140,14 @@ export function Select({
 			}}
 		>
 			<div
-				className={css({
-					position: "relative",
-					display: "inline-block",
-					width: "100%",
-				})}
+				className={cx(
+					css({
+						position: "relative",
+						display: "inline-block",
+						width: "100%",
+					}),
+					className,
+				)}
 			>
 				{children}
 			</div>

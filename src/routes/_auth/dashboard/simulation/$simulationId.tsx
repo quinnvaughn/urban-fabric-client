@@ -104,9 +104,12 @@ function RouteComponent() {
 								"fill-extrusion-opacity": 0.6,
 							}}
 						/>
-						<SimulationMapProvider>
-							<SimulationMapHeader name={simulation.name} id={simulation.id} />
-							<SimulationMapLayers categories={categories} />
+						<SimulationMapProvider
+							simulation={simulation}
+							categories={categories}
+						>
+							<SimulationMapHeader />
+							<SimulationMapLayers />
 							<LayerPropertiesPanel />
 							<SimulationMapFooter />
 						</SimulationMapProvider>

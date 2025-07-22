@@ -4,12 +4,7 @@ query GetSimulation($simulationId: ID!) {
       message
     }
     ... on Simulation {
-      id 
-      name
-      scenarios {
-        id 
-        name
-      }
+      ...SimulationInfo
     }
   }
   categories {
@@ -34,4 +29,17 @@ fragment SelectedTemplate on LayerTemplate {
   geometryType
   description
   icon
+}
+
+fragment SimulationInfo on Simulation {
+  id
+  name
+  scenarios {
+    ...SimulationScenario
+  }
+}
+
+fragment SimulationScenario on Scenario {
+  id
+  name
 }
