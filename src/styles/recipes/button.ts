@@ -21,6 +21,7 @@ export const button = defineRecipe({
 		intent: {
 			primary: {},
 			secondary: {},
+			tertiary: {}, // NEW
 			danger: {},
 			success: {},
 			warning: {},
@@ -76,6 +77,16 @@ export const button = defineRecipe({
 		},
 		{
 			variant: "solid",
+			intent: "tertiary",
+			css: {
+				bg: "{colors.tertiary}",
+				_hover: { bg: "{colors.tertiary.light}" },
+				_active: { bg: "{colors.tertiary.dark}" },
+				_disabled: { bg: "{colors.tertiary}", opacity: 0.6 },
+			},
+		},
+		{
+			variant: "solid",
 			intent: "danger",
 			css: {
 				bg: "{colors.danger}",
@@ -112,14 +123,8 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.primary}",
 				color: "{colors.primary}",
-				_hover: {
-					bg: "{colors.primary.light}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.primary.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.primary.light}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.primary.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.primary}",
 					color: "{colors.neutral.500}",
@@ -148,18 +153,26 @@ export const button = defineRecipe({
 		},
 		{
 			variant: "outline",
+			intent: "tertiary",
+			css: {
+				borderColor: "{colors.tertiary}",
+				color: "{colors.tertiary}",
+				_hover: { bg: "{colors.tertiary.light}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.tertiary.dark}", color: "{colors.neutral.50}" },
+				_disabled: {
+					borderColor: "{colors.tertiary}",
+					color: "{colors.neutral.500}",
+				},
+			},
+		},
+		{
+			variant: "outline",
 			intent: "danger",
 			css: {
 				borderColor: "{colors.danger}",
 				color: "{colors.danger}",
-				_hover: {
-					bg: "{colors.danger.light}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.danger.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.danger.light}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.danger.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.danger}",
 					color: "{colors.neutral.500}",
@@ -172,14 +185,8 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.success}",
 				color: "{colors.success}",
-				_hover: {
-					bg: "{colors.success.light}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.success.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.success.light}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.success.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.success}",
 					color: "{colors.neutral.500}",
@@ -192,14 +199,8 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.warning}",
 				color: "{colors.warning}",
-				_hover: {
-					bg: "{colors.warning.light}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.warning.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.warning.light}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.warning.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.warning}",
 					color: "{colors.neutral.500}",
@@ -213,14 +214,8 @@ export const button = defineRecipe({
 			intent: "primary",
 			css: {
 				color: "{colors.primary}",
-				_hover: {
-					bg: "{colors.primary}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.primary.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.primary}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.primary.dark}", color: "{colors.neutral.50}" },
 				_disabled: { color: "{colors.primary}", opacity: 0.6 },
 			},
 		},
@@ -229,10 +224,7 @@ export const button = defineRecipe({
 			intent: "secondary",
 			css: {
 				color: "{colors.secondary}",
-				_hover: {
-					bg: "{colors.secondary}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.secondary}", color: "{colors.neutral.50}" },
 				_active: {
 					bg: "{colors.secondary.dark}",
 					color: "{colors.neutral.50}",
@@ -242,17 +234,21 @@ export const button = defineRecipe({
 		},
 		{
 			variant: "ghost",
+			intent: "tertiary",
+			css: {
+				color: "{colors.tertiary}",
+				_hover: { bg: "{colors.tertiary}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.tertiary.dark}", color: "{colors.neutral.50}" },
+				_disabled: { color: "{colors.tertiary}", opacity: 0.6 },
+			},
+		},
+		{
+			variant: "ghost",
 			intent: "danger",
 			css: {
 				color: "{colors.danger}",
-				_hover: {
-					bg: "{colors.danger}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.danger.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.danger}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.danger.dark}", color: "{colors.neutral.50}" },
 				_disabled: { color: "{colors.danger}", opacity: 0.6 },
 			},
 		},
@@ -261,14 +257,8 @@ export const button = defineRecipe({
 			intent: "success",
 			css: {
 				color: "{colors.success}",
-				_hover: {
-					bg: "{colors.success}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.success.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.success}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.success.dark}", color: "{colors.neutral.50}" },
 				_disabled: { color: "{colors.success}", opacity: 0.6 },
 			},
 		},
@@ -277,14 +267,8 @@ export const button = defineRecipe({
 			intent: "warning",
 			css: {
 				color: "{colors.warning}",
-				_hover: {
-					bg: "{colors.warning}",
-					color: "{colors.neutral.50}",
-				},
-				_active: {
-					bg: "{colors.warning.dark}",
-					color: "{colors.neutral.50}",
-				},
+				_hover: { bg: "{colors.warning}", color: "{colors.neutral.50}" },
+				_active: { bg: "{colors.warning.dark}", color: "{colors.neutral.50}" },
 				_disabled: { color: "{colors.warning}", opacity: 0.6 },
 			},
 		},

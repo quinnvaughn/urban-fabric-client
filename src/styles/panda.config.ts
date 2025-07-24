@@ -136,6 +136,11 @@ export default defineConfig({
 					light: { value: "#818CF8" },
 					dark: { value: "#4F46E5" },
 				},
+				tertiary: {
+					DEFAULT: { value: "#0EA5E9" }, // teal-500
+					light: { value: "#38BDF8" }, // teal-400
+					dark: { value: "#0284C7" }, // teal-600
+				},
 				neutral: {
 					0: { value: "#FFFFFF" },
 					50: { value: "#FAFAFA" },

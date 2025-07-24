@@ -8,3 +8,4 @@ ContextMenu.Content = Menu.Content
 ContextMenu.Item = Menu.Item
 ContextMenu.Link = Menu.Link
 ContextMenu.Separator = Menu.Separator
+ContextMenu.Shortcut = Menu.Shortcut

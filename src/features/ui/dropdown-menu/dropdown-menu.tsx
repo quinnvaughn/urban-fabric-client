@@ -8,3 +8,4 @@ DropdownMenu.Content = Menu.Content
 DropdownMenu.Item = Menu.Item
 DropdownMenu.Link = Menu.Link
 DropdownMenu.Separator = Menu.Separator
+DropdownMenu.Shortcut = Menu.Shortcut

@@ -76,6 +76,10 @@ export function SimulationName() {
 	const styles = css({
 		p: "xs",
 		textStyle: "md",
+		width: "190px",
+		textOverflow: "ellipsis",
+		overflow: "hidden",
+		whiteSpace: "nowrap",
 	})
 
 	return isEditing ? (
@@ -96,6 +100,8 @@ export function SimulationName() {
 			/>
 		</form>
 	) : (
-		<span className={styles}>{name}</span>
+		<span className={styles} title={name}>
+			{name}
+		</span>
 	)
 }

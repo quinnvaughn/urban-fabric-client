@@ -5,7 +5,7 @@ import { SimulationDropdownMenu } from "../../../../features/simulation"
 import { Card, Flex, Grid, Typography } from "../../../../features/ui"
 import { UserSimulationsDocument } from "../../../../graphql/generated"
 import { css } from "../../../../styles/styled-system/css"
-import { formatTimeAgo, truncate } from "../../../../utils"
+import { formatTimeAgo } from "../../../../utils"
 
 export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 	component: DashboardPage,

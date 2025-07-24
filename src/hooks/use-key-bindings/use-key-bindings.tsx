@@ -18,6 +18,8 @@ export function useKeyBindings(keyBindings: KeyBinding[]) {
 					(ctrl === undefined || event.ctrlKey === ctrl) &&
 					(alt === undefined || event.altKey === alt)
 				) {
+					event.preventDefault()
+					event.stopPropagation()
 					handler(event)
 				}
 			})

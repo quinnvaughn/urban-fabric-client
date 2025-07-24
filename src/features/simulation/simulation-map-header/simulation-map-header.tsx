@@ -6,9 +6,23 @@ import { SimulationName } from "../simulation-name"
 
 export function SimulationMapHeader() {
 	const logout = useLogout()
-	const { isEditing, toggleEditing } = useSimulationMapContext()
+	const {
+		isEditing,
+		toggleEditing,
+		selectedScenario,
+		toggleScenarioMenu,
+		setScenarioMenuOpen,
+		isScenarioMenuOpen,
+	} = useSimulationMapContext()
 
-	useKeyBindings([{ key: "E", shift: true, handler: toggleEditing }])
+	useKeyBindings([
+		{ key: "E", shift: true, handler: toggleEditing },
+		{
+			key: "S",
+			shift: true,
+			handler: toggleScenarioMenu,
+		},
+	])
 
 	return (
 		<Flex
@@ -47,19 +61,42 @@ export function SimulationMapHeader() {
 					<DropdownMenu.Content>
 						<DropdownMenu.Link to="/dashboard">Home</DropdownMenu.Link>
 						<DropdownMenu.Separator />
+						<DropdownMenu.Item onSelect={toggleEditing}>
+							{isEditing ? "Done editing" : "Edit scenario"}
+							<DropdownMenu.Shortcut>⇧&thinsp;E</DropdownMenu.Shortcut>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item onSelect={toggleScenarioMenu}>
+							View scenarios
+							<DropdownMenu.Shortcut>⇧&thinsp;S</DropdownMenu.Shortcut>
+						</DropdownMenu.Item>
+						<DropdownMenu.Separator />
 						<DropdownMenu.Item onSelect={async () => await logout()}>
 							Logout
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu>
 				<SimulationName />
+				<DropdownMenu
+					open={isScenarioMenuOpen}
+					onOpenChange={(next) => setScenarioMenuOpen(next)}
+				>
+					<DropdownMenu.Trigger asChild>
+						<Button variant="ghost" intent="tertiary" size="md">
+							<Flex align="center" gap="xs">
+								<span>{selectedScenario.name}</span>
+								<Icon name="CaretDown" size={16} />
+							</Flex>
+						</Button>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>Hi</DropdownMenu.Content>
+				</DropdownMenu>
 			</Flex>
 			<Flex gap="sm">
 				<Button variant="ghost" intent="secondary" size="sm">
 					Publish
 				</Button>
 				<Button variant="solid" size="sm" onClick={toggleEditing}>
-					{isEditing ? "Done" : "Edit Map"}
+					{isEditing ? "Done" : "Edit Scenario"}
 				</Button>
 			</Flex>
 		</Flex>

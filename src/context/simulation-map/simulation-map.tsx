@@ -1,3 +1,4 @@
+import { useParams } from "@tanstack/react-router"
 import { createContext, useContext, useMemo, useState } from "react"
 import type {
 	AllCategoriesFragment,
@@ -21,7 +22,9 @@ type SimulationMapContext = {
 	name: string
 	setName: (name: string) => void
 	selectedScenario: SimulationScenarioFragment
-	selectScenario: (index: number) => void
+	isScenarioMenuOpen: boolean
+	setScenarioMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+	toggleScenarioMenu: () => void
 	categories: AllCategoriesFragment[]
 }
 
@@ -47,6 +50,9 @@ export function SimulationMapProvider({
 	simulation: SimulationInfoFragment
 	categories: AllCategoriesFragment[]
 }) {
+	const { scenarioId } = useParams({
+		from: "/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId",
+	})
 	const [selectedTemplate, setSelectedTemplate] =
 		useState<SelectedTemplateFragment | null>(null)
 	const [currentProperties, setCurrentProperties] = useState<Record<
@@ -55,17 +61,24 @@ export function SimulationMapProvider({
 	> | null>(null)
 	const [propertiesSchema, setPropertiesSchema] =
 		useState<PropertiesSchema | null>(null)
+	const [isScenarioMenuOpen, setScenarioMenuOpen] = useState(false)
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [name, setName] = useState(simulation.name)
-	const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0)
 
 	const selectedScenario = useMemo(() => {
-		return simulation.scenarios[selectedScenarioIndex]
-	}, [simulation.scenarios, selectedScenarioIndex])
+		return (
+			simulation.scenarios.find((scenario) => scenario.id === scenarioId) ||
+			simulation.scenarios[0]
+		)
+	}, [simulation.scenarios, scenarioId])
 
 	function toggleEditing() {
 		setIsEditing((prev) => !prev)
+	}
+
+	function toggleScenarioMenu() {
+		setScenarioMenuOpen((prev) => !prev)
 	}
 
 	function openTemplate(template: SelectedTemplateFragment) {
@@ -92,10 +105,6 @@ export function SimulationMapProvider({
 		setCurrentProperties((prev) => (prev ? { ...prev, [key]: value } : prev))
 	}
 
-	function selectScenario(index: number) {
-		setSelectedScenarioIndex(index)
-	}
-
 	return (
 		<SimulationMapContext.Provider
 			value={{
@@ -111,8 +120,10 @@ export function SimulationMapProvider({
 				name,
 				setName,
 				selectedScenario,
-				selectScenario,
 				categories,
+				isScenarioMenuOpen,
+				setScenarioMenuOpen,
+				toggleScenarioMenu,
 			}}
 		>
 			{children}

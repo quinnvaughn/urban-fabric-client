@@ -7,6 +7,7 @@ import {
 	type ReactElement,
 	type ReactNode,
 	type RefObject,
+	useCallback,
 	useContext,
 	useEffect,
 	useRef,
@@ -88,20 +89,32 @@ export type MenuProps = {
 	children: ReactNode
 	placement?: Placement
 	openOn?: OpenOn
+	open?: boolean
+	onOpenChange?: (v: boolean) => void
 }
 
 export function Menu({
 	children,
 	placement = "bottom-end",
 	openOn = "click",
+	open: controlledOpen,
+	onOpenChange,
 }: MenuProps) {
-	const [open, setOpen] = useState(false)
+	const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
+	const isControlled = controlledOpen !== undefined
+	const open = isControlled ? controlledOpen : uncontrolledOpen
+	const _setOpen =
+		isControlled && onOpenChange ? onOpenChange : setUncontrolledOpen
+
+	const toggleOpen = () => _setOpen(!open)
+	const closeMenu = useCallback(() => {
+		_setOpen(false)
+	}, [_setOpen])
 	const [position, setPosition] = useState<Position | null>(null)
 	// biome-ignore lint/style/noNonNullAssertion: we ensure these refs are set before use
 	const triggerRef = useRef<HTMLElement>(null!)
 	// biome-ignore lint/style/noNonNullAssertion: we ensure these refs are set before use
 	const contentRef = useRef<HTMLDivElement>(null!)
-	const toggleOpen = () => setOpen((v) => !v)
 
 	// Measure on open
 	useEffect(() => {
@@ -119,17 +132,17 @@ export function Menu({
 				contentRef.current?.contains(e.target as Node)
 			)
 				return
-			setOpen(false)
+			closeMenu() // <-- force close, not toggle
 		}
 		document.addEventListener("mousedown", handleClick)
 		return () => document.removeEventListener("mousedown", handleClick)
-	}, [])
+	}, [closeMenu])
 
 	return (
 		<MenuContext.Provider
 			value={{
 				open,
-				setOpen,
+				setOpen: _setOpen,
 				toggleOpen,
 				triggerRef,
 				contentRef,
@@ -273,7 +286,7 @@ Menu.Item = function MenuItem({
 			}}
 			className={cx(
 				css({
-					px: "md",
+					px: "md", // Use larger padding for inset items
 					py: "sm",
 					textAlign: "left",
 					width: "100%",
@@ -285,8 +298,31 @@ Menu.Item = function MenuItem({
 				className,
 			)}
 		>
-			{children}
+			<span
+				className={css({
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "space-between",
+					width: "100%",
+				})}
+			>
+				{children}
+			</span>
 		</button>
+	)
+}
+
+Menu.Shortcut = function MenuShortcut({ children }: { children: ReactNode }) {
+	return (
+		<span
+			className={css({
+				color: "neutral.500",
+				fontSize: "sm",
+				marginLeft: "auto",
+			})}
+		>
+			{children}
+		</span>
 	)
 }
 
