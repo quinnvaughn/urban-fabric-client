@@ -19,8 +19,7 @@ type SimulationMapContext = {
 	closePanel: () => void
 	isEditing: boolean
 	toggleEditing: () => void
-	name: string
-	setName: (name: string) => void
+	simulation: SimulationInfoFragment
 	selectedScenario: SimulationScenarioFragment
 	isScenarioMenuOpen: boolean
 	setScenarioMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -64,7 +63,6 @@ export function SimulationMapProvider({
 	const [isScenarioMenuOpen, setScenarioMenuOpen] = useState(false)
 
 	const [isEditing, setIsEditing] = useState(false)
-	const [name, setName] = useState(simulation.name)
 
 	const selectedScenario = useMemo(() => {
 		return (
@@ -117,8 +115,7 @@ export function SimulationMapProvider({
 				propertiesSchema,
 				isEditing,
 				toggleEditing,
-				name,
-				setName,
+				simulation,
 				selectedScenario,
 				categories,
 				isScenarioMenuOpen,

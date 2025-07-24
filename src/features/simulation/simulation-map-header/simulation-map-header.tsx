@@ -1,28 +1,16 @@
 import { useSimulationMapContext } from "../../../context"
 import { useKeyBindings, useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
+import { ScenarioSelector } from "../../scenario"
 import { Button, DropdownMenu, Flex, Icon } from "../../ui"
 import { SimulationName } from "../simulation-name"
 
 export function SimulationMapHeader() {
 	const logout = useLogout()
-	const {
-		isEditing,
-		toggleEditing,
-		selectedScenario,
-		toggleScenarioMenu,
-		setScenarioMenuOpen,
-		isScenarioMenuOpen,
-	} = useSimulationMapContext()
+	const { isEditing, toggleEditing, toggleScenarioMenu } =
+		useSimulationMapContext()
 
-	useKeyBindings([
-		{ key: "E", shift: true, handler: toggleEditing },
-		{
-			key: "S",
-			shift: true,
-			handler: toggleScenarioMenu,
-		},
-	])
+	useKeyBindings([{ key: "E", shift: true, handler: toggleEditing }])
 
 	return (
 		<Flex
@@ -76,20 +64,7 @@ export function SimulationMapHeader() {
 					</DropdownMenu.Content>
 				</DropdownMenu>
 				<SimulationName />
-				<DropdownMenu
-					open={isScenarioMenuOpen}
-					onOpenChange={(next) => setScenarioMenuOpen(next)}
-				>
-					<DropdownMenu.Trigger asChild>
-						<Button variant="ghost" intent="tertiary" size="md">
-							<Flex align="center" gap="xs">
-								<span>{selectedScenario.name}</span>
-								<Icon name="CaretDown" size={16} />
-							</Flex>
-						</Button>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>Hi</DropdownMenu.Content>
-				</DropdownMenu>
+				<ScenarioSelector />
 			</Flex>
 			<Flex gap="sm">
 				<Button variant="ghost" intent="secondary" size="sm">
