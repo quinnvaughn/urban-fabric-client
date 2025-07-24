@@ -19,9 +19,8 @@ import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
 import { Route as AuthDashboardShellRouteImport } from './routes/_auth/dashboard/_shell'
 import { Route as AuthDashboardShellIndexRouteImport } from './routes/_auth/dashboard/_shell/index'
-import { Route as AuthDashboardSimulationSimulationIdRouteImport } from './routes/_auth/dashboard/simulation/$simulationId'
-import { Route as AuthDashboardSimulationSimulationIdIndexRouteImport } from './routes/_auth/dashboard/simulation/$simulationId.index'
-import { Route as AuthDashboardSimulationSimulationIdScenarioScenarioIdRouteImport } from './routes/_auth/dashboard/simulation/$simulationId.scenario.$scenarioId'
+import { Route as AuthDashboardSimulationSimulationIdIndexRouteImport } from './routes/_auth/dashboard/simulation/$simulationId/index'
+import { Route as AuthDashboardSimulationSimulationIdScenarioScenarioIdRouteImport } from './routes/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId'
 
 const AuthDashboardRouteImport = createFileRoute('/_auth/dashboard')()
 
@@ -67,23 +66,17 @@ const AuthDashboardShellIndexRoute = AuthDashboardShellIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthDashboardShellRoute,
 } as any)
-const AuthDashboardSimulationSimulationIdRoute =
-  AuthDashboardSimulationSimulationIdRouteImport.update({
-    id: '/simulation/$simulationId',
-    path: '/simulation/$simulationId',
-    getParentRoute: () => AuthDashboardRoute,
-  } as any)
 const AuthDashboardSimulationSimulationIdIndexRoute =
   AuthDashboardSimulationSimulationIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthDashboardSimulationSimulationIdRoute,
+    id: '/simulation/$simulationId/',
+    path: '/simulation/$simulationId/',
+    getParentRoute: () => AuthDashboardRoute,
   } as any)
 const AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute =
   AuthDashboardSimulationSimulationIdScenarioScenarioIdRouteImport.update({
-    id: '/scenario/$scenarioId',
-    path: '/scenario/$scenarioId',
-    getParentRoute: () => AuthDashboardSimulationSimulationIdRoute,
+    id: '/simulation/$simulationId/scenario/$scenarioId',
+    path: '/simulation/$simulationId/scenario/$scenarioId',
+    getParentRoute: () => AuthDashboardRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -92,9 +85,8 @@ export interface FileRoutesByFullPath {
   '/register': typeof PublicRegisterRoute
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthDashboardShellRouteWithChildren
-  '/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdRouteWithChildren
   '/dashboard/': typeof AuthDashboardShellIndexRoute
-  '/dashboard/simulation/$simulationId/': typeof AuthDashboardSimulationSimulationIdIndexRoute
+  '/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdIndexRoute
   '/dashboard/simulation/$simulationId/scenario/$scenarioId': typeof AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute
 }
 export interface FileRoutesByTo {
@@ -116,7 +108,6 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_auth/dashboard': typeof AuthDashboardRouteWithChildren
   '/_auth/dashboard/_shell': typeof AuthDashboardShellRouteWithChildren
-  '/_auth/dashboard/simulation/$simulationId': typeof AuthDashboardSimulationSimulationIdRouteWithChildren
   '/_auth/dashboard/_shell/': typeof AuthDashboardShellIndexRoute
   '/_auth/dashboard/simulation/$simulationId/': typeof AuthDashboardSimulationSimulationIdIndexRoute
   '/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId': typeof AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute
@@ -129,9 +120,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/dashboard'
-    | '/dashboard/simulation/$simulationId'
     | '/dashboard/'
-    | '/dashboard/simulation/$simulationId/'
+    | '/dashboard/simulation/$simulationId'
     | '/dashboard/simulation/$simulationId/scenario/$scenarioId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -152,7 +142,6 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_auth/dashboard'
     | '/_auth/dashboard/_shell'
-    | '/_auth/dashboard/simulation/$simulationId'
     | '/_auth/dashboard/_shell/'
     | '/_auth/dashboard/simulation/$simulationId/'
     | '/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId'
@@ -228,26 +217,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDashboardShellIndexRouteImport
       parentRoute: typeof AuthDashboardShellRoute
     }
-    '/_auth/dashboard/simulation/$simulationId': {
-      id: '/_auth/dashboard/simulation/$simulationId'
-      path: '/simulation/$simulationId'
-      fullPath: '/dashboard/simulation/$simulationId'
-      preLoaderRoute: typeof AuthDashboardSimulationSimulationIdRouteImport
-      parentRoute: typeof AuthDashboardRoute
-    }
     '/_auth/dashboard/simulation/$simulationId/': {
       id: '/_auth/dashboard/simulation/$simulationId/'
-      path: '/'
-      fullPath: '/dashboard/simulation/$simulationId/'
+      path: '/simulation/$simulationId'
+      fullPath: '/dashboard/simulation/$simulationId'
       preLoaderRoute: typeof AuthDashboardSimulationSimulationIdIndexRouteImport
-      parentRoute: typeof AuthDashboardSimulationSimulationIdRoute
+      parentRoute: typeof AuthDashboardRoute
     }
     '/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId': {
       id: '/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId'
-      path: '/scenario/$scenarioId'
+      path: '/simulation/$simulationId/scenario/$scenarioId'
       fullPath: '/dashboard/simulation/$simulationId/scenario/$scenarioId'
       preLoaderRoute: typeof AuthDashboardSimulationSimulationIdScenarioScenarioIdRouteImport
-      parentRoute: typeof AuthDashboardSimulationSimulationIdRoute
+      parentRoute: typeof AuthDashboardRoute
     }
   }
 }
@@ -263,33 +245,18 @@ const AuthDashboardShellRouteChildren: AuthDashboardShellRouteChildren = {
 const AuthDashboardShellRouteWithChildren =
   AuthDashboardShellRoute._addFileChildren(AuthDashboardShellRouteChildren)
 
-interface AuthDashboardSimulationSimulationIdRouteChildren {
+interface AuthDashboardRouteChildren {
+  AuthDashboardShellRoute: typeof AuthDashboardShellRouteWithChildren
   AuthDashboardSimulationSimulationIdIndexRoute: typeof AuthDashboardSimulationSimulationIdIndexRoute
   AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute: typeof AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute
 }
 
-const AuthDashboardSimulationSimulationIdRouteChildren: AuthDashboardSimulationSimulationIdRouteChildren =
-  {
-    AuthDashboardSimulationSimulationIdIndexRoute:
-      AuthDashboardSimulationSimulationIdIndexRoute,
-    AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute:
-      AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute,
-  }
-
-const AuthDashboardSimulationSimulationIdRouteWithChildren =
-  AuthDashboardSimulationSimulationIdRoute._addFileChildren(
-    AuthDashboardSimulationSimulationIdRouteChildren,
-  )
-
-interface AuthDashboardRouteChildren {
-  AuthDashboardShellRoute: typeof AuthDashboardShellRouteWithChildren
-  AuthDashboardSimulationSimulationIdRoute: typeof AuthDashboardSimulationSimulationIdRouteWithChildren
-}
-
 const AuthDashboardRouteChildren: AuthDashboardRouteChildren = {
   AuthDashboardShellRoute: AuthDashboardShellRouteWithChildren,
-  AuthDashboardSimulationSimulationIdRoute:
-    AuthDashboardSimulationSimulationIdRouteWithChildren,
+  AuthDashboardSimulationSimulationIdIndexRoute:
+    AuthDashboardSimulationSimulationIdIndexRoute,
+  AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute:
+    AuthDashboardSimulationSimulationIdScenarioScenarioIdRoute,
 }
 
 const AuthDashboardRouteWithChildren = AuthDashboardRoute._addFileChildren(

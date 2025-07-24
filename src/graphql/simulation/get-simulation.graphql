@@ -34,6 +34,9 @@ fragment SelectedTemplate on LayerTemplate {
 fragment SimulationInfo on Simulation {
   id
   name
+  state {
+    ...SimulationStateInfo
+  }
   scenarios {
     ...SimulationScenario
   }

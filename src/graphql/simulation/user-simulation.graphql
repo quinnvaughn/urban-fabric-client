@@ -4,8 +4,15 @@ query UserSimulations {
     simulations {
       id
       name
-      description
       updatedAt
+      state {
+        ...SimulationStateInfo
+      }
     }
   }
+}
+
+fragment SimulationStateInfo on SimulationState {
+  id
+  lastViewedScenarioId
 }

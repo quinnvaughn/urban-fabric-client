@@ -52,19 +52,16 @@ function DashboardPage() {
 									tabIndex={0}
 									onClick={() => {
 										navigate({
-											to: "/dashboard/simulation/$simulationId",
-											params: { simulationId: simulation.id },
+											to: "/dashboard/simulation/$simulationId/scenario/$scenarioId",
+											params: {
+												simulationId: simulation.id,
+												scenarioId: simulation.state.lastViewedScenarioId,
+											},
 										})
 									}}
 								>
 									<Card.Header>
 										<Card.Title>{simulation.name}</Card.Title>
-
-										{simulation.description && (
-											<Card.Description>
-												{truncate(simulation.description, 120)}
-											</Card.Description>
-										)}
 										<Card.Action>
 											<SimulationDropdownMenu id={simulation.id} />
 										</Card.Action>
