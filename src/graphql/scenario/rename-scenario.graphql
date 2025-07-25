@@ -1,0 +1,16 @@
+mutation RenameScenario($input: RenameScenarioInput!) {
+  renameScenario(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on ValidationError {
+      errors {
+        field 
+        message
+      }
+    }
+    ... on Scenario {
+      ...SimulationScenario
+    }
+  }
+}

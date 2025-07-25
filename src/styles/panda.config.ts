@@ -278,6 +278,16 @@ export default defineConfig({
 				marginRight: value,
 			}),
 		},
+		padding: {
+			className: "padding",
+			values: "spacing",
+			transform: (value) => ({
+				paddingTop: value,
+				paddingRight: value,
+				paddingBottom: value,
+				paddingLeft: value,
+			}),
+		},
 		p: {
 			className: "p",
 			values: "spacing",

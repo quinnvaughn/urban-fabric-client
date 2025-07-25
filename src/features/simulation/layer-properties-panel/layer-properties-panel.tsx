@@ -63,7 +63,7 @@ export function LayerPropertiesPanel() {
 	}
 
 	return (
-		<FloatingPanel top={60} right={12} width={300} maxHeightOffset={100}>
+		<FloatingPanel top={90} right={12} width={300} maxHeightOffset={100}>
 			<Flex direction="column" gap="md">
 				<Flex direction="column" gap="sm">
 					<Flex justify="between" align={"center"}>

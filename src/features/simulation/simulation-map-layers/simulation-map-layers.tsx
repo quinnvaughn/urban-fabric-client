@@ -7,7 +7,7 @@ export function SimulationMapLayers() {
 	const { openTemplate, selectedTemplate, categories } =
 		useSimulationMapContext()
 	return (
-		<FloatingPanel top={60} left={12} width={300} maxHeightOffset={100}>
+		<FloatingPanel top={90} left={12} width={300} maxHeightOffset={100}>
 			<Flex direction="column">
 				{categories.map((cat) => (
 					<Collapsible key={cat.id} defaultOpen>

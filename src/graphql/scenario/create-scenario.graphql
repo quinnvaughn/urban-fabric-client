@@ -1,0 +1,16 @@
+mutation CreateScenario($input: CreateScenarioInput!) {
+  createScenario(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on ValidationError {
+      errors {
+        field
+        message
+      }
+    }
+    ... on Scenario {
+      ...SimulationScenario
+    }
+  }
+}

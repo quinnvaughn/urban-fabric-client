@@ -35,6 +35,7 @@ type MenuContextType = {
 	position: Position | null
 	placement: Placement
 	openOn: OpenOn
+	isControlled: boolean
 }
 
 const MenuContext = createContext<MenuContextType | null>(null)
@@ -149,6 +150,7 @@ export function Menu({
 				position,
 				placement,
 				openOn,
+				isControlled,
 			}}
 		>
 			{children}
@@ -165,7 +167,7 @@ Menu.Trigger = function MenuTrigger({
 	asChild?: boolean
 	className?: string
 }) {
-	const { toggleOpen, openOn, triggerRef } = useMenu()
+	const { toggleOpen, openOn, triggerRef, isControlled } = useMenu()
 
 	if (!isValidElement(children)) {
 		throw new Error("Trigger expects a single valid React element")
@@ -178,7 +180,7 @@ Menu.Trigger = function MenuTrigger({
 					onContextMenu: (e: React.MouseEvent) => {
 						e.preventDefault()
 						e.stopPropagation()
-						toggleOpen()
+						if (!isControlled) toggleOpen()
 						child.props.onContextMenu?.(e)
 					},
 				}
@@ -186,7 +188,7 @@ Menu.Trigger = function MenuTrigger({
 					onClick: (e: React.MouseEvent) => {
 						e.preventDefault()
 						e.stopPropagation()
-						toggleOpen()
+						if (!isControlled) toggleOpen()
 						child.props.onClick?.(e)
 					},
 				}
@@ -233,30 +235,25 @@ Menu.Content = function MenuContent({
 			className={cx(
 				css({
 					position: "absolute",
-					bg: "neutral.0",
+					bg: open ? "neutral.0" : "transparent",
 					border: "1px solid",
-					borderColor: "neutral.300",
-					boxShadow: "lg",
+					borderColor: open ? "neutral.300" : "transparent",
+					boxShadow: open ? "lg" : "none",
 					py: "sm",
 					borderRadius: "md",
 					minWidth: "160px",
 					zIndex: 20,
 					opacity: open ? 1 : 0,
 					visibility: open ? "visible" : "hidden",
-					transition:
-						"opacity 150ms ease, transform 150ms ease, visibility 150ms",
+					transition: "opacity 150ms ease",
 				}),
 				className,
 			)}
-			style={
-				position
-					? {
-							top: position.top,
-							left: position.left,
-							transform: position.transform,
-						}
-					: undefined
-			}
+			style={{
+				top: position?.top,
+				left: position?.left,
+				transform: position?.transform,
+			}}
 		>
 			{children}
 		</div>

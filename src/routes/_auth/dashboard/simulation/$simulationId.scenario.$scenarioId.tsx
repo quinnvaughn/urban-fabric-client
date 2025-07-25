@@ -1,3 +1,4 @@
+import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
@@ -15,18 +16,29 @@ export const Route = createFileRoute(
 	"/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId",
 )({
 	component: RouteComponent,
-	loader: async ({ params, context: { apolloClient } }) => {
-		const { simulationId } = params
-		if (!simulationId) {
-			throw new Error("Simulation ID is required")
-		}
+	loader: async ({ params, context: { preloadQuery, apolloClient } }) => {
+		const queryRef = preloadQuery(GetSimulationDocument, {
+			variables: {
+				simulationId: params.simulationId,
+			},
+		})
+
 		const { data } = await apolloClient.query({
 			query: GetSimulationDocument,
-			variables: { simulationId },
+			variables: {
+				simulationId: params.simulationId,
+			},
+			fetchPolicy: "cache-first",
 		})
+
+		const simulationName =
+			data.simulation.__typename === "Simulation"
+				? data.simulation.name
+				: "Unknown Simulation"
+
 		return {
-			simulation: data.simulation,
-			categories: data.categories,
+			queryRef,
+			simulationName,
 		}
 	},
 	head: ({ loaderData }) => {
@@ -43,41 +55,15 @@ export const Route = createFileRoute(
 				],
 			}
 		}
-		const { simulation } = loaderData
-		if (!simulation) {
-			return {
-				meta: [
-					{
-						name: "description",
-						content: "Simulation not found",
-					},
-					{
-						title: "Simulation Not Found - Urban Fabric",
-					},
-				],
-			}
-		}
-		if (simulation.__typename !== "Simulation") {
-			return {
-				meta: [
-					{
-						name: "description",
-						content: "Invalid simulation",
-					},
-					{
-						title: "Invalid Simulation - Urban Fabric",
-					},
-				],
-			}
-		}
+		const { simulationName } = loaderData
 		return {
 			meta: [
 				{
 					name: "description",
-					content: `Simulation: ${simulation.name}`,
+					content: `Simulation: ${simulationName}`,
 				},
 				{
-					title: `${simulation.name} - Urban Fabric`,
+					title: `${simulationName} - Urban Fabric`,
 				},
 			],
 		}
@@ -85,7 +71,11 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-	const { simulation, categories } = Route.useLoaderData()
+	// const { simulation, categories } = Route.useLoaderData()
+	const { queryRef } = Route.useLoaderData()
+	const {
+		data: { simulation, categories },
+	} = useReadQuery(queryRef)
 	return (
 		<div className={css({ height: "100vh", overflow: "hidden" })}>
 			{match(simulation)
