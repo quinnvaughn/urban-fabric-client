@@ -52,7 +52,7 @@ export function SimulationDropdownMenu({ id }: Props) {
 	return (
 		<DropdownMenu placement="bottom-end">
 			<DropdownMenu.Trigger asChild>
-				<IconButton icon="DotsThreeVertical" />
+				<IconButton name="DotsThreeVertical" />
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content>
 				<DropdownMenu.Item onSelect={() => console.log("Rename")}>

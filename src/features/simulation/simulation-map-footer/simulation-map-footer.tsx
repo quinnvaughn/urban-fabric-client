@@ -51,7 +51,7 @@ export function SimulationMapFooter() {
 			</div>
 			<Flex gap="sm">
 				<IconButton
-					icon="NavigationArrow"
+					name="NavigationArrow"
 					className={iconButton}
 					onClick={() => {
 						navigator.geolocation.getCurrentPosition(
@@ -68,12 +68,12 @@ export function SimulationMapFooter() {
 					}}
 				/>
 				<IconButton
-					icon="Minus"
+					name="Minus"
 					className={iconButton}
 					onClick={() => map.zoomOut()}
 				/>
 				<IconButton
-					icon="Plus"
+					name="Plus"
 					className={iconButton}
 					onClick={() => map.zoomIn()}
 				/>

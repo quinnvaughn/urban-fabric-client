@@ -63,19 +63,24 @@ export function LayerPropertiesPanel() {
 	}
 
 	return (
-		<FloatingPanel top={90} right={12} width={300} maxHeightOffset={100}>
-			<Flex direction="column" gap="md">
-				<Flex direction="column" gap="sm">
-					<Flex justify="between" align={"center"}>
-						<Typography.Heading level={5}>
-							{selectedTemplate.label}
-						</Typography.Heading>
-						<IconButton icon="X" size={16} onClick={() => closePanel()} />
-					</Flex>
-					<Typography.Text color="muted" textStyle="sm">
-						{selectedTemplate.description}
-					</Typography.Text>
+		<FloatingPanel
+			top={90}
+			right={12}
+			width={300}
+			maxHeightOffset={100}
+			header={
+				<Flex justify="between" align={"center"}>
+					<Typography.Heading level={5}>
+						{selectedTemplate.label}
+					</Typography.Heading>
+					<IconButton name="X" size={16} onClick={() => closePanel()} />
 				</Flex>
+			}
+		>
+			<Flex direction="column" gap="md">
+				<Typography.Text color="muted" textStyle="sm">
+					{selectedTemplate.description}
+				</Typography.Text>
 				<Flex direction={"column"} gap="sm">
 					<Typography.Heading level={6}>Properties</Typography.Heading>
 					<Flex direction="column" gap="xs">

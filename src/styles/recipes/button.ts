@@ -123,7 +123,7 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.primary}",
 				color: "{colors.primary}",
-				_hover: { bg: "{colors.primary.light}", color: "{colors.neutral.50}" },
+				_hover: { bg: "{colors.primary}", color: "{colors.neutral.50}" },
 				_active: { bg: "{colors.primary.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.primary}",
@@ -138,7 +138,7 @@ export const button = defineRecipe({
 				borderColor: "{colors.secondary}",
 				color: "{colors.secondary}",
 				_hover: {
-					bg: "{colors.secondary.light}",
+					bg: "{colors.secondary}",
 					color: "{colors.neutral.50}",
 				},
 				_active: {
@@ -157,7 +157,7 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.tertiary}",
 				color: "{colors.tertiary}",
-				_hover: { bg: "{colors.tertiary.light}", color: "{colors.neutral.50}" },
+				_hover: { bg: "{colors.tertiary}", color: "{colors.neutral.50}" },
 				_active: { bg: "{colors.tertiary.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.tertiary}",
@@ -171,7 +171,7 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.danger}",
 				color: "{colors.danger}",
-				_hover: { bg: "{colors.danger.light}", color: "{colors.neutral.50}" },
+				_hover: { bg: "{colors.danger}", color: "{colors.neutral.50}" },
 				_active: { bg: "{colors.danger.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.danger}",
@@ -185,7 +185,7 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.success}",
 				color: "{colors.success}",
-				_hover: { bg: "{colors.success.light}", color: "{colors.neutral.50}" },
+				_hover: { bg: "{colors.success}", color: "{colors.neutral.50}" },
 				_active: { bg: "{colors.success.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.success}",
@@ -199,7 +199,7 @@ export const button = defineRecipe({
 			css: {
 				borderColor: "{colors.warning}",
 				color: "{colors.warning}",
-				_hover: { bg: "{colors.warning.light}", color: "{colors.neutral.50}" },
+				_hover: { bg: "{colors.warning}", color: "{colors.neutral.50}" },
 				_active: { bg: "{colors.warning.dark}", color: "{colors.neutral.50}" },
 				_disabled: {
 					borderColor: "{colors.warning}",

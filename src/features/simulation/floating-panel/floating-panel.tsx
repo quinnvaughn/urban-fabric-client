@@ -1,5 +1,7 @@
-import type { ReactNode } from "react"
+import { type ReactNode, useState } from "react"
 import { css, cx } from "../../../styles/styled-system/css"
+import { Flex, Typography } from "../../ui"
+import { IconButton } from "../../ui/icon-button"
 
 type Props = {
 	children: ReactNode
@@ -9,6 +11,7 @@ type Props = {
 	right?: number
 	width: number
 	maxHeightOffset: number
+	header: ReactNode
 }
 
 export function FloatingPanel({
@@ -18,6 +21,7 @@ export function FloatingPanel({
 	left,
 	right,
 	width,
+	header,
 	maxHeightOffset,
 }: Props) {
 	return (
@@ -29,6 +33,9 @@ export function FloatingPanel({
 					borderRadius: "lg",
 					bg: "neutral.0",
 					p: "md",
+					display: "flex",
+					flexDirection: "column",
+					rowGap: "md",
 					boxShadow: "md",
 					position: "absolute",
 					overflowY: "auto",
@@ -43,6 +50,7 @@ export function FloatingPanel({
 				maxHeight: `calc(100vh - ${maxHeightOffset}px)`,
 			}}
 		>
+			{header}
 			{children}
 		</div>
 	)

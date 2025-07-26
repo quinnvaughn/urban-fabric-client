@@ -62,16 +62,16 @@ export function SimulationMapHeader() {
 				<Flex gap="sm">
 					<Button
 						variant="outline"
-						intent="tertiary"
+						intent="secondary"
 						size="sm"
 						onClick={() => {}}
 					>
 						<Flex align="center" gap="xs">
-							<Icon name="Play" size={16} />
+							<Icon name="Play" size={16} weight="fill" />
 							<span>Run Simulation</span>
 						</Flex>
 					</Button>
-					<Button variant="ghost" intent="secondary" size="sm">
+					<Button variant="solid" intent="primary" size="sm">
 						Publish
 					</Button>
 				</Flex>

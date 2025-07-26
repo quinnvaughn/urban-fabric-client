@@ -7,22 +7,24 @@ import {
 import { Icon, type IconProps } from "../icon"
 
 type IconButtonProps = {
-	icon: IconProps["name"]
+	name: IconProps["name"]
 	size?: number
 	label?: string // for aria-label / tooltip
 	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+	weight?: IconProps["weight"]
 	className?: string
 } & IconButtonVariantProps
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 	function IconButton(
 		{
-			icon,
+			name,
 			size = 20,
 			label,
 			onClick,
 			className,
 			borderRadius,
+			weight = "regular",
 		}: IconButtonProps,
 		ref,
 	) {
@@ -31,10 +33,10 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 				ref={ref}
 				type="button"
 				onClick={onClick}
-				aria-label={label || icon}
+				aria-label={label || name}
 				className={cx(iconButton({ borderRadius }), className)}
 			>
-				<Icon name={icon} size={size} />
+				<Icon name={name} size={size} weight={weight} />
 			</button>
 		)
 	},

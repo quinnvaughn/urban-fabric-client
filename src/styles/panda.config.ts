@@ -367,6 +367,16 @@ export default defineConfig({
 			values: "spacing",
 			transform: (value) => ({ paddingLeft: value }),
 		},
+		rowGap: {
+			className: "rowGap",
+			values: "spacing",
+			transform: (value) => ({ rowGap: value }),
+		},
+		columnGap: {
+			className: "columnGap",
+			values: "spacing",
+			transform: (value) => ({ columnGap: value }),
+		},
 	},
 	eject: true,
 	presets: [],
