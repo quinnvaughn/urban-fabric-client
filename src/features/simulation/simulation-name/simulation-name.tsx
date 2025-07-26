@@ -1,9 +1,9 @@
 import { useMutation } from "@apollo/client/index.js"
 import { useNavigate, useParams } from "@tanstack/react-router"
+import { useState } from "react"
 import { match } from "ts-pattern"
 import { z } from "zod"
 import { useSimulationMapContext } from "../../../context"
-
 import { UpdateSimulationDocument } from "../../../graphql/generated"
 import { useToast } from "../../../hooks"
 import { useForm } from "../../../lib"
@@ -14,7 +14,7 @@ const schema = z.object({
 })
 
 export function SimulationName() {
-	const { simulation, isEditing } = useSimulationMapContext()
+	const { simulation } = useSimulationMapContext()
 	const [updateSimulation] = useMutation(UpdateSimulationDocument)
 	const { addToast } = useToast()
 	const navigate = useNavigate()
@@ -62,18 +62,11 @@ export function SimulationName() {
 		textStyle: "md",
 		width: "190px",
 		textOverflow: "ellipsis",
+		textAlign: "start",
 		overflow: "hidden",
 		whiteSpace: "nowrap",
 		outlineColor: "secondary",
 	})
-
-	if (!isEditing) {
-		return (
-			<span className={inputStyles} title={simulation.name}>
-				{simulation.name}
-			</span>
-		)
-	}
 
 	return (
 		<form

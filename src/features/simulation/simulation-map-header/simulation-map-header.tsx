@@ -1,16 +1,11 @@
-import { useSimulationMapContext } from "../../../context"
-import { useKeyBindings, useLogout } from "../../../hooks"
+import { useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
-import { ScenarioNav, ScenarioSelector } from "../../scenario"
+import { ScenarioNav } from "../../scenario"
 import { Button, DropdownMenu, Flex, Icon } from "../../ui"
 import { SimulationName } from "../simulation-name"
 
 export function SimulationMapHeader() {
 	const logout = useLogout()
-	const { isEditing, toggleEditing, toggleScenarioMenu } =
-		useSimulationMapContext()
-
-	useKeyBindings([{ key: "E", shift: true, handler: toggleEditing }])
 
 	return (
 		<div
@@ -57,15 +52,6 @@ export function SimulationMapHeader() {
 						<DropdownMenu.Content>
 							<DropdownMenu.Link to="/dashboard">Home</DropdownMenu.Link>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item onSelect={toggleEditing}>
-								{isEditing ? "Done editing" : "Edit scenario"}
-								<DropdownMenu.Shortcut>⇧&thinsp;E</DropdownMenu.Shortcut>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item onSelect={toggleScenarioMenu}>
-								View scenarios
-								<DropdownMenu.Shortcut>⇧&thinsp;S</DropdownMenu.Shortcut>
-							</DropdownMenu.Item>
-							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={async () => await logout()}>
 								Logout
 							</DropdownMenu.Item>
@@ -74,11 +60,19 @@ export function SimulationMapHeader() {
 					<SimulationName />
 				</Flex>
 				<Flex gap="sm">
+					<Button
+						variant="outline"
+						intent="tertiary"
+						size="sm"
+						onClick={() => {}}
+					>
+						<Flex align="center" gap="xs">
+							<Icon name="Play" size={16} />
+							<span>Run Simulation</span>
+						</Flex>
+					</Button>
 					<Button variant="ghost" intent="secondary" size="sm">
 						Publish
-					</Button>
-					<Button variant="solid" size="sm" onClick={toggleEditing}>
-						{isEditing ? "Done" : "Edit Scenario"}
 					</Button>
 				</Flex>
 			</Flex>

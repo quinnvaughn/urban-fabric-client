@@ -17,13 +17,8 @@ type SimulationMapContext = {
 	updateProperty: (key: string, value: any) => void
 	// openInstance: (instance: LayerInstance) => void
 	closePanel: () => void
-	isEditing: boolean
-	toggleEditing: () => void
 	simulation: SimulationInfoFragment
 	selectedScenario: SimulationScenarioFragment
-	isScenarioMenuOpen: boolean
-	setScenarioMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-	toggleScenarioMenu: () => void
 	categories: AllCategoriesFragment[]
 }
 
@@ -60,9 +55,6 @@ export function SimulationMapProvider({
 	> | null>(null)
 	const [propertiesSchema, setPropertiesSchema] =
 		useState<PropertiesSchema | null>(null)
-	const [isScenarioMenuOpen, setScenarioMenuOpen] = useState(false)
-
-	const [isEditing, setIsEditing] = useState(false)
 
 	const selectedScenario = useMemo(() => {
 		return (
@@ -70,14 +62,6 @@ export function SimulationMapProvider({
 			simulation.scenarios[0]
 		)
 	}, [simulation.scenarios, scenarioId])
-
-	function toggleEditing() {
-		setIsEditing((prev) => !prev)
-	}
-
-	function toggleScenarioMenu() {
-		setScenarioMenuOpen((prev) => !prev)
-	}
 
 	function openTemplate(template: SelectedTemplateFragment) {
 		setSelectedTemplate(template)
@@ -113,14 +97,9 @@ export function SimulationMapProvider({
 				updateProperty,
 				closePanel,
 				propertiesSchema,
-				isEditing,
-				toggleEditing,
 				simulation,
 				selectedScenario,
 				categories,
-				isScenarioMenuOpen,
-				setScenarioMenuOpen,
-				toggleScenarioMenu,
 			}}
 		>
 			{children}
