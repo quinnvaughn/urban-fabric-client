@@ -1,0 +1,10 @@
+mutation UpdateLastViewedScenario($input: UpdateLastViewedScenarioInput!) {
+  updateLastViewedScenario(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on SimulationState {
+      ...SimulationStateInfo
+    }
+  }
+}

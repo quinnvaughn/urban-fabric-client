@@ -1,5 +1,6 @@
-import { useReadQuery } from "@apollo/client/index.js"
+import { useMutation, useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
 import {
@@ -9,7 +10,10 @@ import {
 	SimulationMapLayers,
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
-import { GetSimulationDocument } from "../../../../graphql/generated"
+import {
+	GetSimulationDocument,
+	UpdateLastViewedScenarioDocument,
+} from "../../../../graphql/generated"
 import { css } from "../../../../styles/styled-system/css"
 
 export const Route = createFileRoute(
@@ -73,9 +77,26 @@ export const Route = createFileRoute(
 function RouteComponent() {
 	// const { simulation, categories } = Route.useLoaderData()
 	const { queryRef } = Route.useLoaderData()
+	const { scenarioId, simulationId } = Route.useParams()
+	const [updateLastViewedScenario] = useMutation(
+		UpdateLastViewedScenarioDocument,
+	)
 	const {
 		data: { simulation, categories },
 	} = useReadQuery(queryRef)
+
+	// Update the last viewed scenario when the component mounts or when scenarioId or simulationId changes
+	useEffect(() => {
+		updateLastViewedScenario({
+			variables: {
+				input: {
+					scenarioId,
+					simulationId,
+				},
+			},
+		})
+	}, [scenarioId, simulationId])
+
 	return (
 		<div className={css({ height: "100vh", overflow: "hidden" })}>
 			{match(simulation)

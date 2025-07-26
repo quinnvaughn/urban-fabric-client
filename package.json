@@ -9,7 +9,8 @@
     "panda": "panda codegen --config src/styles/panda.config.ts",
     "dev": "vite dev",
     "start": "vite start",
-    "build": "vite build"
+    "build": "vite build",
+    "graphql": "graphql-codegen --config codegen.ts"
   },
   "keywords": [],
   "author": "",
