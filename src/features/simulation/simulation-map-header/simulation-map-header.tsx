@@ -1,3 +1,4 @@
+import Logo from "../../../assets/logo.svg?react"
 import { useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
 import { ScenarioNav } from "../../scenario"
@@ -6,7 +7,6 @@ import { SimulationName } from "../simulation-name"
 
 export function SimulationMapHeader() {
 	const logout = useLogout()
-
 	return (
 		<div
 			className={css({
@@ -30,6 +30,7 @@ export function SimulationMapHeader() {
 				})}
 			>
 				<Flex align="center" gap="sm">
+					<Logo width={32} height={32} />
 					<DropdownMenu placement="bottom-start">
 						<DropdownMenu.Trigger asChild>
 							<button
