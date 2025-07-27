@@ -13,7 +13,6 @@ type SimulationMapContext = {
 	openTemplate: (template: SelectedTemplateFragment) => void
 	propertiesSchema: PropertiesSchema | null
 	currentProperties: Record<string, any> | null
-	setProperties: (props: Record<string, any>) => void
 	updateProperty: (key: string, value: any) => void
 	// openInstance: (instance: LayerInstance) => void
 	closePanel: () => void
@@ -49,12 +48,18 @@ export function SimulationMapProvider({
 	})
 	const [selectedTemplate, setSelectedTemplate] =
 		useState<SelectedTemplateFragment | null>(null)
-	const [currentProperties, setCurrentProperties] = useState<Record<
-		string,
-		any
-	> | null>(null)
 	const [propertiesSchema, setPropertiesSchema] =
 		useState<PropertiesSchema | null>(null)
+
+	// NEW: persistent store for template properties
+	const [propertiesByTemplate, setPropertiesByTemplate] = useState<
+		Record<string, Record<string, any>>
+	>({})
+
+	const currentProperties = useMemo(() => {
+		if (!selectedTemplate) return null
+		return propertiesByTemplate[selectedTemplate.id] || null
+	}, [selectedTemplate, propertiesByTemplate])
 
 	const selectedScenario = useMemo(() => {
 		return (
@@ -65,26 +70,37 @@ export function SimulationMapProvider({
 
 	function openTemplate(template: SelectedTemplateFragment) {
 		setSelectedTemplate(template)
-		// setSelectedInstance(null)
-		setCurrentProperties(
-			Object.fromEntries(
-				Object.entries(template.propertiesSchema).map(([k, v]: any) => [
-					k,
-					v.default,
-				]),
-			),
-		)
 		setPropertiesSchema(template.propertiesSchema)
+
+		// Lazy-init properties if this template hasn’t been opened yet
+		setPropertiesByTemplate((prev) =>
+			prev[template.id]
+				? prev
+				: {
+						...prev,
+						[template.id]: Object.fromEntries(
+							Object.entries(template.propertiesSchema).map(([k, v]: any) => [
+								k,
+								v.default,
+							]),
+						),
+					},
+		)
 	}
 
 	function closePanel() {
 		setSelectedTemplate(null)
-		// setSelectedInstance(null)
-		setCurrentProperties(null)
 	}
 
 	function updateProperty(key: string, value: any) {
-		setCurrentProperties((prev) => (prev ? { ...prev, [key]: value } : prev))
+		if (!selectedTemplate) return
+		setPropertiesByTemplate((prev) => ({
+			...prev,
+			[selectedTemplate.id]: {
+				...(prev[selectedTemplate.id] ?? {}),
+				[key]: value,
+			},
+		}))
 	}
 
 	return (
@@ -93,7 +109,6 @@ export function SimulationMapProvider({
 				selectedTemplate,
 				openTemplate,
 				currentProperties,
-				setProperties: setCurrentProperties,
 				updateProperty,
 				closePanel,
 				propertiesSchema,
