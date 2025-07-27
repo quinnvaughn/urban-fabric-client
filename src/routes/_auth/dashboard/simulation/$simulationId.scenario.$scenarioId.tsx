@@ -11,6 +11,7 @@ import {
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
 import {
+	GetCategoriesDocument,
 	GetSimulationDocument,
 	UpdateLastOpenedAtDocument,
 	UpdateLastViewedScenarioDocument,
@@ -22,11 +23,16 @@ export const Route = createFileRoute(
 )({
 	component: RouteComponent,
 	loader: async ({ params, context: { preloadQuery, apolloClient } }) => {
-		const queryRef = preloadQuery(GetSimulationDocument, {
+		// TODO: I'm not getting any data other than scenario ids and names
+		// yet, but when I'm getting layers and whatnot, I will need this
+		// to be another separate query.
+		const simulationRef = preloadQuery(GetSimulationDocument, {
 			variables: {
 				simulationId: params.simulationId,
 			},
 		})
+
+		const categoriesRef = preloadQuery(GetCategoriesDocument)
 
 		const { data } = await apolloClient.query({
 			query: GetSimulationDocument,
@@ -42,7 +48,8 @@ export const Route = createFileRoute(
 				: "Unknown Simulation"
 
 		return {
-			queryRef,
+			simulationRef,
+			categoriesRef,
 			simulationName,
 		}
 	},
@@ -77,15 +84,18 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
 	// const { simulation, categories } = Route.useLoaderData()
-	const { queryRef } = Route.useLoaderData()
+	const { simulationRef, categoriesRef } = Route.useLoaderData()
 	const { scenarioId, simulationId } = Route.useParams()
 	const [updateLastViewedScenario] = useMutation(
 		UpdateLastViewedScenarioDocument,
 	)
 	const [updateLastOpenedAt] = useMutation(UpdateLastOpenedAtDocument)
 	const {
-		data: { simulation, categories },
-	} = useReadQuery(queryRef)
+		data: { simulation },
+	} = useReadQuery(simulationRef)
+	const {
+		data: { categories },
+	} = useReadQuery(categoriesRef)
 
 	// Update the last viewed scenario when the component mounts or when scenarioId or simulationId changes
 	useEffect(() => {

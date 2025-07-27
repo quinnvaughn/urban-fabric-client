@@ -7,28 +7,6 @@ query GetSimulation($simulationId: ID!) {
       ...SimulationInfo
     }
   }
-  categories {
-    ...AllCategories
-  }
-}
-
-fragment AllCategories on Category {
-  id
-  icon
-  order
-  label
-  layerTemplates {
-    ...SelectedTemplate
-  }
-}
-
-fragment SelectedTemplate on LayerTemplate {
-  id
-  label
-  propertiesSchema
-  geometryType
-  description
-  icon
 }
 
 fragment SimulationInfo on Simulation {
