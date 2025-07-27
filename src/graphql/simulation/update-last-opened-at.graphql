@@ -1,0 +1,10 @@
+mutation UpdateLastOpenedAt($input: UpdateLastOpenedAtInput!) {
+  updateLastOpenedAt(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on SimulationState {
+      ...SimulationStateInfo
+    }
+  }
+}

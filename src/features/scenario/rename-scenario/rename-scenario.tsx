@@ -11,13 +11,14 @@ type Props = {
 	name: string
 	id: string
 	onClose: () => void
+	simulationId: string
 }
 
 const schema = z.object({
 	name: z.string().min(1, { message: "Name is required" }).max(100),
 })
 
-export function RenameScenario({ name, id, onClose }: Props) {
+export function RenameScenario({ name, id, onClose, simulationId }: Props) {
 	const [renameScenario] = useMutation(RenameScenarioDocument)
 	const form = useForm({
 		schema,
@@ -31,6 +32,20 @@ export function RenameScenario({ name, id, onClose }: Props) {
 						id,
 						name: values.name,
 					},
+				},
+				update: (cache) => {
+					cache.modify({
+						id: cache.identify({ __typename: "Scenario", id }),
+						fields: {
+							name: () => values.name,
+						},
+					})
+					cache.modify({
+						id: cache.identify({ __typename: "Simulation", id: simulationId }),
+						fields: {
+							updatedAt: () => new Date().toISOString(),
+						},
+					})
 				},
 			})
 			match(data?.renameScenario)

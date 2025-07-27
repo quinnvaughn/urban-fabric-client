@@ -1,19 +1,18 @@
-import { useReadQuery } from "@apollo/client/index.js"
-import { createFileRoute } from "@tanstack/react-router"
-import { match } from "ts-pattern"
-import { SimulationDropdownMenu } from "../../../../features/simulation"
-import { Card, Flex, Grid, Typography } from "../../../../features/ui"
-import { UserSimulationsDocument } from "../../../../graphql/generated"
-import { css } from "../../../../styles/styled-system/css"
-import { formatTimeAgo } from "../../../../utils"
+import { useReadQuery } from "@apollo/client/index.js";
+import { createFileRoute } from "@tanstack/react-router";
+import { match } from "ts-pattern";
+import { SimulationDropdownMenu } from "../../../../features/simulation";
+import { Card, Flex, Grid, Typography } from "../../../../features/ui";
+import { UserSimulationsDocument } from "../../../../graphql/generated";
+import { formatTimeAgo } from "../../../../utils";
 
 export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 	component: DashboardPage,
 	loader: ({ context: { preloadQuery } }) => {
-		const queryRef = preloadQuery(UserSimulationsDocument)
+		const queryRef = preloadQuery(UserSimulationsDocument);
 		return {
 			queryRef,
-		}
+		};
 	},
 	head: () => ({
 		meta: [
@@ -26,13 +25,13 @@ export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 			},
 		],
 	}),
-})
+});
 
 function DashboardPage() {
-	const { queryRef } = Route.useLoaderData()
-	const { data } = useReadQuery(queryRef)
-	const simulations = data.currentUser?.simulations || []
-	const navigate = Route.useNavigate()
+	const { queryRef } = Route.useLoaderData();
+	const { data } = useReadQuery(queryRef);
+	const simulations = data.currentUser?.simulations || [];
+	const navigate = Route.useNavigate();
 	return (
 		<Flex direction="column" gap="lg">
 			<Typography.Heading level={1}>Dashboard</Typography.Heading>
@@ -57,7 +56,7 @@ function DashboardPage() {
 												simulationId: simulation.id,
 												scenarioId: simulation.state.lastViewedScenarioId,
 											},
-										})
+										});
 									}}
 								>
 									<Card.Header>
@@ -66,11 +65,11 @@ function DashboardPage() {
 											<SimulationDropdownMenu id={simulation.id} />
 										</Card.Action>
 									</Card.Header>
-									<Card.Footer className={css({ alignItems: "flex-start" })}>
-										<Typography.Text color="muted" textStyle={"sm"}>
-											Last edited {formatTimeAgo(simulation.updatedAt)}
-										</Typography.Text>
-									</Card.Footer>
+									<Card.Content>
+										<Card.Description>
+											Last opened {formatTimeAgo(simulation.state.lastOpenedAt)}
+										</Card.Description>
+									</Card.Content>
 								</Card>
 							))}
 						</Grid>
@@ -82,5 +81,5 @@ function DashboardPage() {
 					</Typography.Text>
 				))}
 		</Flex>
-	)
+	);
 }

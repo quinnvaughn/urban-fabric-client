@@ -93,6 +93,7 @@ export function ScenarioSelector({ scenario }: Props) {
 						<RenameScenario
 							id={scenario.id}
 							name={scenario.name}
+							simulationId={simulationId}
 							onClose={() => setMode("closed")}
 						/>
 					))

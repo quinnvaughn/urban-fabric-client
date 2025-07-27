@@ -12,6 +12,7 @@ import {
 import { FabricMap } from "../../../../features/ui"
 import {
 	GetSimulationDocument,
+	UpdateLastOpenedAtDocument,
 	UpdateLastViewedScenarioDocument,
 } from "../../../../graphql/generated"
 import { css } from "../../../../styles/styled-system/css"
@@ -81,6 +82,7 @@ function RouteComponent() {
 	const [updateLastViewedScenario] = useMutation(
 		UpdateLastViewedScenarioDocument,
 	)
+	const [updateLastOpenedAt] = useMutation(UpdateLastOpenedAtDocument)
 	const {
 		data: { simulation, categories },
 	} = useReadQuery(queryRef)
@@ -96,6 +98,16 @@ function RouteComponent() {
 			},
 		})
 	}, [scenarioId, simulationId])
+
+	useEffect(() => {
+		updateLastOpenedAt({
+			variables: {
+				input: {
+					simulationId,
+				},
+			},
+		})
+	}, [simulationId])
 
 	return (
 		<div className={css({ height: "100vh", overflow: "hidden" })}>

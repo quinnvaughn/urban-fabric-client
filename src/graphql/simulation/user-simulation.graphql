@@ -15,4 +15,5 @@ query UserSimulations {
 fragment SimulationStateInfo on SimulationState {
   id
   lastViewedScenarioId
+  lastOpenedAt
 }
