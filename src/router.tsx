@@ -1,4 +1,4 @@
-import { HttpLink } from "@apollo/client/index.js"
+import { disableFragmentWarnings, HttpLink } from "@apollo/client/index.js"
 import {
 	ApolloClient,
 	InMemoryCache,
@@ -6,6 +6,9 @@ import {
 } from "@apollo/client-integration-tanstack-start"
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
+
+// gets rid of the annoying warnings about fragments
+disableFragmentWarnings()
 
 let getCleanHeaders: () => Record<string, string> = () => ({})
 if (typeof window === "undefined") {
