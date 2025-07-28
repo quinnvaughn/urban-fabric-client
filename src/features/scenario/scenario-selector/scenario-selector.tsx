@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { match } from "ts-pattern"
+import { useSimulationMapContext } from "../../../context"
 import type { SimulationScenarioFragment } from "../../../graphql/generated"
 import { css } from "../../../styles/styled-system/css"
 import { DropdownMenu, Flex, Icon } from "../../ui"
@@ -14,11 +15,20 @@ type Props = {
 type Modes = "closed" | "menu" | "rename" | "clear-layers" | "delete"
 
 export function ScenarioSelector({ scenario }: Props) {
+	const { setJustCreatedScenarioId, justCreatedScenarioId } =
+		useSimulationMapContext()
 	const [mode, setMode] = useState<Modes>("closed")
 	const { scenarioId, simulationId } = useParams({
 		from: "/_auth/dashboard/simulation/$simulationId/scenario/$scenarioId",
 	})
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (scenario.id === justCreatedScenarioId && scenario.id === scenarioId) {
+			setMode("rename")
+			setJustCreatedScenarioId(null) // clear it so it’s one-shot
+		}
+	}, [justCreatedScenarioId, scenario.id, scenarioId])
 
 	const isActive = scenario.id === scenarioId
 

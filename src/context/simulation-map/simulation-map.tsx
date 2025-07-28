@@ -23,6 +23,8 @@ type SimulationMapContext = {
 	categories: AllCategoriesFragment[]
 	activeOverlay: Overlays
 	setActiveOverlay: React.Dispatch<React.SetStateAction<Overlays>>
+	justCreatedScenarioId: string | null
+	setJustCreatedScenarioId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const SimulationMapContext = createContext<SimulationMapContext | undefined>(
@@ -56,6 +58,10 @@ export function SimulationMapProvider({
 		useState<PropertiesSchema | null>(null)
 
 	const [activeOverlay, setActiveOverlay] = useState<Overlays>(null)
+
+	const [justCreatedScenarioId, setJustCreatedScenarioId] = useState<
+		string | null
+	>(null)
 
 	// NEW: persistent store for template properties
 	const [propertiesByTemplate, setPropertiesByTemplate] = useState<
@@ -123,6 +129,8 @@ export function SimulationMapProvider({
 				categories,
 				activeOverlay,
 				setActiveOverlay,
+				justCreatedScenarioId,
+				setJustCreatedScenarioId,
 			}}
 		>
 			{children}

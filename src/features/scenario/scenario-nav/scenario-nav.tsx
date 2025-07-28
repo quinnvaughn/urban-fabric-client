@@ -11,7 +11,7 @@ import { css } from "../../../styles/styled-system/css"
 import { ScenarioSelector } from "../scenario-selector"
 
 export function ScenarioNav() {
-	const { simulation } = useSimulationMapContext()
+	const { simulation, setJustCreatedScenarioId } = useSimulationMapContext()
 	const { addToast } = useToast()
 	const [createScenario] = useMutation(CreateScenarioDocument)
 	const navigate = useNavigate()
@@ -53,6 +53,7 @@ export function ScenarioNav() {
 				redirect({ to: "/login" })
 			})
 			.with({ __typename: "Scenario" }, (scenario) => {
+				setJustCreatedScenarioId(scenario.id)
 				navigate({
 					to: "/dashboard/simulation/$simulationId/scenario/$scenarioId",
 					params: { simulationId: simulation.id, scenarioId: scenario.id },
