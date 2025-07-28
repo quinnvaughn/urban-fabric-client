@@ -218,7 +218,7 @@ Dialog.Title = function DialogTitle({
 	return (
 		<Typography.Heading
 			level={2}
-			className={cx(css({ textStyle: "sm", fontWeight: "bold" }), className)}
+			className={cx(css({ textStyle: "md", fontWeight: "bold" }), className)}
 		>
 			{children}
 		</Typography.Heading>
