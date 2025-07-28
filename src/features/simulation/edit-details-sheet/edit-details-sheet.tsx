@@ -7,7 +7,7 @@ import { UpdateSimulationDocument } from "../../../graphql/generated"
 import { useToast } from "../../../hooks"
 import { useForm } from "../../../lib"
 import { css } from "../../../styles/styled-system/css"
-import { Button, Flex, Input, Sheet } from "../../ui"
+import { Button, Flex, Input, Sheet, Textarea } from "../../ui"
 
 const schema = z.object({
 	name: z.string().min(1, "Name can’t be empty"),
@@ -103,7 +103,7 @@ export function EditDetailsSheet() {
 						</form.Field>
 						<form.Field name="description">
 							{(field) => (
-								<Input
+								<Textarea
 									placeholder="Simulation Description"
 									error={field.meta.error}
 									label="Description"

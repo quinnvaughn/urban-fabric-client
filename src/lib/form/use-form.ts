@@ -284,7 +284,9 @@ export function useForm<Schema extends z.ZodObject<any>>(opts: {
 			children: (field: {
 				name: K
 				value: Values[K]
-				onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+				onChange: (
+					e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+				) => void
 				onBlur: () => void
 				meta: { error: string | null; touched: boolean }
 			}) => React.ReactNode
