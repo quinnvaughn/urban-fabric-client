@@ -35,6 +35,30 @@ export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
 				rel: "stylesheet",
 				href: css,
 			},
+			{
+				rel: "icon",
+				href: "/favicon.svg",
+				type: "image/svg+xml",
+			},
+			{
+				rel: "icon",
+				href: "/favicon.ico",
+				sizes: "any",
+			},
+			{
+				rel: "apple-touch-icon",
+				href: "/favicon.png",
+				sizes: "180x180",
+			},
+			{
+				rel: "mask-icon",
+				href: "/favicon.svg",
+				color: "#10B981",
+			},
+			{
+				rel: "manifest",
+				href: "/site.webmanifest",
+			},
 		],
 	}),
 	component: RootComponent,
