@@ -1,0 +1,10 @@
+mutation DeleteScenario($input: DeleteScenarioInput!) {
+  deleteScenario(input: $input) {
+    ... on ApplicationError {
+      message
+    }
+    ... on DeleteScenarioResponse {
+      data
+    }
+  }
+}

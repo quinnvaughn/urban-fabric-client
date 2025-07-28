@@ -5,6 +5,7 @@ import { useSimulationMapContext } from "../../../context"
 import type { SimulationScenarioFragment } from "../../../graphql/generated"
 import { css } from "../../../styles/styled-system/css"
 import { DropdownMenu, Flex, Icon } from "../../ui"
+import { DeleteScenario } from "../delete-scenario"
 import { RenameScenario } from "../rename-scenario"
 import { ScenarioMenu } from "../scenario-menu"
 
@@ -108,7 +109,10 @@ export function ScenarioSelector({ scenario }: Props) {
 						/>
 					))
 					.with("delete", () => (
-						<DropdownMenu.Item>Delete Mode</DropdownMenu.Item>
+						<DeleteScenario
+							id={scenario.id}
+							onClose={() => setMode("closed")}
+						/>
 					))
 					.with("clear-layers", () => (
 						<DropdownMenu.Item>Clear Layers Mode</DropdownMenu.Item>

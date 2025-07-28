@@ -59,8 +59,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 				>
 					<div
 						className={css({
-							padding: "0.5rem 1rem",
-							borderRadius: "0.25rem",
+							padding: "md",
+							borderRadius: "md",
 							backgroundColor:
 								toast.intent === "success"
 									? "success"
@@ -68,7 +68,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 										? "error"
 										: "info",
 							color: "white",
-							marginBottom: "0.5rem",
+							mb: "sm",
+							boxShadow: "md",
 						})}
 					>
 						{toast.message}
