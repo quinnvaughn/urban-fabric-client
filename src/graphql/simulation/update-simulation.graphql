@@ -10,8 +10,7 @@ mutation UpdateSimulation($input: UpdateSimulationInput!) {
       }
     }
     ... on Simulation {
-      id 
-      name
+      ...BaseSimulationInfo
     }
   }
 }

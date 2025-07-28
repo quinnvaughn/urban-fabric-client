@@ -8,6 +8,7 @@ import {
 	SimulationMapFooter,
 	SimulationMapHeader,
 	SimulationMapLayers,
+	SimulationOverlayRenderer,
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
 import {
@@ -141,6 +142,7 @@ function RouteComponent() {
 							simulation={simulation}
 							categories={categories}
 						>
+							<SimulationOverlayRenderer />
 							<SimulationMapHeader />
 							<SimulationMapLayers />
 							<LayerPropertiesPanel />

@@ -8,6 +8,8 @@ import type {
 } from "../../graphql/generated"
 import type { PropertiesSchema } from "./types"
 
+type Overlays = "details" | "delete" | null
+
 type SimulationMapContext = {
 	selectedTemplate: SelectedTemplateFragment | null
 	openTemplate: (template: SelectedTemplateFragment) => void
@@ -19,6 +21,8 @@ type SimulationMapContext = {
 	simulation: SimulationInfoFragment
 	selectedScenario: SimulationScenarioFragment
 	categories: AllCategoriesFragment[]
+	activeOverlay: Overlays
+	setActiveOverlay: React.Dispatch<React.SetStateAction<Overlays>>
 }
 
 const SimulationMapContext = createContext<SimulationMapContext | undefined>(
@@ -50,6 +54,8 @@ export function SimulationMapProvider({
 		useState<SelectedTemplateFragment | null>(null)
 	const [propertiesSchema, setPropertiesSchema] =
 		useState<PropertiesSchema | null>(null)
+
+	const [activeOverlay, setActiveOverlay] = useState<Overlays>(null)
 
 	// NEW: persistent store for template properties
 	const [propertiesByTemplate, setPropertiesByTemplate] = useState<
@@ -115,6 +121,8 @@ export function SimulationMapProvider({
 				simulation,
 				selectedScenario,
 				categories,
+				activeOverlay,
+				setActiveOverlay,
 			}}
 		>
 			{children}

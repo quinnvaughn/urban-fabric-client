@@ -1,12 +1,15 @@
+import { Link } from "@tanstack/react-router"
 import Logo from "../../../assets/logo.svg?react"
+import { useSimulationMapContext } from "../../../context"
 import { useLogout } from "../../../hooks"
 import { css } from "../../../styles/styled-system/css"
 import { ScenarioNav } from "../../scenario"
-import { Button, DropdownMenu, Flex, Icon } from "../../ui"
-import { SimulationName } from "../simulation-name"
+import { Button, DropdownMenu, Flex, Icon, Typography } from "../../ui"
+import { IconButton } from "../../ui/icon-button"
 
 export function SimulationMapHeader() {
 	const logout = useLogout()
+	const { simulation, setActiveOverlay } = useSimulationMapContext()
 	return (
 		<div
 			className={css({
@@ -30,7 +33,9 @@ export function SimulationMapHeader() {
 				})}
 			>
 				<Flex align="center" gap="sm">
-					<Logo width={32} height={32} />
+					<Link to="/dashboard">
+						<Logo width={32} height={32} />
+					</Link>
 					<DropdownMenu placement="bottom-start">
 						<DropdownMenu.Trigger asChild>
 							<button
@@ -45,20 +50,37 @@ export function SimulationMapHeader() {
 								<span
 									className={css({ color: "neutral.900", textStyle: "lg" })}
 								>
-									Urban Fabric
+									{simulation.name}
 								</span>
 								<Icon name="CaretDown" size={16} color={"neutral.900"} />
 							</button>
 						</DropdownMenu.Trigger>
+						<DropdownMenu placement="bottom-start">
+							<DropdownMenu.Trigger asChild>
+								<IconButton name="Info" size={16} />
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content>
+								<div
+									className={css({
+										p: "sm",
+									})}
+								>
+									<Typography.Text color="muted" textStyle="xs">
+										{simulation.description || "No description available."}
+									</Typography.Text>
+								</div>
+							</DropdownMenu.Content>
+						</DropdownMenu>
 						<DropdownMenu.Content>
-							<DropdownMenu.Link to="/dashboard">Home</DropdownMenu.Link>
+							<DropdownMenu.Item onSelect={() => setActiveOverlay("details")}>
+								Edit Details
+							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onSelect={async () => await logout()}>
 								Logout
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu>
-					<SimulationName />
 				</Flex>
 				<Flex gap="sm">
 					<Button variant="outline" intent="secondary" size="sm">

@@ -9,9 +9,14 @@ query GetSimulation($simulationId: ID!) {
   }
 }
 
-fragment SimulationInfo on Simulation {
+fragment BaseSimulationInfo on Simulation {
   id
   name
+  description
+}
+
+fragment SimulationInfo on Simulation {
+  ...BaseSimulationInfo
   state {
     ...SimulationStateInfo
   }

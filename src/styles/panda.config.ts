@@ -220,10 +220,20 @@ export default defineConfig({
 			values: "colors",
 			transform: (value) => ({ borderRightColor: value }),
 		},
+		borderLeftColor: {
+			className: "borderLeftColor",
+			values: "colors",
+			transform: (value) => ({ borderLeftColor: value }),
+		},
 		borderBottomColor: {
 			className: "borderBottomColor",
 			values: "colors",
 			transform: (value) => ({ borderBottomColor: value }),
+		},
+		borderTopColor: {
+			className: "borderTopColor",
+			values: "colors",
+			transform: (value) => ({ borderTopColor: value }),
 		},
 		boxShadow: {
 			className: "shadow",
