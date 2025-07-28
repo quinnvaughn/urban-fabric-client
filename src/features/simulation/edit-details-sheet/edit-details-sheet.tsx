@@ -132,7 +132,7 @@ export function EditDetailsSheet() {
 								)}
 							</form.Subscribe>
 							<Button
-								variant="outline"
+								variant="ghost"
 								intent="tertiary"
 								onClick={() => setActiveOverlay(null)}
 							>
