@@ -76,6 +76,9 @@ export function SimulationMapHeader() {
 								Edit Details
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
+							<DropdownMenu.Item onSelect={() => setActiveOverlay("delete")}>
+								Delete Simulation
+							</DropdownMenu.Item>
 							<DropdownMenu.Item onSelect={async () => await logout()}>
 								Logout
 							</DropdownMenu.Item>

@@ -96,8 +96,10 @@ Dialog.Trigger = function DialogTrigger({
 
 Dialog.ContentBase = function DialogContentBase({
 	children,
+	className,
 }: {
 	children: ReactNode
+	className?: string
 }) {
 	const { open } = useDialog()
 	const ref = useRef<HTMLDivElement>(null)
@@ -124,10 +126,15 @@ Dialog.ContentBase = function DialogContentBase({
 			<div
 				ref={ref}
 				tabIndex={-1}
-				style={{
-					zIndex: 50,
-					position: "fixed",
-				}}
+				className={cx(
+					css({
+						zIndex: 50,
+						position: "fixed",
+						width: "100%",
+						height: "100%",
+					}),
+					className,
+				)}
 			>
 				{children}
 			</div>
@@ -144,15 +151,16 @@ Dialog.Content = function DialogContent({
 }) {
 	const { open } = useDialog()
 	return (
-		<Dialog.ContentBase>
+		<Dialog.ContentBase
+			className={css({
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+			})}
+		>
 			<div
 				className={cx(
 					css({
-						top: "50%",
-						left: "50%",
-						transform: open
-							? "translate(-50%, -50%) scale(1)"
-							: "translate(-50%, -50%) scale(0.95)",
 						opacity: open ? 1 : 0,
 						transition: "opacity 200ms ease, transform 200ms ease",
 						bg: "neutral.0",

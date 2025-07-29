@@ -1,10 +1,10 @@
 mutation DeleteSimulation($input: DeleteSimulationInput!) {
   deleteSimulation(input: $input) {
-    ... on DeleteSimulationResponse {
-      data
-    }
     ... on ApplicationError {
       message
+    }
+    ... on DeleteSimulationResponse {
+      data
     }
   }
 }

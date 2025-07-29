@@ -1,5 +1,6 @@
 import { match } from "ts-pattern"
 import { useSimulationMapContext } from "../../../context"
+import { DeleteSimulationDialog } from "../delete-simulation-dialog"
 import { EditDetailsSheet } from "../edit-details-sheet"
 
 export function SimulationOverlayRenderer() {
@@ -7,12 +8,6 @@ export function SimulationOverlayRenderer() {
 
 	return match(activeOverlay)
 		.with("details", () => <EditDetailsSheet />)
-		.with("delete", () => (
-			<div>
-				{/* Render Delete Modal */}
-				<h2>Delete Simulation</h2>
-				{/* Add confirmation dialog for deletion */}
-			</div>
-		))
+		.with("delete", () => <DeleteSimulationDialog />)
 		.otherwise(() => null)
 }

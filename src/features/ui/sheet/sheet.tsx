@@ -19,21 +19,30 @@ Sheet.Content = function SheetContent({
 }) {
 	const { open } = useDialog()
 	return (
-		<Dialog.ContentBase>
+		<Dialog.ContentBase
+			className={css({
+				display: "flex",
+				flexDirection: side === "bottom" ? "column" : "row",
+				justifyContent:
+					side === "right"
+						? "flex-end"
+						: side === "left"
+							? "flex-start"
+							: "center",
+				alignItems: side === "bottom" ? "flex-end" : "stretch",
+			})}
+		>
 			<div
 				className={cx(
 					css({
-						position: "fixed",
-						top: 0,
-						right: side === "right" ? 0 : "auto",
-						left: side === "left" ? 0 : "auto",
-						bottom: side === "bottom" ? 0 : "auto",
 						width: side === "bottom" ? "100%" : "400px",
 						height: side === "bottom" ? "300px" : "100%",
 						borderLeft: side === "right" ? "1px solid" : "none",
 						borderRight: side === "left" ? "1px solid" : "none",
 						borderTop: side === "bottom" ? "1px solid" : "none",
-						borderColor: "neutral.200",
+						borderLeftColor: "neutral.200",
+						borderRightColor: "neutral.200",
+						borderTopColor: "neutral.200",
 						bg: "neutral.0",
 						transform: open
 							? "translateX(0)"
