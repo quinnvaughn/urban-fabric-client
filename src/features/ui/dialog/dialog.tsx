@@ -186,6 +186,7 @@ Dialog.Header = function DialogHeader({
 	children: ReactNode
 	className?: string
 }) {
+	const { close } = useDialog()
 	return (
 		<div className={cx(css({ p: "md", position: "relative" }), className)}>
 			<IconButton
