@@ -16,7 +16,7 @@ type Props = {
 type Modes = "closed" | "menu" | "rename" | "clear-layers" | "delete"
 
 export function ScenarioSelector({ scenario }: Props) {
-	const { setJustCreatedScenarioId, justCreatedScenarioId } =
+	const { setJustCreatedScenarioId, justCreatedScenarioId, simulation } =
 		useSimulationMapContext()
 	const [mode, setMode] = useState<Modes>("closed")
 	const { scenarioId, simulationId } = useParams({
@@ -98,6 +98,7 @@ export function ScenarioSelector({ scenario }: Props) {
 							onRename={() => setMode("rename")}
 							onDelete={() => setMode("delete")}
 							onClearLayers={() => setMode("clear-layers")}
+							isLastScenario={simulation.scenarios.length === 1}
 						/>
 					))
 					.with("rename", () => (

@@ -265,17 +265,20 @@ Menu.Item = function MenuItem({
 	onSelect,
 	className,
 	closeOnSelect = true,
+	disabled = false,
 }: {
 	children: ReactNode
 	onSelect?: (e: React.MouseEvent) => void
 	className?: string
 	closeOnSelect?: boolean
+	disabled?: boolean
 }) {
 	const { setOpen } = useMenu()
 	return (
 		<button
 			role="menuitem"
 			type="button"
+			disabled={disabled}
 			onClick={(e) => {
 				e.preventDefault()
 				e.stopPropagation()
@@ -291,7 +294,11 @@ Menu.Item = function MenuItem({
 					fontSize: "sm",
 					color: "neutral.900",
 					cursor: "pointer",
-					_hover: { bg: "neutral.100" },
+					_hover: { bg: disabled ? undefined : "neutral.100" },
+					_disabled: {
+						color: "neutral.500",
+					},
+					opacity: disabled ? 0.6 : 1,
 				}),
 				className,
 			)}
