@@ -27,8 +27,6 @@ export function useMapboxContext() {
 export function useOnMapLoad<T>(fn: () => T): T | null {
 	const map = useMapboxContext()
 	const [result, setResult] = useState<T | null>(null)
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: `fn` is a dependency but we want to run it only once when the map loads
 	useEffect(() => {
 		if (!map) return
 		setResult(fn())
@@ -67,7 +65,6 @@ export function useAddSourceOnce(
 	const map = useMapboxContext()
 	const addedRef = useRef(false)
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: `id` and `source` are dependencies but we want to add the source only once
 	useEffect(() => {
 		if (!map || addedRef.current || map.getSource(id)) return
 		map.addSource(id, source)
@@ -94,7 +91,6 @@ export function FabricMap({
 	const containerRef = useRef<HTMLDivElement | null>(null)
 	const [map, setMap] = useState<mapboxgl.Map | null>(null)
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: `containerRef` is a dependency but we want to set up the map only once
 	useEffect(() => {
 		if (!containerRef.current) return
 
@@ -107,6 +103,7 @@ export function FabricMap({
 			bearing,
 			attributionControl: false,
 		})
+		instance.scrollZoom.setWheelZoomRate(1.5)
 		setMap(instance)
 
 		return () => instance.remove()
