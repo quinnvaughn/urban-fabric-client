@@ -5,10 +5,10 @@ import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
 import {
 	LayerPropertiesPanel,
+	MapPageOverlays,
 	SimulationMapFooter,
 	SimulationMapHeader,
 	SimulationMapLayers,
-	SimulationOverlayRenderer,
 } from "../../../../features/simulation"
 import { FabricMap } from "../../../../features/ui"
 import {
@@ -142,7 +142,7 @@ function RouteComponent() {
 							simulation={simulation}
 							categories={categories}
 						>
-							<SimulationOverlayRenderer />
+							<MapPageOverlays />
 							<SimulationMapHeader />
 							<SimulationMapLayers />
 							<LayerPropertiesPanel />

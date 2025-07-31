@@ -1,14 +1,21 @@
 import { useMutation } from "@apollo/client/index.js"
 import { useNavigate } from "@tanstack/react-router"
-import { useSimulationMapContext } from "../../../context"
 import { DeleteSimulationDocument } from "../../../graphql/generated"
 import { useToast } from "../../../hooks"
 import { Button } from "../../ui"
 import { Dialog } from "../../ui/dialog"
 
-export function DeleteSimulationDialog() {
-	const { setActiveOverlay, activeOverlay, simulation } =
-		useSimulationMapContext()
+type Props = {
+	simulation: { id: string; name: string; description: string | null }
+	open: boolean
+	onOpenChange: (open: boolean) => void
+}
+
+export function DeleteSimulationDialog({
+	simulation,
+	open,
+	onOpenChange,
+}: Props) {
 	const [deleteSimulation] = useMutation(DeleteSimulationDocument)
 	const { addToast } = useToast()
 	const navigate = useNavigate()
@@ -41,7 +48,7 @@ export function DeleteSimulationDialog() {
 							},
 						},
 					})
-					setActiveOverlay(null)
+					onOpenChange(false)
 					addToast({
 						message: "Simulation deleted successfully",
 						intent: "success",
@@ -53,12 +60,7 @@ export function DeleteSimulationDialog() {
 	}
 
 	return (
-		<Dialog
-			open={activeOverlay === "delete"}
-			onOpenChange={(next) => {
-				if (!next) setActiveOverlay(null)
-			}}
-		>
+		<Dialog open={open} onOpenChange={onOpenChange}>
 			<Dialog.Content>
 				<Dialog.Header>
 					<Dialog.Title>Delete Simulation</Dialog.Title>
@@ -71,7 +73,7 @@ export function DeleteSimulationDialog() {
 					<Button
 						variant="ghost"
 						intent="tertiary"
-						onClick={() => setActiveOverlay(null)}
+						onClick={() => onOpenChange(false)}
 					>
 						Cancel
 					</Button>

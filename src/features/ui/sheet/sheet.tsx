@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { createPortal } from "react-dom"
 import { css, cx } from "../../../styles/styled-system/css"
 import { Dialog, useDialog } from "../dialog"
 
@@ -18,23 +19,16 @@ Sheet.Content = function SheetContent({
 	className?: string
 }) {
 	const { open } = useDialog()
-	return (
-		<Dialog.ContentBase
-			className={css({
-				display: "flex",
-				flexDirection: side === "bottom" ? "column" : "row",
-				justifyContent:
-					side === "right"
-						? "flex-end"
-						: side === "left"
-							? "flex-start"
-							: "center",
-				alignItems: side === "bottom" ? "flex-end" : "stretch",
-			})}
-		>
+	const content = (
+		<Dialog.ContentBase>
 			<div
 				className={cx(
 					css({
+						position: "fixed", // <-- key: panel itself is fixed
+						top: side === "bottom" ? "auto" : 0,
+						bottom: side === "bottom" ? 0 : "auto",
+						right: side === "right" ? 0 : "auto",
+						left: side === "left" ? 0 : "auto",
 						width: side === "bottom" ? "100%" : "400px",
 						height: side === "bottom" ? "300px" : "100%",
 						borderLeft: side === "right" ? "1px solid" : "none",
@@ -64,6 +58,8 @@ Sheet.Content = function SheetContent({
 			</div>
 		</Dialog.ContentBase>
 	)
+
+	return createPortal(content, document.body)
 }
 
 Sheet.Header = Dialog.Header

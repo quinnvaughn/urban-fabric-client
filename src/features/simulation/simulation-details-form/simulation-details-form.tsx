@@ -2,7 +2,6 @@ import { useMutation } from "@apollo/client/index.js"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import z from "zod"
-import { useSimulationMapContext } from "../../../context"
 import { UpdateSimulationDocument } from "../../../graphql/generated"
 import { useToast } from "../../../hooks"
 import { useForm } from "../../../lib"
@@ -11,23 +10,35 @@ import { Button, Flex, Input, Sheet, Textarea } from "../../ui"
 
 const schema = z.object({
 	name: z.string().min(1, "Name can’t be empty"),
-	description: z.string().optional(),
+	description: z.string().nullable(),
 })
 
-export function EditDetailsSheet() {
-	const { simulation, activeOverlay, setActiveOverlay } =
-		useSimulationMapContext()
+type Props = {
+	simulation: { id: string; name: string; description: string | null }
+	open: boolean
+	onOpenChange: (open: boolean) => void
+	showDescription?: boolean
+	header: {
+		title: string
+		description: string
+	}
+}
+
+export function SimulationDetailsForm({
+	simulation,
+	open,
+	onOpenChange,
+	header,
+	showDescription,
+}: Props) {
 	const [updateSimulation] = useMutation(UpdateSimulationDocument)
 	const { addToast } = useToast()
 	const navigate = useNavigate()
-	const { simulationId } = useParams({
-		from: "/_auth/dashboard/simulation/$simulationId",
-	})
 
 	const form = useForm({
 		defaultValues: {
 			name: simulation.name,
-			description: simulation.description ?? "",
+			description: simulation.description,
 		},
 		schema,
 		onSubmit: async (
@@ -36,13 +47,13 @@ export function EditDetailsSheet() {
 		) => {
 			try {
 				const { data } = await updateSimulation({
-					variables: { input: { id: simulationId, name, description } },
+					variables: { input: { id: simulation.id, name, description } },
 				})
 				match(data?.updateSimulation)
 					.with({ __typename: "Simulation" }, () => {
 						reset({ name, description }) // sync form’s initial back to updated
 						document.title = `${name} – Urban Fabric`
-						setActiveOverlay(null)
+						onOpenChange(false)
 					})
 					.with({ __typename: "UnauthorizedError" }, () => {
 						navigate({ to: "/login", replace: true })
@@ -69,10 +80,7 @@ export function EditDetailsSheet() {
 	})
 
 	return (
-		<Sheet
-			open={activeOverlay === "details"}
-			onOpenChange={() => setActiveOverlay(null)}
-		>
+		<Sheet open={open} onOpenChange={onOpenChange}>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
@@ -81,10 +89,8 @@ export function EditDetailsSheet() {
 			>
 				<Sheet.Content>
 					<Sheet.Header>
-						<Sheet.Title>Edit Simulation Details</Sheet.Title>
-						<Sheet.Description>
-							Here you can edit the details of your simulation.
-						</Sheet.Description>
+						<Sheet.Title>{header.title}</Sheet.Title>
+						<Sheet.Description>{header.description}</Sheet.Description>
 					</Sheet.Header>
 					<Flex
 						direction="column"
@@ -101,17 +107,19 @@ export function EditDetailsSheet() {
 								/>
 							)}
 						</form.Field>
-						<form.Field name="description">
-							{(field) => (
-								<Textarea
-									placeholder="Simulation Description"
-									error={field.meta.error}
-									label="Description"
-									{...field}
-									value={field.value ?? ""}
-								/>
-							)}
-						</form.Field>
+						{showDescription && (
+							<form.Field name="description">
+								{(field) => (
+									<Textarea
+										placeholder="Simulation Description"
+										error={field.meta.error}
+										label="Description"
+										{...field}
+										value={field.value ?? ""}
+									/>
+								)}
+							</form.Field>
+						)}
 					</Flex>
 					<Sheet.Footer>
 						<Flex gap="sm" direction="column">
@@ -134,7 +142,7 @@ export function EditDetailsSheet() {
 							<Button
 								variant="ghost"
 								intent="tertiary"
-								onClick={() => setActiveOverlay(null)}
+								onClick={() => onOpenChange(false)}
 							>
 								Cancel
 							</Button>

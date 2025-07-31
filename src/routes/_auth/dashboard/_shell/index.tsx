@@ -1,7 +1,11 @@
 import { useReadQuery } from "@apollo/client/index.js"
 import { createFileRoute } from "@tanstack/react-router"
+import { useState } from "react"
 import { match } from "ts-pattern"
-import { SimulationCard } from "../../../../features/simulation"
+import {
+	SimulationCard,
+	SimulationOverlayRenderer,
+} from "../../../../features/simulation"
 import { Flex, Grid, Typography } from "../../../../features/ui"
 import { UserSimulationsDocument } from "../../../../graphql/generated"
 export const Route = createFileRoute("/_auth/dashboard/_shell/")({
@@ -29,10 +33,17 @@ function DashboardPage() {
 	const { queryRef } = Route.useLoaderData()
 	const { data } = useReadQuery(queryRef)
 	const simulations = data.currentUser?.simulations || []
+
+	const [openOverlay, setOpenOverlay] = useState<"details" | "delete" | null>(
+		null,
+	)
+	const [selectedSimulation, setSelectedSimulation] = useState<
+		(typeof simulations)[number] | null
+	>(null)
+
 	return (
 		<Flex direction="column" gap="lg">
 			<Typography.Heading level={1}>Dashboard</Typography.Heading>
-
 			{match(simulations)
 				.when(
 					(simulations) => simulations.length > 0,
@@ -42,7 +53,22 @@ function DashboardPage() {
 							templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
 						>
 							{simulations.map((simulation) => (
-								<SimulationCard key={simulation.id} simulation={simulation} />
+								<SimulationCard
+									key={simulation.id}
+									simulation={simulation}
+									onEdit={(e) => {
+										e.preventDefault()
+										e.stopPropagation()
+										setSelectedSimulation(simulation)
+										setOpenOverlay("details")
+									}}
+									onDelete={(e) => {
+										e.preventDefault()
+										e.stopPropagation()
+										setSelectedSimulation(simulation)
+										setOpenOverlay("delete")
+									}}
+								/>
 							))}
 						</Grid>
 					),
@@ -52,6 +78,14 @@ function DashboardPage() {
 						You have no simulations yet. Create one to get started.
 					</Typography.Text>
 				))}
+			{selectedSimulation && (
+				<SimulationOverlayRenderer
+					open={openOverlay}
+					onOpenChange={setOpenOverlay}
+					simulation={{ ...selectedSimulation, description: null }}
+					showDescription={false}
+				/>
+			)}
 		</Flex>
 	)
 }

@@ -1,5 +1,6 @@
 export * from "./floating-panel"
 export * from "./layer-properties-panel"
+export * from "./map-page-overlays"
 export * from "./simulation-card"
 export * from "./simulation-dropdown-menu"
 export * from "./simulation-map-footer"

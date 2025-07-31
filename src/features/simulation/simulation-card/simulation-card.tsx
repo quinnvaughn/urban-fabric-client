@@ -6,9 +6,11 @@ import { SimulationDropdownMenu } from "../simulation-dropdown-menu"
 
 type Props = {
 	simulation: SimulationCardFragment
+	onEdit: (e: React.MouseEvent) => void
+	onDelete: (e: React.MouseEvent) => void
 }
 
-export function SimulationCard({ simulation }: Props) {
+export function SimulationCard({ simulation, onEdit, onDelete }: Props) {
 	const navigate = useNavigate()
 	return (
 		<Card
@@ -27,7 +29,7 @@ export function SimulationCard({ simulation }: Props) {
 			<Card.Header>
 				<Card.Title>{simulation.name}</Card.Title>
 				<Card.Action>
-					<SimulationDropdownMenu id={simulation.id} />
+					<SimulationDropdownMenu onEdit={onEdit} onDelete={onDelete} />
 				</Card.Action>
 			</Card.Header>
 			<Card.Content>

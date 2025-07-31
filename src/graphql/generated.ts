@@ -41,11 +41,11 @@ export type BikeLaneLayerInstance = LayerInstance & {
 
 export type Category = {
   __typename: 'Category';
-  icon?: Maybe<Scalars['String']['output']>;
+  icon: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   layerTemplates: Array<LayerTemplate>;
-  order?: Maybe<Scalars['Int']['output']>;
+  order: Maybe<Scalars['Int']['output']>;
 };
 
 export type CategoryResult = Category | NotFoundError;
@@ -62,7 +62,7 @@ export type CreateScenarioInput = {
 export type CreateScenarioResult = ForbiddenError | NotFoundError | Scenario | UnauthorizedError | ValidationError;
 
 export type CreateSimulationInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -119,9 +119,9 @@ export type LayerInstance = {
 
 export type LayerTemplate = {
   __typename: 'LayerTemplate';
-  description?: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
   geometryType: GeometryType;
-  icon?: Maybe<Scalars['String']['output']>;
+  icon: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   interactionConfig: Scalars['JSON']['output'];
   label: Scalars['String']['output'];
@@ -217,7 +217,7 @@ export type Query = {
   __typename: 'Query';
   categories: Array<Category>;
   category: CategoryResult;
-  currentUser?: Maybe<User>;
+  currentUser: Maybe<User>;
   layerTemplate: LayerTemplateResult;
   layerTemplates: Array<LayerTemplate>;
   simulation: SimulationResult;
@@ -247,7 +247,7 @@ export type QueryUserArgs = {
 export type RegisterInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
-  role?: InputMaybe<Scalars['String']['input']>;
+  role: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RegisterResult = ForbiddenError | User | ValidationError;
@@ -274,7 +274,7 @@ export type Simulation = {
   __typename: 'Simulation';
   author: User;
   createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   scenarios: Array<Scenario>;
@@ -314,9 +314,9 @@ export type UpdateLastViewedScenarioInput = {
 export type UpdateLastViewedScenarioResult = ForbiddenError | NotFoundError | SimulationState | UnauthorizedError;
 
 export type UpdateSimulationInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSimulationResult = ForbiddenError | NotFoundError | Simulation | UnauthorizedError | ValidationError;
@@ -339,7 +339,7 @@ export type User = {
   __typename: 'User';
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
   simulations: Array<Simulation>;
 };
@@ -348,25 +348,25 @@ export type UserResult = NotFoundError | User;
 
 export type ValidationError = ApplicationError & {
   __typename: 'ValidationError';
-  errors?: Maybe<Array<FieldError>>;
+  errors: Maybe<Array<FieldError>>;
   message: Scalars['String']['output'];
 };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename: 'Query', categories: Array<{ __typename: 'Category', id: string, icon?: string | null, order?: number | null, label: string, layerTemplates: Array<{ __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description?: string | null, icon?: string | null }> }> };
+export type GetCategoriesQuery = { __typename: 'Query', categories: Array<{ __typename: 'Category', id: string, icon: string | null, order: number | null, label: string, layerTemplates: Array<{ __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description: string | null, icon: string | null }> }> };
 
-export type AllCategoriesFragment = { __typename: 'Category', id: string, icon?: string | null, order?: number | null, label: string, layerTemplates: Array<{ __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description?: string | null, icon?: string | null }> };
+export type AllCategoriesFragment = { __typename: 'Category', id: string, icon: string | null, order: number | null, label: string, layerTemplates: Array<{ __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description: string | null, icon: string | null }> };
 
-export type SelectedTemplateFragment = { __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description?: string | null, icon?: string | null };
+export type SelectedTemplateFragment = { __typename: 'LayerTemplate', id: string, label: string, propertiesSchema: any, geometryType: GeometryType, description: string | null, icon: string | null };
 
 export type CreateScenarioMutationVariables = Exact<{
   input: CreateScenarioInput;
 }>;
 
 
-export type CreateScenarioMutation = { __typename: 'Mutation', createScenario: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Scenario', id: string, name: string } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors?: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
+export type CreateScenarioMutation = { __typename: 'Mutation', createScenario: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Scenario', id: string, name: string } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
 
 export type DeleteScenarioMutationVariables = Exact<{
   input: DeleteScenarioInput;
@@ -380,7 +380,7 @@ export type RenameScenarioMutationVariables = Exact<{
 }>;
 
 
-export type RenameScenarioMutation = { __typename: 'Mutation', renameScenario: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Scenario', id: string, name: string } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors?: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
+export type RenameScenarioMutation = { __typename: 'Mutation', renameScenario: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Scenario', id: string, name: string } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
 
 export type UpdateLastViewedScenarioMutationVariables = Exact<{
   input: UpdateLastViewedScenarioInput;
@@ -408,11 +408,11 @@ export type GetSimulationQueryVariables = Exact<{
 }>;
 
 
-export type GetSimulationQuery = { __typename: 'Query', simulation: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Simulation', id: string, name: string, description?: string | null, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string }, scenarios: Array<{ __typename: 'Scenario', id: string, name: string }> } | { __typename: 'UnauthorizedError', message: string } };
+export type GetSimulationQuery = { __typename: 'Query', simulation: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Simulation', id: string, name: string, description: string | null, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string }, scenarios: Array<{ __typename: 'Scenario', id: string, name: string }> } | { __typename: 'UnauthorizedError', message: string } };
 
-export type BaseSimulationInfoFragment = { __typename: 'Simulation', id: string, name: string, description?: string | null };
+export type BaseSimulationInfoFragment = { __typename: 'Simulation', id: string, name: string, description: string | null };
 
-export type SimulationInfoFragment = { __typename: 'Simulation', id: string, name: string, description?: string | null, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string }, scenarios: Array<{ __typename: 'Scenario', id: string, name: string }> };
+export type SimulationInfoFragment = { __typename: 'Simulation', id: string, name: string, description: string | null, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string }, scenarios: Array<{ __typename: 'Scenario', id: string, name: string }> };
 
 export type SimulationScenarioFragment = { __typename: 'Scenario', id: string, name: string };
 
@@ -428,12 +428,12 @@ export type UpdateSimulationMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSimulationMutation = { __typename: 'Mutation', updateSimulation: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Simulation', id: string, name: string, description?: string | null } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors?: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
+export type UpdateSimulationMutation = { __typename: 'Mutation', updateSimulation: { __typename: 'ForbiddenError', message: string } | { __typename: 'NotFoundError', message: string } | { __typename: 'Simulation', id: string, name: string, description: string | null } | { __typename: 'UnauthorizedError', message: string } | { __typename: 'ValidationError', message: string, errors: Array<{ __typename: 'FieldError', field: string, message: string }> | null } };
 
 export type UserSimulationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserSimulationsQuery = { __typename: 'Query', currentUser?: { __typename: 'User', id: string, simulations: Array<{ __typename: 'Simulation', id: string, name: string, updatedAt: string, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string } }> } | null };
+export type UserSimulationsQuery = { __typename: 'Query', currentUser: { __typename: 'User', id: string, simulations: Array<{ __typename: 'Simulation', id: string, name: string, updatedAt: string, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string } }> } | null };
 
 export type SimulationCardFragment = { __typename: 'Simulation', id: string, name: string, updatedAt: string, state: { __typename: 'SimulationState', id: string, lastViewedScenarioId: string, lastOpenedAt: string } };
 
@@ -442,7 +442,7 @@ export type SimulationStateInfoFragment = { __typename: 'SimulationState', id: s
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename: 'Query', currentUser?: { __typename: 'User', id: string, email: string, name?: string | null } | null };
+export type CurrentUserQuery = { __typename: 'Query', currentUser: { __typename: 'User', id: string, email: string, name: string | null } | null };
 
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
@@ -461,7 +461,7 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename: 'Mutation', register: { __typename: 'ForbiddenError', message: string } | { __typename: 'User', id: string } | { __typename: 'ValidationError', message: string, errors?: Array<{ __typename: 'FieldError', message: string, field: string }> | null } };
+export type RegisterMutation = { __typename: 'Mutation', register: { __typename: 'ForbiddenError', message: string } | { __typename: 'User', id: string } | { __typename: 'ValidationError', message: string, errors: Array<{ __typename: 'FieldError', message: string, field: string }> | null } };
 
 export const SelectedTemplateFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SelectedTemplate"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LayerTemplate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"propertiesSchema"}},{"kind":"Field","name":{"kind":"Name","value":"geometryType"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]} as unknown as DocumentNode<SelectedTemplateFragment, unknown>;
 export const AllCategoriesFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AllCategories"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"layerTemplates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SelectedTemplate"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SelectedTemplate"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LayerTemplate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"propertiesSchema"}},{"kind":"Field","name":{"kind":"Name","value":"geometryType"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]} as unknown as DocumentNode<AllCategoriesFragment, unknown>;

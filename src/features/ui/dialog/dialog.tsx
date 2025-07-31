@@ -10,6 +10,7 @@ import {
 	useRef,
 	useState,
 } from "react"
+import { createPortal } from "react-dom"
 import { css, cx } from "../../../styles/styled-system/css"
 import { IconButton } from "../icon-button"
 import { Typography } from "../typography"
@@ -108,7 +109,7 @@ Dialog.ContentBase = function DialogContentBase({
 		if (open) ref.current?.focus()
 	}, [open])
 
-	return (
+	const content = (
 		<>
 			{/* Overlay */}
 			<div
@@ -140,6 +141,8 @@ Dialog.ContentBase = function DialogContentBase({
 			</div>
 		</>
 	)
+
+	return createPortal(content, document.body)
 }
 
 Dialog.Content = function DialogContent({
@@ -151,16 +154,14 @@ Dialog.Content = function DialogContent({
 }) {
 	const { open } = useDialog()
 	return (
-		<Dialog.ContentBase
-			className={css({
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-			})}
-		>
+		<Dialog.ContentBase>
 			<div
 				className={cx(
 					css({
+						position: "fixed",
+						top: "50%",
+						left: "50%",
+						transform: "translate(-50%, -50%)",
 						opacity: open ? 1 : 0,
 						transition: "opacity 200ms ease, transform 200ms ease",
 						bg: "neutral.0",

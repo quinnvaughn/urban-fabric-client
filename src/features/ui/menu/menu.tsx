@@ -277,6 +277,7 @@ Menu.Item = function MenuItem({
 			role="menuitem"
 			type="button"
 			onClick={(e) => {
+				e.preventDefault()
 				e.stopPropagation()
 				onSelect?.(e)
 				if (closeOnSelect) setOpen(false)
