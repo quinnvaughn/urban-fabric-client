@@ -2,13 +2,17 @@ query UserSimulations {
   currentUser {
     id
     simulations {
-      id
-      name
-      updatedAt
-      state {
-        ...SimulationStateInfo
-      }
+      ...SimulationCard
     }
+  }
+}
+
+fragment SimulationCard on Simulation {
+  id
+  name
+  updatedAt
+  state {
+    ...SimulationStateInfo
   }
 }
 

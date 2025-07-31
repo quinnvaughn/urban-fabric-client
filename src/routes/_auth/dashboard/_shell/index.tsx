@@ -1,18 +1,16 @@
-import { useReadQuery } from "@apollo/client/index.js";
-import { createFileRoute } from "@tanstack/react-router";
-import { match } from "ts-pattern";
-import { SimulationDropdownMenu } from "../../../../features/simulation";
-import { Card, Flex, Grid, Typography } from "../../../../features/ui";
-import { UserSimulationsDocument } from "../../../../graphql/generated";
-import { formatTimeAgo } from "../../../../utils";
-
+import { useReadQuery } from "@apollo/client/index.js"
+import { createFileRoute } from "@tanstack/react-router"
+import { match } from "ts-pattern"
+import { SimulationCard } from "../../../../features/simulation"
+import { Flex, Grid, Typography } from "../../../../features/ui"
+import { UserSimulationsDocument } from "../../../../graphql/generated"
 export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 	component: DashboardPage,
 	loader: ({ context: { preloadQuery } }) => {
-		const queryRef = preloadQuery(UserSimulationsDocument);
+		const queryRef = preloadQuery(UserSimulationsDocument)
 		return {
 			queryRef,
-		};
+		}
 	},
 	head: () => ({
 		meta: [
@@ -25,13 +23,12 @@ export const Route = createFileRoute("/_auth/dashboard/_shell/")({
 			},
 		],
 	}),
-});
+})
 
 function DashboardPage() {
-	const { queryRef } = Route.useLoaderData();
-	const { data } = useReadQuery(queryRef);
-	const simulations = data.currentUser?.simulations || [];
-	const navigate = Route.useNavigate();
+	const { queryRef } = Route.useLoaderData()
+	const { data } = useReadQuery(queryRef)
+	const simulations = data.currentUser?.simulations || []
 	return (
 		<Flex direction="column" gap="lg">
 			<Typography.Heading level={1}>Dashboard</Typography.Heading>
@@ -45,32 +42,7 @@ function DashboardPage() {
 							templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
 						>
 							{simulations.map((simulation) => (
-								<Card
-									key={simulation.id}
-									role="button"
-									tabIndex={0}
-									onClick={() => {
-										navigate({
-											to: "/dashboard/simulation/$simulationId/scenario/$scenarioId",
-											params: {
-												simulationId: simulation.id,
-												scenarioId: simulation.state.lastViewedScenarioId,
-											},
-										});
-									}}
-								>
-									<Card.Header>
-										<Card.Title>{simulation.name}</Card.Title>
-										<Card.Action>
-											<SimulationDropdownMenu id={simulation.id} />
-										</Card.Action>
-									</Card.Header>
-									<Card.Content>
-										<Card.Description>
-											Last opened {formatTimeAgo(simulation.state.lastOpenedAt)}
-										</Card.Description>
-									</Card.Content>
-								</Card>
+								<SimulationCard key={simulation.id} simulation={simulation} />
 							))}
 						</Grid>
 					),
@@ -81,5 +53,5 @@ function DashboardPage() {
 					</Typography.Text>
 				))}
 		</Flex>
-	);
+	)
 }
