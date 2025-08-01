@@ -1,4 +1,5 @@
 import {
+	type ComponentPropsWithRef,
 	cloneElement,
 	createContext,
 	isValidElement,
@@ -10,6 +11,7 @@ import {
 	useRef,
 	useState,
 } from "react"
+import { createPortal } from "react-dom"
 import { match } from "ts-pattern"
 import { css, cx } from "../../../styles/styled-system/css"
 
@@ -28,8 +30,8 @@ type Position = { top: number; left: number; transform: string }
 type TooltipContextType = {
 	open: boolean
 	setOpen: (v: boolean) => void
-	triggerRef: RefObject<HTMLElement>
-	contentRef: RefObject<HTMLDivElement>
+	triggerRef: RefObject<HTMLElement | null>
+	contentRef: RefObject<HTMLDivElement | null>
 	position: Position | null
 	placement: TooltipPlacement
 	delay: number
@@ -51,32 +53,28 @@ function getTooltipCoords(
 ): Position {
 	return match(placement)
 		.with("bottom", () => ({
-			top: trigger.bottom + window.scrollY + OFFSET,
-			left:
-				trigger.left + window.scrollX + trigger.width / 2 - content.width / 2,
+			top: trigger.bottom + OFFSET,
+			left: trigger.left + trigger.width / 2 - content.width / 2,
 			transform: "translateY(0)",
 		}))
 		.with("top", () => ({
-			top: trigger.top + window.scrollY - content.height - OFFSET,
-			left:
-				trigger.left + window.scrollX + trigger.width / 2 - content.width / 2,
+			top: trigger.top - content.height - OFFSET,
+			left: trigger.left + trigger.width / 2 - content.width / 2,
 			transform: "translateY(0)",
 		}))
 		.with("left", () => ({
-			top:
-				trigger.top + window.scrollY + trigger.height / 2 - content.height / 2,
-			left: trigger.left + window.scrollX - content.width - OFFSET,
+			top: trigger.top + trigger.height / 2 - content.height / 2,
+			left: trigger.left - content.width - OFFSET,
 			transform: "translateY(0)",
 		}))
 		.with("right", () => ({
-			top:
-				trigger.top + window.scrollY + trigger.height / 2 - content.height / 2,
-			left: trigger.right + window.scrollX + OFFSET,
+			top: trigger.top + trigger.height / 2 - content.height / 2,
+			left: trigger.right + OFFSET,
 			transform: "translateY(0)",
 		}))
 		.otherwise(() => ({
-			top: trigger.bottom + window.scrollY + OFFSET,
-			left: trigger.left + window.scrollX,
+			top: trigger.bottom + OFFSET,
+			left: trigger.left,
 			transform: "translateY(0)",
 		}))
 }
@@ -102,8 +100,8 @@ export function Tooltip({
 	const _setOpen =
 		isControlled && onOpenChange ? onOpenChange : setUncontrolledOpen
 
-	const triggerRef = useRef<HTMLElement>(null!)
-	const contentRef = useRef<HTMLDivElement>(null!)
+	const triggerRef = useRef<HTMLElement | null>(null)
+	const contentRef = useRef<HTMLDivElement | null>(null)
 	const [position, setPosition] = useState<Position | null>(null)
 
 	// Compute coords
@@ -136,7 +134,7 @@ Tooltip.Trigger = function TooltipTrigger({
 	asChild = false,
 	className,
 }: {
-	children: ReactNode
+	children: ReactElement<ComponentPropsWithRef<"span">>
 	asChild?: boolean
 	className?: string
 }) {
@@ -163,7 +161,7 @@ Tooltip.Trigger = function TooltipTrigger({
 	}
 
 	if (asChild) {
-		return cloneElement(children as ReactElement, {
+		return cloneElement(children, {
 			ref: triggerRef,
 			className: cx(children.props.className, className),
 			...props,
@@ -185,19 +183,18 @@ Tooltip.Content = function TooltipContent({
 	className?: string
 }) {
 	const { open, contentRef, position } = useTooltip()
-	return (
+	return createPortal(
 		<div
 			ref={contentRef}
 			role="tooltip"
 			className={cx(
 				css({
-					position: "absolute",
+					position: "fixed",
 					bg: "neutral.900",
 					color: "neutral.0",
 					fontSize: "xs",
-					px: "sm",
-					py: "2xs",
-					borderRadius: "sm",
+					p: "sm",
+					borderRadius: "md",
 					whiteSpace: "nowrap",
 					pointerEvents: "none",
 					zIndex: 30,
@@ -214,6 +211,7 @@ Tooltip.Content = function TooltipContent({
 			}}
 		>
 			{children}
-		</div>
+		</div>,
+		document.body,
 	)
 }
