@@ -2,6 +2,7 @@ import mapboxgl, { type LayerSpecification } from "mapbox-gl"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { css } from "../../../styles/styled-system/css"
+import { canvasStyle } from "./canvas"
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
@@ -77,14 +78,12 @@ export function FabricMap({
 	center = [-118.2437, 34.0522], // default Los Angeles coordinates
 	// these are not right. Invalid LngLat latitude value: must be between -90 and 90
 	zoom = 12,
-	style = "mapbox://styles/mapbox/streets-v11",
-	pitch = 45,
+	pitch = 0,
 	bearing = 0,
 }: {
 	children?: React.ReactNode
 	center?: [number, number]
 	zoom?: number
-	style?: string
 	pitch?: number
 	bearing?: number
 }) {
@@ -96,7 +95,7 @@ export function FabricMap({
 
 		const instance = new mapboxgl.Map({
 			container: containerRef.current,
-			style,
+			style: canvasStyle,
 			center,
 			zoom,
 			pitch,
