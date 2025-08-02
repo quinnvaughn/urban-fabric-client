@@ -296,5 +296,13 @@ export const canvasStyle: StyleSpecification = {
 			},
 			minzoom: 14,
 		},
+		{
+			id: "road-centerline-hitbox",
+			type: "line",
+			source: "mapbox",
+			"source-layer": "road",
+			paint: { "line-width": 10, "line-opacity": 0 },
+			layout: { "line-join": "round", "line-cap": "round" },
+		},
 	],
 }

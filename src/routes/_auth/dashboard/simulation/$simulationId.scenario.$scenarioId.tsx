@@ -3,14 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { match } from "ts-pattern"
 import { SimulationMapProvider } from "../../../../context"
-import {
-	LayerPropertiesPanel,
-	MapPageOverlays,
-	SimulationMapFooter,
-	SimulationMapHeader,
-	SimulationMapLayers,
-} from "../../../../features/simulation"
-import { FabricMap } from "../../../../features/ui"
+import { SimulationMap } from "../../../../features/simulation"
 import {
 	GetCategoriesDocument,
 	GetSimulationDocument,
@@ -124,31 +117,12 @@ function RouteComponent() {
 		<div className={css({ height: "100vh", overflow: "hidden" })}>
 			{match(simulation)
 				.with({ __typename: "Simulation" }, (simulation) => (
-					<FabricMap>
-						<FabricMap.Layer
-							id="3d-buildings"
-							source="composite"
-							source-layer="building"
-							type="fill-extrusion"
-							filter={["==", ["get", "extrude"], "true"]}
-							paint={{
-								"fill-extrusion-color": "#aaa",
-								"fill-extrusion-height": ["get", "height"],
-								"fill-extrusion-base": ["get", "min_height"],
-								"fill-extrusion-opacity": 0.6,
-							}}
-						/>
-						<SimulationMapProvider
-							simulation={simulation}
-							categories={categories}
-						>
-							<MapPageOverlays />
-							<SimulationMapHeader />
-							<SimulationMapLayers />
-							<LayerPropertiesPanel />
-							<SimulationMapFooter />
-						</SimulationMapProvider>
-					</FabricMap>
+					<SimulationMapProvider
+						simulation={simulation}
+						categories={categories}
+					>
+						<SimulationMap />
+					</SimulationMapProvider>
 				))
 				// TODO: Handle error cases.
 				.otherwise(() => (

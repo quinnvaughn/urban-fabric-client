@@ -21,4 +21,17 @@ fragment SelectedTemplate on LayerTemplate {
   geometryType
   description
   icon
+  interactionConfig {
+    toolType
+    defaultCursor
+    validCursor
+    invalidCursor
+    validTargetLayers
+    hoverStyle
+    activeStyle
+    featureFilter {
+      excludeClasses 
+      includeClasses
+    }
+  }
 }
