@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useSimulationMapContext } from "../../../../context"
 import { useMapboxContext } from "../../../ui"
 
@@ -17,13 +17,13 @@ function passesTemplateFilter(
 	feature: mapboxgl.MapboxGeoJSONFeature,
 	filter?: FeatureFilter | null,
 ) {
-	const raw = feature.properties?.["class"]
+	const raw = feature.properties?.class
 	if (!raw) return false
 	const cls = String(raw).toLowerCase()
 	const include = filter?.includeClasses?.map((c) => c.toLowerCase())
 	const exclude = filter?.excludeClasses?.map((c) => c.toLowerCase())
-	if (exclude && exclude.includes(cls)) return false
-	if (include && !include.includes(cls)) return false
+	if (exclude?.includes(cls)) return false
+	if (include?.includes(cls)) return false
 	return true
 }
 
@@ -34,14 +34,11 @@ export function useTemplateInteraction() {
 	const previousHover = useRef<FeatureKey | null>(null)
 	const previousActive = useRef<FeatureKey | null>(null)
 
-	const [debugInfo, setDebugInfo] = useState<string>("no template")
-
 	useEffect(() => {
 		if (!map) return
 
 		if (!selectedTemplate) {
 			map.getCanvas().style.cursor = "default"
-			setDebugInfo("no template selected")
 			return
 		}
 
@@ -102,17 +99,11 @@ export function useTemplateInteraction() {
 		function safeQuery(point: mapboxgl.PointLike) {
 			const available = validLayers.filter((id) => !!map.getLayer(id))
 			if (available.length === 0) {
-				setDebugInfo(`missing target layers: ${validLayers.join(",")}`)
 				return []
 			}
-			try {
-				return map.queryRenderedFeatures(point, {
-					layers: available,
-				})
-			} catch (e) {
-				setDebugInfo(`queryRenderedFeatures error: ${(e as Error).message}`)
-				return []
-			}
+			return map.queryRenderedFeatures(point, {
+				layers: available,
+			})
 		}
 
 		// ---------- runtime setup -------------------------------------------
@@ -150,26 +141,16 @@ export function useTemplateInteraction() {
 						previousHover.current.sourceLayer !== key.sourceLayer
 					) {
 						if (previousHover.current) {
-							try {
-								map.setFeatureState(previousHover.current, { hover: false })
-							} catch {}
+							map.setFeatureState(previousHover.current, { hover: false })
 						}
-						try {
-							map.setFeatureState(key, { hover: true })
-							previousHover.current = key
-							setDebugInfo(`hover id=${key.id}`)
-						} catch (err) {
-							setDebugInfo(`hover state error: ${(err as Error).message}`)
-						}
+						map.setFeatureState(key, { hover: true })
+						previousHover.current = key
 					}
 				} else {
 					if (previousHover.current) {
-						try {
-							map.setFeatureState(previousHover.current, { hover: false })
-						} catch {}
+						map.setFeatureState(previousHover.current, { hover: false })
 						previousHover.current = null
 					}
-					setDebugInfo("hovering nothing valid")
 				}
 			}
 
@@ -179,7 +160,6 @@ export function useTemplateInteraction() {
 						passesTemplateFilter(f, featureFilter),
 					) || null
 				if (!feature || feature.id == null) {
-					setDebugInfo("clicked nothing valid")
 					return
 				}
 
@@ -199,17 +179,10 @@ export function useTemplateInteraction() {
 					previousActive.current.sourceLayer !== key.sourceLayer
 				) {
 					if (previousActive.current) {
-						try {
-							map.setFeatureState(previousActive.current, { active: false })
-						} catch {}
+						map.setFeatureState(previousActive.current, { active: false })
 					}
-					try {
-						map.setFeatureState(key, { active: true })
-						previousActive.current = key
-						setDebugInfo(`active id=${key.id}`)
-					} catch (err) {
-						setDebugInfo(`active state error: ${(err as Error).message}`)
-					}
+					map.setFeatureState(key, { active: true })
+					previousActive.current = key
 				}
 			}
 
@@ -223,11 +196,6 @@ export function useTemplateInteraction() {
 		}
 
 		let cleanup: (() => void) | void
-		if (map.isStyleLoaded()) {
-			cleanup = setup()
-		} else {
-			map.once("style.load", () => (cleanup = setup()))
-		}
 
 		return () => {
 			if (cleanup) cleanup()

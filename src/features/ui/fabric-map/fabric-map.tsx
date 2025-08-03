@@ -6,27 +6,27 @@ import { canvasStyle } from "./canvas"
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
-const MapboxContext = createContext<mapboxgl.Map | null>(null)
+const MapContext = createContext<mapboxgl.Map | null>(null)
 
-export function MapboxProvider({
+export function MapProvider({
 	children,
 	map,
 }: {
 	children: React.ReactNode
 	map: mapboxgl.Map
 }) {
-	return <MapboxContext.Provider value={map}>{children}</MapboxContext.Provider>
+	return <MapContext.Provider value={map}>{children}</MapContext.Provider>
 }
 
-export function useMapboxContext() {
-	const context = useContext(MapboxContext)
+export function useMapContext() {
+	const context = useContext(MapContext)
 	if (!context) {
-		throw new Error("useMapboxContext must be used within a MapboxProvider")
+		throw new Error("useMapContext must be used within a MapProvider")
 	}
 	return context
 }
 export function useOnMapLoad<T>(fn: () => T): T | null {
-	const map = useMapboxContext()
+	const map = useMapContext()
 	const [result, setResult] = useState<T | null>(null)
 	useEffect(() => {
 		if (!map) return
@@ -40,7 +40,7 @@ export function useMapClick(
 	layers: string[] | null | undefined,
 	handler: (feature: mapboxgl.GeoJSONFeature) => void,
 ) {
-	const map = useMapboxContext()
+	const map = useMapContext()
 
 	useEffect(() => {
 		if (!map || !layers?.length) return
@@ -63,7 +63,7 @@ export function useAddSourceOnce(
 	id: string,
 	source: mapboxgl.SourceSpecification,
 ) {
-	const map = useMapboxContext()
+	const map = useMapContext()
 	const addedRef = useRef(false)
 
 	useEffect(() => {
@@ -118,7 +118,7 @@ export function FabricMap({
 
 	return (
 		<div ref={containerRef} className={css({ width: "100%", height: "100%" })}>
-			<MapboxProvider map={map}>{children}</MapboxProvider>
+			<MapProvider map={map}>{children}</MapProvider>
 		</div>
 	)
 }
@@ -128,7 +128,7 @@ type Props = LayerSpecification & {
 }
 
 FabricMap.Layer = function MapLayer({ before, ...layer }: Props) {
-	const map = useMapboxContext()
+	const map = useMapContext()
 	const addedRef = useRef(false)
 
 	useEffect(() => {
