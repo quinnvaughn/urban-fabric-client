@@ -19,7 +19,7 @@ export function SimulationMapFooter() {
 	})
 	return (
 		<Flex
-			justify={"between"}
+			justify={"end"}
 			align={"center"}
 			className={css({
 				position: "absolute",
@@ -31,22 +31,30 @@ export function SimulationMapFooter() {
 				px: "lg",
 			})}
 		>
-			<div>
+			<div
+				className={css({
+					padding: "xs",
+					position: "absolute",
+					bottom: "0px",
+					left: "0px",
+					borderRadius: "sm",
+					backgroundColor: "rgba(255, 255, 255, 0.7)",
+				})}
+			>
 				Urban Fabric. Data from{" "}
 				<a
-					href="https://www.openstreetmap.org/"
+					href="https://www.maptiler.com/copyright/"
 					target="_blank"
-					rel="noopener noreferrer"
+					rel="noopener"
 				>
-					OpenStreetMap
+					&copy; MapTiler
 				</a>{" "}
-				and{" "}
 				<a
-					href="https://www.mapbox.com/"
+					href="https://www.openstreetmap.org/copyright"
 					target="_blank"
-					rel="noopener noreferrer"
+					rel="noopener"
 				>
-					Mapbox
+					&copy; OpenStreetMap contributors
 				</a>
 			</div>
 			<Flex gap="sm">

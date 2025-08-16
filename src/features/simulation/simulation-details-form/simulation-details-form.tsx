@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client/index.js"
-import { useNavigate, useParams } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { match } from "ts-pattern"
 import z from "zod"
 import { UpdateSimulationDocument } from "../../../graphql/generated"
@@ -23,6 +23,8 @@ type Props = {
 		description: string
 	}
 }
+
+const formId = "sim-details-form"
 
 export function SimulationDetailsForm({
 	simulation,
@@ -82,6 +84,7 @@ export function SimulationDetailsForm({
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<form
+				id={formId}
 				onSubmit={(e) => {
 					e.preventDefault()
 					form.handleSubmit()
@@ -133,6 +136,7 @@ export function SimulationDetailsForm({
 									<Button
 										type="submit"
 										intent="secondary"
+										form={formId}
 										disabled={isSubmitting || !canSubmit}
 									>
 										Save Changes

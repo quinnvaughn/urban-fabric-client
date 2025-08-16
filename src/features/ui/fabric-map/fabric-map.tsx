@@ -2,7 +2,6 @@ import maplibre, { type LayerSpecification } from "maplibre-gl"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import "maplibre-gl/dist/maplibre-gl.css"
 import { css } from "../../../styles/styled-system/css"
-import { makeCanvasStyle } from "./canvas"
 
 const MapContext = createContext<maplibre.Map | null>(null)
 
@@ -93,9 +92,7 @@ export function FabricMap({
 
 		const instance = new maplibre.Map({
 			container: containerRef.current,
-			style: makeCanvasStyle(import.meta.env.VITE_TILES_URL, {
-				dev: true,
-			}),
+			style: `https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.VITE_MAPTILER_KEY}`,
 			center,
 			zoom,
 			pitch,
