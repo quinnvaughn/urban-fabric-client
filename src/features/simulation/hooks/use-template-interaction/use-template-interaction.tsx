@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useSimulationMapContext } from "../../../../context"
-import { useMapboxContext } from "../../../ui"
+import { useMapContext } from "../../../ui"
 
 type FeatureKey = {
 	source: string
@@ -14,7 +14,7 @@ type FeatureFilter = {
 }
 
 function passesTemplateFilter(
-	feature: mapboxgl.MapboxGeoJSONFeature,
+	feature: maplibregl.GeoJSONFeature,
 	filter?: FeatureFilter | null,
 ) {
 	const raw = feature.properties?.class
@@ -28,7 +28,7 @@ function passesTemplateFilter(
 }
 
 export function useTemplateInteraction() {
-	const map = useMapboxContext()
+	const map = useMapContext()
 	const { selectedTemplate } = useSimulationMapContext()
 
 	const previousHover = useRef<FeatureKey | null>(null)
@@ -96,7 +96,7 @@ export function useTemplateInteraction() {
 			}
 		}
 
-		function safeQuery(point: mapboxgl.PointLike) {
+		function safeQuery(point: maplibregl.PointLike) {
 			const available = validLayers.filter((id) => !!map.getLayer(id))
 			if (available.length === 0) {
 				return []
@@ -114,7 +114,7 @@ export function useTemplateInteraction() {
 			ensureStateLayer(hoverLayerId, hoverStyle, "hover")
 			ensureStateLayer(activeLayerId, activeStyle, "active")
 
-			function onMouseMove(e: mapboxgl.MapMouseEvent) {
+			function onMouseMove(e: maplibregl.MapMouseEvent) {
 				const feature =
 					safeQuery(e.point).find((f) =>
 						passesTemplateFilter(f, featureFilter),
@@ -154,7 +154,7 @@ export function useTemplateInteraction() {
 				}
 			}
 
-			function onClick(e: mapboxgl.MapMouseEvent) {
+			function onClick(e: maplibregl.MapMouseEvent) {
 				const feature =
 					safeQuery(e.point).find((f) =>
 						passesTemplateFilter(f, featureFilter),

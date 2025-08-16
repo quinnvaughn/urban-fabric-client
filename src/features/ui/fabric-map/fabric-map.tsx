@@ -1,19 +1,17 @@
-import mapboxgl, { type LayerSpecification } from "mapbox-gl"
+import maplibre, { type LayerSpecification } from "maplibre-gl"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
-import "mapbox-gl/dist/mapbox-gl.css"
+import "maplibre-gl/dist/maplibre-gl.css"
 import { css } from "../../../styles/styled-system/css"
-import { canvasStyle } from "./canvas"
+import { makeCanvasStyle } from "./canvas"
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
-
-const MapContext = createContext<mapboxgl.Map | null>(null)
+const MapContext = createContext<maplibre.Map | null>(null)
 
 export function MapProvider({
 	children,
 	map,
 }: {
 	children: React.ReactNode
-	map: mapboxgl.Map
+	map: maplibre.Map
 }) {
 	return <MapContext.Provider value={map}>{children}</MapContext.Provider>
 }
@@ -38,17 +36,17 @@ export function useOnMapLoad<T>(fn: () => T): T | null {
 
 export function useMapClick(
 	layers: string[] | null | undefined,
-	handler: (feature: mapboxgl.GeoJSONFeature) => void,
+	handler: (feature: maplibre.GeoJSONFeature) => void,
 ) {
 	const map = useMapContext()
 
 	useEffect(() => {
 		if (!map || !layers?.length) return
 
-		const clickHandler = (e: mapboxgl.MapMouseEvent) => {
+		const clickHandler = (e: maplibre.MapMouseEvent) => {
 			const features = map.queryRenderedFeatures(e.point, { layers })
 			if (features.length > 0) {
-				handler(features[0] as mapboxgl.GeoJSONFeature)
+				handler(features[0] as maplibre.GeoJSONFeature)
 			}
 		}
 
@@ -61,7 +59,7 @@ export function useMapClick(
 
 export function useAddSourceOnce(
 	id: string,
-	source: mapboxgl.SourceSpecification,
+	source: maplibre.SourceSpecification,
 ) {
 	const map = useMapContext()
 	const addedRef = useRef(false)
@@ -78,7 +76,7 @@ export function FabricMap({
 	center = [-118.2437, 34.0522], // default Los Angeles coordinates
 	// these are not right. Invalid LngLat latitude value: must be between -90 and 90
 	zoom = 12,
-	pitch = 0,
+	pitch = 30,
 	bearing = 0,
 }: {
 	children?: React.ReactNode
@@ -88,14 +86,16 @@ export function FabricMap({
 	bearing?: number
 }) {
 	const containerRef = useRef<HTMLDivElement | null>(null)
-	const [map, setMap] = useState<mapboxgl.Map | null>(null)
+	const [map, setMap] = useState<maplibre.Map | null>(null)
 
 	useEffect(() => {
 		if (!containerRef.current) return
 
-		const instance = new mapboxgl.Map({
+		const instance = new maplibre.Map({
 			container: containerRef.current,
-			style: canvasStyle,
+			style: makeCanvasStyle(import.meta.env.VITE_TILES_URL, {
+				dev: true,
+			}),
 			center,
 			zoom,
 			pitch,

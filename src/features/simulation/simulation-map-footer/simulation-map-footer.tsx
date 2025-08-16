@@ -1,10 +1,10 @@
 import { css } from "../../../styles/styled-system/css"
-import { useMapboxContext } from "../../ui/fabric-map/fabric-map"
+import { useMapContext } from "../../ui/fabric-map/fabric-map"
 import { Flex } from "../../ui/flex"
 import { IconButton } from "../../ui/icon-button"
 
 export function SimulationMapFooter() {
-	const map = useMapboxContext()
+	const map = useMapContext()
 	const iconButton = css({
 		p: "sm",
 		boxShadow: "sm",
