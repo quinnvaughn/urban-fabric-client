@@ -22,6 +22,7 @@ export default defineConfig({
 		checked: "&:checked",
 		focusVisible: "&:focus-visible",
 		focusWithin: "&:focus-within",
+		before: "&:before",
 	},
 	// Useful for theme customization
 	theme: {
@@ -321,6 +322,11 @@ export default defineConfig({
 				paddingBottom: value,
 			}),
 		},
+		maxW: {
+			className: "maxW",
+			values: "sizes",
+			transform: (value) => ({ maxWidth: value }),
+		},
 		px: {
 			className: "px",
 			values: "spacing",
@@ -352,6 +358,16 @@ export default defineConfig({
 				marginBottom: value,
 			}),
 		},
+		pt: {
+			className: "pt",
+			values: "spacing",
+			transform: (value) => ({ paddingTop: value }),
+		},
+		paddingTop: {
+			className: "paddingTop",
+			values: "spacing",
+			transform: (value) => ({ paddingTop: value }),
+		},
 		pb: {
 			className: "pb",
 			values: "spacing",
@@ -371,6 +387,11 @@ export default defineConfig({
 			className: "marginBottom",
 			values: "spacing",
 			transform: (value) => ({ marginBottom: value }),
+		},
+		pl: {
+			className: "pl",
+			values: "spacing",
+			transform: (value) => ({ paddingLeft: value }),
 		},
 		paddingLeft: {
 			className: "paddingLeft",
