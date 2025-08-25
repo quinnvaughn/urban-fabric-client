@@ -29,6 +29,67 @@ export const Route = createRootRouteWithContext<ApolloClientRouterContext>()({
 			{
 				title: "Urban Fabric",
 			},
+			{
+				name: "description",
+				content:
+					"An urban planning simulator for communities, creators, and cities.",
+			},
+			{
+				name: "theme-color",
+				content: "#10B981",
+			},
+			{
+				name: "og:type",
+				content: "website",
+			},
+			{
+				name: "og:site_name",
+				content: "Urban Fabric",
+			},
+			{
+				name: "og:url",
+				content: "https://urbanfabric.app",
+			},
+			{
+				name: "og:title",
+				content: "Urban Fabric",
+			},
+			{
+				name: "og:description",
+				content: "Run simulations, share ideas, and reimagine your city.",
+			},
+			{
+				name: "og:image",
+				content: "/og-image.jpg",
+			},
+			{
+				name: "og:image:alt",
+				content: "Urban Fabric map with “Simulate your city” overlay",
+			},
+			{
+				name: "og:image:width",
+				content: "1970",
+			},
+			{
+				name: "og:image:height",
+				content: "767",
+			},
+			{
+				name: "twitter:card",
+				content: "summary_large_image",
+			},
+			{
+				name: "twitter:title",
+				content: "Urban Fabric",
+			},
+			{
+				name: "twitter:description",
+				content: "Run simulations, share ideas, and reimagine your city.",
+			},
+			{
+				name: "twitter:image",
+				content: "/og-image.jpg",
+			},
 		],
 		links: [
 			{
