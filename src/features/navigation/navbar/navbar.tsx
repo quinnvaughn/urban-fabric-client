@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { HStack, Typography } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
+import { button } from "#/styles/styled-system/recipes"
 
 export function Navbar() {
 	return (
@@ -17,9 +18,8 @@ export function Navbar() {
 		>
 			<nav
 				className={css({
-					maxW: "7xl",
 					px: "4",
-					h: "50px",
+					h: "var(--uf-header-height)",
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "space-between",
@@ -33,6 +33,22 @@ export function Navbar() {
 						</Typography.Text>
 					</HStack>
 				</Link>
+				<HStack align="center" gap="4">
+					<Link
+						to="/login"
+						className={css({
+							textDecoration: { _hover: "underline" },
+						})}
+					>
+						Sign in
+					</Link>
+					<Link
+						to="/register"
+						className={button({ appearance: "solid", intent: "brand" })}
+					>
+						Sign up
+					</Link>
+				</HStack>
 			</nav>
 		</header>
 	)

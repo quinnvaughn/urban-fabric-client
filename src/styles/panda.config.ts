@@ -11,6 +11,11 @@ export default defineConfig({
 	include: ["./src/**/*.{js,jsx,ts,tsx}"],
 	presets: [],
 	exclude: [],
+	globalCss: {
+		html: {
+			"--uf-header-height": "50px",
+		},
+	},
 	staticCss: {
 		recipes: {
 			input: ["*"],
@@ -1359,6 +1364,7 @@ export default defineConfig({
 
 			// ── Spacing ───────────────────────────────────────────────────────────
 			spacing: {
+				auto: { value: "auto" },
 				0: { value: "0" },
 				px: { value: "1px" },
 				0.5: { value: "2px" },

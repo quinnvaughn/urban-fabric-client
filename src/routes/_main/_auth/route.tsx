@@ -11,7 +11,7 @@ function RouteComponent() {
 		<main
 			className={css({
 				backgroundColor: "bg.base",
-				minHeight: "100vh",
+				minHeight: "calc(100lvh - var(--uf-header-height))",
 				w: "full",
 			})}
 		>
@@ -47,7 +47,7 @@ function RouteComponent() {
 							</span>
 						</h1>
 						<Typography.Text tone="muted" size="sm">
-							Model better streets. Share the vision. Make the case.
+							Design better streets. Share the vision. Make the case.
 						</Typography.Text>
 					</Box>
 					<Card>

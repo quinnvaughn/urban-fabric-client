@@ -91,6 +91,11 @@ export const button = defineRecipe({
 		fullWidth: {
 			true: { w: "full" },
 		},
+
+		// Opt-in hover lift — use only on prominent CTAs (sign up, auth submit, etc.)
+		lift: {
+			true: {},
+		},
 	},
 
 	// ---------------------------------------------------------------
@@ -107,10 +112,6 @@ export const button = defineRecipe({
 				color: "brand.fg",
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "brand.emphasis",
-					transform: "translateY(-1px)",
-				},
-				"&:not([data-disabled]):not([data-loading]):active": {
-					transform: "translateY(0)",
 				},
 			},
 		},
@@ -126,10 +127,8 @@ export const button = defineRecipe({
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "accent.emphasis",
 					boxShadow: "0 4px 14px token(colors.coral.200)",
-					transform: "translateY(-1px)",
 				},
 				"&:not([data-disabled]):not([data-loading]):active": {
-					transform: "translateY(0)",
 					boxShadow: "0 1px 4px token(colors.coral.200)",
 				},
 			},
@@ -144,10 +143,6 @@ export const button = defineRecipe({
 				color: "fg.default",
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "bg.subtle",
-					transform: "translateY(-1px)",
-				},
-				"&:not([data-disabled]):not([data-loading]):active": {
-					transform: "translateY(0)",
 				},
 			},
 		},
@@ -161,10 +156,6 @@ export const button = defineRecipe({
 				color: "danger.fg",
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "danger.emphasis",
-					transform: "translateY(-1px)",
-				},
-				"&:not([data-disabled]):not([data-loading]):active": {
-					transform: "translateY(0)",
 				},
 			},
 		},

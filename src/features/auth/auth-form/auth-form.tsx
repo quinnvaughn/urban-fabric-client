@@ -60,7 +60,9 @@ export function AuthForm({ mode }: Props) {
 							}
 						/>
 					</Input>
-					<Button intent="accent">Sign in</Button>
+					<Button intent="accent" lift>
+						{mode === "login" ? "Sign in" : "Join Urban Fabric"}
+					</Button>
 					{match(mode)
 						.with("login", () => (
 							<HStack gap="1" justify="center">

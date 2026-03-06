@@ -24,6 +24,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			intent,
 			size,
 			fullWidth,
+			lift,
 			loading = false,
 			disabled,
 			startIcon,
@@ -44,7 +45,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 				data-disabled={isDisabled ? "" : undefined}
 				data-loading={loading ? "" : undefined}
 				className={cx(
-					buttonRecipe({ appearance, intent, size, fullWidth }),
+					buttonRecipe({ appearance, intent, size, fullWidth, lift }),
 					className,
 				)}
 				{...rest}
