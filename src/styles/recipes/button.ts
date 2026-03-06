@@ -93,6 +93,8 @@ export const button = defineRecipe({
 		},
 
 		// Opt-in hover lift — use only on prominent CTAs (sign up, auth submit, etc.)
+		// Transforms live in compoundVariants (at the end) so they win the cascade
+		// over the appearance×intent blocks above.
 		lift: {
 			true: {},
 		},
@@ -272,6 +274,20 @@ export const button = defineRecipe({
 				},
 				"&:not([data-disabled]):not([data-loading]):active": {
 					bg: "danger.muted",
+				},
+			},
+		},
+
+		// ── lift ───────────────────────────────────────────────────────
+		// Placed last so it wins the cascade over appearance×intent blocks.
+		{
+			lift: true,
+			css: {
+				"&:not([data-disabled]):not([data-loading]):hover": {
+					transform: "translateY(-1px)",
+				},
+				"&:not([data-disabled]):not([data-loading]):active": {
+					transform: "translateY(0)",
 				},
 			},
 		},
