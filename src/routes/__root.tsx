@@ -21,10 +21,33 @@ export const Route =
 					content: "width=device-width, initial-scale=1",
 				},
 				{
-					title: "TanStack Start Starter",
+					title: "Urban Fabric",
 				},
 			],
 			links: [
+				{
+					rel: "icon",
+					href: "/logo.svg",
+					type: "image/svg+xml",
+				},
+				{
+					rel: "icon",
+					href: "/favicon.ico",
+					type: "image/x-icon",
+				},
+				{
+					rel: "preconnect",
+					href: "https://fonts.googleapis.com",
+				},
+				{
+					rel: "preconnect",
+					href: "https://fonts.gstatic.com",
+					crossOrigin: "anonymous",
+				},
+				{
+					rel: "stylesheet",
+					href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Manrope:wght@200..800&display=swap",
+				},
 				{
 					rel: "stylesheet",
 					href: appCss,

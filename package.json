@@ -6,7 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "prepare": "panda codegen",
+    "prepare": "panda codegen --config src/styles/panda.config.ts",
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
@@ -32,6 +32,7 @@
     "nitro": "npm:nitro-nightly@latest",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "ts-pattern": "^5.9.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
