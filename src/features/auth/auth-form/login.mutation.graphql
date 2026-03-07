@@ -1,0 +1,16 @@
+mutation Login($input: LoginInput!) {
+	login(input: $input) {
+		... on ConflictError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on User {
+			id
+			name
+			email
+			role
+		}
+	}
+}

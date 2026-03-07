@@ -1,6 +1,9 @@
+import { useApolloClient, useMutation } from "@apollo/client/react"
+import { useNavigate } from "@tanstack/react-router"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
 import { match } from "ts-pattern"
+import z from "zod"
 import {
 	Box,
 	Button,
@@ -9,8 +12,11 @@ import {
 	Input,
 	Link,
 	Typography,
+	useToast,
 	VStack,
 } from "#/features/ui"
+import { LoginDocument, RegisterDocument } from "#/graphql/generated"
+import { useForm } from "#/lib/form"
 import { css } from "#/styles/styled-system/css"
 import { GoogleSignInButton } from "../google-button"
 
@@ -18,75 +24,216 @@ type Props = {
 	mode: "login" | "register"
 }
 
+const LoginSchema = z.object({
+	mode: z.literal("login"),
+	email: z.email({ error: "Must be a valid email" }).min(1),
+	password: z.string().min(8, "Password must be at least 8 characters"),
+})
+
+const RegisterSchema = z.object({
+	mode: z.literal("register"),
+	email: z.email({ error: "Must be a valid email" }).min(1),
+	password: z.string().min(8, "Password must be at least 8 characters"),
+	name: z
+		.string()
+		.min(1, "Name is required")
+		.max(100, "Name must be less than 100 characters"),
+})
+
+const AuthSchema = z.discriminatedUnion("mode", [LoginSchema, RegisterSchema])
+
 export function AuthForm({ mode }: Props) {
 	const [showPassword, setShowPassword] = useState(false)
+	const [login] = useMutation(LoginDocument)
+	const [register] = useMutation(RegisterDocument)
+	const toast = useToast()
+	const navigate = useNavigate()
+	const client = useApolloClient()
 
 	const googleText =
 		mode === "login" ? "Continue with Google" : "Sign up with Google"
+
+	const form = useForm({
+		schema: AuthSchema,
+		defaultValues: {
+			mode,
+			email: "",
+			password: "",
+			name: "",
+		},
+		onSubmit: async (values) => {
+			try {
+				match(values)
+					.with({ mode: "login" }, async (v) => {
+						const response = await login({
+							variables: {
+								input: {
+									email: v.email,
+									password: v.password,
+								},
+							},
+						})
+						match(response.data?.login)
+							.with(
+								{ __typename: "ConflictError" },
+								{ __typename: "UnauthorizedError" },
+								({ message }) => {
+									form.setFormError(message)
+								},
+							)
+							.with({ __typename: "User" }, async () => {
+								await client.resetStore()
+								toast.success("Logged in successfully")
+								navigate({ to: "/", replace: true })
+							})
+							.with(undefined, () => {
+								form.setFormError("An unknown error occurred")
+							})
+							.exhaustive()
+					})
+					.with({ mode: "register" }, async (v) => {
+						const response = await register({
+							variables: {
+								input: {
+									email: v.email,
+									password: v.password,
+									name: v.name,
+								},
+							},
+						})
+						match(response.data?.register)
+							.with({ __typename: "ConflictError" }, ({ message }) => {
+								form.setFormError(message)
+							})
+							.with({ __typename: "ValidationError" }, ({ errors }) => {
+								errors.forEach((error) => {
+									form.setError(error.field, error.message)
+								})
+							})
+							.with({ __typename: "User" }, async () => {
+								await client.resetStore()
+								toast.success("Account created successfully")
+								navigate({ to: "/", replace: true })
+							})
+							.with(undefined, () => {
+								form.setFormError("An unknown error occurred")
+							})
+							.exhaustive()
+					})
+					.exhaustive()
+			} catch {
+				form.setFormError("An unknown error occurred")
+			}
+		},
+	})
 	return (
-		<Box sx={{ py: "6" }}>
-			<VStack gap="6">
-				<GoogleSignInButton label={googleText} />
-				<Divider label="or email" />
-				<VStack gap="3">
-					<Input>
-						<Input.Label>Email</Input.Label>
-						<Input.Field
-							placeholder="you@example.com"
-							type="email"
-							autoComplete="email"
-							inputMode="email"
-							autoCapitalize="none"
-						/>
-					</Input>
-					<Input>
-						<Input.Label>Password</Input.Label>
-						<Input.Field
-							placeholder="••••••••"
-							type={showPassword ? "text" : "password"}
-							autoComplete={"new-password"}
-							endAdornment={
-								<button
-									type="button"
-									onPointerDown={(e) => e.preventDefault()}
-									onClick={() => setShowPassword((v) => !v)}
-									className={css({
-										display: "inline-flex",
-										cursor: "pointer",
-									})}
-								>
-									{showPassword ? <EyeClosed size={16} /> : <Eye size={16} />}
-								</button>
+		<form onSubmit={form.handleSubmit} noValidate>
+			<Box sx={{ py: "6" }}>
+				<VStack gap="6">
+					<GoogleSignInButton label={googleText} />
+					<Divider label="or email" />
+					<VStack gap="3">
+						<form.Field name="email">
+							{(field) => (
+								<Input required invalid={!!field.meta.error}>
+									<Input.Label>Email</Input.Label>
+									<Input.Field
+										placeholder="you@example.com"
+										type="email"
+										autoComplete="email"
+										inputMode="email"
+										autoCapitalize="none"
+										{...field}
+									/>
+									<Input.Error>{field.meta.error}</Input.Error>
+								</Input>
+							)}
+						</form.Field>
+
+						<form.Field name="password">
+							{(field) => (
+								<Input required invalid={!!field.meta.error}>
+									<Input.Label>Password</Input.Label>
+									<Input.Field
+										placeholder="••••••••"
+										type={showPassword ? "text" : "password"}
+										autoComplete={
+											mode === "login" ? "current-password" : "new-password"
+										}
+										{...field}
+										endAdornment={
+											<button
+												type="button"
+												onPointerDown={(e) => e.preventDefault()}
+												onClick={() => setShowPassword((v) => !v)}
+												className={css({
+													display: "inline-flex",
+													cursor: "pointer",
+												})}
+											>
+												{showPassword ? (
+													<EyeClosed size={16} />
+												) : (
+													<Eye size={16} />
+												)}
+											</button>
+										}
+									/>
+									<Input.Error>{field.meta.error}</Input.Error>
+								</Input>
+							)}
+						</form.Field>
+						{mode === "register" && (
+							<form.Field name="name">
+								{(field) => (
+									<Input invalid={!!field.meta.error} required>
+										<Input.Label>Name</Input.Label>
+										<Input.Field
+											placeholder="Your name"
+											type="text"
+											autoComplete="name"
+											{...field}
+										/>
+										<Input.Error>{field.meta.error}</Input.Error>
+									</Input>
+								)}
+							</form.Field>
+						)}
+						<form.Subscribe selector={(s) => s.meta.formError}>
+							{(formError) =>
+								formError ? (
+									<Typography.Text color="red.500">{formError}</Typography.Text>
+								) : null
 							}
-						/>
-					</Input>
-					<Button intent="accent" lift>
-						{mode === "login" ? "Sign in" : "Join Urban Fabric"}
-					</Button>
-					{match(mode)
-						.with("login", () => (
-							<HStack gap="1" justify="center">
-								<Typography.Text size="sm" color="stone.500">
-									No account?
-								</Typography.Text>
-								<Link to="/register" size="sm">
-									Join Urban Fabric
-								</Link>
-							</HStack>
-						))
-						.with("register", () => (
-							<HStack gap="1" justify="center">
-								<Typography.Text size="sm" color="stone.500">
-									Already a member?
-								</Typography.Text>
-								<Link to="/login" size="sm">
-									Sign in
-								</Link>
-							</HStack>
-						))
-						.exhaustive()}
+						</form.Subscribe>
+						<Button intent="accent" lift type="submit">
+							{mode === "login" ? "Sign in" : "Join Urban Fabric"}
+						</Button>
+						{match(mode)
+							.with("login", () => (
+								<HStack gap="1" justify="center">
+									<Typography.Text size="sm" color="stone.500">
+										No account?
+									</Typography.Text>
+									<Link to="/register" size="sm">
+										Join Urban Fabric
+									</Link>
+								</HStack>
+							))
+							.with("register", () => (
+								<HStack gap="1" justify="center">
+									<Typography.Text size="sm" color="stone.500">
+										Already a member?
+									</Typography.Text>
+									<Link to="/login" size="sm">
+										Sign in
+									</Link>
+								</HStack>
+							))
+							.exhaustive()}
+					</VStack>
 				</VStack>
-			</VStack>
-		</Box>
+			</Box>
+		</form>
 	)
 }

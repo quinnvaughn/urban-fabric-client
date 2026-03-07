@@ -4,6 +4,7 @@ import { card } from "./recipes/card"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { tabs } from "./recipes/tabs"
+import { toast } from "./recipes/toast"
 import { typography } from "./recipes/typography"
 
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
 			link: ["*"],
 			button: ["*"],
 			typography: ["*"],
+			toast: ["*"],
 		},
 		css: [
 			{
@@ -53,6 +55,8 @@ export default defineConfig({
 					margin: ["*"],
 					marginBlock: ["*"],
 					marginInline: ["*"],
+					borderRadius: ["*"],
+					backgroundColor: ["*"],
 				},
 			},
 		],
@@ -1398,7 +1402,7 @@ export default defineConfig({
 
 			// ── Typography ────────────────────────────────────────────────────────
 			fonts: {
-				sans: { value: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
+				sans: { value: "'DM Sans', ui-sans-serif, system-ui, sans-serif" },
 				serif: { value: "'Fraunces', Georgia, ui-serif, serif" },
 				mono: {
 					value: "ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace",
@@ -1514,6 +1518,7 @@ export default defineConfig({
 			input,
 			link,
 			button,
+			toast,
 		},
 
 		// ── Semantic tokens ───────────────────────────────────────────────────────

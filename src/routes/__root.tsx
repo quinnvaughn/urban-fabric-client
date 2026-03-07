@@ -6,11 +6,15 @@ import {
 	Scripts,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-
+import { ToastProvider } from "#/features/ui"
+import { MeDocument } from "#/graphql/generated"
 import appCss from "../index.css?url"
 
 export const Route =
 	createRootRouteWithContext<ApolloClientIntegration.RouterContext>()({
+		loader: async ({ context }) => {
+			await context.apolloClient.query({ query: MeDocument })
+		},
 		head: () => ({
 			meta: [
 				{
@@ -46,7 +50,7 @@ export const Route =
 				},
 				{
 					rel: "stylesheet",
-					href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Manrope:wght@200..800&display=swap",
+					href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..900;1,9..40,100..900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap",
 				},
 				{
 					rel: "stylesheet",
@@ -64,7 +68,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				{children}
+				<ToastProvider>{children}</ToastProvider>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

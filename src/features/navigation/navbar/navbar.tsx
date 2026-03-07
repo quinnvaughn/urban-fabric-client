@@ -1,9 +1,12 @@
 import { Link } from "@tanstack/react-router"
-import { HStack, Typography } from "#/features/ui"
+import { Box, HStack, Typography } from "#/features/ui"
+import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 
 export function Navbar() {
+	const { data, loading } = useCurrentUser()
+	const user = data?.me
 	return (
 		<header
 			className={css({
@@ -34,20 +37,59 @@ export function Navbar() {
 					</HStack>
 				</Link>
 				<HStack align="center" gap="4">
-					<Link
-						to="/login"
-						className={css({
-							textDecoration: { _hover: "underline" },
-						})}
-					>
-						Sign in
-					</Link>
-					<Link
-						to="/register"
-						className={button({ appearance: "solid", intent: "brand" })}
-					>
-						Sign up
-					</Link>
+					{loading ? null : user ? (
+						<HStack align="center" gap="2.5">
+							<Link
+								to="/dashboard"
+								className={button({ appearance: "outline", intent: "brand" })}
+							>
+								New Fabric
+							</Link>
+							<Box
+								sx={{
+									borderRadius: "full",
+									padding: "2",
+									bg: "accent.default",
+									w: "32px",
+									h: "32px",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Typography.Text
+									size="sm"
+									weight="medium"
+									color="white"
+									font="sans"
+								>
+									{/** first two letters of the user's name */}
+									{user.name
+										.split(" ")
+										.map((n) => n[0])
+										.join("")
+										.toUpperCase()}
+								</Typography.Text>
+							</Box>
+						</HStack>
+					) : (
+						<>
+							<Link
+								to="/login"
+								className={css({
+									textDecoration: { _hover: "underline" },
+								})}
+							>
+								Sign in
+							</Link>
+							<Link
+								to="/register"
+								className={button({ appearance: "solid", intent: "brand" })}
+							>
+								Sign up
+							</Link>
+						</>
+					)}
 				</HStack>
 			</nav>
 		</header>

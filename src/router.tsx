@@ -1,17 +1,10 @@
-import { HttpLink } from "@apollo/client"
-import {
-	ApolloClient,
-	InMemoryCache,
-	routerWithApolloClient,
-} from "@apollo/client-integration-tanstack-start"
+import { routerWithApolloClient } from "@apollo/client-integration-tanstack-start"
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
+import { createApolloClient } from "./lib/apollo/client"
 import { routeTree } from "./routeTree.gen"
 
 export function getRouter() {
-	const apolloClient = new ApolloClient({
-		cache: new InMemoryCache(),
-		link: new HttpLink({ uri: "http://localhost:4000" }),
-	})
+	const apolloClient = createApolloClient()
 	const router = createTanStackRouter({
 		routeTree,
 		context: {
