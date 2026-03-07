@@ -44,6 +44,16 @@ function CardRoot({
 	)
 }
 
+// ---------- Media ----------
+function CardMedia({
+	className,
+	...rest
+}: React.HTMLAttributes<HTMLDivElement>) {
+	const { styles } = useCardContext()
+	return <div className={cx(styles.media, className)} {...rest} />
+}
+CardMedia.displayName = "Card.Media"
+
 // ---------- Header ----------
 
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -77,6 +87,7 @@ CardFooter.displayName = "Card.Footer"
 // ---------- Dot-notation export ----------
 
 export const Card = Object.assign(CardRoot, {
+	Media: CardMedia,
 	Header: CardHeader,
 	Body: CardBody,
 	Footer: CardFooter,

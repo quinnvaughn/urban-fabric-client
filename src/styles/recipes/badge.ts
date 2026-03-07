@@ -9,21 +9,35 @@ export const badge = defineRecipe({
 		fontFamily: "sans",
 		fontWeight: "semibold",
 		letterSpacing: "wider",
-		textTransform: "uppercase",
 		borderRadius: "full",
 		whiteSpace: "nowrap",
 		alignSelf: "flex-start",
 	},
 	variants: {
+		appearance: {
+			subtle: {}, // current behavior, tones handle the colors
+			solid: {
+				border: "none",
+			},
+		},
+		uppercase: {
+			true: { textTransform: "uppercase", letterSpacing: "wider" },
+		},
 		size: {
-			sm: { fontSize: "xs", paddingInline: "2", paddingBlock: "0.5" },
-			md: { fontSize: "xs", paddingInline: "2.5", paddingBlock: "1" },
+			xs: { fontSize: "xxs", paddingInline: "1.5", paddingBlock: "0.5" }, // 0.75rem, 6px/2px
+			sm: { fontSize: "xs", paddingInline: "2", paddingBlock: "1" }, // 0.75rem, 8px/4px
+			md: { fontSize: "sm", paddingInline: "2.5", paddingBlock: "1" }, // 0.875rem, 10px/4px
 		},
 		tone: {
 			default: {
 				background: "bg.muted",
 				color: "fg.muted",
 				border: "1px solid {colors.border.subtle}",
+			},
+			neutral: {
+				background: "bg.muted",
+				color: "fg.default",
+				border: "1px solid {colors.border.default}",
 			},
 			brand: {
 				background: "brand.subtle",
@@ -52,8 +66,47 @@ export const badge = defineRecipe({
 			},
 		},
 	},
+	compoundVariants: [
+		{
+			appearance: "solid",
+			tone: "brand",
+			css: { background: "brand.default", color: "brand.fg" },
+		},
+		{
+			appearance: "solid",
+			tone: "accent",
+			css: { background: "accent.default", color: "accent.fg" },
+		},
+		{
+			appearance: "solid",
+			tone: "success",
+			css: { background: "success.default", color: "success.fg" },
+		},
+		{
+			appearance: "solid",
+			tone: "danger",
+			css: { background: "danger.default", color: "danger.fg" },
+		},
+		{
+			appearance: "solid",
+			tone: "warning",
+			css: { background: "warning.default", color: "warning.fg" },
+		},
+		{
+			appearance: "solid",
+			tone: "default",
+			css: { background: "fg.default", color: "bg.base" },
+		},
+		{
+			appearance: "solid",
+			tone: "neutral",
+			css: { background: "fg.muted", color: "bg.base", border: "none" },
+		},
+	],
 	defaultVariants: {
-		size: "md",
+		size: "xs",
 		tone: "default",
+		appearance: "subtle",
+		uppercase: false,
 	},
 })

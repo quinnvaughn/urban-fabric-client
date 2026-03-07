@@ -1,1 +1,7 @@
+export * from "./hero-proposal-map"
+export * from "./platform-chip"
 export * from "./section"
+export * from "./social-post"
+export * from "./steps"
+export * from "./what-is-a-fabric-map"
+export * from "./who-card"

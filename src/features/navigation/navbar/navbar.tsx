@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Box, HStack, Typography } from "#/features/ui"
+import { Avatar, HStack, Typography } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
@@ -49,32 +49,7 @@ export function Navbar() {
 							>
 								New Fabric
 							</Link>
-							<Box
-								sx={{
-									borderRadius: "full",
-									padding: "2",
-									bg: "accent.default",
-									w: "32px",
-									h: "32px",
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-								}}
-							>
-								<Typography.Text
-									size="sm"
-									weight="medium"
-									color="white"
-									font="sans"
-								>
-									{/** first two letters of the user's name */}
-									{user.name
-										.split(" ")
-										.map((n) => n[0])
-										.join("")
-										.toUpperCase()}
-								</Typography.Text>
-							</Box>
+							<Avatar name={user.name} size="sm" tone="accent" />
 						</HStack>
 					) : (
 						<>

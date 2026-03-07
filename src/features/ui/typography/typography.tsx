@@ -44,6 +44,7 @@ export interface TextProps
 	tracking?: Tracking
 	transform?: Transform
 	color?: Color
+	italic?: boolean
 }
 
 function TypographyText({
@@ -56,6 +57,7 @@ function TypographyText({
 	tracking,
 	transform,
 	color,
+	italic,
 	className,
 	style,
 	...rest
@@ -73,7 +75,11 @@ function TypographyText({
 	return (
 		<Tag
 			className={cx(styles.text, className)}
-			style={{ ...colorStyle(color), ...style }}
+			style={{
+				fontStyle: italic ? "italic" : undefined,
+				...colorStyle(color),
+				...style,
+			}}
 			{...rest}
 		/>
 	)
@@ -108,6 +114,7 @@ export interface HeadingProps
 	tracking?: Tracking
 	transform?: Transform
 	color?: Color
+	italic?: boolean
 }
 
 function TypographyHeading({
@@ -120,6 +127,7 @@ function TypographyHeading({
 	tracking,
 	transform,
 	color,
+	italic,
 	className,
 	style,
 	...rest
@@ -137,7 +145,11 @@ function TypographyHeading({
 	return (
 		<Tag
 			className={cx(styles.heading, className)}
-			style={{ ...colorStyle(color), ...style }}
+			style={{
+				fontStyle: italic ? "italic" : undefined,
+				...colorStyle(color),
+				...style,
+			}}
 			{...rest}
 		/>
 	)

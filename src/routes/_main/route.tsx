@@ -27,7 +27,7 @@ function RouteComponent() {
 						<Typography.Text
 							size="xs"
 							weight="bold"
-							font={"sans"}
+							font="sans"
 							color="stone.500"
 							tracking="wide"
 							transform="uppercase"
