@@ -14,7 +14,7 @@ export function Navbar() {
 				top: 0,
 				zIndex: "sticky",
 				w: "full",
-				bg: "white",
+				bg: "bg.base",
 				borderBottomWidth: "1px",
 				borderBottomColor: "border.subtle",
 			})}
@@ -41,7 +41,11 @@ export function Navbar() {
 						<HStack align="center" gap="2.5">
 							<Link
 								to="/dashboard"
-								className={button({ appearance: "outline", intent: "brand" })}
+								className={button({
+									appearance: "outline",
+									intent: "brand",
+									size: "sm",
+								})}
 							>
 								New Fabric
 							</Link>
@@ -75,18 +79,24 @@ export function Navbar() {
 					) : (
 						<>
 							<Link
-								to="/login"
-								className={css({
-									textDecoration: { _hover: "underline" },
+								to="/register"
+								className={button({
+									appearance: "outline",
+									intent: "neutral",
+									size: "sm",
 								})}
 							>
 								Sign in
 							</Link>
 							<Link
-								to="/register"
-								className={button({ appearance: "solid", intent: "brand" })}
+								to="/fabric"
+								className={button({
+									appearance: "solid",
+									intent: "accent",
+									size: "sm",
+								})}
 							>
-								Sign up
+								Start designing
 							</Link>
 						</>
 					)}

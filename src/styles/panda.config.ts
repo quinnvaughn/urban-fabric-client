@@ -1,4 +1,5 @@
 import { defineConfig } from "@pandacss/dev"
+import { badge } from "./recipes/badge"
 import { button } from "./recipes/button"
 import { card } from "./recipes/card"
 import { input } from "./recipes/input"
@@ -14,7 +15,7 @@ export default defineConfig({
 	exclude: [],
 	globalCss: {
 		html: {
-			"--uf-header-height": "50px",
+			"--uf-header-height": "56px",
 		},
 	},
 	staticCss: {
@@ -26,6 +27,7 @@ export default defineConfig({
 			button: ["*"],
 			typography: ["*"],
 			toast: ["*"],
+			badge: ["*"],
 		},
 		css: [
 			{
@@ -1391,6 +1393,7 @@ export default defineConfig({
 				16: { value: "64px" },
 				20: { value: "80px" },
 				24: { value: "96px" },
+				25: { value: "100px" },
 				28: { value: "112px" },
 				32: { value: "128px" },
 				36: { value: "144px" },
@@ -1422,6 +1425,8 @@ export default defineConfig({
 				"7xl": { value: "4.5rem" },
 			},
 			fontWeights: {
+				thin: { value: "100" },
+				light: { value: "300" },
 				normal: { value: "400" },
 				medium: { value: "500" },
 				semibold: { value: "600" },
@@ -1519,6 +1524,7 @@ export default defineConfig({
 			link,
 			button,
 			toast,
+			badge,
 		},
 
 		// ── Semantic tokens ───────────────────────────────────────────────────────

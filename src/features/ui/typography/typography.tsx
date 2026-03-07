@@ -5,14 +5,22 @@ import {
 } from "@/styles/styled-system/recipes"
 import type { ColorToken } from "@/styles/styled-system/tokens"
 
-// ---------- Shared prop types ----------
+// ── Shared types ──────────────────────────────────────────────────────────────
 
 type Tone = NonNullable<TypographyVariantProps["tone"]>
 type Font = NonNullable<TypographyVariantProps["font"]>
 type Weight = NonNullable<TypographyVariantProps["weight"]>
+type Leading = NonNullable<TypographyVariantProps["leading"]>
+type Tracking = NonNullable<TypographyVariantProps["tracking"]>
+type Transform = NonNullable<TypographyVariantProps["transform"]>
 type Color = ColorToken
 
-// ---------- Text ----------
+function colorStyle(color?: Color): React.CSSProperties | undefined {
+	if (!color) return undefined
+	return { color: `var(--colors-${color.replace(/\./g, "-")})` }
+}
+
+// ── Text ──────────────────────────────────────────────────────────────────────
 
 type TextSize = Extract<NonNullable<TypographyVariantProps["textSize"]>, string>
 
@@ -32,6 +40,9 @@ export interface TextProps
 	weight?: Weight
 	tone?: Tone
 	font?: Font
+	leading?: Leading
+	tracking?: Tracking
+	transform?: Transform
 	color?: Color
 }
 
@@ -41,28 +52,35 @@ function TypographyText({
 	weight,
 	tone,
 	font,
+	leading,
+	tracking,
+	transform,
 	color,
 	className,
 	style,
 	...rest
 }: TextProps) {
-	const styles = typography({ textSize: size, weight, tone, font })
+	const styles = typography({
+		textSize: size,
+		weight,
+		tone,
+		font,
+		leading,
+		tracking,
+		transform,
+	})
 	const Tag = as ?? TEXT_ELEMENT_MAP[size]
 	return (
 		<Tag
 			className={cx(styles.text, className)}
-			style={
-				color
-					? { ...style, color: `var(--colors-${color.replace(/\./g, "-")})` }
-					: style
-			}
+			style={{ ...colorStyle(color), ...style }}
 			{...rest}
 		/>
 	)
 }
 TypographyText.displayName = "Typography.Text"
 
-// ---------- Heading ----------
+// ── Heading ───────────────────────────────────────────────────────────────────
 
 type HeadingSize = Extract<
 	NonNullable<TypographyVariantProps["headingSize"]>,
@@ -75,6 +93,8 @@ const HEADING_ELEMENT_MAP: Record<HeadingSize, React.ElementType> = {
 	lg: "h2",
 	xl: "h1",
 	"2xl": "h1",
+	"3xl": "h1",
+	"4xl": "h1",
 }
 
 export interface HeadingProps
@@ -84,6 +104,9 @@ export interface HeadingProps
 	weight?: Weight
 	tone?: Tone
 	font?: Font
+	leading?: Leading
+	tracking?: Tracking
+	transform?: Transform
 	color?: Color
 }
 
@@ -93,30 +116,79 @@ function TypographyHeading({
 	weight,
 	tone,
 	font,
+	leading,
+	tracking,
+	transform,
 	color,
 	className,
 	style,
 	...rest
 }: HeadingProps) {
-	const styles = typography({ headingSize: size, weight, tone, font })
+	const styles = typography({
+		headingSize: size,
+		weight,
+		tone,
+		font,
+		leading,
+		tracking,
+		transform,
+	})
 	const Tag = as ?? HEADING_ELEMENT_MAP[size]
 	return (
 		<Tag
 			className={cx(styles.heading, className)}
-			style={
-				color
-					? { ...style, color: `var(--colors-${color.replace(/\./g, "-")})` }
-					: style
-			}
+			style={{ ...colorStyle(color), ...style }}
 			{...rest}
 		/>
 	)
 }
 TypographyHeading.displayName = "Typography.Heading"
 
-// ---------- Dot-notation export ----------
+// ── Inline ────────────────────────────────────────────────────────────────────
+
+export interface InlineProps
+	extends Omit<React.HTMLAttributes<HTMLElement>, "color"> {
+	as?: React.ElementType
+	italic?: boolean
+	weight?: Weight
+	tone?: Tone
+	color?: Color
+	tracking?: Tracking
+	transform?: Transform
+}
+
+function TypographyInline({
+	as,
+	italic,
+	weight,
+	tone,
+	color,
+	tracking,
+	transform,
+	className,
+	style,
+	...rest
+}: InlineProps) {
+	const styles = typography({ weight, tone, tracking, transform })
+	const Tag = as ?? "span"
+	return (
+		<Tag
+			className={cx(styles.inline, className)}
+			style={{
+				fontStyle: italic ? "italic" : undefined,
+				...colorStyle(color),
+				...style,
+			}}
+			{...rest}
+		/>
+	)
+}
+TypographyInline.displayName = "Typography.Inline"
+
+// ── Export ────────────────────────────────────────────────────────────────────
 
 export const Typography = {
 	Text: TypographyText,
 	Heading: TypographyHeading,
+	Inline: TypographyInline,
 }

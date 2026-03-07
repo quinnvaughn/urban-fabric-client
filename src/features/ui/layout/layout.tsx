@@ -102,6 +102,7 @@ export function HStack({
 
 export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
 	cols?: GridCols
+	columns?: string // raw CSS value for asymmetric layouts
 	gap?: SpacingToken
 	gapX?: SpacingToken
 	gapY?: SpacingToken
@@ -110,7 +111,8 @@ export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Grid({
-	cols = 1,
+	cols,
+	columns,
 	gap,
 	gapX,
 	gapY,
@@ -133,6 +135,7 @@ export function Grid({
 				}),
 				className,
 			)}
+			style={columns ? { gridTemplateColumns: columns } : undefined}
 			{...rest}
 		/>
 	)
