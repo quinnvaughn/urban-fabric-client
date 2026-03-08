@@ -54,7 +54,7 @@ export function Navbar() {
 					) : (
 						<>
 							<Link
-								to="/register"
+								to="/login"
 								className={button({
 									appearance: "outline",
 									intent: "neutral",
