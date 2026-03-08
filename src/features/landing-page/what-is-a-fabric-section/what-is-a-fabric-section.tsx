@@ -91,7 +91,7 @@ export function WhatIsAFabricSection() {
 										width: "1.5",
 										height: "1.5",
 										borderRadius: "full",
-										background: "accent.default",
+										background: "brand.default",
 										flexShrink: "0",
 										position: "relative",
 										top: "-1px",

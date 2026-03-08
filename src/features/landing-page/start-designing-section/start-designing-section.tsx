@@ -1,5 +1,6 @@
 import { PencilLine } from "lucide-react"
 import { Box, HStack, Link, Typography, VStack } from "#/features/ui"
+import { css, cx } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { LandingPageSection } from "../section"
 
@@ -35,23 +36,29 @@ export function StartDesigningSection() {
 					<HStack gap="4" align="center" wrap>
 						<Link
 							to="/proposal/new"
-							className={button({
-								appearance: "solid",
-								intent: "accent",
-								lift: true,
-								size: "lg",
-							})}
+							className={cx(
+								button({
+									appearance: "solid",
+									intent: "brand",
+									lift: true,
+									size: "lg",
+								}),
+								css({ textDecoration: "none" }),
+							)}
 						>
 							<PencilLine size={14} />
 							Start designing
 						</Link>
 						<Link
 							to="/proposal/explore"
-							className={button({
-								size: "lg",
-								intent: "neutral",
-								appearance: "outline",
-							})}
+							className={cx(
+								button({
+									size: "lg",
+									intent: "neutral",
+									appearance: "outline",
+								}),
+								css({ textDecoration: "none" }),
+							)}
 						>
 							Browse proposals
 						</Link>

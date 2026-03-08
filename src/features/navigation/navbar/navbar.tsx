@@ -67,7 +67,7 @@ export function Navbar() {
 								to="/fabric"
 								className={button({
 									appearance: "solid",
-									intent: "accent",
+									intent: "brand",
 									size: "sm",
 								})}
 							>

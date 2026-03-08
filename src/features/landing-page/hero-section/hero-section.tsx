@@ -10,7 +10,7 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
-import { css } from "#/styles/styled-system/css"
+import { css, cx } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { HeroProposalMap } from "../hero-proposal-map"
 import { LandingPageSection } from "../section"
@@ -67,23 +67,29 @@ export function HeroSection() {
 						<HStack gap="4" align="center" wrap>
 							<Link
 								to="/proposal/new"
-								className={button({
-									appearance: "solid",
-									intent: "accent",
-									lift: true,
-									size: "lg",
-								})}
+								className={cx(
+									button({
+										appearance: "solid",
+										intent: "brand",
+										lift: true,
+										size: "lg",
+									}),
+									css({ textDecoration: "none" }),
+								)}
 							>
 								<PencilLine size={14} />
 								Start designing
 							</Link>
 							<Link
 								to="/proposal/explore"
-								className={button({
-									size: "lg",
-									intent: "neutral",
-									appearance: "outline",
-								})}
+								className={cx(
+									button({
+										size: "lg",
+										intent: "neutral",
+										appearance: "outline",
+									}),
+									css({ textDecoration: "none" }),
+								)}
 							>
 								Explore proposals <ArrowRight size={14} />
 							</Link>
@@ -100,7 +106,7 @@ export function HeroSection() {
 					<Card.Media style={{ position: "relative" }}>
 						<Badge
 							style={{ position: "absolute", top: "12px", right: "12px" }}
-							tone="accent"
+							tone="brand"
 							appearance="solid"
 						>
 							Proposed
@@ -110,10 +116,12 @@ export function HeroSection() {
 					<Card.Body>
 						<VStack gap="3">
 							<VStack gap="1">
-								<Badge tone="brand" uppercase>
-									<Check size={12} />
-									Street conversion
-								</Badge>
+								<HStack gap="1" align="center">
+									<Check size={12} color="var(--colors-fg-muted)" />
+									<Typography.Text tone="muted" size="xs">
+										Street conversion
+									</Typography.Text>
+								</HStack>
 								<Typography.Text
 									weight="normal"
 									size="md"

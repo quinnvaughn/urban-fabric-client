@@ -125,13 +125,8 @@ export const button = defineRecipe({
 			css: {
 				bg: "accent.default",
 				color: "accent.fg",
-				boxShadow: "0 2px 8px token(colors.coral.200)",
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "accent.emphasis",
-					boxShadow: "0 4px 14px token(colors.coral.200)",
-				},
-				"&:not([data-disabled]):not([data-loading]):active": {
-					boxShadow: "0 1px 4px token(colors.coral.200)",
 				},
 			},
 		},
