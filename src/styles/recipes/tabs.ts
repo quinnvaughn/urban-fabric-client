@@ -38,7 +38,7 @@ export const tabs = defineSlotRecipe({
 			},
 			"&[data-state=active]": {
 				color: "fg.default",
-				borderBottomColor: "accent.default",
+				borderBottomColor: "brand.default",
 			},
 		},
 		link: {
@@ -62,7 +62,7 @@ export const tabs = defineSlotRecipe({
 			},
 			'&[data-status="active"]': {
 				color: "fg.default",
-				borderBottomColor: "accent.default",
+				borderBottomColor: "brand.default",
 			},
 		},
 	},

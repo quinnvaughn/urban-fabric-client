@@ -206,7 +206,7 @@ export function AuthForm({ mode }: Props) {
 								) : null
 							}
 						</form.Subscribe>
-						<Button intent="accent" lift type="submit">
+						<Button intent="brand" lift type="submit">
 							{mode === "login" ? "Sign in" : "Join Urban Fabric"}
 						</Button>
 						{match(mode)
