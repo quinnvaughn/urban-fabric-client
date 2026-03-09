@@ -17,6 +17,7 @@ export default defineConfig({
 	globalCss: {
 		html: {
 			"--uf-header-height": "56px",
+			"--uf-sidebar-width": "220px",
 		},
 	},
 	staticCss: {
@@ -63,6 +64,10 @@ export default defineConfig({
 					backgroundColor: ["*"],
 					transition: ["*"],
 					border: ["*"],
+					borderBottom: ["*"],
+					borderBottomWidth: ["*"],
+					borderBottomStyle: ["*"],
+					borderBottomColor: ["*"],
 				},
 			},
 		],
@@ -1477,6 +1482,38 @@ export default defineConfig({
 			lg: "1024px",
 			xl: "1280px",
 			"2xl": "1536px",
+		},
+		keyframes: {
+			fadeInLeft: {
+				"0%": {
+					opacity: "0",
+					transform: "translateX(-12px)",
+				},
+				"100%": {
+					opacity: "1",
+					transform: "translateX(0)",
+				},
+			},
+			fadeDown: {
+				"0%": {
+					opacity: "0",
+					transform: "translateY(-8px)",
+				},
+				"100%": {
+					opacity: "1",
+					transform: "translateY(0)",
+				},
+			},
+			fadeUp: {
+				"0%": {
+					opacity: "0",
+					transform: "translateY(10px)",
+				},
+				"100%": {
+					opacity: "1",
+					transform: "translateY(0)",
+				},
+			},
 		},
 
 		tokens: {

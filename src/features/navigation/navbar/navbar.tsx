@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Avatar, HStack, Typography } from "#/features/ui"
+import { Avatar, HStack, Logo, Typography } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
@@ -29,12 +29,7 @@ export function Navbar() {
 				})}
 			>
 				<Link to="/">
-					<HStack align="center" gap="2">
-						<img src="/logo.svg" alt="Urban Fabric" width={24} height={24} />
-						<Typography.Text size="sm" weight="bold" font={"sans"}>
-							Urban Fabric
-						</Typography.Text>
-					</HStack>
+					<Logo />
 				</Link>
 				<HStack align="center" gap="4">
 					{loading ? null : user ? (

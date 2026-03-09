@@ -13,6 +13,8 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
+import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
 import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
@@ -36,6 +38,16 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
+const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
+  id: '/proposals',
+  path: '/proposals',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardFabricsRoute = DashboardFabricsRouteImport.update({
+  id: '/fabrics',
+  path: '/fabrics',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const MarketingAuthRouteRoute = MarketingAuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => MarketingRouteRoute,
@@ -54,12 +66,16 @@ const MarketingAuthLoginRoute = MarketingAuthLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/proposals': typeof DashboardProposalsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
+  '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/proposals': typeof DashboardProposalsRoute
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
@@ -69,6 +85,8 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
+  '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/proposals': typeof DashboardProposalsRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
@@ -76,14 +94,29 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/dashboard/' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/dashboard/fabrics'
+    | '/dashboard/proposals'
+    | '/dashboard/'
+    | '/login'
+    | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/register'
+  to:
+    | '/'
+    | '/dashboard/fabrics'
+    | '/dashboard/proposals'
+    | '/dashboard'
+    | '/login'
+    | '/register'
   id:
     | '__root__'
     | '/_marketing'
     | '/dashboard'
     | '/_marketing/_auth'
+    | '/dashboard/fabrics'
+    | '/dashboard/proposals'
     | '/_marketing/'
     | '/dashboard/'
     | '/_marketing/_auth/login'
@@ -124,6 +157,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
+    }
+    '/dashboard/proposals': {
+      id: '/dashboard/proposals'
+      path: '/proposals'
+      fullPath: '/dashboard/proposals'
+      preLoaderRoute: typeof DashboardProposalsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/fabrics': {
+      id: '/dashboard/fabrics'
+      path: '/fabrics'
+      fullPath: '/dashboard/fabrics'
+      preLoaderRoute: typeof DashboardFabricsRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/_marketing/_auth': {
       id: '/_marketing/_auth'
@@ -177,10 +224,14 @@ const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
+  DashboardFabricsRoute: typeof DashboardFabricsRoute
+  DashboardProposalsRoute: typeof DashboardProposalsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardFabricsRoute: DashboardFabricsRoute,
+  DashboardProposalsRoute: DashboardProposalsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 

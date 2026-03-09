@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import { Sidebar } from "#/features/navigation"
 import { MeDocument } from "#/graphql/generated"
 
 export const Route = createFileRoute("/dashboard")({
@@ -14,5 +15,10 @@ export const Route = createFileRoute("/dashboard")({
 })
 
 function RouteComponent() {
-	return <Outlet />
+	return (
+		<main>
+			<Sidebar />
+			<Outlet />
+		</main>
+	)
 }
