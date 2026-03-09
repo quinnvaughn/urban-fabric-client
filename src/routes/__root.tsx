@@ -13,7 +13,7 @@ import appCss from "../index.css?url"
 
 export const Route =
 	createRootRouteWithContext<ApolloClientIntegration.RouterContext>()({
-		loader: async ({ context }) => {
+		beforeLoad: async ({ context }) => {
 			await context.apolloClient.query({ query: MeDocument })
 		},
 		head: () => ({
