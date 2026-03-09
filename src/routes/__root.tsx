@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { useEffect, useState } from "react"
 import { ToastProvider } from "#/features/ui"
 import { MeDocument } from "#/graphql/generated"
 import appCss from "../index.css?url"
@@ -62,6 +63,12 @@ export const Route =
 	})
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const [isClient, setIsClient] = useState(false)
+
+	useEffect(() => {
+		setIsClient(true)
+	}, [])
+
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
@@ -69,17 +76,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<ToastProvider>{children}</ToastProvider>
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-					]}
-				/>
+				{isClient ? (
+					<TanStackDevtools
+						config={{
+							position: "bottom-right",
+						}}
+						plugins={[
+							{
+								name: "Tanstack Router",
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+						]}
+					/>
+				) : null}
 				<Scripts />
 			</body>
 		</html>

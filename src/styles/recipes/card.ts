@@ -89,6 +89,21 @@ export const card = defineSlotRecipe({
 				},
 			},
 		},
+		lift: {
+			true: {
+				root: {
+					transition: "box-shadow 0.2s ease, transform 0.2s ease",
+					"&:hover": {
+						transform: "translateY(-3px)",
+						boxShadow: "2xl",
+					},
+					"&:active": {
+						transform: "translateY(-1px)",
+						boxShadow: "lg",
+					},
+				},
+			},
+		},
 	},
 
 	defaultVariants: {

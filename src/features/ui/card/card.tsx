@@ -29,11 +29,12 @@ export interface CardRootProps
 function CardRoot({
 	size,
 	variant,
+	lift,
 	className,
 	children,
 	...rest
 }: CardRootProps) {
-	const styles = card({ size, variant })
+	const styles = card({ size, variant, lift })
 
 	return (
 		<CardContext.Provider value={{ styles }}>

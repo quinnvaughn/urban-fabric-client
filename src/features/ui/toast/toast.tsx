@@ -198,7 +198,13 @@ function Toaster({
 	toasts: ToastItem[]
 	onDismiss: (id: string) => void
 }) {
-	if (typeof document === "undefined") return null
+	const [mounted, setMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	if (!mounted || typeof document === "undefined") return null
 
 	return createPortal(
 		<div

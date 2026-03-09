@@ -84,7 +84,7 @@ export function AuthForm({ mode }: Props) {
 							.with({ __typename: "User" }, async () => {
 								await client.resetStore()
 								toast.success("Logged in successfully")
-								navigate({ to: "/", replace: true })
+								navigate({ to: "/dashboard", replace: true })
 							})
 							.with(undefined, () => {
 								form.setFormError("An unknown error occurred")
@@ -113,7 +113,7 @@ export function AuthForm({ mode }: Props) {
 							.with({ __typename: "User" }, async () => {
 								await client.resetStore()
 								toast.success("Account created successfully")
-								navigate({ to: "/", replace: true })
+								navigate({ to: "/dashboard", replace: true })
 							})
 							.with(undefined, () => {
 								form.setFormError("An unknown error occurred")

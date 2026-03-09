@@ -9,142 +9,160 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MainRouteRouteImport } from './routes/_main/route'
-import { Route as MainIndexRouteImport } from './routes/_main/index'
-import { Route as MainAuthRouteRouteImport } from './routes/_main/_auth/route'
-import { Route as MainAuthRegisterRouteImport } from './routes/_main/_auth/register'
-import { Route as MainAuthLoginRouteImport } from './routes/_main/_auth/login'
+import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
+import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
+import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
 
-const MainRouteRoute = MainRouteRouteImport.update({
-  id: '/_main',
+const MarketingRouteRoute = MarketingRouteRouteImport.update({
+  id: '/_marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MainIndexRoute = MainIndexRouteImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => MainRouteRoute,
+  getParentRoute: () => MarketingRouteRoute,
 } as any)
-const MainAuthRouteRoute = MainAuthRouteRouteImport.update({
+const MarketingAuthRouteRoute = MarketingAuthRouteRouteImport.update({
   id: '/_auth',
-  getParentRoute: () => MainRouteRoute,
+  getParentRoute: () => MarketingRouteRoute,
 } as any)
-const MainAuthRegisterRoute = MainAuthRegisterRouteImport.update({
+const MarketingAuthRegisterRoute = MarketingAuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => MainAuthRouteRoute,
+  getParentRoute: () => MarketingAuthRouteRoute,
 } as any)
-const MainAuthLoginRoute = MainAuthLoginRouteImport.update({
+const MarketingAuthLoginRoute = MarketingAuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => MainAuthRouteRoute,
+  getParentRoute: () => MarketingAuthRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof MainIndexRoute
-  '/login': typeof MainAuthLoginRoute
-  '/register': typeof MainAuthRegisterRoute
+  '/': typeof MarketingIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/login': typeof MarketingAuthLoginRoute
+  '/register': typeof MarketingAuthRegisterRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof MainIndexRoute
-  '/login': typeof MainAuthLoginRoute
-  '/register': typeof MainAuthRegisterRoute
+  '/': typeof MarketingIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/login': typeof MarketingAuthLoginRoute
+  '/register': typeof MarketingAuthRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_main': typeof MainRouteRouteWithChildren
-  '/_main/_auth': typeof MainAuthRouteRouteWithChildren
-  '/_main/': typeof MainIndexRoute
-  '/_main/_auth/login': typeof MainAuthLoginRoute
-  '/_main/_auth/register': typeof MainAuthRegisterRoute
+  '/_marketing': typeof MarketingRouteRouteWithChildren
+  '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
+  '/_marketing/': typeof MarketingIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
+  '/_marketing/_auth/register': typeof MarketingAuthRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register'
+  fullPaths: '/' | '/dashboard/' | '/login' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register'
+  to: '/' | '/dashboard' | '/login' | '/register'
   id:
     | '__root__'
-    | '/_main'
-    | '/_main/_auth'
-    | '/_main/'
-    | '/_main/_auth/login'
-    | '/_main/_auth/register'
+    | '/_marketing'
+    | '/_marketing/_auth'
+    | '/_marketing/'
+    | '/dashboard/'
+    | '/_marketing/_auth/login'
+    | '/_marketing/_auth/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  MainRouteRoute: typeof MainRouteRouteWithChildren
+  MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_main': {
-      id: '/_main'
+    '/_marketing': {
+      id: '/_marketing'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof MainRouteRouteImport
+      preLoaderRoute: typeof MarketingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_main/': {
-      id: '/_main/'
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/': {
+      id: '/_marketing/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof MainIndexRouteImport
-      parentRoute: typeof MainRouteRoute
+      preLoaderRoute: typeof MarketingIndexRouteImport
+      parentRoute: typeof MarketingRouteRoute
     }
-    '/_main/_auth': {
-      id: '/_main/_auth'
+    '/_marketing/_auth': {
+      id: '/_marketing/_auth'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof MainAuthRouteRouteImport
-      parentRoute: typeof MainRouteRoute
+      preLoaderRoute: typeof MarketingAuthRouteRouteImport
+      parentRoute: typeof MarketingRouteRoute
     }
-    '/_main/_auth/register': {
-      id: '/_main/_auth/register'
+    '/_marketing/_auth/register': {
+      id: '/_marketing/_auth/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof MainAuthRegisterRouteImport
-      parentRoute: typeof MainAuthRouteRoute
+      preLoaderRoute: typeof MarketingAuthRegisterRouteImport
+      parentRoute: typeof MarketingAuthRouteRoute
     }
-    '/_main/_auth/login': {
-      id: '/_main/_auth/login'
+    '/_marketing/_auth/login': {
+      id: '/_marketing/_auth/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof MainAuthLoginRouteImport
-      parentRoute: typeof MainAuthRouteRoute
+      preLoaderRoute: typeof MarketingAuthLoginRouteImport
+      parentRoute: typeof MarketingAuthRouteRoute
     }
   }
 }
 
-interface MainAuthRouteRouteChildren {
-  MainAuthLoginRoute: typeof MainAuthLoginRoute
-  MainAuthRegisterRoute: typeof MainAuthRegisterRoute
+interface MarketingAuthRouteRouteChildren {
+  MarketingAuthLoginRoute: typeof MarketingAuthLoginRoute
+  MarketingAuthRegisterRoute: typeof MarketingAuthRegisterRoute
 }
 
-const MainAuthRouteRouteChildren: MainAuthRouteRouteChildren = {
-  MainAuthLoginRoute: MainAuthLoginRoute,
-  MainAuthRegisterRoute: MainAuthRegisterRoute,
+const MarketingAuthRouteRouteChildren: MarketingAuthRouteRouteChildren = {
+  MarketingAuthLoginRoute: MarketingAuthLoginRoute,
+  MarketingAuthRegisterRoute: MarketingAuthRegisterRoute,
 }
 
-const MainAuthRouteRouteWithChildren = MainAuthRouteRoute._addFileChildren(
-  MainAuthRouteRouteChildren,
-)
+const MarketingAuthRouteRouteWithChildren =
+  MarketingAuthRouteRoute._addFileChildren(MarketingAuthRouteRouteChildren)
 
-interface MainRouteRouteChildren {
-  MainAuthRouteRoute: typeof MainAuthRouteRouteWithChildren
-  MainIndexRoute: typeof MainIndexRoute
+interface MarketingRouteRouteChildren {
+  MarketingAuthRouteRoute: typeof MarketingAuthRouteRouteWithChildren
+  MarketingIndexRoute: typeof MarketingIndexRoute
 }
 
-const MainRouteRouteChildren: MainRouteRouteChildren = {
-  MainAuthRouteRoute: MainAuthRouteRouteWithChildren,
-  MainIndexRoute: MainIndexRoute,
+const MarketingRouteRouteChildren: MarketingRouteRouteChildren = {
+  MarketingAuthRouteRoute: MarketingAuthRouteRouteWithChildren,
+  MarketingIndexRoute: MarketingIndexRoute,
 }
 
-const MainRouteRouteWithChildren = MainRouteRoute._addFileChildren(
-  MainRouteRouteChildren,
+const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
+  MarketingRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  MainRouteRoute: MainRouteRouteWithChildren,
+  MarketingRouteRoute: MarketingRouteRouteWithChildren,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

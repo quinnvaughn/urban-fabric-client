@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { Box, Card, Tabs, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 
-export const Route = createFileRoute("/_main/_auth")({
+export const Route = createFileRoute("/_marketing/_auth")({
 	component: RouteComponent,
 })
 

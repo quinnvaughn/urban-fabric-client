@@ -8,7 +8,7 @@ import {
 	WhoItIsForSection,
 } from "#/features/landing-page"
 
-export const Route = createFileRoute("/_main/")({ component: App })
+export const Route = createFileRoute("/_marketing/")({ component: App })
 
 function App() {
 	return (

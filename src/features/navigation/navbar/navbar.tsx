@@ -47,7 +47,7 @@ export function Navbar() {
 									size: "sm",
 								})}
 							>
-								New Fabric
+								Dashboard
 							</Link>
 							<Avatar name={user.name} size="sm" tone="accent" />
 						</HStack>

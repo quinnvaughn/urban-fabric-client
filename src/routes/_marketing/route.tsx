@@ -4,7 +4,7 @@ import { HStack } from "#/features/ui/layout/layout"
 import { Typography } from "#/features/ui/typography/typography"
 import { css } from "#/styles/styled-system/css"
 
-export const Route = createFileRoute("/_main")({
+export const Route = createFileRoute("/_marketing")({
 	component: RouteComponent,
 })
 
