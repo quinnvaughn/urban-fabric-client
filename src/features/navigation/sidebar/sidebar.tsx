@@ -24,12 +24,14 @@ export function Sidebar() {
 		>
 			<Box
 				sx={{
-					paddingBlock: "4",
 					paddingInline: "2",
 					borderBottomWidth: "1px",
 					borderBottomStyle: "solid",
 					borderBottomColor: "stone.200",
 					flexShrink: 0,
+					height: "var(--uf-topbar-height)",
+					display: "flex",
+					alignItems: "center",
 				}}
 			>
 				<Logo />

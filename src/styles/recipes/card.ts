@@ -13,7 +13,6 @@ export const card = defineSlotRecipe({
 			borderStyle: "solid",
 			borderColor: "border.subtle",
 			borderRadius: "lg",
-			boxShadow: "lg",
 			overflow: "hidden",
 		},
 		media: {
@@ -49,7 +48,7 @@ export const card = defineSlotRecipe({
 	},
 
 	variants: {
-		// Controls padding across all slots
+		// ── Size — controls padding across all slots ───────────────────
 		size: {
 			sm: {
 				media: { aspectRatio: "video" },
@@ -70,11 +69,10 @@ export const card = defineSlotRecipe({
 				footer: { px: "10", py: "6" },
 			},
 		},
-		// Visual elevation
+
+		// ── Variant — visual style ─────────────────────────────────────
 		variant: {
-			elevated: {
-				// default — white with shadow
-			},
+			elevated: {},
 			flat: {
 				root: {
 					boxShadow: "none",
@@ -89,25 +87,178 @@ export const card = defineSlotRecipe({
 				},
 			},
 		},
+
+		// ── Shadow — resting elevation ─────────────────────────────────
+		shadow: {
+			none: { root: { boxShadow: "none" } },
+			sm: { root: { boxShadow: "sm" } },
+			md: { root: { boxShadow: "md" } },
+			lg: { root: { boxShadow: "lg" } },
+		},
+
+		// ── Lift — interactive hover behavior ─────────────────────────
+		// Controls transform amount only. Shadow step-up is handled
+		// via compound variants below.
 		lift: {
-			true: {
+			sm: {
+				root: {
+					transition: "box-shadow 0.15s ease, transform 0.15s ease",
+					"&:hover": { transform: "translateY(-1px)" },
+					"&:active": { transform: "translateY(0)" },
+				},
+			},
+			md: {
 				root: {
 					transition: "box-shadow 0.2s ease, transform 0.2s ease",
-					"&:hover": {
-						transform: "translateY(-3px)",
-						boxShadow: "2xl",
-					},
-					"&:active": {
-						transform: "translateY(-1px)",
-						boxShadow: "lg",
-					},
+					"&:hover": { transform: "translateY(-2px)" },
+					"&:active": { transform: "translateY(-1px)" },
+				},
+			},
+			lg: {
+				root: {
+					transition: "box-shadow 0.2s ease, transform 0.2s ease",
+					"&:hover": { transform: "translateY(-4px)" },
+					"&:active": { transform: "translateY(-1px)" },
 				},
 			},
 		},
 	},
 
+	// ── Compound variants — shadow × lift matrix ───────────────────────
+	// Each combination steps the shadow up proportionally on hover.
+	compoundVariants: [
+		// shadow: none
+		{
+			shadow: "none",
+			lift: "sm",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "sm" },
+					"&:active": { boxShadow: "none" },
+				},
+			},
+		},
+		{
+			shadow: "none",
+			lift: "md",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "md" },
+					"&:active": { boxShadow: "sm" },
+				},
+			},
+		},
+		{
+			shadow: "none",
+			lift: "lg",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "lg" },
+					"&:active": { boxShadow: "md" },
+				},
+			},
+		},
+
+		// shadow: sm
+		{
+			shadow: "sm",
+			lift: "sm",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "md" },
+					"&:active": { boxShadow: "sm" },
+				},
+			},
+		},
+		{
+			shadow: "sm",
+			lift: "md",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "lg" },
+					"&:active": { boxShadow: "md" },
+				},
+			},
+		},
+		{
+			shadow: "sm",
+			lift: "lg",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "2xl" },
+					"&:active": { boxShadow: "lg" },
+				},
+			},
+		},
+
+		// shadow: md
+		{
+			shadow: "md",
+			lift: "sm",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "lg" },
+					"&:active": { boxShadow: "md" },
+				},
+			},
+		},
+		{
+			shadow: "md",
+			lift: "md",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "xl" },
+					"&:active": { boxShadow: "lg" },
+				},
+			},
+		},
+		{
+			shadow: "md",
+			lift: "lg",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "2xl" },
+					"&:active": { boxShadow: "xl" },
+				},
+			},
+		},
+
+		// shadow: lg
+		{
+			shadow: "lg",
+			lift: "sm",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "xl" },
+					"&:active": { boxShadow: "lg" },
+				},
+			},
+		},
+		{
+			shadow: "lg",
+			lift: "md",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "2xl" },
+					"&:active": { boxShadow: "xl" },
+				},
+			},
+		},
+		{
+			shadow: "lg",
+			lift: "lg",
+			css: {
+				root: {
+					"&:hover": { boxShadow: "2xl" },
+					"&:active": { boxShadow: "xl" },
+				},
+			},
+		},
+	],
+
 	defaultVariants: {
 		size: "md",
 		variant: "elevated",
+		shadow: "lg",
 	},
 })

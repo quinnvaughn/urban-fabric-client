@@ -18,6 +18,7 @@ export default defineConfig({
 		html: {
 			"--uf-header-height": "56px",
 			"--uf-sidebar-width": "220px",
+			"--uf-topbar-height": "56px",
 		},
 	},
 	staticCss: {
@@ -68,6 +69,7 @@ export default defineConfig({
 					borderBottomWidth: ["*"],
 					borderBottomStyle: ["*"],
 					borderBottomColor: ["*"],
+					color: ["*"],
 				},
 			},
 		],

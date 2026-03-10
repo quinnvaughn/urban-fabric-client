@@ -13,6 +13,7 @@ type Weight = NonNullable<TypographyVariantProps["weight"]>
 type Leading = NonNullable<TypographyVariantProps["leading"]>
 type Tracking = NonNullable<TypographyVariantProps["tracking"]>
 type Transform = NonNullable<TypographyVariantProps["transform"]>
+type Clamp = NonNullable<TypographyVariantProps["clamp"]>
 type Color = ColorToken
 
 function colorStyle(color?: Color): React.CSSProperties | undefined {
@@ -25,12 +26,14 @@ function colorStyle(color?: Color): React.CSSProperties | undefined {
 type TextSize = Extract<NonNullable<TypographyVariantProps["textSize"]>, string>
 
 const TEXT_ELEMENT_MAP: Record<TextSize, React.ElementType> = {
+	xxs: "span",
 	xs: "span",
 	sm: "span",
 	md: "p",
 	lg: "p",
 	xl: "p",
 	"2xl": "p",
+	"3xl": "p",
 }
 
 export interface TextProps
@@ -44,6 +47,7 @@ export interface TextProps
 	tracking?: Tracking
 	transform?: Transform
 	color?: Color
+	clamp?: Clamp
 	italic?: boolean
 }
 
@@ -60,6 +64,7 @@ function TypographyText({
 	italic,
 	className,
 	style,
+	clamp,
 	...rest
 }: TextProps) {
 	const styles = typography({
@@ -67,6 +72,7 @@ function TypographyText({
 		weight,
 		tone,
 		font,
+		clamp,
 		leading,
 		tracking,
 		transform,

@@ -14,7 +14,7 @@ function useCardContext() {
 	const ctx = React.useContext(CardContext)
 	if (!ctx) {
 		throw new Error(
-			"Card.Header, Card.Body, and Card.Footer must be used within <Card>",
+			"Card.Header, Card.Body, Card.Media, and Card.Footer must be used within <Card>",
 		)
 	}
 	return ctx
@@ -29,12 +29,13 @@ export interface CardRootProps
 function CardRoot({
 	size,
 	variant,
+	shadow,
 	lift,
 	className,
 	children,
 	...rest
 }: CardRootProps) {
-	const styles = card({ size, variant, lift })
+	const styles = card({ size, variant, shadow, lift })
 
 	return (
 		<CardContext.Provider value={{ styles }}>
@@ -46,6 +47,7 @@ function CardRoot({
 }
 
 // ---------- Media ----------
+
 function CardMedia({
 	className,
 	...rest
