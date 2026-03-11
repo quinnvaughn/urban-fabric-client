@@ -14,10 +14,11 @@ import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
-import { Route as FabricIdRouteImport } from './routes/fabric/$id'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
+import { Route as FabricIdIndexRouteImport } from './routes/fabric/$id/index'
+import { Route as FabricIdPublishRouteImport } from './routes/fabric/$id/publish'
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
 import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
 
@@ -45,11 +46,6 @@ const FabricNewRoute = FabricNewRouteImport.update({
   path: '/fabric/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FabricIdRoute = FabricIdRouteImport.update({
-  id: '/fabric/$id',
-  path: '/fabric/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
   id: '/proposals',
   path: '/proposals',
@@ -63,6 +59,16 @@ const DashboardFabricsRoute = DashboardFabricsRouteImport.update({
 const MarketingAuthRouteRoute = MarketingAuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => MarketingRouteRoute,
+} as any)
+const FabricIdIndexRoute = FabricIdIndexRouteImport.update({
+  id: '/fabric/$id/',
+  path: '/fabric/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FabricIdPublishRoute = FabricIdPublishRouteImport.update({
+  id: '/fabric/$id/publish',
+  path: '/fabric/$id/publish',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MarketingAuthRegisterRoute = MarketingAuthRegisterRouteImport.update({
   id: '/register',
@@ -80,21 +86,23 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
-  '/fabric/$id': typeof FabricIdRoute
   '/fabric/new': typeof FabricNewRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
+  '/fabric/$id/publish': typeof FabricIdPublishRoute
+  '/fabric/$id/': typeof FabricIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
-  '/fabric/$id': typeof FabricIdRoute
   '/fabric/new': typeof FabricNewRoute
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
+  '/fabric/$id/publish': typeof FabricIdPublishRoute
+  '/fabric/$id': typeof FabricIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,12 +111,13 @@ export interface FileRoutesById {
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
-  '/fabric/$id': typeof FabricIdRoute
   '/fabric/new': typeof FabricNewRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
   '/_marketing/_auth/register': typeof MarketingAuthRegisterRoute
+  '/fabric/$id/publish': typeof FabricIdPublishRoute
+  '/fabric/$id/': typeof FabricIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,21 +126,23 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
-    | '/fabric/$id'
     | '/fabric/new'
     | '/dashboard/'
     | '/login'
     | '/register'
+    | '/fabric/$id/publish'
+    | '/fabric/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
-    | '/fabric/$id'
     | '/fabric/new'
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/fabric/$id/publish'
+    | '/fabric/$id'
   id:
     | '__root__'
     | '/_marketing'
@@ -139,19 +150,21 @@ export interface FileRouteTypes {
     | '/_marketing/_auth'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
-    | '/fabric/$id'
     | '/fabric/new'
     | '/_marketing/'
     | '/dashboard/'
     | '/_marketing/_auth/login'
     | '/_marketing/_auth/register'
+    | '/fabric/$id/publish'
+    | '/fabric/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  FabricIdRoute: typeof FabricIdRoute
   FabricNewRoute: typeof FabricNewRoute
+  FabricIdPublishRoute: typeof FabricIdPublishRoute
+  FabricIdIndexRoute: typeof FabricIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -191,13 +204,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FabricNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fabric/$id': {
-      id: '/fabric/$id'
-      path: '/fabric/$id'
-      fullPath: '/fabric/$id'
-      preLoaderRoute: typeof FabricIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/proposals': {
       id: '/dashboard/proposals'
       path: '/proposals'
@@ -218,6 +224,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof MarketingAuthRouteRouteImport
       parentRoute: typeof MarketingRouteRoute
+    }
+    '/fabric/$id/': {
+      id: '/fabric/$id/'
+      path: '/fabric/$id'
+      fullPath: '/fabric/$id/'
+      preLoaderRoute: typeof FabricIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fabric/$id/publish': {
+      id: '/fabric/$id/publish'
+      path: '/fabric/$id/publish'
+      fullPath: '/fabric/$id/publish'
+      preLoaderRoute: typeof FabricIdPublishRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_marketing/_auth/register': {
       id: '/_marketing/_auth/register'
@@ -282,8 +302,9 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  FabricIdRoute: FabricIdRoute,
   FabricNewRoute: FabricNewRoute,
+  FabricIdPublishRoute: FabricIdPublishRoute,
+  FabricIdIndexRoute: FabricIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -41,6 +41,7 @@ export function Topbar() {
 					css({ textDecoration: "none" }),
 				)}
 				to="/fabric/new"
+			preload={false}
 			>
 				+ New Fabric
 			</Link>

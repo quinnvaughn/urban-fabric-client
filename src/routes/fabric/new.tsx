@@ -16,7 +16,7 @@ const getLocationFromIp = createServerFn({ method: "GET" }).handler(
 
 export const Route = createFileRoute("/fabric/new")({
 	component: RouteComponent,
-	beforeLoad: async ({ context }) => {
+	loader: async ({ context }) => {
 		const response = context.apolloClient.readQuery({
 			query: MeDocument,
 		})

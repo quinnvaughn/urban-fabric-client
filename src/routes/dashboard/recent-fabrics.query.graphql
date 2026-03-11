@@ -1,0 +1,17 @@
+query RecentFabrics($limit: Int) {
+	myFabrics(limit: $limit) {
+		... on UnauthorizedError {
+			message
+		}
+		... on MyFabricsResponse {
+			data {
+				updatedAt
+				id
+				locationCity
+				locationCountry
+				locationRegion
+				title
+			}
+		}
+	}
+}

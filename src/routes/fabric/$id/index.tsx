@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { EditorTopbar, FabricMap } from "#/features/fabric"
 import { GetFabricDocument } from "#/graphql/generated"
 
-export const Route = createFileRoute("/fabric/$id")({
+export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
 	loader: ({ context, params }) => {
 		const fabricQuery = context.preloadQuery(GetFabricDocument, {
@@ -26,7 +26,7 @@ function RouteComponent() {
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
 			<EditorTopbar id={data.fabric.id} title={data.fabric.title} />
-			<FabricMap center={{ lat: 34.0195, lng: -118.4912 }} zoom={12} />
+			<FabricMap center={[-118.4912, 34.0195]} zoom={12} />
 		</div>
 	)
 }

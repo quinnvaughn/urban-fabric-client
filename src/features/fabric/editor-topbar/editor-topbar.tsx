@@ -1,5 +1,8 @@
+import { Link } from "@tanstack/react-router"
+import { ChevronRight } from "lucide-react"
 import { Box } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
+import { button } from "#/styles/styled-system/recipes"
 import { BackButton } from "./back-button"
 import { EditorTitleInput } from "./editor-title-input"
 
@@ -47,6 +50,19 @@ export function EditorTopbar({ title, id }: Props) {
 					})}
 				/>
 				<EditorTitleInput id={id} title={title} />
+			</Box>
+			<Box className={css({ flexShrink: 0 })}>
+				<Link
+					to="/fabric/$id/publish"
+					params={{ id }}
+					className={button({
+						appearance: "solid",
+						intent: "brand",
+						size: "sm",
+					})}
+				>
+					Publish proposal <ChevronRight size={12} />
+				</Link>
 			</Box>
 		</header>
 	)
