@@ -1,0 +1,32 @@
+import { useReadQuery } from "@apollo/client/react"
+import { createFileRoute } from "@tanstack/react-router"
+import { EditorTopbar, FabricMap } from "#/features/fabric"
+import { GetFabricDocument } from "#/graphql/generated"
+
+export const Route = createFileRoute("/fabric/$id")({
+	component: RouteComponent,
+	loader: ({ context, params }) => {
+		const fabricQuery = context.preloadQuery(GetFabricDocument, {
+			variables: {
+				fabricId: params.id,
+			},
+		})
+		return { fabricQuery }
+	},
+})
+
+function RouteComponent() {
+	const { fabricQuery } = Route.useLoaderData()
+	const { data } = useReadQuery(fabricQuery)
+
+	if (data.fabric.__typename === "NotFoundError") {
+		return <div>Fabric not found</div>
+	}
+
+	return (
+		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+			<EditorTopbar id={data.fabric.id} title={data.fabric.title} />
+			<FabricMap center={{ lat: 34.0195, lng: -118.4912 }} zoom={12} />
+		</div>
+	)
+}

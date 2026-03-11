@@ -1,6 +1,7 @@
-import { useMatches } from "@tanstack/react-router"
+import { Link, useMatches } from "@tanstack/react-router"
 import { Typography } from "#/features/ui"
-import { css } from "#/styles/styled-system/css"
+import { css, cx } from "#/styles/styled-system/css"
+import { button } from "#/styles/styled-system/recipes"
 
 export function Topbar() {
 	// get route name
@@ -22,6 +23,7 @@ export function Topbar() {
 				flexShrink: 0,
 				display: "flex",
 				alignItems: "center",
+				justifyContent: "space-between",
 				gap: "3",
 				px: "7",
 				borderBottom: "1px solid",
@@ -33,6 +35,15 @@ export function Topbar() {
 			<Typography.Text size="sm" weight="semibold">
 				{name}
 			</Typography.Text>
+			<Link
+				className={cx(
+					button({ intent: "brand", appearance: "solid", size: "sm" }),
+					css({ textDecoration: "none" }),
+				)}
+				to="/fabric/new"
+			>
+				+ New Fabric
+			</Link>
 		</header>
 	)
 }

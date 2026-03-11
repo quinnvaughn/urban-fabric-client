@@ -2,6 +2,7 @@ import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Greeting, SectionHeader, StatRow } from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
+import { ProposalRow } from "#/features/proposal"
 import { Grid, VStack } from "#/features/ui"
 import { MeDocument } from "#/graphql/generated"
 
@@ -49,368 +50,556 @@ function RouteComponent() {
 						]}
 					/>
 				</VStack>
-				<VStack gap="6">
-					<SectionHeader type="fabrics" total={12} />
-					<Grid gap="3" cols={3}>
-						<FabricCard
-							lastEdited="2026-05-20T14:48:00.000Z"
-							title="Main St: protected bike lanes & roundabouts at every intersection"
-							mapImage={
-								<svg
-									viewBox="0 0 300 120"
-									xmlns="http://www.w3.org/2000/svg"
-									preserveAspectRatio="xMidYMid slice"
-								>
-									<title>Example map image for a fabric</title>
-									{/* Background */}
-									<rect width="300" height="120" fill="#f5f2ec" />
-									{/* Blocks */}
-									<rect
-										x="0"
-										y="0"
-										width="90"
-										height="55"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="110"
-										y="0"
-										width="80"
-										height="55"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="210"
-										y="0"
-										width="90"
-										height="55"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="0"
-										y="75"
-										width="90"
-										height="45"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="110"
-										y="75"
-										width="80"
-										height="45"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="210"
-										y="75"
-										width="90"
-										height="45"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									{/* Streets */}
-									<rect x="0" y="55" width="300" height="20" fill="#d9d2c4" />
-									<rect x="90" y="0" width="20" height="120" fill="#d9d2c4" />
-									<rect x="190" y="0" width="20" height="120" fill="#d9d2c4" />
-									{/* Proposed: protected bike lane (coral strip) */}
-									<rect
-										x="0"
-										y="55"
-										width="300"
-										height="4"
-										fill="#d4735e"
-										opacity="0.75"
-									/>
-									{/* Proposed: tree canopy median (teal dots) */}
-									<circle cx="50" cy="65" r="7" fill="#1a6b5a" opacity="0.55" />
-									<circle
-										cx="150"
-										cy="65"
-										r="7"
-										fill="#1a6b5a"
-										opacity="0.55"
-									/>
-									<circle
-										cx="250"
-										cy="65"
-										r="7"
-										fill="#1a6b5a"
-										opacity="0.55"
-									/>
-									{/* Roundabout at intersection */}
-									<circle
-										cx="100"
-										cy="65"
-										r="9"
-										fill="#d9d2c4"
-										stroke="#c8c4ba"
-										strokeWidth="1"
-									/>
-									<circle cx="100" cy="65" r="4" fill="#b2e0d5" />
-									<circle
-										cx="200"
-										cy="65"
-										r="9"
-										fill="#d9d2c4"
-										stroke="#c8c4ba"
-										strokeWidth="1"
-									/>
-									<circle cx="200" cy="65" r="4" fill="#b2e0d5" />
-								</svg>
-							}
-						/>
-						<FabricCard
-							lastEdited="2026-06-03T14:48:00.000Z"
-							title="Harlem Ave dedicated bus lane — 12 min time savings"
-							mapImage={
-								<svg
-									viewBox="0 0 300 120"
-									xmlns="http://www.w3.org/2000/svg"
-									preserveAspectRatio="xMidYMid slice"
-								>
-									<title>Example map image for a fabric</title>
-									<rect width="300" height="120" fill="#f5f2ec" />
-									{/* Blocks */}
-									<rect
-										x="0"
-										y="0"
-										width="110"
-										height="45"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="130"
-										y="0"
-										width="170"
-										height="45"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="0"
-										y="65"
-										width="110"
-										height="55"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="130"
-										y="65"
-										width="170"
-										height="55"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									{/* Streets */}
-									<rect x="0" y="45" width="300" height="20" fill="#d9d2c4" />
-									<rect x="110" y="0" width="20" height="120" fill="#d9d2c4" />
-									{/* Bus lane proposal */}
-									<rect
-										x="0"
-										y="45"
-										width="300"
-										height="5"
-										fill="#d4901e"
-										opacity="0.6"
-									/>
-									{/* Station stops */}
-									<rect
-										x="55"
-										y="43"
-										width="24"
-										height="14"
-										fill="#1a6b5a"
-										opacity="0.8"
-										rx="2"
-									/>
-									<rect
-										x="175"
-										y="43"
-										width="24"
-										height="14"
-										fill="#1a6b5a"
-										opacity="0.8"
-										rx="2"
-									/>
-									<text
-										x="67"
-										y="53"
-										textAnchor="middle"
-										fontFamily="DM Sans,sans-serif"
-										fontSize="5"
-										fill="white"
-										fontWeight="600"
+				<VStack gap="9">
+					<VStack gap="6">
+						<SectionHeader type="fabrics" total={12} />
+						<Grid gap="3" cols={3}>
+							<FabricCard
+								lastEdited="2026-05-20T14:48:00.000Z"
+								title="Main St: protected bike lanes & roundabouts at every intersection"
+								mapImage={
+									<svg
+										viewBox="0 0 300 120"
+										xmlns="http://www.w3.org/2000/svg"
+										preserveAspectRatio="xMidYMid slice"
 									>
-										BUS
-									</text>
-									<text
-										x="187"
-										y="53"
-										textAnchor="middle"
-										fontFamily="DM Sans,sans-serif"
-										fontSize="5"
-										fill="white"
-										fontWeight="600"
+										<title>Example map image for a fabric</title>
+										{/* Background */}
+										<rect width="300" height="120" fill="#f5f2ec" />
+										{/* Blocks */}
+										<rect
+											x="0"
+											y="0"
+											width="90"
+											height="55"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="110"
+											y="0"
+											width="80"
+											height="55"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="210"
+											y="0"
+											width="90"
+											height="55"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="0"
+											y="75"
+											width="90"
+											height="45"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="110"
+											y="75"
+											width="80"
+											height="45"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="210"
+											y="75"
+											width="90"
+											height="45"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										{/* Streets */}
+										<rect x="0" y="55" width="300" height="20" fill="#d9d2c4" />
+										<rect x="90" y="0" width="20" height="120" fill="#d9d2c4" />
+										<rect
+											x="190"
+											y="0"
+											width="20"
+											height="120"
+											fill="#d9d2c4"
+										/>
+										{/* Proposed: protected bike lane (coral strip) */}
+										<rect
+											x="0"
+											y="55"
+											width="300"
+											height="4"
+											fill="#d4735e"
+											opacity="0.75"
+										/>
+										{/* Proposed: tree canopy median (teal dots) */}
+										<circle
+											cx="50"
+											cy="65"
+											r="7"
+											fill="#1a6b5a"
+											opacity="0.55"
+										/>
+										<circle
+											cx="150"
+											cy="65"
+											r="7"
+											fill="#1a6b5a"
+											opacity="0.55"
+										/>
+										<circle
+											cx="250"
+											cy="65"
+											r="7"
+											fill="#1a6b5a"
+											opacity="0.55"
+										/>
+										{/* Roundabout at intersection */}
+										<circle
+											cx="100"
+											cy="65"
+											r="9"
+											fill="#d9d2c4"
+											stroke="#c8c4ba"
+											strokeWidth="1"
+										/>
+										<circle cx="100" cy="65" r="4" fill="#b2e0d5" />
+										<circle
+											cx="200"
+											cy="65"
+											r="9"
+											fill="#d9d2c4"
+											stroke="#c8c4ba"
+											strokeWidth="1"
+										/>
+										<circle cx="200" cy="65" r="4" fill="#b2e0d5" />
+									</svg>
+								}
+							/>
+							<FabricCard
+								lastEdited="2026-06-03T14:48:00.000Z"
+								title="Harlem Ave dedicated bus lane — 12 min time savings"
+								mapImage={
+									<svg
+										viewBox="0 0 300 120"
+										xmlns="http://www.w3.org/2000/svg"
+										preserveAspectRatio="xMidYMid slice"
 									>
-										BUS
-									</text>
-								</svg>
-							}
-						/>
-						<FabricCard
-							lastEdited="2026-04-15T14:48:00.000Z"
-							title="Elm Ave shared street + widened sidewalks near school"
-							mapImage={
-								<svg
-									viewBox="0 0 300 120"
-									xmlns="http://www.w3.org/2000/svg"
-									preserveAspectRatio="xMidYMid slice"
-								>
-									<title>Example map image for a fabric</title>
-									<rect width="300" height="120" fill="#f5f2ec" />
-									{/* Blocks */}
-									<rect
-										x="0"
-										y="0"
-										width="130"
-										height="50"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="150"
-										y="0"
-										width="150"
-										height="50"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="0"
-										y="70"
-										width="130"
-										height="50"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									<rect
-										x="150"
-										y="70"
-										width="150"
-										height="50"
-										fill="#ebe6dc"
-										rx="2"
-									/>
-									{/* Streets */}
-									<rect x="0" y="50" width="300" height="20" fill="#d9d2c4" />
-									<rect x="130" y="0" width="20" height="120" fill="#d9d2c4" />
-									{/* Wide sidewalk proposal (teal) */}
-									<rect
-										x="0"
-										y="68"
-										width="300"
-										height="5"
-										fill="#1a6b5a"
-										opacity="0.5"
-									/>
-									{/* Shared path marker (dashed) */}
-									<rect
-										x="0"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="30"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="60"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="90"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="160"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="190"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="220"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="250"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									<rect
-										x="280"
-										y="51"
-										width="20"
-										height="3"
-										fill="white"
-										opacity="0.6"
-									/>
-									{/* Trees */}
-									<circle cx="60" cy="43" r="6" fill="#278d75" opacity="0.5" />
-									<circle cx="200" cy="43" r="6" fill="#278d75" opacity="0.5" />
-									<circle cx="60" cy="78" r="6" fill="#278d75" opacity="0.5" />
-									<circle cx="200" cy="78" r="6" fill="#278d75" opacity="0.5" />
-									{/* Crossing signal */}
-									<rect
-										x="128"
-										y="48"
-										width="4"
-										height="12"
-										fill="#504c45"
-										rx="1"
-									/>
-								</svg>
-							}
-						/>
-					</Grid>
+										<title>Example map image for a fabric</title>
+										<rect width="300" height="120" fill="#f5f2ec" />
+										{/* Blocks */}
+										<rect
+											x="0"
+											y="0"
+											width="110"
+											height="45"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="130"
+											y="0"
+											width="170"
+											height="45"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="0"
+											y="65"
+											width="110"
+											height="55"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="130"
+											y="65"
+											width="170"
+											height="55"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										{/* Streets */}
+										<rect x="0" y="45" width="300" height="20" fill="#d9d2c4" />
+										<rect
+											x="110"
+											y="0"
+											width="20"
+											height="120"
+											fill="#d9d2c4"
+										/>
+										{/* Bus lane proposal */}
+										<rect
+											x="0"
+											y="45"
+											width="300"
+											height="5"
+											fill="#d4901e"
+											opacity="0.6"
+										/>
+										{/* Station stops */}
+										<rect
+											x="55"
+											y="43"
+											width="24"
+											height="14"
+											fill="#1a6b5a"
+											opacity="0.8"
+											rx="2"
+										/>
+										<rect
+											x="175"
+											y="43"
+											width="24"
+											height="14"
+											fill="#1a6b5a"
+											opacity="0.8"
+											rx="2"
+										/>
+										<text
+											x="67"
+											y="53"
+											textAnchor="middle"
+											fontFamily="DM Sans,sans-serif"
+											fontSize="5"
+											fill="white"
+											fontWeight="600"
+										>
+											BUS
+										</text>
+										<text
+											x="187"
+											y="53"
+											textAnchor="middle"
+											fontFamily="DM Sans,sans-serif"
+											fontSize="5"
+											fill="white"
+											fontWeight="600"
+										>
+											BUS
+										</text>
+									</svg>
+								}
+							/>
+							<FabricCard
+								lastEdited="2026-04-15T14:48:00.000Z"
+								title="Elm Ave shared street + widened sidewalks near school"
+								mapImage={
+									<svg
+										viewBox="0 0 300 120"
+										xmlns="http://www.w3.org/2000/svg"
+										preserveAspectRatio="xMidYMid slice"
+									>
+										<title>Example map image for a fabric</title>
+										<rect width="300" height="120" fill="#f5f2ec" />
+										{/* Blocks */}
+										<rect
+											x="0"
+											y="0"
+											width="130"
+											height="50"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="150"
+											y="0"
+											width="150"
+											height="50"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="0"
+											y="70"
+											width="130"
+											height="50"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										<rect
+											x="150"
+											y="70"
+											width="150"
+											height="50"
+											fill="#ebe6dc"
+											rx="2"
+										/>
+										{/* Streets */}
+										<rect x="0" y="50" width="300" height="20" fill="#d9d2c4" />
+										<rect
+											x="130"
+											y="0"
+											width="20"
+											height="120"
+											fill="#d9d2c4"
+										/>
+										{/* Wide sidewalk proposal (teal) */}
+										<rect
+											x="0"
+											y="68"
+											width="300"
+											height="5"
+											fill="#1a6b5a"
+											opacity="0.5"
+										/>
+										{/* Shared path marker (dashed) */}
+										<rect
+											x="0"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="30"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="60"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="90"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="160"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="190"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="220"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="250"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										<rect
+											x="280"
+											y="51"
+											width="20"
+											height="3"
+											fill="white"
+											opacity="0.6"
+										/>
+										{/* Trees */}
+										<circle
+											cx="60"
+											cy="43"
+											r="6"
+											fill="#278d75"
+											opacity="0.5"
+										/>
+										<circle
+											cx="200"
+											cy="43"
+											r="6"
+											fill="#278d75"
+											opacity="0.5"
+										/>
+										<circle
+											cx="60"
+											cy="78"
+											r="6"
+											fill="#278d75"
+											opacity="0.5"
+										/>
+										<circle
+											cx="200"
+											cy="78"
+											r="6"
+											fill="#278d75"
+											opacity="0.5"
+										/>
+										{/* Crossing signal */}
+										<rect
+											x="128"
+											y="48"
+											width="4"
+											height="12"
+											fill="#504c45"
+											rx="1"
+										/>
+									</svg>
+								}
+							/>
+						</Grid>
+					</VStack>
+					<VStack gap="6">
+						<SectionHeader type="proposals" total={4} />
+						<VStack gap="2.5">
+							<ProposalRow
+								title="Main St: protected bike lanes & roundabouts"
+								date="2026-05-20T14:48:00.000Z"
+								status="published"
+								location="Oak Park, IL"
+								views={2400}
+								likes={240}
+								mapImage={
+									<svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+										<title>Example map image for a proposal</title>
+										<rect width="80" height="64" fill="#f5f2ec"></rect>
+										<rect
+											x="0"
+											y="26"
+											width="80"
+											height="12"
+											fill="#d9d2c4"
+										></rect>
+										<rect
+											x="0"
+											y="26"
+											width="80"
+											height="3"
+											fill="#d4735e"
+											opacity="0.7"
+										></rect>
+										<circle
+											cx="40"
+											cy="32"
+											r="7"
+											fill="#d9d2c4"
+											stroke="#c8c4ba"
+											stroke-width="1"
+										></circle>
+										<circle cx="40" cy="32" r="3" fill="#b2e0d5"></circle>
+										<circle
+											cx="20"
+											cy="22"
+											r="5"
+											fill="#1a6b5a"
+											opacity="0.5"
+										></circle>
+										<circle
+											cx="60"
+											cy="22"
+											r="5"
+											fill="#1a6b5a"
+											opacity="0.5"
+										></circle>
+									</svg>
+								}
+							/>
+							<ProposalRow
+								title="Harlem Ave dedicated bus lane — 12 min time savings"
+								status="published"
+								date="2026-06-03T14:48:00.000Z"
+								location="Berwyn, IL"
+								likes={143}
+								views={5600}
+								mapImage={
+									<svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+										<title>Example map image for a proposal</title>
+										<rect width="80" height="64" fill="#f5f2ec"></rect>
+										<rect
+											x="0"
+											y="26"
+											width="80"
+											height="12"
+											fill="#d9d2c4"
+										></rect>
+										<rect
+											x="0"
+											y="26"
+											width="80"
+											height="3"
+											fill="#d4901e"
+											opacity="0.6"
+										></rect>
+										<rect
+											x="18"
+											y="24"
+											width="12"
+											height="8"
+											fill="#1a6b5a"
+											opacity="0.8"
+											rx="1"
+										></rect>
+										<rect
+											x="50"
+											y="24"
+											width="12"
+											height="8"
+											fill="#1a6b5a"
+											opacity="0.8"
+											rx="1"
+										></rect>
+									</svg>
+								}
+							/>
+							<ProposalRow
+								mapImage={
+									<svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+										<title>Example map image for a proposal</title>
+										<rect width="80" height="64" fill="#f5f2ec"></rect>
+										<rect
+											x="0"
+											y="22"
+											width="80"
+											height="10"
+											fill="#d9d2c4"
+										></rect>
+										<rect
+											x="30"
+											y="0"
+											width="10"
+											height="64"
+											fill="#d9d2c4"
+										></rect>
+										<rect
+											x="0"
+											y="22"
+											width="80"
+											height="3"
+											fill="#1a6b5a"
+											opacity="0.45"
+										></rect>
+									</svg>
+								}
+								title="Elm Ave shared street + widened sidewalks"
+								status="draft"
+								location="Oak Park, IL"
+								date="2026-04-15T14:48:00.000Z"
+							/>
+						</VStack>
+					</VStack>
 				</VStack>
 			</VStack>
 		</div>

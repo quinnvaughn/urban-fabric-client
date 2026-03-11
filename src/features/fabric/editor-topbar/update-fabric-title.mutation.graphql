@@ -1,0 +1,16 @@
+mutation UpdateFabricTitle($input: UpdateFabricTitleInput!) {
+	updateFabricTitle(input: $input) {
+		... on Fabric {
+			id
+		}
+		... on NotFoundError {
+			message
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

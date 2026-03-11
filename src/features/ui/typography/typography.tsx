@@ -49,6 +49,7 @@ export interface TextProps
 	color?: Color
 	clamp?: Clamp
 	italic?: boolean
+	truncate?: boolean
 }
 
 function TypographyText({
@@ -65,6 +66,7 @@ function TypographyText({
 	className,
 	style,
 	clamp,
+	truncate,
 	...rest
 }: TextProps) {
 	const styles = typography({
@@ -76,6 +78,7 @@ function TypographyText({
 		leading,
 		tracking,
 		transform,
+		truncate,
 	})
 	const Tag = as ?? TEXT_ELEMENT_MAP[size]
 	return (

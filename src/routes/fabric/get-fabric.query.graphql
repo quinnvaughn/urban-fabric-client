@@ -1,0 +1,11 @@
+query GetFabric($fabricId: ID!) {
+	fabric(id: $fabricId) {
+		... on Fabric {
+			id
+			title
+		}
+		... on NotFoundError {
+			message
+		}
+	}
+}

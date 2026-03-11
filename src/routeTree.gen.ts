@@ -13,6 +13,8 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as FabricNewRouteImport } from './routes/fabric/new'
+import { Route as FabricIdRouteImport } from './routes/fabric/$id'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
@@ -37,6 +39,16 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
+} as any)
+const FabricNewRoute = FabricNewRouteImport.update({
+  id: '/fabric/new',
+  path: '/fabric/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FabricIdRoute = FabricIdRouteImport.update({
+  id: '/fabric/$id',
+  path: '/fabric/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
   id: '/proposals',
@@ -68,6 +80,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/fabric/$id': typeof FabricIdRoute
+  '/fabric/new': typeof FabricNewRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
@@ -76,6 +90,8 @@ export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/fabric/$id': typeof FabricIdRoute
+  '/fabric/new': typeof FabricNewRoute
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
@@ -87,6 +103,8 @@ export interface FileRoutesById {
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/fabric/$id': typeof FabricIdRoute
+  '/fabric/new': typeof FabricNewRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
@@ -99,6 +117,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/fabric/$id'
+    | '/fabric/new'
     | '/dashboard/'
     | '/login'
     | '/register'
@@ -107,6 +127,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/fabric/$id'
+    | '/fabric/new'
     | '/dashboard'
     | '/login'
     | '/register'
@@ -117,6 +139,8 @@ export interface FileRouteTypes {
     | '/_marketing/_auth'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/fabric/$id'
+    | '/fabric/new'
     | '/_marketing/'
     | '/dashboard/'
     | '/_marketing/_auth/login'
@@ -126,6 +150,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  FabricIdRoute: typeof FabricIdRoute
+  FabricNewRoute: typeof FabricNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -157,6 +183,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
+    }
+    '/fabric/new': {
+      id: '/fabric/new'
+      path: '/fabric/new'
+      fullPath: '/fabric/new'
+      preLoaderRoute: typeof FabricNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fabric/$id': {
+      id: '/fabric/$id'
+      path: '/fabric/$id'
+      fullPath: '/fabric/$id'
+      preLoaderRoute: typeof FabricIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/proposals': {
       id: '/dashboard/proposals'
@@ -242,6 +282,8 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  FabricIdRoute: FabricIdRoute,
+  FabricNewRoute: FabricNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

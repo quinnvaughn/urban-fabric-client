@@ -34,6 +34,11 @@ export const badge = defineRecipe({
 				color: "fg.muted",
 				border: "1px solid {colors.border.subtle}",
 			},
+			muted: {
+				background: "bg.base",
+				color: "fg.subtle",
+				border: "1px solid {colors.border.subtle}",
+			},
 			neutral: {
 				background: "bg.muted",
 				color: "fg.default",

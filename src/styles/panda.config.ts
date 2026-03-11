@@ -20,6 +20,13 @@ export default defineConfig({
 			"--uf-sidebar-width": "220px",
 			"--uf-topbar-height": "56px",
 		},
+		"*::-webkit-scrollbar": { width: "6px", height: "6px" },
+		"*::-webkit-scrollbar-track": { background: "transparent" },
+		"*::-webkit-scrollbar-thumb": {
+			background: "stone.300",
+			borderRadius: "9999px",
+		},
+		"*::-webkit-scrollbar-thumb:hover": { background: "stone.400" },
 	},
 	staticCss: {
 		recipes: {

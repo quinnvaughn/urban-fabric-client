@@ -1,0 +1,10 @@
+mutation CreateFabric($input: CreateFabricInput!) {
+	createFabric(input: $input) {
+		... on Fabric {
+			id
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

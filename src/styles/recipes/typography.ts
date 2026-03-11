@@ -198,6 +198,15 @@ export const typography = defineSlotRecipe({
 				},
 			},
 		},
+		truncate: {
+			true: {
+				text: {
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					whiteSpace: "nowrap",
+				},
+			},
+		},
 		// ── Tone ──────────────────────────────────────────────────────────────
 		tone: {
 			default: {

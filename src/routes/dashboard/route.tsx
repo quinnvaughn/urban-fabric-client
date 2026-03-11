@@ -21,7 +21,7 @@ function RouteComponent() {
 			className={css({
 				display: "flex",
 				background: "stone.100",
-				height: "100%",
+				height: "100dvh",
 				overflow: "hidden",
 			})}
 		>
