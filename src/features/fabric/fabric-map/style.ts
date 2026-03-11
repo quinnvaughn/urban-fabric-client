@@ -35,6 +35,17 @@ export function buildMapStyle(apiKey: string): StyleSpecification {
 				type: "fill",
 				source: "protomaps",
 				"source-layer": "water",
+				filter: [
+					"all",
+					[
+						"in",
+						["get", "kind"],
+						[
+							"literal",
+							["ocean", "sea", "lake", "river", "reservoir", "canal"],
+						],
+					],
+				],
 				paint: { "fill-color": "#b8cfe0" },
 			},
 

@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { buildMapStyle } from "./style"
 
 type Props = {
-	center: [number, number] // [lng, lat] — MapLibre's native order
+	center: [number, number] // [lng, lat]
 	zoom?: number
 	pitch?: number
 }
