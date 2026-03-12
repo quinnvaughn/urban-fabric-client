@@ -7,11 +7,11 @@ import { buildMapStyle } from "./style"
 type Props = {
 	center: [number, number] // [lng, lat]
 	zoom?: number
-	pitch?: number
+	bearing?: number
 	children?: React.ReactNode
 }
 
-export function FabricMap({ center, zoom = 15, pitch = 0, children }: Props) {
+export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const mapRef = useRef<maplibregl.Map | null>(null)
 	const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -26,8 +26,8 @@ export function FabricMap({ center, zoom = 15, pitch = 0, children }: Props) {
 			style: buildMapStyle(import.meta.env.VITE_PROTOMAPS_KEY),
 			center,
 			zoom,
-			pitch,
-			bearing: 0,
+			pitch: 0,
+			bearing,
 			// Remove default controls — you'll add your own HUD
 			attributionControl: false,
 		})
@@ -50,8 +50,8 @@ export function FabricMap({ center, zoom = 15, pitch = 0, children }: Props) {
 	// Fly to center if it changes after mount rather than remounting
 	useEffect(() => {
 		if (!mapRef.current) return
-		mapRef.current.flyTo({ center, zoom, pitch, duration: 600 })
-	}, [center, zoom, pitch])
+		mapRef.current.flyTo({ center, zoom, bearing, duration: 600 })
+	}, [center, zoom, bearing])
 
 	return (
 		<MapProvider value={map}>

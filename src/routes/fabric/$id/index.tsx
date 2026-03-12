@@ -2,6 +2,7 @@ import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import {
 	DrawingLayer,
+	EditorHUD,
 	EditorTopbar,
 	ElementPanel,
 	FabricMap,
@@ -39,9 +40,11 @@ function RouteComponent() {
 					data.fabric.viewportCenter.lat,
 				]}
 				zoom={data.fabric.viewportZoom}
+				bearing={data.fabric.viewportBearing}
 			>
 				<DrawingLayer />
 				<ViewportTracker id={data.fabric.id} />
+				<EditorHUD />
 			</FabricMap>
 		</div>
 	)
