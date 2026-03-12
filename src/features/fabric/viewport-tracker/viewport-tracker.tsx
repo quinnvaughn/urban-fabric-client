@@ -16,7 +16,6 @@ export function ViewportTracker({ id }: Props) {
 		function handleMoveEnd() {
 			const { lng, lat } = map.getCenter()
 			const zoom = map.getZoom()
-			const pitch = map.getPitch()
 			const bearing = map.getBearing()
 			syncViewport({
 				variables: {
@@ -24,7 +23,6 @@ export function ViewportTracker({ id }: Props) {
 						id,
 						center: { lng, lat },
 						zoom,
-						pitch,
 						bearing,
 					},
 				},
