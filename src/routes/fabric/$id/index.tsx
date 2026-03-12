@@ -1,14 +1,21 @@
-import { useReadQuery } from "@apollo/client/react"
+import { useApolloClient, useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { useEffect } from "react"
 import {
 	DrawingLayer,
 	EditorHUD,
 	EditorTopbar,
 	ElementPanel,
 	FabricMap,
+	SelectLayer,
 } from "#/features/fabric"
+import { apiHandler } from "#/features/fabric/element-types/types"
+import {
+	useFabricPersistence,
+	useFabricStore,
+} from "#/features/fabric/fabric-store"
 import { ViewportTracker } from "#/features/fabric/viewport-tracker"
-import { GetFabricDocument } from "#/graphql/generated"
+import { GetFabricDocument, type GetFabricQuery } from "#/graphql/generated"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -30,20 +37,33 @@ function RouteComponent() {
 		return <div>Fabric not found</div>
 	}
 
+	return <FabricEditor fabric={data.fabric} />
+}
+
+type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
+
+function FabricEditor({ fabric }: { fabric: Fabric }) {
+	const client = useApolloClient()
+	const initElements = useFabricStore((state) => state.initElements)
+	useFabricPersistence(apiHandler(fabric.id, client))
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+	useEffect(() => {
+		initElements(fabric.elements)
+	}, [fabric.id])
+
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<EditorTopbar id={data.fabric.id} title={data.fabric.title} />
+			<EditorTopbar id={fabric.id} title={fabric.title} />
 			<ElementPanel />
 			<FabricMap
-				center={[
-					data.fabric.viewportCenter.lng,
-					data.fabric.viewportCenter.lat,
-				]}
-				zoom={data.fabric.viewportZoom}
-				bearing={data.fabric.viewportBearing}
+				center={[fabric.viewportCenter.lng, fabric.viewportCenter.lat]}
+				zoom={fabric.viewportZoom}
+				bearing={fabric.viewportBearing}
 			>
 				<DrawingLayer />
-				<ViewportTracker id={data.fabric.id} />
+				<SelectLayer />
+				<ViewportTracker id={fabric.id} />
 				<EditorHUD />
 			</FabricMap>
 		</div>

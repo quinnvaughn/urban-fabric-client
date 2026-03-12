@@ -8,6 +8,7 @@ type FabricStore = {
 	setActiveTool: (tool: "select" | "draw") => void
 
 	elements: ElementInstance[]
+	initElements: (elements: ElementInstance[]) => void
 	addElement: (element: ElementInstance) => void
 	updateElement: (id: string, updates: Partial<ElementInstance>) => void
 	deleteElement: (id: string) => void
@@ -23,6 +24,7 @@ export const useFabricStore = create<FabricStore>((set) => ({
 	selectedInstanceId: null,
 	setActiveElement: (element) => set({ activeElement: element }),
 	setActiveTool: (tool) => set({ activeTool: tool }),
+	initElements: (elements) => set({ elements }),
 	addElement: (element) =>
 		set((state) => ({ elements: [...state.elements, element] })),
 	updateElement: (id, updates) =>

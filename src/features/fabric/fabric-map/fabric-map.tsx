@@ -15,6 +15,7 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const mapRef = useRef<maplibregl.Map | null>(null)
 	const [map, setMap] = useState<maplibregl.Map | null>(null)
+	const [styleLoaded, setStyleLoaded] = useState(false)
 
 	// Initialize once — intentionally empty deps
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
@@ -32,12 +33,14 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 			attributionControl: false,
 		})
 
+		mapRef.current.once("load", () => setStyleLoaded(true))
 		setMap(mapRef.current)
 
 		return () => {
 			mapRef.current?.remove()
 			mapRef.current = null
 			setMap(null)
+			setStyleLoaded(false)
 		}
 	}, [])
 
@@ -50,7 +53,7 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 	return (
 		<MapProvider value={map}>
 			<div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-			{map && children}
+			{map && styleLoaded && children}
 		</MapProvider>
 	)
 }

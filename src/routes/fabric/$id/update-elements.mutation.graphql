@@ -1,0 +1,16 @@
+mutation UpdateFabricElements($input: UpdateFabricElementsInput!) {
+	updateFabricElements(input: $input) {
+		... on Fabric {
+			id
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

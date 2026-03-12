@@ -125,36 +125,27 @@ export function DrawingLayer() {
 
 	// ── Persistent drawing sources/layers ──────────────────────────────────
 	useEffect(() => {
-		function setup() {
-			if (!map.getSource("draw-active")) {
-				map.addSource("draw-active", { type: "geojson", data: EMPTY_LINE })
-				map.addLayer({
-					id: "draw-active",
-					type: "line",
-					source: "draw-active",
-					layout: { "line-join": "round", "line-cap": "round" },
-					paint: { "line-color": "#3d8b37", "line-width": 4 },
-				})
-			}
-			if (!map.getSource("draw-preview")) {
-				map.addSource("draw-preview", { type: "geojson", data: EMPTY_LINE })
-				map.addLayer({
-					id: "draw-preview",
-					type: "line",
-					source: "draw-preview",
-					layout: { "line-join": "round", "line-cap": "round" },
-					paint: {
-						"line-color": "#3d8b37",
-						"line-width": 2.5,
-						"line-dasharray": [8, 6],
-						"line-opacity": 0.5,
-					},
-				})
-			}
-		}
-
-		if (map.isStyleLoaded()) setup()
-		else map.once("styledata", setup)
+		map.addSource("draw-active", { type: "geojson", data: EMPTY_LINE })
+		map.addLayer({
+			id: "draw-active",
+			type: "line",
+			source: "draw-active",
+			layout: { "line-join": "round", "line-cap": "round" },
+			paint: { "line-color": "#3d8b37", "line-width": 4 },
+		})
+		map.addSource("draw-preview", { type: "geojson", data: EMPTY_LINE })
+		map.addLayer({
+			id: "draw-preview",
+			type: "line",
+			source: "draw-preview",
+			layout: { "line-join": "round", "line-cap": "round" },
+			paint: {
+				"line-color": "#3d8b37",
+				"line-width": 2.5,
+				"line-dasharray": [8, 6],
+				"line-opacity": 0.5,
+			},
+		})
 
 		return () => {
 			if (map.getLayer("draw-preview")) map.removeLayer("draw-preview")
@@ -222,6 +213,7 @@ export function DrawingLayer() {
 				typeId: element.id,
 				geometry: "line",
 				coordinates: coords,
+				waypoints: [...waypointsRef.current],
 				properties: Object.fromEntries(
 					descriptor.properties.map((p) => [p.key, p.default]),
 				),
@@ -282,75 +274,79 @@ export function DrawingLayer() {
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {
-		const currentIds = new Set(elements.map((e) => e.id))
+		function sync() {
+			const currentIds = new Set(elements.map((e) => e.id))
 
-		// Remove layers for deleted elements
-		for (const id of elementLayerIds.current) {
-			if (!currentIds.has(id)) {
-				removeElementLayers(map, id)
-				elementLayerIds.current.delete(id)
-			}
-		}
-
-		// Add or update layers for current elements
-		for (const el of elements) {
-			const descriptor = ELEMENT_TYPE_MAP[el.typeId]
-			if (!descriptor) continue
-
-			const data = makeLineFeature(el.coordinates)
-
-			// ── Update existing sources ──────────────────────────────────────
-			if (map.getSource(mainSourceId(el.id))) {
-				;(
-					map.getSource(mainSourceId(el.id)) as maplibregl.GeoJSONSource
-				).setData(data)
-				if (map.getSource(casingSourceId(el.id))) {
-					;(
-						map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
-					).setData(data)
+			// Remove layers for deleted elements
+			for (const id of elementLayerIds.current) {
+				if (!currentIds.has(id)) {
+					removeElementLayers(map, id)
+					elementLayerIds.current.delete(id)
 				}
-				continue
 			}
 
-			// ── Add new layers ───────────────────────────────────────────────
-			// Insert everything below the draw layers so new elements never
-			// appear on top of an in-progress drawing.
-			const belowLayer = map.getLayer("draw-active") ? "draw-active" : undefined
+			// Add or update layers for current elements
+			for (const el of elements) {
+				const descriptor = ELEMENT_TYPE_MAP[el.typeId]
+				if (!descriptor) continue
 
-			// 1. Casing — rendered beneath the main stroke
-			const casingPaint = computeCasingPaint(descriptor.baseMapStyle)
-			if (casingPaint) {
-				map.addSource(casingSourceId(el.id), { type: "geojson", data })
+				const data = makeLineFeature(el.coordinates)
+
+				// ── Update existing sources ──────────────────────────────────────
+				if (map.getSource(mainSourceId(el.id))) {
+					;(
+						map.getSource(mainSourceId(el.id)) as maplibregl.GeoJSONSource
+					).setData(data)
+					if (map.getSource(casingSourceId(el.id))) {
+						;(
+							map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
+						).setData(data)
+					}
+					continue
+				}
+
+				// ── Add new layers ───────────────────────────────────────────────
+				// Insert everything below the draw layers so new elements never
+				// appear on top of an in-progress drawing.
+				const belowLayer = map.getLayer("draw-active") ? "draw-active" : undefined
+
+				// 1. Casing — rendered beneath the main stroke
+				const casingPaint = computeCasingPaint(descriptor.baseMapStyle)
+				if (casingPaint) {
+					map.addSource(casingSourceId(el.id), { type: "geojson", data })
+					map.addLayer(
+						{
+							id: casingLayerId(el.id),
+							type: "line",
+							source: casingSourceId(el.id),
+							layout: { "line-join": "round", "line-cap": "round" },
+							paint: casingPaint,
+						},
+						belowLayer,
+					)
+				}
+
+				// 2. Main stroke — on top of casing, below draw layers
+				map.addSource(mainSourceId(el.id), { type: "geojson", data })
 				map.addLayer(
 					{
-						id: casingLayerId(el.id),
+						id: mainLayerId(el.id),
 						type: "line",
-						source: casingSourceId(el.id),
-						layout: { "line-join": "round", "line-cap": "round" },
-						paint: casingPaint,
+						source: mainSourceId(el.id),
+						layout: {
+							"line-join": descriptor.baseMapStyle.lineJoin ?? "round",
+							"line-cap": descriptor.baseMapStyle.lineCap ?? "square",
+						},
+						paint: computeBasePaint(descriptor, el),
 					},
 					belowLayer,
 				)
+
+				elementLayerIds.current.add(el.id)
 			}
-
-			// 2. Main stroke — on top of casing, below draw layers
-			map.addSource(mainSourceId(el.id), { type: "geojson", data })
-			map.addLayer(
-				{
-					id: mainLayerId(el.id),
-					type: "line",
-					source: mainSourceId(el.id),
-					layout: {
-						"line-join": descriptor.baseMapStyle.lineJoin ?? "round",
-						"line-cap": descriptor.baseMapStyle.lineCap ?? "square",
-					},
-					paint: computeBasePaint(descriptor, el),
-				},
-				belowLayer,
-			)
-
-			elementLayerIds.current.add(el.id)
 		}
+
+		sync()
 	}, [elements, map])
 
 	return null

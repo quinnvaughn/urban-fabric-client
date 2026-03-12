@@ -1,5 +1,8 @@
 // ── Property panel inputs ────────────────────────────────────────────────────
 
+import type { ApolloClient } from "@apollo/client"
+import { UpdateFabricElementsDocument } from "#/graphql/generated"
+
 type StepperInput = {
 	kind: "stepper"
 	min: number
@@ -61,38 +64,44 @@ export type LineLayerStyle = {
 	casingWidth?: number
 	casingOpacity?: number
 
-	// Selected state — applied as a separate filtered layer when
-	// feature-state "selected: true". Overrides width and lineCap on the main
-	// stroke, and adds the dashed bounding outline.
+	// Selected state — applied as a separate filtered layer when selected.
+	// outlineColor and the main stroke color are derived from baseMapStyle.color
+	// at render time.
 	selected?: {
 		color?: string
 		width?: number
 		lineCap?: "butt" | "round" | "square"
-		// Bounding outline: two dashed line layers offset symmetrically above
-		// and below the main stroke to approximate a selection bounding box.
-		outlineColor?: string
 		outlineOpacity?: number
 		outlineDasharray?: number[]
-		outlineOffset?: number // px — applied as +n and -n to produce both sides
+		outlineOffset?: number
 		outlineWidth?: number
 	}
 
-	// Endpoint nodes — a separate circle layer rendered at each vertex of the
-	// line. Only visible when feature-state "selected: true". The glow is a
-	// larger circle at low opacity behind the main node circle.
+	// Endpoint nodes — rendered at each user-placed waypoint, selected state only.
+	// strokeColor and snapRingColor are derived from baseMapStyle.color at render time.
 	endpoints?: {
 		radius: number
-		fillColor: string
-		strokeColor: string
+		fillColor: string // always white
 		strokeWidth: number
 		glowRadius: number
 		glowOpacity: number
+		snapRingRadius: number
+		snapRingOpacity: number
+		snapRingDasharray: number[]
+		snapRingWidth: number
+	}
+
+	// Small pill handle at the line midpoint, selected state only.
+	// strokeColor is derived from baseMapStyle.color at render time.
+	midHandle?: {
+		width: number
+		height: number
+		radius: number
+		fillColor: string // always white
+		strokeWidth: number
 	}
 
 	// Draw preview — ghost line shown while the user is placing nodes.
-	// Rendered as an ephemeral layer managed by draw state, not feature state.
-	// Intentionally lighter/more transparent than the resting style so it reads
-	// as "in progress" rather than a committed element.
 	drawPreview?: {
 		color: string
 		width: number
@@ -109,6 +118,8 @@ export type ElementInstance = {
 	typeId: string
 	geometry: "line" // | "polygon" | "point" in v2
 	coordinates: [number, number][]
+	// User-placed waypoints (subset of coordinates used to generate the route)
+	waypoints: [number, number][]
 	// Current values for each property in the descriptor
 	properties: Record<string, unknown>
 }
@@ -116,8 +127,8 @@ export type ElementInstance = {
 // ── Persistence handler — agnostic of auth state ────────────────────────────
 
 export type PersistenceHandler = {
-	load: () => Promise<ElementInstance[]>
-	save: (elements: ElementInstance[]) => Promise<void>
+	load?: () => Promise<ElementInstance[]>
+	save: (elements: ElementInstance[]) => void
 }
 
 // Two implementations you swap in depending on auth state:
@@ -126,7 +137,7 @@ export const localStorageHandler = (fabricId: string): PersistenceHandler => ({
 		const raw = localStorage.getItem(`fabric:${fabricId}:elements`)
 		return raw ? JSON.parse(raw) : []
 	},
-	save: async (elements) => {
+	save: (elements) => {
 		localStorage.setItem(
 			`fabric:${fabricId}:elements`,
 			JSON.stringify(elements),
@@ -134,19 +145,21 @@ export const localStorageHandler = (fabricId: string): PersistenceHandler => ({
 	},
 })
 
-// export const apiHandler = (fabricId: string): PersistenceHandler => ({
-// 	load: async () => {
-// 		const res = await fetch(`/api/fabrics/${fabricId}/elements`)
-// 		return res.json()
-// 	},
-// 	save: async (elements) => {
-// 		await fetch(`/api/fabrics/${fabricId}/elements`, {
-// 			method: "PUT",
-// 			headers: { "Content-Type": "application/json" },
-// 			body: JSON.stringify(elements),
-// 		})
-// 	},
-// })
+export const apiHandler = (
+	fabricId: string,
+	client: ApolloClient,
+): PersistenceHandler => ({
+	save: (elements) =>
+		client.mutate({
+			mutation: UpdateFabricElementsDocument,
+			variables: {
+				input: {
+					elements,
+					id: fabricId,
+				},
+			},
+		}),
+})
 
 // ── Element type descriptor ──────────────────────────────────────────────────
 
@@ -160,6 +173,7 @@ export type ElementDescriptor = {
 	id: string
 	title: string
 	geometry: "line"
+	excludes?: string[]
 	draw: "click-to-place-points"
 	baseMapStyle: LineLayerStyle
 	properties: PropertyDescriptor[]

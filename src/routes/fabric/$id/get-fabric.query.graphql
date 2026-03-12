@@ -9,6 +9,7 @@ query GetFabric($fabricId: ID!) {
 				lat
 			}
 			viewportZoom
+			elements
 		}
 		... on NotFoundError {
 			message
