@@ -6,6 +6,7 @@ import {
 	ElementPanel,
 	FabricMap,
 } from "#/features/fabric"
+import { ViewportTracker } from "#/features/fabric/viewport-tracker"
 import { GetFabricDocument } from "#/graphql/generated"
 
 export const Route = createFileRoute("/fabric/$id/")({
@@ -40,6 +41,7 @@ function RouteComponent() {
 				zoom={data.fabric.viewportZoom}
 			>
 				<DrawingLayer />
+				<ViewportTracker id={data.fabric.id} />
 			</FabricMap>
 		</div>
 	)
