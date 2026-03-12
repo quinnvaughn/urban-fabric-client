@@ -44,11 +44,21 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 		}
 	}, [])
 
-	// Fly to center if it changes after mount rather than remounting
-	useEffect(() => {
-		if (!mapRef.current) return
-		mapRef.current.flyTo({ center, zoom, bearing, duration: 600 })
-	}, [center, zoom, bearing])
+	// Fly to center if it changes after mount rather than remounting.
+	// Skip if the map is already at (approximately) the requested position —
+	// this prevents Apollo cache round-trips from kicking off a flyTo mid-interaction.
+	// useEffect(() => {
+	// 	if (!mapRef.current) return
+	// 	const c = mapRef.current.getCenter()
+	// 	if (
+	// 		Math.abs(center[0] - c.lng) < 1e-5 &&
+	// 		Math.abs(center[1] - c.lat) < 1e-5 &&
+	// 		Math.abs(zoom - mapRef.current.getZoom()) < 0.001 &&
+	// 		Math.abs(bearing - mapRef.current.getBearing()) < 0.001
+	// 	)
+	// 		return
+	// 	mapRef.current.flyTo({ center, zoom, bearing, duration: 600 })
+	// }, [center, zoom, bearing])
 
 	return (
 		<MapProvider value={map}>

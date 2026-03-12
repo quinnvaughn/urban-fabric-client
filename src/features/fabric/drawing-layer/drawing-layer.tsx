@@ -17,28 +17,11 @@ type LinePaint = {
 	"line-dasharray"?: number[]
 }
 
-const OSRM_BASE =
-	import.meta.env.VITE_OSRM_URL ?? "https://router.project-osrm.org"
-
-async function snapToRoad(lng: number, lat: number): Promise<[number, number]> {
-	const res = await fetch(
-		`${OSRM_BASE}/nearest/v1/driving/${lng},${lat}?number=1`,
-	)
-	const data = await res.json()
-	return data.waypoints[0].location as [number, number]
-}
-
-async function routeBetween(
-	a: [number, number],
-	b: [number, number],
-): Promise<[number, number][]> {
-	const coords = `${a[0]},${a[1]};${b[0]},${b[1]}`
-	const res = await fetch(
-		`${OSRM_BASE}/route/v1/driving/${coords}?overview=full&geometries=geojson`,
-	)
-	const data = await res.json()
-	return data.routes[0].geometry.coordinates as [number, number][]
-}
+import {
+	flattenSegments,
+	routeBetween,
+	snapToRoad,
+} from "../osrm-utils"
 
 // ── Paint helpers ─────────────────────────────────────────────────────────────
 
@@ -72,10 +55,6 @@ function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
-// Joins routed segments into one coordinate array, avoiding duplicate junction points
-function flattenSegments(segments: [number, number][][]): [number, number][] {
-	return segments.flatMap((seg, i) => (i === 0 ? seg : seg.slice(1)))
-}
 
 const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	type: "Feature",
@@ -214,6 +193,7 @@ export function DrawingLayer() {
 				geometry: "line",
 				coordinates: coords,
 				waypoints: [...waypointsRef.current],
+				segments: [...segmentsRef.current],
 				properties: Object.fromEntries(
 					descriptor.properties.map((p) => [p.key, p.default]),
 				),

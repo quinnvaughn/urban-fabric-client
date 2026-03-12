@@ -120,6 +120,10 @@ export type ElementInstance = {
 	coordinates: [number, number][]
 	// User-placed waypoints (subset of coordinates used to generate the route)
 	waypoints: [number, number][]
+	// OSRM-routed coordinate arrays between each consecutive pair of waypoints.
+	// segments[i] is the routed path from waypoints[i] to waypoints[i+1].
+	// Optional for backwards compatibility with elements saved before this field was added.
+	segments?: [number, number][][]
 	// Current values for each property in the descriptor
 	properties: Record<string, unknown>
 }
