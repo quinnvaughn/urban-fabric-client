@@ -1,5 +1,62 @@
 import type { ElementCategory } from "./types"
 
+// ─── Layer style types ────────────────────────────────────────────────────────
+
+interface LineLayerStyle {
+	// Main stroke
+	color: string
+	width: number
+	opacity?: number
+	lineCap?: "butt" | "round" | "square"
+	lineJoin?: "bevel" | "round" | "miter"
+	dasharray?: number[]
+
+	// Casing — rendered as a second layer beneath the main stroke.
+	// Uses the same color at lower opacity and greater width to give
+	// the line visual depth without a distinct outline color.
+	casingWidth?: number
+	casingOpacity?: number
+
+	// Selected state — applied via MapLibre feature-state "selected: true"
+	selected?: {
+		color?: string
+		width?: number
+		lineCap?: "butt" | "round" | "square"
+		// Dashed outline offset above/below the line to approximate a bounding box.
+		// Rendered as two identical line layers at +outlineOffset and -outlineOffset.
+		outlineColor?: string
+		outlineOpacity?: number
+		outlineDasharray?: number[]
+		outlineOffset?: number
+		outlineWidth?: number
+	}
+
+	// Endpoint nodes — rendered as a separate circle layer,
+	// only visible when feature-state "selected: true".
+	// Source is derived from line endpoint coordinates at render time.
+	endpoints?: {
+		radius: number
+		fillColor: string
+		strokeColor: string
+		strokeWidth: number
+		// Outer glow: a larger circle at low opacity behind the main node
+		glowRadius: number
+		glowOpacity: number
+	}
+
+	// Draw preview — the ghost line shown while placing nodes.
+	// Rendered as an ephemeral layer driven by draw state, not feature state.
+	drawPreview?: {
+		color: string
+		width: number
+		opacity: number
+		dasharray: number[]
+		lineCap: "butt" | "round" | "square"
+	}
+}
+
+// ─── Category ─────────────────────────────────────────────────────────────────
+
 export const STREETS_CATEGORY: ElementCategory = {
 	id: "streets",
 	title: "Streets",
@@ -12,7 +69,40 @@ export const STREETS_CATEGORY: ElementCategory = {
 			baseMapStyle: {
 				color: "#3d8b37",
 				width: 4,
-			},
+				lineCap: "square",
+				lineJoin: "round",
+
+				casingWidth: 10,
+				casingOpacity: 0.18,
+
+				selected: {
+					width: 5.5,
+					lineCap: "round",
+					outlineColor: "#3d8b37",
+					outlineOpacity: 0.85,
+					outlineDasharray: [5, 3],
+					outlineOffset: 9,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: {
+					radius: 5.5,
+					fillColor: "#ffffff",
+					strokeColor: "#3d8b37",
+					strokeWidth: 2,
+					glowRadius: 9,
+					glowOpacity: 0.12,
+				},
+
+				drawPreview: {
+					color: "#78ab3c",
+					width: 3,
+					opacity: 0.5,
+					dasharray: [8, 6],
+					lineCap: "round",
+				},
+			} satisfies LineLayerStyle,
+
 			properties: [
 				{
 					key: "protection",
@@ -102,13 +192,14 @@ export const STREETS_CATEGORY: ElementCategory = {
 					},
 				},
 			],
-			// Calculated fields — derived at render time, not stored as user input
+
 			calculated: [
 				{ key: "length", label: "Length", unit: "ft" },
 				{ key: "from", label: "From" },
 				{ key: "to", label: "To" },
 			],
 		},
+
 		{
 			id: "sharrow",
 			title: "Sharrow/Shared Lane",
@@ -117,9 +208,43 @@ export const STREETS_CATEGORY: ElementCategory = {
 			baseMapStyle: {
 				color: "#78ab3c",
 				width: 3,
+				lineCap: "round",
+				lineJoin: "round",
 				dasharray: [4, 2],
-			},
+
+				casingWidth: 8,
+				casingOpacity: 0.14,
+
+				selected: {
+					width: 4.5,
+					lineCap: "round",
+					outlineColor: "#78ab3c",
+					outlineOpacity: 0.75,
+					outlineDasharray: [5, 3],
+					outlineOffset: 8,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: {
+					radius: 5,
+					fillColor: "#ffffff",
+					strokeColor: "#78ab3c",
+					strokeWidth: 2,
+					glowRadius: 8,
+					glowOpacity: 0.12,
+				},
+
+				drawPreview: {
+					color: "#78ab3c",
+					width: 2.5,
+					opacity: 0.45,
+					dasharray: [6, 5],
+					lineCap: "round",
+				},
+			} satisfies LineLayerStyle,
+
 			properties: [],
+
 			calculated: [
 				{ key: "length", label: "Length", unit: "ft" },
 				{ key: "from", label: "From" },

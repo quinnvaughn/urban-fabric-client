@@ -1,7 +1,11 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { ELEMENT_TYPE_MAP } from "../element-types"
-import type { ElementDescriptor, ElementInstance } from "../element-types/types"
+import type {
+	ElementDescriptor,
+	ElementInstance,
+	LineLayerStyle,
+} from "../element-types/types"
 
 import { useMap } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
@@ -36,24 +40,37 @@ async function routeBetween(
 	return data.routes[0].geometry.coordinates as [number, number][]
 }
 
-function computePaint(
+// ── Paint helpers ─────────────────────────────────────────────────────────────
+
+function computeBasePaint(
 	descriptor: ElementDescriptor,
 	instance: ElementInstance,
 ): LinePaint {
+	const s = descriptor.baseMapStyle
 	const paint: LinePaint = {
-		"line-color": descriptor.baseMapStyle.color,
-		"line-width": descriptor.baseMapStyle.width,
-		"line-opacity": descriptor.baseMapStyle.opacity ?? 1,
+		"line-color": s.color,
+		"line-width": s.width,
+		"line-opacity": s.opacity ?? 1,
 	}
-	if (descriptor.baseMapStyle.dasharray) {
-		paint["line-dasharray"] = descriptor.baseMapStyle.dasharray
-	}
+	if (s.dasharray) paint["line-dasharray"] = s.dasharray
+	// Apply per-property overrides on top of base style
 	for (const prop of descriptor.properties) {
 		const value = instance.properties[prop.key] ?? prop.default
 		Object.assign(paint, prop.toMapStyle(value))
 	}
 	return paint
 }
+
+function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
+	if (!s.casingWidth) return null
+	return {
+		"line-color": s.color,
+		"line-width": s.casingWidth,
+		"line-opacity": s.casingOpacity ?? 0.15,
+	}
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
 
 // Joins routed segments into one coordinate array, avoiding duplicate junction points
 function flattenSegments(segments: [number, number][][]): [number, number][] {
@@ -66,6 +83,32 @@ const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	properties: {},
 }
 
+function makeLineFeature(
+	coords: [number, number][],
+): GeoJSON.Feature<GeoJSON.LineString> {
+	return {
+		type: "Feature",
+		geometry: { type: "LineString", coordinates: coords },
+		properties: {},
+	}
+}
+
+// ── Layer ID helpers ──────────────────────────────────────────────────────────
+
+const casingLayerId = (id: string) => `el-${id}-casing`
+const mainLayerId = (id: string) => `el-${id}`
+const casingSourceId = (id: string) => `el-${id}-casing`
+const mainSourceId = (id: string) => `el-${id}`
+
+function removeElementLayers(map: maplibregl.Map, id: string) {
+	const layers = [casingLayerId(id), mainLayerId(id)]
+	const sources = [casingSourceId(id), mainSourceId(id)]
+	for (const l of layers) if (map.getLayer(l)) map.removeLayer(l)
+	for (const s of sources) if (map.getSource(s)) map.removeSource(s)
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export function DrawingLayer() {
 	const map = useMap()
 	const activeTool = useFabricStore((s) => s.activeTool)
@@ -77,10 +120,10 @@ export function DrawingLayer() {
 	const waypointsRef = useRef<[number, number][]>([])
 	const segmentsRef = useRef<[number, number][][]>([])
 
-	// Track which element IDs have been added to the map for diffing
+	// Track which element IDs have layers on the map for diffing
 	const elementLayerIds = useRef<Set<string>>(new Set())
 
-	// ── Persistent drawing sources/layers ────────────────────────────────────
+	// ── Persistent drawing sources/layers ──────────────────────────────────
 	useEffect(() => {
 		function setup() {
 			if (!map.getSource("draw-active")) {
@@ -90,7 +133,7 @@ export function DrawingLayer() {
 					type: "line",
 					source: "draw-active",
 					layout: { "line-join": "round", "line-cap": "round" },
-					paint: { "line-color": "#0ea5e9", "line-width": 3 },
+					paint: { "line-color": "#3d8b37", "line-width": 4 },
 				})
 			}
 			if (!map.getSource("draw-preview")) {
@@ -101,10 +144,10 @@ export function DrawingLayer() {
 					source: "draw-preview",
 					layout: { "line-join": "round", "line-cap": "round" },
 					paint: {
-						"line-color": "#0ea5e9",
-						"line-width": 2,
-						"line-dasharray": [4, 2],
-						"line-opacity": 0.7,
+						"line-color": "#3d8b37",
+						"line-width": 2.5,
+						"line-dasharray": [8, 6],
+						"line-opacity": 0.5,
 					},
 				})
 			}
@@ -121,19 +164,29 @@ export function DrawingLayer() {
 		}
 	}, [map])
 
-	// ── Drawing interaction ───────────────────────────────────────────────────
+	// ── Drawing interaction ─────────────────────────────────────────────────
 	useEffect(() => {
 		if (activeTool !== "draw" || !activeElement) return
 		const element = activeElement
+		const style = element.baseMapStyle
+		const dp = style.drawPreview
 
 		map.getCanvas().style.cursor = "crosshair"
 		map.doubleClickZoom.disable()
 
-		// Update drawing layer colors to match the selected element
+		// Update drawing layer paint to match the active element type
 		if (map.getLayer("draw-active")) {
-			map.setPaintProperty("draw-active", "line-color", element.baseMapStyle.color)
-			map.setPaintProperty("draw-active", "line-width", element.baseMapStyle.width)
-			map.setPaintProperty("draw-preview", "line-color", element.baseMapStyle.color)
+			map.setPaintProperty("draw-active", "line-color", style.color)
+			map.setPaintProperty("draw-active", "line-width", style.width)
+			if (style.dasharray) {
+				map.setPaintProperty("draw-active", "line-dasharray", style.dasharray)
+			}
+		}
+		if (map.getLayer("draw-preview") && dp) {
+			map.setPaintProperty("draw-preview", "line-color", dp.color)
+			map.setPaintProperty("draw-preview", "line-width", dp.width)
+			map.setPaintProperty("draw-preview", "line-opacity", dp.opacity)
+			map.setPaintProperty("draw-preview", "line-dasharray", dp.dasharray)
 		}
 
 		const lastClickTimeRef = { current: 0 }
@@ -144,14 +197,9 @@ export function DrawingLayer() {
 			map.getSource("draw-preview") as maplibregl.GeoJSONSource | undefined
 
 		function updateActiveLine() {
-			activeSource()?.setData({
-				type: "Feature",
-				geometry: {
-					type: "LineString",
-					coordinates: flattenSegments(segmentsRef.current),
-				},
-				properties: {},
-			})
+			activeSource()?.setData(
+				makeLineFeature(flattenSegments(segmentsRef.current)),
+			)
 		}
 
 		function reset() {
@@ -167,6 +215,7 @@ export function DrawingLayer() {
 				reset()
 				return
 			}
+
 			const descriptor = ELEMENT_TYPE_MAP[element.id]
 			addElement({
 				id: crypto.randomUUID(),
@@ -183,7 +232,6 @@ export function DrawingLayer() {
 		async function handleClick(e: maplibregl.MapMouseEvent) {
 			const now = Date.now()
 			if (now - lastClickTimeRef.current < 300) {
-				// Second click within 300ms — treat as double-click, commit
 				lastClickTimeRef.current = 0
 				commit()
 				return
@@ -208,14 +256,9 @@ export function DrawingLayer() {
 		function handleMouseMove(e: maplibregl.MapMouseEvent) {
 			if (waypointsRef.current.length === 0) return
 			const last = waypointsRef.current[waypointsRef.current.length - 1]
-			previewSource()?.setData({
-				type: "Feature",
-				geometry: {
-					type: "LineString",
-					coordinates: [last, [e.lngLat.lng, e.lngLat.lat]],
-				},
-				properties: {},
-			})
+			previewSource()?.setData(
+				makeLineFeature([last, [e.lngLat.lng, e.lngLat.lat]]),
+			)
 		}
 
 		function handleKeyDown(e: KeyboardEvent) {
@@ -237,15 +280,14 @@ export function DrawingLayer() {
 		}
 	}, [activeTool, activeElement, map, addElement])
 
-	// ── Sync committed elements to map ───────────────────────────────────────
+	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {
 		const currentIds = new Set(elements.map((e) => e.id))
 
 		// Remove layers for deleted elements
 		for (const id of elementLayerIds.current) {
 			if (!currentIds.has(id)) {
-				if (map.getLayer(`el-${id}`)) map.removeLayer(`el-${id}`)
-				if (map.getSource(`el-${id}`)) map.removeSource(`el-${id}`)
+				removeElementLayers(map, id)
 				elementLayerIds.current.delete(id)
 			}
 		}
@@ -255,30 +297,59 @@ export function DrawingLayer() {
 			const descriptor = ELEMENT_TYPE_MAP[el.typeId]
 			if (!descriptor) continue
 
-			const sourceId = `el-${el.id}`
-			const data: GeoJSON.Feature<GeoJSON.LineString> = {
-				type: "Feature",
-				geometry: { type: "LineString", coordinates: el.coordinates },
-				properties: {},
+			const data = makeLineFeature(el.coordinates)
+
+			// ── Update existing sources ──────────────────────────────────────
+			if (map.getSource(mainSourceId(el.id))) {
+				;(
+					map.getSource(mainSourceId(el.id)) as maplibregl.GeoJSONSource
+				).setData(data)
+				if (map.getSource(casingSourceId(el.id))) {
+					;(
+						map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
+					).setData(data)
+				}
+				continue
 			}
 
-			if (map.getSource(sourceId)) {
-				;(map.getSource(sourceId) as maplibregl.GeoJSONSource).setData(data)
-			} else {
-				map.addSource(sourceId, { type: "geojson", data })
-				// Insert below drawing layers if they exist, otherwise add on top
+			// ── Add new layers ───────────────────────────────────────────────
+			// Insert everything below the draw layers so new elements never
+			// appear on top of an in-progress drawing.
+			const belowLayer = map.getLayer("draw-active") ? "draw-active" : undefined
+
+			// 1. Casing — rendered beneath the main stroke
+			const casingPaint = computeCasingPaint(descriptor.baseMapStyle)
+			if (casingPaint) {
+				map.addSource(casingSourceId(el.id), { type: "geojson", data })
 				map.addLayer(
 					{
-						id: sourceId,
+						id: casingLayerId(el.id),
 						type: "line",
-						source: sourceId,
+						source: casingSourceId(el.id),
 						layout: { "line-join": "round", "line-cap": "round" },
-						paint: computePaint(descriptor, el),
+						paint: casingPaint,
 					},
-					map.getLayer("draw-active") ? "draw-active" : undefined,
+					belowLayer,
 				)
-				elementLayerIds.current.add(el.id)
 			}
+
+			// 2. Main stroke — on top of casing, below draw layers
+			map.addSource(mainSourceId(el.id), { type: "geojson", data })
+			map.addLayer(
+				{
+					id: mainLayerId(el.id),
+					type: "line",
+					source: mainSourceId(el.id),
+					layout: {
+						"line-join": descriptor.baseMapStyle.lineJoin ?? "round",
+						"line-cap": descriptor.baseMapStyle.lineCap ?? "square",
+					},
+					paint: computeBasePaint(descriptor, el),
+				},
+				belowLayer,
+			)
+
+			elementLayerIds.current.add(el.id)
 		}
 	}, [elements, map])
 
