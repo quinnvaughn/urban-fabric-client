@@ -1,17 +1,20 @@
 import maplibregl from "maplibre-gl"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import "maplibre-gl/dist/maplibre-gl.css"
+import { MapProvider } from "./map-context"
 import { buildMapStyle } from "./style"
 
 type Props = {
 	center: [number, number] // [lng, lat]
 	zoom?: number
 	pitch?: number
+	children?: React.ReactNode
 }
 
-export function FabricMap({ center, zoom = 15, pitch = 0 }: Props) {
+export function FabricMap({ center, zoom = 15, pitch = 0, children }: Props) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const mapRef = useRef<maplibregl.Map | null>(null)
+	const [map, setMap] = useState<maplibregl.Map | null>(null)
 
 	// Initialize once — intentionally empty deps
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
@@ -35,9 +38,12 @@ export function FabricMap({ center, zoom = 15, pitch = 0 }: Props) {
 			"bottom-right",
 		)
 
+		setMap(mapRef.current)
+
 		return () => {
 			mapRef.current?.remove()
 			mapRef.current = null
+			setMap(null)
 		}
 	}, [])
 
@@ -47,5 +53,10 @@ export function FabricMap({ center, zoom = 15, pitch = 0 }: Props) {
 		mapRef.current.flyTo({ center, zoom, pitch, duration: 600 })
 	}, [center, zoom, pitch])
 
-	return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+	return (
+		<MapProvider value={map}>
+			<div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+			{map && children}
+		</MapProvider>
+	)
 }

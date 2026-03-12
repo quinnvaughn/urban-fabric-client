@@ -3,6 +3,13 @@ query GetFabric($fabricId: ID!) {
 		... on Fabric {
 			id
 			title
+			viewportBearing
+			viewportCenter {
+				lng
+				lat
+			}
+			viewportPitch
+			viewportZoom
 		}
 		... on NotFoundError {
 			message

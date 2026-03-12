@@ -1,3 +1,5 @@
+export * from "./drawing-layer"
 export * from "./editor-topbar"
+export * from "./element-panel"
 export * from "./fabric-card"
 export * from "./fabric-map"

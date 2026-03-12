@@ -1,6 +1,11 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
-import { EditorTopbar, FabricMap } from "#/features/fabric"
+import {
+	DrawingLayer,
+	EditorTopbar,
+	ElementPanel,
+	FabricMap,
+} from "#/features/fabric"
 import { GetFabricDocument } from "#/graphql/generated"
 
 export const Route = createFileRoute("/fabric/$id/")({
@@ -26,7 +31,16 @@ function RouteComponent() {
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
 			<EditorTopbar id={data.fabric.id} title={data.fabric.title} />
-			<FabricMap center={[-118.4912, 34.0195]} zoom={12} />
+			<ElementPanel />
+			<FabricMap
+				center={[
+					data.fabric.viewportCenter.lng,
+					data.fabric.viewportCenter.lat,
+				]}
+				zoom={data.fabric.viewportZoom}
+			>
+				<DrawingLayer />
+			</FabricMap>
 		</div>
 	)
 }
