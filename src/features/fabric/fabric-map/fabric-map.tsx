@@ -32,12 +32,6 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 			attributionControl: false,
 		})
 
-		// Add attribution in your own position
-		mapRef.current.addControl(
-			new maplibregl.AttributionControl({ compact: true }),
-			"bottom-right",
-		)
-
 		setMap(mapRef.current)
 
 		return () => {

@@ -1,6 +1,8 @@
 import { Box } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
+import { Attribution } from "../attribution"
 import { MapControls } from "../map-controls"
+import { ModeBar } from "../mode-bar"
 
 export function EditorHUD() {
 	return (
@@ -19,6 +21,8 @@ export function EditorHUD() {
 			})}
 		>
 			<MapControls />
+			<ModeBar />
+			<Attribution />
 		</Box>
 	)
 }
