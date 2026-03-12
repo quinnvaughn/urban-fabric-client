@@ -3,13 +3,12 @@ import { Box, Typography } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
-const text = {
-	select: ["Select", "Click to select", "Drag to Move", "Del to remove"],
-	draw: ["Draw", "Click to place nodes", "Enter to finish", "Esc to cancel"],
-}
-
 export function ModeBar() {
 	const activeTool = useFabricStore((state) => state.activeTool)
+	const text: Record<typeof activeTool, string[]> = {
+		select: ["Select", "Click to select", "Drag to Move", "Del to remove"],
+		draw: ["Draw", "Click to place nodes", "Enter to finish", "Esc to cancel"],
+	}
 	return (
 		<Box
 			className={css({
