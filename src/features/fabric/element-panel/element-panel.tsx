@@ -1,4 +1,5 @@
 import { MousePointer2, PencilLine, Redo, Undo } from "lucide-react"
+import { useEffect } from "react"
 import { ELEMENT_CATEGORIES } from "#/features/fabric/element-types"
 import type { ElementDescriptor } from "#/features/fabric/element-types/types"
 import { Box, Grid, HStack, Typography, VStack } from "#/features/ui"
@@ -49,6 +50,40 @@ export function ElementPanel() {
 		setActiveTool(tool.title)
 		if (tool.title === "select") setActiveElement(null)
 	}
+
+	useEffect(() => {
+		// add keyboard shortcuts for tools
+		function handleKeyDown(event: KeyboardEvent) {
+			if (
+				event.target instanceof HTMLInputElement ||
+				event.target instanceof HTMLTextAreaElement ||
+				(event.target instanceof HTMLElement && event.target.isContentEditable)
+			) {
+				return
+			}
+
+			// s for select tool, d for draw tool (no modifier to avoid browser conflicts)
+			if (
+				event.key === "s" &&
+				!event.metaKey &&
+				!event.ctrlKey &&
+				!event.altKey
+			) {
+				setActiveTool("select")
+				setActiveElement(null)
+			} else if (
+				event.key === "d" &&
+				!event.metaKey &&
+				!event.ctrlKey &&
+				!event.altKey
+			) {
+				setActiveTool("draw")
+			}
+		}
+
+		window.addEventListener("keydown", handleKeyDown, true)
+		return () => window.removeEventListener("keydown", handleKeyDown, true)
+	}, [setActiveTool, setActiveElement])
 
 	return (
 		<Box
