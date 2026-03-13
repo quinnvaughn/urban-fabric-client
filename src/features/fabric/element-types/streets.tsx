@@ -154,11 +154,10 @@ export const STREETS_CATEGORY: ElementCategory = {
 				{
 					key: "paint",
 					label: "Paint",
-					default: "none",
+					default: "green",
 					input: {
 						kind: "select",
 						options: [
-							{ label: "None", value: "none" },
 							{ label: "Green fill", value: "green" },
 							{ label: "Red fill", value: "red" },
 							{ label: "Blue fill", value: "blue" },
@@ -167,14 +166,13 @@ export const STREETS_CATEGORY: ElementCategory = {
 					},
 					toMapStyle: (value) => {
 						const paintColors: Record<string, string> = {
-							green: "#4a9e44",
+							green: "#3d8b37",
 							red: "#c0392b",
 							blue: "#2980b9",
 							white: "#ffffff",
 						}
-						return value !== "none" && paintColors[value as string]
-							? { "line-color": paintColors[value as string] }
-							: {}
+						const color = paintColors[value as string]
+						return color ? { "line-color": color } : {}
 					},
 				},
 			],

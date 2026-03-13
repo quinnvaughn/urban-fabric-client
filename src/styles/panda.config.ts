@@ -6,6 +6,7 @@ import { card } from "./recipes/card"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { segmented } from "./recipes/segmented"
+import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
 import { tabs } from "./recipes/tabs"
 import { toast } from "./recipes/toast"
@@ -43,6 +44,7 @@ export default defineConfig({
 			avatar: ["*"],
 			segmented: ["*"],
 			stepper: ["*"],
+			select: ["*"],
 		},
 		css: [
 			{
@@ -1732,6 +1734,8 @@ export default defineConfig({
 				popover: { value: "50" },
 				toast: { value: "60" },
 				tooltip: { value: "70" },
+				panel: { value: "100" },
+				floating: { value: "200" },
 			},
 
 			// ── Motion ────────────────────────────────────────────────────────────
@@ -1754,6 +1758,7 @@ export default defineConfig({
 			typography,
 			segmented,
 			stepper,
+			select,
 		},
 		recipes: {
 			input,

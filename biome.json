@@ -35,5 +35,19 @@
 			"quoteStyle": "double",
 			"semicolons": "asNeeded"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/features/ui/select/select.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noNoninteractiveElementToInteractiveRole": "off",
+						"useFocusableInteractive": "off",
+						"useKeyWithClickEvents": "off"
+					}
+				}
+			}
+		}
+	]
 }

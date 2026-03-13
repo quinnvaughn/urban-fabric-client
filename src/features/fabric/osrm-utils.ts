@@ -12,6 +12,20 @@ export async function snapToRoad(
 	return data.waypoints[0].location as [number, number]
 }
 
+export async function nearestRoadName(
+	lng: number,
+	lat: number,
+): Promise<string | null> {
+	const res = await fetch(
+		`${OSRM_BASE}/nearest/v1/driving/${lng},${lat}?number=1`,
+	)
+	const data = await res.json()
+	const name = data.waypoints?.[0]?.name
+	if (typeof name !== "string") return null
+	const trimmed = name.trim()
+	return trimmed.length > 0 ? trimmed : null
+}
+
 export async function routeBetween(
 	a: [number, number],
 	b: [number, number],
