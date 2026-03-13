@@ -1,6 +1,6 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { ELEMENT_TYPE_MAP, computeBasePaint } from "../element-types"
+import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
 import { useMap } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
@@ -166,6 +166,7 @@ export function SelectLayer() {
 	const setSelectedInstanceId = useFabricStore((s) => s.setSelectedInstanceId)
 	const deleteElement = useFabricStore((s) => s.deleteElement)
 	const updateElement = useFabricStore((s) => s.updateElement)
+	const snapshot = useFabricStore((s) => s.snapshot)
 
 	const dragging = useRef<{
 		waypointIndex: number
@@ -373,14 +374,22 @@ export function SelectLayer() {
 		const basePaint = computeBasePaint(descriptor, el)
 		map.setPaintProperty("select-main", "line-color", basePaint["line-color"])
 		map.setPaintProperty("select-main", "line-width", basePaint["line-width"])
-		map.setPaintProperty("select-main", "line-opacity", basePaint["line-opacity"])
-		map.setPaintProperty("select-main", "line-dasharray", basePaint["line-dasharray"] ?? null)
-		map.setPaintProperty("select-drag-preview", "line-color", sel.color ?? s.color)
-		map.setLayoutProperty(
+		map.setPaintProperty(
 			"select-main",
-			"line-cap",
-			s.lineCap ?? "round",
+			"line-opacity",
+			basePaint["line-opacity"],
 		)
+		map.setPaintProperty(
+			"select-main",
+			"line-dasharray",
+			basePaint["line-dasharray"] ?? null,
+		)
+		map.setPaintProperty(
+			"select-drag-preview",
+			"line-color",
+			sel.color ?? s.color,
+		)
+		map.setLayoutProperty("select-main", "line-cap", s.lineCap ?? "round")
 
 		// Outlines
 		const outlineOpacity = sel.outlineOpacity ?? 0.85
@@ -657,18 +666,18 @@ export function SelectLayer() {
 			if (waypointIndex < waypoints.length - 1)
 				previewCoords.push(waypoints[waypointIndex + 1])
 
-			const previewSrc = map.getSource(
-				"select-drag-preview",
-			) as maplibregl.GeoJSONSource | undefined
+			const previewSrc = map.getSource("select-drag-preview") as
+				| maplibregl.GeoJSONSource
+				| undefined
 			previewSrc?.setData({
 				type: "Feature",
 				geometry: { type: "LineString", coordinates: previewCoords },
 				properties: {},
 			})
 
-			const endpointSrc = map.getSource(
-				"select-endpoints",
-			) as maplibregl.GeoJSONSource | undefined
+			const endpointSrc = map.getSource("select-endpoints") as
+				| maplibregl.GeoJSONSource
+				| undefined
 			const previewWaypoints = [...waypoints]
 			previewWaypoints[waypointIndex] = cursorPos
 			endpointSrc?.setData({
@@ -702,10 +711,7 @@ export function SelectLayer() {
 				] as [number, number][][]
 
 				try {
-					const snapped = await snapToRoad(
-						capturedCursor[0],
-						capturedCursor[1],
-					)
+					const snapped = await snapToRoad(capturedCursor[0], capturedCursor[1])
 					freshWaypoints[capturedWaypointIndex] = snapped
 
 					const reroutes: Promise<void>[] = []
@@ -748,6 +754,8 @@ export function SelectLayer() {
 
 		function handleMouseUp() {
 			if (!dragging.current) return
+			if (hasDragged.current) snapshot()
+			hasDragged.current = false
 			dragging.current = null
 			if (routeDebounce.current) {
 				clearTimeout(routeDebounce.current)
@@ -755,7 +763,6 @@ export function SelectLayer() {
 			}
 			map.dragPan.enable()
 			map.getCanvas().style.cursor = ""
-			// Clear preview in case OSRM hadn't resolved yet when mouse was released
 			;(
 				map.getSource("select-drag-preview") as
 					| maplibregl.GeoJSONSource
@@ -777,14 +784,17 @@ export function SelectLayer() {
 			const el = elements.find((el) => el.id === selectedInstanceId)
 			if (!el || el.waypoints.length <= 2) return
 
+			snapshot() // ← capture before any mutation
+
 			const idx = closestWaypointIndex(el.waypoints, [
 				e.lngLat.lng,
 				e.lngLat.lat,
 			])
 			const segs = el.segments?.length ? el.segments : [el.coordinates]
-			const newWaypoints = el.waypoints.filter(
-				(_, i) => i !== idx,
-			) as [number, number][]
+			const newWaypoints = el.waypoints.filter((_, i) => i !== idx) as [
+				number,
+				number,
+			][]
 
 			if (idx === 0) {
 				const newSegments = segs.slice(1)
@@ -801,7 +811,6 @@ export function SelectLayer() {
 					coordinates: flattenSegments(newSegments),
 				})
 			} else {
-				// Re-route to bridge the gap left by the removed waypoint
 				routeBetween(el.waypoints[idx - 1], el.waypoints[idx + 1]).then(
 					(merged) => {
 						const newSegments: [number, number][][] = [
@@ -850,7 +859,14 @@ export function SelectLayer() {
 			if (routeDebounce.current) clearTimeout(routeDebounce.current)
 			map.dragPan.enable()
 		}
-	}, [activeTool, map, deleteElement, setSelectedInstanceId, updateElement])
+	}, [
+		activeTool,
+		map,
+		deleteElement,
+		setSelectedInstanceId,
+		updateElement,
+		snapshot,
+	])
 
 	return null
 }

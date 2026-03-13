@@ -5,22 +5,39 @@ import { useFabricStore } from "../fabric-store"
 
 export function ModeBar() {
 	const activeTool = useFabricStore((state) => state.activeTool)
+	const activeElement = useFabricStore((state) => state.activeElement)
+	const selectedInstanceId = useFabricStore((state) => state.selectedInstanceId)
 	const drawHint = useFabricStore((s) => s.drawHint)
-	const text: Record<typeof activeTool, string[]> = {
-		select: [
-			"Select",
-			"Click to select",
-			"Drag to Move",
-			"Del to remove",
-			"Dbl-click waypoint to remove segment",
-		],
-		draw: drawHint ?? [
-			"Draw",
-			"Click to place nodes",
-			"Enter to finish",
-			"Esc to cancel",
-		],
+	const hasActiveTarget = Boolean(activeElement || selectedInstanceId)
+
+	const selectText = [
+		"Select",
+		"Click to select",
+		"Drag to move",
+		"Del to delete",
+		"Dbl-click waypoint to remove segment",
+	]
+
+	if (!hasActiveTarget) {
+		selectText.splice(1, 0, "E to select latest")
 	}
+
+	const drawText = [
+		"Draw",
+		"Click to place nodes",
+		"Enter to finish",
+		"Esc to cancel",
+	]
+
+	if (!hasActiveTarget) {
+		drawText.splice(1, 0, "Pick element to start drawing")
+	}
+
+	const text: Record<typeof activeTool, string[]> = {
+		select: selectText,
+		draw: drawHint ?? drawText,
+	}
+
 	return (
 		<Box
 			className={css({
@@ -42,7 +59,7 @@ export function ModeBar() {
 		>
 			{activeTool &&
 				text[activeTool].map((t, i, arr) => (
-					<Fragment key={t}>
+					<Fragment key={`${activeTool}-${t}`}>
 						<Typography.Text
 							size="xs"
 							color={i === 0 ? "teal.700" : "stone.600"}

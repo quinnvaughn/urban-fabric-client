@@ -166,6 +166,7 @@ export function DrawingLayer() {
 			setDrawHint([
 				`${descriptor.title} added`,
 				"Switch to Select to edit properties",
+				"Press E to select new element",
 			])
 			hintTimerRef.current = window.setTimeout(() => setDrawHint(null), 3500)
 		}

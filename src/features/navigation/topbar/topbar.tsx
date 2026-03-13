@@ -27,7 +27,7 @@ export function Topbar() {
 				gap: "3",
 				px: "7",
 				borderBottom: "1px solid",
-				borderColor: "stone.200",
+				borderBottomColor: "stone.200",
 				background: "bg.base",
 				animation: "fadeDown 0.4s var(--easings-spring) both",
 			})}
@@ -41,7 +41,7 @@ export function Topbar() {
 					css({ textDecoration: "none" }),
 				)}
 				to="/fabric/new"
-			preload={false}
+				preload={false}
 			>
 				+ New Fabric
 			</Link>

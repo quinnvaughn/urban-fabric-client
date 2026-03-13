@@ -20,9 +20,16 @@ type FabricStore = {
 	addElement: (element: ElementInstance) => void
 	updateElement: (id: string, updates: Partial<ElementInstance>) => void
 	deleteElement: (id: string) => void
-
 	selectedInstanceId: string | null
 	setSelectedInstanceId: (id: string | null) => void
+
+	past: ElementInstance[][]
+	future: ElementInstance[][]
+	canUndo: boolean
+	canRedo: boolean
+	snapshot: () => void
+	undo: () => void
+	redo: () => void
 }
 
 export const useFabricStore = create<FabricStore>((set) => ({
@@ -43,6 +50,10 @@ export const useFabricStore = create<FabricStore>((set) => ({
 	addElement: (element) =>
 		set((state) => ({
 			elements: [...state.elements, element],
+			past: [...state.past.slice(-49), state.elements],
+			future: [],
+			canUndo: true,
+			canRedo: false,
 			saveStatus: "dirty",
 		})),
 	updateElement: (id, updates) =>
@@ -55,7 +66,49 @@ export const useFabricStore = create<FabricStore>((set) => ({
 	deleteElement: (id) =>
 		set((state) => ({
 			elements: state.elements.filter((el) => el.id !== id),
+			past: [...state.past.slice(-49), state.elements],
+			future: [],
+			canUndo: true,
+			canRedo: false,
 			saveStatus: "dirty",
 		})),
 	setSelectedInstanceId: (id) => set({ selectedInstanceId: id }),
+
+	past: [],
+	future: [],
+	canUndo: false,
+	canRedo: false,
+	snapshot: () =>
+		set((state) => ({
+			past: [...state.past.slice(-49), state.elements],
+			future: [],
+			canUndo: true,
+			canRedo: false,
+		})),
+	undo: () =>
+		set((state) => {
+			if (!state.past.length) return state
+			const previous = state.past[state.past.length - 1]
+			return {
+				elements: previous,
+				past: state.past.slice(0, -1),
+				future: [state.elements, ...state.future],
+				canUndo: state.past.length - 1 > 0,
+				canRedo: true,
+				saveStatus: "dirty",
+			}
+		}),
+	redo: () =>
+		set((state) => {
+			if (!state.future.length) return state
+			const next = state.future[0]
+			return {
+				elements: next,
+				past: [...state.past, state.elements],
+				future: state.future.slice(1),
+				canUndo: true,
+				canRedo: state.future.length - 1 > 0,
+				saveStatus: "dirty",
+			}
+		}),
 }))

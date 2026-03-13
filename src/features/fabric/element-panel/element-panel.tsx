@@ -1,8 +1,8 @@
 import { MousePointer2, PencilLine, Redo, Undo } from "lucide-react"
-import { useEffect } from "react"
 import { ELEMENT_CATEGORIES } from "#/features/fabric/element-types"
 import type { ElementDescriptor } from "#/features/fabric/element-types/types"
 import { Box, Grid, HStack, Typography, VStack } from "#/features/ui"
+import { useKeyboardShortcuts } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
@@ -10,21 +10,28 @@ type Tool = {
 	title: "select" | "draw"
 	icon: React.ReactNode
 	fill?: boolean
+	shortcut?: string
 }
 
 type Action = {
 	title: "undo" | "redo"
 	icon: React.ReactNode
+	shortcut?: string
 }
 
 const tools: Tool[] = [
-	{ title: "select", icon: <MousePointer2 size={14} />, fill: true },
-	{ title: "draw", icon: <PencilLine size={14} /> },
+	{
+		title: "select",
+		icon: <MousePointer2 size={14} />,
+		fill: true,
+		shortcut: "s",
+	},
+	{ title: "draw", icon: <PencilLine size={14} />, shortcut: "d" },
 ]
 
 const actions: Action[] = [
-	{ title: "undo", icon: <Undo size={14} /> },
-	{ title: "redo", icon: <Redo size={14} /> },
+	{ title: "undo", icon: <Undo size={14} />, shortcut: "u" },
+	{ title: "redo", icon: <Redo size={14} />, shortcut: "r" },
 ]
 
 export function ElementPanel() {
@@ -32,6 +39,14 @@ export function ElementPanel() {
 	const activeTool = useFabricStore((state) => state.activeTool)
 	const setActiveElement = useFabricStore((state) => state.setActiveElement)
 	const setActiveTool = useFabricStore((state) => state.setActiveTool)
+	const undo = useFabricStore((state) => state.undo)
+	const redo = useFabricStore((state) => state.redo)
+	const canUndo = useFabricStore((state) => state.canUndo)
+	const canRedo = useFabricStore((state) => state.canRedo)
+	const elements = useFabricStore((state) => state.elements)
+	const setSelectedInstanceId = useFabricStore(
+		(state) => state.setSelectedInstanceId,
+	)
 
 	function isActiveElement(element: ElementDescriptor) {
 		return activeElement?.id === element.id
@@ -51,39 +66,31 @@ export function ElementPanel() {
 		if (tool.title === "select") setActiveElement(null)
 	}
 
-	useEffect(() => {
-		// add keyboard shortcuts for tools
-		function handleKeyDown(event: KeyboardEvent) {
-			if (
-				event.target instanceof HTMLInputElement ||
-				event.target instanceof HTMLTextAreaElement ||
-				(event.target instanceof HTMLElement && event.target.isContentEditable)
-			) {
-				return
-			}
-
-			// s for select tool, d for draw tool (no modifier to avoid browser conflicts)
-			if (
-				event.key === "s" &&
-				!event.metaKey &&
-				!event.ctrlKey &&
-				!event.altKey
-			) {
+	useKeyboardShortcuts([
+		...tools.map((tool) => ({
+			shortcut: tool.shortcut,
+			handler: () => {
+				setActiveTool(tool.title)
+				if (tool.title === "select") setActiveElement(null)
+			},
+		})),
+		...actions.map((action) => ({
+			shortcut: action.shortcut,
+			handler: () => {
+				if (action.title === "undo") undo()
+				else if (action.title === "redo") redo()
+			},
+		})),
+		{
+			shortcut: "e",
+			handler: () => {
+				if (!elements.length) return
 				setActiveTool("select")
 				setActiveElement(null)
-			} else if (
-				event.key === "d" &&
-				!event.metaKey &&
-				!event.ctrlKey &&
-				!event.altKey
-			) {
-				setActiveTool("draw")
-			}
-		}
-
-		window.addEventListener("keydown", handleKeyDown, true)
-		return () => window.removeEventListener("keydown", handleKeyDown, true)
-	}, [setActiveTool, setActiveElement])
+				setSelectedInstanceId(elements[elements.length - 1].id)
+			},
+		},
+	])
 
 	return (
 		<Box
@@ -159,6 +166,11 @@ export function ElementPanel() {
 					<button
 						type="button"
 						key={action.title}
+						disabled={
+							(action.title === "undo" && !canUndo) ||
+							(action.title === "redo" && !canRedo)
+						}
+						onClick={action.title === "undo" ? undo : redo}
 						className={css({
 							width: "8",
 							height: "8",
@@ -174,6 +186,17 @@ export function ElementPanel() {
 							transition:
 								"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
 							_hover: { background: "stone.200", color: "stone.900" },
+							_disabled: {
+								cursor: "not-allowed",
+								color: "stone.400",
+								_hover: { background: "transparent", color: "stone.400" },
+								"& svg": { stroke: "currentColor" },
+								"&[data-active='true']": {
+									background: "transparent",
+									color: "stone.400",
+									_hover: { background: "transparent", color: "stone.400" },
+								},
+							},
 						})}
 					>
 						{action.icon}
