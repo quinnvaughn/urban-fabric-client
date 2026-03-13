@@ -5,6 +5,7 @@ import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { BackButton } from "./back-button"
 import { EditorTitleInput } from "./editor-title-input"
+import { SaveIndicator } from "./save-indicator"
 
 type Props = {
 	title: string
@@ -51,6 +52,7 @@ export function EditorTopbar({ title, id }: Props) {
 				/>
 				<EditorTitleInput id={id} title={title} />
 			</Box>
+			<SaveIndicator />
 			<Box className={css({ flexShrink: 0 })}>
 				<Link
 					to="/fabric/$id/publish"

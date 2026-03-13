@@ -144,7 +144,7 @@ export type ElementInstance = {
 
 export type PersistenceHandler = {
 	load?: () => Promise<ElementInstance[]>
-	save: (elements: ElementInstance[]) => void
+	save: (elements: ElementInstance[]) => Promise<void>
 }
 
 // Two implementations you swap in depending on auth state:
@@ -153,7 +153,7 @@ export const localStorageHandler = (fabricId: string): PersistenceHandler => ({
 		const raw = localStorage.getItem(`fabric:${fabricId}:elements`)
 		return raw ? JSON.parse(raw) : []
 	},
-	save: (elements) => {
+	save: async (elements) => {
 		localStorage.setItem(
 			`fabric:${fabricId}:elements`,
 			JSON.stringify(elements),
@@ -165,8 +165,8 @@ export const apiHandler = (
 	fabricId: string,
 	client: ApolloClient,
 ): PersistenceHandler => ({
-	save: (elements) =>
-		client.mutate({
+	save: async (elements) => {
+		await client.mutate({
 			mutation: UpdateFabricElementsDocument,
 			variables: {
 				input: {
@@ -174,7 +174,8 @@ export const apiHandler = (
 					id: fabricId,
 				},
 			},
-		}),
+		})
+	},
 })
 
 // ── Element type descriptor ──────────────────────────────────────────────────

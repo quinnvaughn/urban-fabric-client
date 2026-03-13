@@ -1,8 +1,9 @@
 import { useMutation } from "@apollo/client/react"
-import { useState } from "react"
+import { useEffect, useRef } from "react"
 import { Box } from "#/features/ui"
 import { UpdateFabricTitleDocument } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
+import { useFabricStore } from "../fabric-store"
 
 type Props = {
 	id: string
@@ -10,8 +11,22 @@ type Props = {
 }
 
 export function EditorTitleInput({ id, title }: Props) {
-	const [text, setText] = useState(title)
+	const text = useFabricStore((state) => state.title)
+	const initTitle = useFabricStore((state) => state.initTitle)
+	const setText = useFabricStore((state) => state.setTitle)
+	const setSaveStatus = useFabricStore((state) => state.setSaveStatus)
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
+	const initializedFabricId = useRef<string | null>(null)
+
+	// Initialize local title from server data when opening a fabric.
+	useEffect(() => {
+		if (initializedFabricId.current === id) {
+			return
+		}
+		initTitle(title)
+		initializedFabricId.current = id
+	}, [id, initTitle, title])
+
 	return (
 		<Box className={css({ minWidth: 0, flex: 1, maxWidth: "400px" })}>
 			<input
@@ -42,12 +57,21 @@ export function EditorTitleInput({ id, title }: Props) {
 				})}
 				value={text}
 				onChange={(e) => setText(e.target.value)}
-				onBlur={() => {
+				onBlur={async () => {
 					if (text.trim() === "") {
-						setText(title)
+						initTitle(title)
 						return
 					}
-					updateTitle({ variables: { input: { id, title: text.trim() } } })
+					setSaveStatus("saving")
+					try {
+						await updateTitle({
+							variables: { input: { id, title: text.trim() } },
+						})
+						setSaveStatus("saved")
+						setTimeout(() => setSaveStatus("idle"), 2000)
+					} catch {
+						setSaveStatus("error")
+					}
 				}}
 				onKeyDown={(e) => {
 					if (e.key === "Enter") {
