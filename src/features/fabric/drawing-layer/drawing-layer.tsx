@@ -17,11 +17,7 @@ type LinePaint = {
 	"line-dasharray"?: number[]
 }
 
-import {
-	flattenSegments,
-	routeBetween,
-	snapToRoad,
-} from "../osrm-utils"
+import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
 
 // ── Paint helpers ─────────────────────────────────────────────────────────────
 
@@ -54,7 +50,6 @@ function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
-
 
 const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	type: "Feature",
@@ -94,10 +89,12 @@ export function DrawingLayer() {
 	const activeElement = useFabricStore((s) => s.activeElement)
 	const elements = useFabricStore((s) => s.elements)
 	const addElement = useFabricStore((s) => s.addElement)
+	const setDrawHint = useFabricStore((s) => s.setDrawHint)
 
 	// Mutable drawing state — lives in refs so map event handlers never go stale
 	const waypointsRef = useRef<[number, number][]>([])
 	const segmentsRef = useRef<[number, number][][]>([])
+	const hintTimerRef = useRef<number | null>(null)
 
 	// Track which element IDs have layers on the map for diffing
 	const elementLayerIds = useRef<Set<string>>(new Set())
@@ -199,9 +196,19 @@ export function DrawingLayer() {
 				),
 			})
 			reset()
+			setDrawHint([
+				`${descriptor.title} added`,
+				"Switch to Select to edit properties",
+			])
+			hintTimerRef.current = window.setTimeout(() => setDrawHint(null), 3500)
 		}
 
 		async function handleClick(e: maplibregl.MapMouseEvent) {
+			if (hintTimerRef.current !== null) {
+				clearTimeout(hintTimerRef.current)
+				hintTimerRef.current = null
+				setDrawHint(null)
+			}
 			const now = Date.now()
 			if (now - lastClickTimeRef.current < 300) {
 				lastClickTimeRef.current = 0
@@ -248,9 +255,10 @@ export function DrawingLayer() {
 			map.off("click", handleClick)
 			map.off("mousemove", handleMouseMove)
 			window.removeEventListener("keydown", handleKeyDown)
+			if (hintTimerRef.current !== null) clearTimeout(hintTimerRef.current)
 			reset()
 		}
-	}, [activeTool, activeElement, map, addElement])
+	}, [activeTool, activeElement, map, addElement, setDrawHint])
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {
@@ -288,7 +296,9 @@ export function DrawingLayer() {
 				// ── Add new layers ───────────────────────────────────────────────
 				// Insert everything below the draw layers so new elements never
 				// appear on top of an in-progress drawing.
-				const belowLayer = map.getLayer("draw-active") ? "draw-active" : undefined
+				const belowLayer = map.getLayer("draw-active")
+					? "draw-active"
+					: undefined
 
 				// 1. Casing — rendered beneath the main stroke
 				const casingPaint = computeCasingPaint(descriptor.baseMapStyle)

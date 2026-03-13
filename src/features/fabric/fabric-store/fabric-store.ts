@@ -6,7 +6,8 @@ type FabricStore = {
 	activeElement: ElementDescriptor | null
 	setActiveElement: (element: ElementDescriptor | null) => void
 	setActiveTool: (tool: "select" | "draw") => void
-
+	drawHint: string[] | null
+	setDrawHint: (hint: string[] | null) => void
 	elements: ElementInstance[]
 	initElements: (elements: ElementInstance[]) => void
 	addElement: (element: ElementInstance) => void
@@ -21,6 +22,8 @@ export const useFabricStore = create<FabricStore>((set) => ({
 	activeElement: null,
 	activeTool: "select",
 	elements: [],
+	drawHint: null,
+	setDrawHint: (hint) => set({ drawHint: hint }),
 	selectedInstanceId: null,
 	setActiveElement: (element) => set({ activeElement: element }),
 	setActiveTool: (tool) => set({ activeTool: tool }),

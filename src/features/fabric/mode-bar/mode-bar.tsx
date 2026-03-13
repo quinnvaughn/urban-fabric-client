@@ -5,6 +5,7 @@ import { useFabricStore } from "../fabric-store"
 
 export function ModeBar() {
 	const activeTool = useFabricStore((state) => state.activeTool)
+	const drawHint = useFabricStore((s) => s.drawHint)
 	const text: Record<typeof activeTool, string[]> = {
 		select: [
 			"Select",
@@ -13,7 +14,12 @@ export function ModeBar() {
 			"Del to remove",
 			"Dbl-click waypoint to remove segment",
 		],
-		draw: ["Draw", "Click to place nodes", "Enter to finish", "Esc to cancel"],
+		draw: drawHint ?? [
+			"Draw",
+			"Click to place nodes",
+			"Enter to finish",
+			"Esc to cancel",
+		],
 	}
 	return (
 		<Box
