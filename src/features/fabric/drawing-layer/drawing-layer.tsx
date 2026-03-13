@@ -1,44 +1,11 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { ELEMENT_TYPE_MAP } from "../element-types"
-import type {
-	ElementDescriptor,
-	ElementInstance,
-	LineLayerStyle,
-} from "../element-types/types"
-
+import type { LinePaint } from "../element-types"
+import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
+import type { LineLayerStyle } from "../element-types/types"
 import { useMap } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
-
-type LinePaint = {
-	"line-color"?: string
-	"line-width"?: number
-	"line-opacity"?: number
-	"line-dasharray"?: number[]
-}
-
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
-
-// ── Paint helpers ─────────────────────────────────────────────────────────────
-
-function computeBasePaint(
-	descriptor: ElementDescriptor,
-	instance: ElementInstance,
-): LinePaint {
-	const s = descriptor.baseMapStyle
-	const paint: LinePaint = {
-		"line-color": s.color,
-		"line-width": s.width,
-		"line-opacity": s.opacity ?? 1,
-	}
-	if (s.dasharray) paint["line-dasharray"] = s.dasharray
-	// Apply per-property overrides on top of base style
-	for (const prop of descriptor.properties) {
-		const value = instance.properties[prop.key] ?? prop.default
-		Object.assign(paint, prop.toMapStyle(value))
-	}
-	return paint
-}
 
 function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
 	if (!s.casingWidth) return null
@@ -289,6 +256,31 @@ export function DrawingLayer() {
 						;(
 							map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
 						).setData(data)
+					}
+					// Re-apply paint in case properties changed
+					if (map.getLayer(mainLayerId(el.id))) {
+						const paint = computeBasePaint(descriptor, el)
+						map.setPaintProperty(
+							mainLayerId(el.id),
+							"line-color",
+							paint["line-color"],
+						)
+						map.setPaintProperty(
+							mainLayerId(el.id),
+							"line-width",
+							paint["line-width"],
+						)
+						map.setPaintProperty(
+							mainLayerId(el.id),
+							"line-opacity",
+							paint["line-opacity"],
+						)
+						// null explicitly clears the dasharray in MapLibre when not set
+						map.setPaintProperty(
+							mainLayerId(el.id),
+							"line-dasharray",
+							paint["line-dasharray"] ?? null,
+						)
 					}
 					continue
 				}

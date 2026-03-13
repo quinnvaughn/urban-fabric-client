@@ -1,6 +1,6 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { ELEMENT_TYPE_MAP } from "../element-types"
+import { ELEMENT_TYPE_MAP, computeBasePaint } from "../element-types"
 import { useMap } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
@@ -368,15 +368,18 @@ export function SelectLayer() {
 			properties: { bearing: lineBearingAtMidpoint(el.coordinates) },
 		})
 
-		// Main stroke
-		map.setPaintProperty("select-main", "line-color", sel.color ?? s.color)
+		// Main stroke — use the same computed paint as the base layer so property
+		// overrides (dasharray, color, etc.) are reflected while selected
+		const basePaint = computeBasePaint(descriptor, el)
+		map.setPaintProperty("select-main", "line-color", basePaint["line-color"])
+		map.setPaintProperty("select-main", "line-width", basePaint["line-width"])
+		map.setPaintProperty("select-main", "line-opacity", basePaint["line-opacity"])
+		map.setPaintProperty("select-main", "line-dasharray", basePaint["line-dasharray"] ?? null)
 		map.setPaintProperty("select-drag-preview", "line-color", sel.color ?? s.color)
-		map.setPaintProperty("select-main", "line-width", sel.width ?? s.width)
-		map.setPaintProperty("select-main", "line-opacity", s.opacity ?? 1)
 		map.setLayoutProperty(
 			"select-main",
 			"line-cap",
-			sel.lineCap ?? s.lineCap ?? "round",
+			s.lineCap ?? "round",
 		)
 
 		// Outlines

@@ -5,6 +5,8 @@ import { button } from "./recipes/button"
 import { card } from "./recipes/card"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
+import { segmented } from "./recipes/segmented"
+import { stepper } from "./recipes/stepper"
 import { tabs } from "./recipes/tabs"
 import { toast } from "./recipes/toast"
 import { typography } from "./recipes/typography"
@@ -39,6 +41,8 @@ export default defineConfig({
 			toast: ["*"],
 			badge: ["*"],
 			avatar: ["*"],
+			segmented: ["*"],
+			stepper: ["*"],
 		},
 		css: [
 			{
@@ -1748,6 +1752,8 @@ export default defineConfig({
 			tabs,
 			card,
 			typography,
+			segmented,
+			stepper,
 		},
 		recipes: {
 			input,

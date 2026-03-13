@@ -12,19 +12,30 @@ type StepperInput = {
 }
 type SelectInput = {
 	kind: "select"
-	options: { label: string; value: string }[]
+	options: {
+		label: string
+		value: string
+		icon?: React.ReactNode
+		description?: string
+	}[]
 }
 type SegmentedInput = {
 	kind: "segmented"
-	options: { label: string; value: string }[]
+	options: {
+		label: string
+		value: string
+		icon?: React.ReactNode
+		description?: string
+	}[]
 }
 type ToggleInput = { kind: "toggle" }
 
 type PropertyInput = StepperInput | SelectInput | SegmentedInput | ToggleInput
 
-type PropertyDescriptor<T = unknown> = {
+export type PropertyDescriptor<T = unknown> = {
 	key: string
 	label: string
+	description?: string
 	default: T
 	input: PropertyInput
 	toMapStyle: (value: T) => Partial<LinePaintOverrides>
@@ -109,6 +120,7 @@ export type LineLayerStyle = {
 		dasharray: number[]
 		lineCap: "butt" | "round" | "square"
 	}
+
 }
 
 // ── Element instance — what gets persisted ───────────────────────────────────

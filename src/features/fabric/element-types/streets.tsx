@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowLeftRight, ArrowRight } from "lucide-react"
 import type { ElementCategory, LineLayerStyle } from "./types"
 
 // ─── Category ─────────────────────────────────────────────────────────────────
@@ -61,32 +62,59 @@ export const STREETS_CATEGORY: ElementCategory = {
 				{
 					key: "protection",
 					label: "Protection Level",
+					description:
+						"How physically separated the lane is from vehicle traffic",
 					default: "none",
 					input: {
 						kind: "segmented",
 						options: [
-							{ label: "None", value: "none" },
-							{ label: "Flexible", value: "flexible" },
-							{ label: "Rigid", value: "rigid" },
+							{
+								label: "None",
+								value: "none",
+								description: "Lane markings only, no physical barrier",
+							},
+							{
+								label: "Flexible",
+								value: "flexible",
+								description: "Soft barriers like flex posts or delineators",
+							},
+							{
+								label: "Rigid",
+								value: "rigid",
+								description: "Hard barriers like concrete curbs or planters",
+							},
 						],
 					},
 					toMapStyle: (value) => {
-						if (value === "none") return { "line-dasharray": [6, 2] }
-						if (value === "flexible") return {}
-						if (value === "rigid") return { "line-width": 6 }
+						if (value === "none") return { "line-dasharray": [2, 2] }
+						if (value === "flexible") return { "line-dasharray": [6, 2] }
+						if (value === "rigid") return { "line-dasharray": [1, 0] }
 						return {}
 					},
 				},
 				{
 					key: "direction",
 					label: "Direction",
+					description: "Which direction cyclists travel in this lane",
 					default: "two-way",
 					input: {
 						kind: "segmented",
 						options: [
-							{ label: "Two-way", value: "two-way" },
-							{ label: "With", value: "one-way-with" },
-							{ label: "Against", value: "one-way-against" },
+							{
+								label: "Two-way",
+								value: "two-way",
+								icon: <ArrowLeftRight size={14} />,
+							},
+							{
+								label: "With",
+								value: "one-way-with",
+								icon: <ArrowRight size={14} />,
+							},
+							{
+								label: "Against",
+								value: "one-way-against",
+								icon: <ArrowLeft size={14} />,
+							},
 						],
 					},
 					toMapStyle: () => ({}),
@@ -102,7 +130,11 @@ export const STREETS_CATEGORY: ElementCategory = {
 						step: 0.5,
 						unit: "ft",
 					},
-					toMapStyle: () => ({}),
+					toMapStyle: (value) => {
+						const width = typeof value === "number" ? value : Number(value)
+						if (!Number.isFinite(width)) return {}
+						return { "line-width": width }
+					},
 				},
 				{
 					key: "surface",

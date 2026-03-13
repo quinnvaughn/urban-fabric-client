@@ -1,10 +1,7 @@
-// import { Info } from "lucide-react"
 import * as React from "react"
 import { css, cx } from "@/styles/styled-system/css"
 import { input as inputRecipe } from "@/styles/styled-system/recipes"
 import type { SystemStyleObject } from "@/styles/styled-system/types"
-
-// import { Tooltip } from "../tooltip"
 
 // ---------- Context ----------
 
@@ -114,29 +111,29 @@ function InputLabel({ className, htmlFor, help, ...rest }: InputLabelProps) {
 			{rest.children}
 			{required && <span className={inputLabelRequiredStyles}>*</span>}
 			{/* {help && (
-				<Tooltip>
-					<Tooltip.Trigger asChild>
-						<button
-							type="button"
-							className={css({
-								display: "inline-flex",
-								alignItems: "center",
-								marginLeft: "1",
-								color: "fg.subtle",
-								cursor: "help",
-							})}
-							aria-label="Help"
-							onClick={(e) => e.preventDefault()}
-						>
-							<Info size={12} />
-						</button>
-					</Tooltip.Trigger>
-					<Tooltip.Content>
-						{help}
-						<Tooltip.Arrow />
-					</Tooltip.Content>
-				</Tooltip>
-			)} */}
+					<Tooltip>
+						<Tooltip.Trigger asChild>
+							<button
+								type="button"
+								className={css({
+									display: "inline-flex",
+									alignItems: "center",
+									marginLeft: "1",
+									color: "fg.subtle",
+									cursor: "help",
+								})}
+								aria-label="Help"
+								onClick={(e) => e.preventDefault()}
+							>
+								<Info size={12} />
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							{help}
+							<Tooltip.Arrow />
+						</Tooltip.Content>
+					</Tooltip>
+				)} */}
 		</label>
 	)
 }

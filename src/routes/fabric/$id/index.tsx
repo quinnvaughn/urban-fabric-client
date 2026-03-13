@@ -7,6 +7,7 @@ import {
 	EditorTopbar,
 	ElementPanel,
 	FabricMap,
+	PropertiesPanel,
 	SelectLayer,
 } from "#/features/fabric"
 import { apiHandler } from "#/features/fabric/element-types/types"
@@ -56,6 +57,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
 			<EditorTopbar id={fabric.id} title={fabric.title} />
 			<ElementPanel />
+			<PropertiesPanel />
 			<FabricMap
 				center={[fabric.viewportCenter.lng, fabric.viewportCenter.lat]}
 				zoom={fabric.viewportZoom}
