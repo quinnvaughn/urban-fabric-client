@@ -15,6 +15,13 @@ import {
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
 
+function toMaplibrePaint(
+	paint: LinePaint,
+): Omit<LinePaint, "line-casing-opacity"> {
+	const { "line-casing-opacity": _, ...rest } = paint
+	return rest
+}
+
 function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
 	if (!s.casingWidth) return null
 	return {
@@ -252,7 +259,7 @@ export function DrawingLayer() {
 					}
 					// Re-apply paint in case properties changed
 					if (hasLayer(map, mainLayerId(el.id))) {
-						const paint = computeBasePaint(descriptor, el)
+						const paint = toMaplibrePaint(computeBasePaint(descriptor, el))
 						map.setPaintProperty(
 							mainLayerId(el.id),
 							"line-color",
@@ -322,7 +329,7 @@ export function DrawingLayer() {
 							"line-join": descriptor.baseMapStyle.lineJoin ?? "round",
 							"line-cap": descriptor.baseMapStyle.lineCap ?? "square",
 						},
-						paint: computeBasePaint(descriptor, el),
+						paint: toMaplibrePaint(computeBasePaint(descriptor, el)),
 					},
 					belowLayer,
 				)

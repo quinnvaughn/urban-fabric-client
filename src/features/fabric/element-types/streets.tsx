@@ -169,13 +169,20 @@ export const STREETS_CATEGORY: ElementCategory = {
 							green: "#3d8b37",
 							red: "#c0392b",
 							blue: "#2980b9",
-							white: "#ffffff",
+							white: "#fdfdf7",
 						}
 						const color = paintColors[value as string]
 						if (!color) return {}
-						return value === "white"
-							? { "line-color": color, "line-casing-opacity": 0.65 }
-							: { "line-color": color }
+						const casingOpacity: Record<string, number> = {
+							green: 0.18, // same as the base default
+							red: 0.45, // red casing helps anchor the red line
+							blue: 0.45,
+							white: 0.65, // needs the most help
+						}
+						return {
+							"line-color": color,
+							"line-casing-opacity": casingOpacity[value as string] ?? 0.18,
+						}
 					},
 				},
 			],
