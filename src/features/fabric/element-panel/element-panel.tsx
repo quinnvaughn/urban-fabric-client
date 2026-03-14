@@ -44,6 +44,7 @@ export function ElementPanel() {
 	const canUndo = useFabricStore((state) => state.canUndo)
 	const canRedo = useFabricStore((state) => state.canRedo)
 	const elements = useFabricStore((state) => state.elements)
+	const selectedInstanceId = useFabricStore((state) => state.selectedInstanceId)
 	const setSelectedInstanceId = useFabricStore(
 		(state) => state.setSelectedInstanceId,
 	)
@@ -88,6 +89,15 @@ export function ElementPanel() {
 				setActiveTool("select")
 				setActiveElement(null)
 				setSelectedInstanceId(elements[elements.length - 1].id)
+			},
+		},
+		{
+			shortcut: "Escape",
+			handler: () => {
+				if (!selectedInstanceId) return
+				setActiveTool("select")
+				setActiveElement(null)
+				setSelectedInstanceId(null)
 			},
 		},
 	])
