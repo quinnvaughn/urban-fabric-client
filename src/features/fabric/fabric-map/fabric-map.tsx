@@ -36,10 +36,13 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 		setMap(mapRef.current)
 
 		return () => {
-			mapRef.current?.remove()
+			const mapToRemove = mapRef.current
 			mapRef.current = null
 			setMap(null)
 			setStyleLoaded(false)
+			window.setTimeout(() => {
+				mapToRemove?.remove()
+			}, 0)
 		}
 	}, [])
 

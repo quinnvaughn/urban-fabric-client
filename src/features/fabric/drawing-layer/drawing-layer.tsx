@@ -3,7 +3,15 @@ import { useEffect, useRef } from "react"
 import type { LinePaint } from "../element-types"
 import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
 import type { LineLayerStyle } from "../element-types/types"
-import { useMap } from "../fabric-map"
+import {
+	DRAW_LAYER_IDS,
+	DRAW_SOURCE_IDS,
+	hasLayer,
+	hasSource,
+	removeLayersIfPresent,
+	removeSourcesIfPresent,
+	useMap,
+} from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
 
@@ -44,8 +52,8 @@ const mainSourceId = (id: string) => `el-${id}`
 function removeElementLayers(map: maplibregl.Map, id: string) {
 	const layers = [casingLayerId(id), mainLayerId(id)]
 	const sources = [casingSourceId(id), mainSourceId(id)]
-	for (const l of layers) if (map.getLayer(l)) map.removeLayer(l)
-	for (const s of sources) if (map.getSource(s)) map.removeSource(s)
+	removeLayersIfPresent(map, layers)
+	removeSourcesIfPresent(map, sources)
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -91,10 +99,8 @@ export function DrawingLayer() {
 		})
 
 		return () => {
-			if (map.getLayer("draw-preview")) map.removeLayer("draw-preview")
-			if (map.getSource("draw-preview")) map.removeSource("draw-preview")
-			if (map.getLayer("draw-active")) map.removeLayer("draw-active")
-			if (map.getSource("draw-active")) map.removeSource("draw-active")
+			removeLayersIfPresent(map, DRAW_LAYER_IDS)
+			removeSourcesIfPresent(map, DRAW_SOURCE_IDS)
 		}
 	}, [map])
 
@@ -109,14 +115,14 @@ export function DrawingLayer() {
 		map.doubleClickZoom.disable()
 
 		// Update drawing layer paint to match the active element type
-		if (map.getLayer("draw-active")) {
+		if (hasLayer(map, "draw-active")) {
 			map.setPaintProperty("draw-active", "line-color", style.color)
 			map.setPaintProperty("draw-active", "line-width", style.width)
 			if (style.dasharray) {
 				map.setPaintProperty("draw-active", "line-dasharray", style.dasharray)
 			}
 		}
-		if (map.getLayer("draw-preview") && dp) {
+		if (hasLayer(map, "draw-preview") && dp) {
 			map.setPaintProperty("draw-preview", "line-color", dp.color)
 			map.setPaintProperty("draw-preview", "line-width", dp.width)
 			map.setPaintProperty("draw-preview", "line-opacity", dp.opacity)
@@ -249,17 +255,17 @@ export function DrawingLayer() {
 				const data = makeLineFeature(el.coordinates)
 
 				// ── Update existing sources ──────────────────────────────────────
-				if (map.getSource(mainSourceId(el.id))) {
+				if (hasSource(map, mainSourceId(el.id))) {
 					;(
 						map.getSource(mainSourceId(el.id)) as maplibregl.GeoJSONSource
 					).setData(data)
-					if (map.getSource(casingSourceId(el.id))) {
+					if (hasSource(map, casingSourceId(el.id))) {
 						;(
 							map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
 						).setData(data)
 					}
 					// Re-apply paint in case properties changed
-					if (map.getLayer(mainLayerId(el.id))) {
+					if (hasLayer(map, mainLayerId(el.id))) {
 						const paint = computeBasePaint(descriptor, el)
 						map.setPaintProperty(
 							mainLayerId(el.id),
@@ -289,7 +295,7 @@ export function DrawingLayer() {
 				// ── Add new layers ───────────────────────────────────────────────
 				// Insert everything below the draw layers so new elements never
 				// appear on top of an in-progress drawing.
-				const belowLayer = map.getLayer("draw-active")
+				const belowLayer = hasLayer(map, "draw-active")
 					? "draw-active"
 					: undefined
 

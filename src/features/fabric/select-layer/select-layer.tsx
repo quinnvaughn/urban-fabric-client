@@ -1,7 +1,15 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
-import { useMap } from "../fabric-map"
+import { ELEMENT_TYPE_MAP } from "../element-types"
+import {
+	hasImage,
+	removeImageIfPresent,
+	removeLayersIfPresent,
+	removeSourcesIfPresent,
+	SELECT_LAYER_IDS,
+	SELECT_SOURCE_IDS,
+	useMap,
+} from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
 
@@ -192,24 +200,28 @@ export function SelectLayer() {
 			id: "select-outline-below",
 			type: "line",
 			source: "select-line",
-			layout: { "line-join": "round", "line-cap": "round" },
+			layout: { "line-join": "round", "line-cap": "butt" },
 			paint: {
 				"line-color": "#000000",
 				"line-opacity": 0,
 				"line-width": 1.5,
 				"line-offset": -9,
+				"line-color-transition": { duration: 0, delay: 0 },
+				"line-opacity-transition": { duration: 0, delay: 0 },
 			},
 		})
 		map.addLayer({
 			id: "select-outline-above",
 			type: "line",
 			source: "select-line",
-			layout: { "line-join": "round", "line-cap": "round" },
+			layout: { "line-join": "round", "line-cap": "butt" },
 			paint: {
 				"line-color": "#000000",
 				"line-opacity": 0,
 				"line-width": 1.5,
 				"line-offset": 9,
+				"line-color-transition": { duration: 0, delay: 0 },
+				"line-opacity-transition": { duration: 0, delay: 0 },
 			},
 		})
 		map.addLayer({
@@ -217,7 +229,13 @@ export function SelectLayer() {
 			type: "line",
 			source: "select-line",
 			layout: { "line-join": "round", "line-cap": "round" },
-			paint: { "line-color": "#000000", "line-opacity": 0, "line-width": 4 },
+			paint: {
+				"line-color": "#000000",
+				"line-opacity": 0,
+				"line-width": 4,
+				"line-color-transition": { duration: 0, delay: 0 },
+				"line-opacity-transition": { duration: 0, delay: 0 },
+			},
 		})
 
 		// Drag preview — straight-line ghost shown while OSRM routes in the background
@@ -232,6 +250,7 @@ export function SelectLayer() {
 				"line-width": 2,
 				"line-dasharray": [6, 5],
 				"line-opacity": 0.45,
+				"line-color-transition": { duration: 0, delay: 0 },
 			},
 		})
 
@@ -247,6 +266,10 @@ export function SelectLayer() {
 				"circle-stroke-width": 1.5,
 				"circle-opacity": 0,
 				"circle-stroke-opacity": 0,
+				"circle-color-transition": { duration: 0, delay: 0 },
+				"circle-stroke-color-transition": { duration: 0, delay: 0 },
+				"circle-opacity-transition": { duration: 0, delay: 0 },
+				"circle-stroke-opacity-transition": { duration: 0, delay: 0 },
 			},
 		})
 		map.addLayer({
@@ -257,6 +280,8 @@ export function SelectLayer() {
 				"circle-radius": 9,
 				"circle-color": "#000000",
 				"circle-opacity": 0,
+				"circle-color-transition": { duration: 0, delay: 0 },
+				"circle-opacity-transition": { duration: 0, delay: 0 },
 			},
 		})
 		map.addLayer({
@@ -270,6 +295,10 @@ export function SelectLayer() {
 				"circle-stroke-width": 2,
 				"circle-opacity": 0,
 				"circle-stroke-opacity": 0,
+				"circle-color-transition": { duration: 0, delay: 0 },
+				"circle-stroke-color-transition": { duration: 0, delay: 0 },
+				"circle-opacity-transition": { duration: 0, delay: 0 },
+				"circle-stroke-opacity-transition": { duration: 0, delay: 0 },
 			},
 		})
 
@@ -288,28 +317,9 @@ export function SelectLayer() {
 		})
 
 		return () => {
-			for (const id of [
-				"select-mid-handle",
-				"select-endpoints-node",
-				"select-endpoints-glow",
-				"select-endpoints-snap-ring",
-				"select-drag-preview",
-				"select-main",
-				"select-outline-above",
-				"select-outline-below",
-			]) {
-				if (map.getLayer(id)) map.removeLayer(id)
-			}
-			for (const id of [
-				"select-line",
-				"select-endpoints",
-				"select-midpoint",
-				"select-drag-preview",
-			]) {
-				if (map.getSource(id)) map.removeSource(id)
-			}
-			if (map.hasImage(MID_HANDLE_IMAGE_ID))
-				map.removeImage(MID_HANDLE_IMAGE_ID)
+			removeLayersIfPresent(map, SELECT_LAYER_IDS)
+			removeSourcesIfPresent(map, SELECT_SOURCE_IDS)
+			removeImageIfPresent(map, MID_HANDLE_IMAGE_ID)
 		}
 	}, [map])
 
@@ -352,44 +362,25 @@ export function SelectLayer() {
 			return
 		}
 
-		// Geometry
-		lineSource.setData({
-			type: "Feature",
-			geometry: { type: "LineString", coordinates: el.coordinates },
-			properties: {},
-		})
-		pointSource.setData({
-			type: "Feature",
-			geometry: { type: "MultiPoint", coordinates: el.waypoints },
-			properties: {},
-		})
-		midSource.setData({
-			type: "Feature",
-			geometry: { type: "Point", coordinates: lineMidpoint(el.coordinates) },
-			properties: { bearing: lineBearingAtMidpoint(el.coordinates) },
-		})
-
-		// Main stroke — use the same computed paint as the base layer so property
-		// overrides (dasharray, color, etc.) are reflected while selected
-		const basePaint = computeBasePaint(descriptor, el)
-		map.setPaintProperty("select-main", "line-color", basePaint["line-color"])
-		map.setPaintProperty("select-main", "line-width", basePaint["line-width"])
+		// Update paint/layout properties BEFORE swapping geometry so the new
+		// colors are already applied when the re-render fires. Without this ordering
+		// MapLibre renders the new geometry for one frame with the old line's colors.
+		map.setPaintProperty("select-main", "line-opacity", 0)
+		map.setPaintProperty("select-outline-above", "line-opacity", 0)
+		map.setPaintProperty("select-outline-below", "line-opacity", 0)
+		map.setPaintProperty("select-endpoints-node", "circle-opacity", 0)
+		map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 0)
+		map.setPaintProperty("select-endpoints-glow", "circle-opacity", 0)
 		map.setPaintProperty(
-			"select-main",
-			"line-opacity",
-			basePaint["line-opacity"],
-		)
-		map.setPaintProperty(
-			"select-main",
-			"line-dasharray",
-			basePaint["line-dasharray"] ?? null,
+			"select-endpoints-snap-ring",
+			"circle-stroke-opacity",
+			0,
 		)
 		map.setPaintProperty(
 			"select-drag-preview",
 			"line-color",
 			sel.color ?? s.color,
 		)
-		map.setLayoutProperty("select-main", "line-cap", s.lineCap ?? "round")
 
 		// Outlines
 		const outlineOpacity = sel.outlineOpacity ?? 0.85
@@ -397,11 +388,9 @@ export function SelectLayer() {
 		const offset = sel.outlineOffset ?? 8
 
 		map.setPaintProperty("select-outline-above", "line-color", s.color)
-		map.setPaintProperty("select-outline-above", "line-opacity", outlineOpacity)
 		map.setPaintProperty("select-outline-above", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-above", "line-offset", offset)
 		map.setPaintProperty("select-outline-below", "line-color", s.color)
-		map.setPaintProperty("select-outline-below", "line-opacity", outlineOpacity)
 		map.setPaintProperty("select-outline-below", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-below", "line-offset", -offset)
 		if (sel.outlineDasharray) {
@@ -415,6 +404,9 @@ export function SelectLayer() {
 				"line-dasharray",
 				sel.outlineDasharray,
 			)
+		} else {
+			map.setPaintProperty("select-outline-above", "line-dasharray", null)
+			map.setPaintProperty("select-outline-below", "line-dasharray", null)
 		}
 
 		// Endpoints
@@ -435,8 +427,6 @@ export function SelectLayer() {
 				"circle-stroke-width",
 				ep.strokeWidth,
 			)
-			map.setPaintProperty("select-endpoints-node", "circle-opacity", 1)
-			map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 1)
 			map.setPaintProperty(
 				"select-endpoints-glow",
 				"circle-radius",
@@ -463,11 +453,6 @@ export function SelectLayer() {
 				"circle-stroke-width",
 				ep.snapRingWidth,
 			)
-			map.setPaintProperty(
-				"select-endpoints-snap-ring",
-				"circle-stroke-opacity",
-				ep.snapRingOpacity,
-			)
 		} else {
 			map.setPaintProperty("select-endpoints-node", "circle-opacity", 0)
 			map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 0)
@@ -481,6 +466,10 @@ export function SelectLayer() {
 
 		// Mid-handle — build SVG image from spec, register with map, show symbol
 		if (mh) {
+			// Hide immediately so the previous line's color doesn't flash at the
+			// new line's midpoint position while the async image build is in flight.
+			map.setLayoutProperty("select-mid-handle", "icon-image", "")
+			const expectedId = selectedInstanceId
 			makeMidHandleImage(
 				mh.width,
 				mh.height,
@@ -489,7 +478,9 @@ export function SelectLayer() {
 				s.color,
 				mh.strokeWidth,
 			).then(({ img, pixelRatio }) => {
-				if (map.hasImage(MID_HANDLE_IMAGE_ID))
+				// Discard if selection changed before the image finished building.
+				if (useFabricStore.getState().selectedInstanceId !== expectedId) return
+				if (hasImage(map, MID_HANDLE_IMAGE_ID))
 					map.removeImage(MID_HANDLE_IMAGE_ID)
 				map.addImage(MID_HANDLE_IMAGE_ID, img, { pixelRatio })
 				map.setLayoutProperty(
@@ -500,6 +491,41 @@ export function SelectLayer() {
 			})
 		} else {
 			map.setLayoutProperty("select-mid-handle", "icon-image", "")
+		}
+
+		// Geometry — updated last so all paint/style properties are already
+		// applied before MapLibre renders the new geometry.
+		lineSource.setData({
+			type: "Feature",
+			geometry: { type: "LineString", coordinates: el.coordinates },
+			properties: {},
+		})
+		pointSource.setData({
+			type: "Feature",
+			geometry: { type: "MultiPoint", coordinates: el.waypoints },
+			properties: {},
+		})
+		midSource.setData({
+			type: "Feature",
+			geometry: { type: "Point", coordinates: lineMidpoint(el.coordinates) },
+			properties: { bearing: lineBearingAtMidpoint(el.coordinates) },
+		})
+
+		map.setPaintProperty("select-outline-above", "line-opacity", outlineOpacity)
+		map.setPaintProperty("select-outline-below", "line-opacity", outlineOpacity)
+		if (ep) {
+			map.setPaintProperty("select-endpoints-node", "circle-opacity", 1)
+			map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 1)
+			map.setPaintProperty(
+				"select-endpoints-glow",
+				"circle-opacity",
+				ep.glowOpacity,
+			)
+			map.setPaintProperty(
+				"select-endpoints-snap-ring",
+				"circle-stroke-opacity",
+				ep.snapRingOpacity,
+			)
 		}
 	}, [map, selectedInstanceId, elements])
 
@@ -523,6 +549,8 @@ export function SelectLayer() {
 				.map((l) => l.id)
 		}
 
+		const HIT_RADIUS = 6
+
 		function handleClick(e: maplibregl.MapMouseEvent) {
 			// Suppress click that ends a drag
 			if (hasDragged.current) {
@@ -540,7 +568,11 @@ export function SelectLayer() {
 				setSelectedInstanceId(null)
 				return
 			}
-			const features = map.queryRenderedFeatures(e.point, { layers })
+			const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+				[e.point.x - HIT_RADIUS, e.point.y - HIT_RADIUS],
+				[e.point.x + HIT_RADIUS, e.point.y + HIT_RADIUS],
+			]
+			const features = map.queryRenderedFeatures(bbox, { layers })
 			if (features.length === 0) {
 				setSelectedInstanceId(null)
 				return
@@ -632,8 +664,21 @@ export function SelectLayer() {
 			const midHit = map.queryRenderedFeatures(e.point, {
 				layers: ["select-mid-handle"],
 			})
-			map.getCanvas().style.cursor =
-				endpointHit.length > 0 || midHit.length > 0 ? "grab" : ""
+			if (endpointHit.length > 0 || midHit.length > 0) {
+				map.getCanvas().style.cursor = "grab"
+				return
+			}
+			// Also show a pointer when hovering over any element line
+			const layers = elementLayerIds()
+			const lineHoverBbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+				[e.point.x - HIT_RADIUS, e.point.y - HIT_RADIUS],
+				[e.point.x + HIT_RADIUS, e.point.y + HIT_RADIUS],
+			]
+			const lineHit =
+				layers.length > 0
+					? map.queryRenderedFeatures(lineHoverBbox, { layers })
+					: []
+			map.getCanvas().style.cursor = lineHit.length > 0 ? "pointer" : ""
 		}
 
 		// Window-level mousemove: drag tracking. Uses map.unproject so events are
