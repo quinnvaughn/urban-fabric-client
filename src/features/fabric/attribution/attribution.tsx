@@ -5,27 +5,26 @@ export function Attribution() {
 	return (
 		<Box
 			className={css({
-				justifySelf: "end",
-				borderRadius: "md",
+				pointerEvents: "all",
+				paddingBottom: "1",
+				userSelect: "none",
 				fontSize: "xs",
 				color: "stone.500",
-				fontWeight: "medium",
-				whiteSpace: "nowrap",
-				pointerEvents: "all",
-				boxShadow: "sm",
-				background: "white",
-				border: "1px solid",
-				borderColor: "stone.200",
-				px: "3",
-				py: "1",
 			})}
 		>
+			©{" "}
 			<a
 				href="https://www.openstreetmap.org/copyright"
 				target="_blank"
 				rel="noopener noreferrer"
+				className={css({
+					textDecoration: { base: "none", _hover: "underline" },
+					color: { base: "stone.500", _hover: "stone.700" },
+					fontSize: "xs",
+					lineHeight: "none",
+				})}
 			>
-				© OpenStreetMap
+				OpenStreetMap
 			</a>
 		</Box>
 	)

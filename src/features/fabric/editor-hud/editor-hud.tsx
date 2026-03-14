@@ -2,7 +2,6 @@ import { Box } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { Attribution } from "../attribution"
 import { MapControls } from "../map-controls"
-import { ModeBar } from "../mode-bar"
 
 export function EditorHUD() {
 	return (
@@ -14,15 +13,14 @@ export function EditorHUD() {
 				right: "20px",
 				zIndex: 100,
 				pointerEvents: "none",
-				display: "grid",
-				gridTemplateColumns: "1fr auto 1fr",
+				display: "flex",
+				justifyContent: "space-between",
 				alignItems: "end",
 				animation: "fadeUp 0.42s var(--easings-spring) 0.18s both",
 			})}
 		>
-			<MapControls />
-			<ModeBar />
 			<Attribution />
+			<MapControls />
 		</Box>
 	)
 }

@@ -1,6 +1,5 @@
-import { Compass, Minus, Plus } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import { Box } from "#/features/ui"
+import { InfoIcon, KeyboardIcon, Minus, Plus } from "lucide-react"
+import { Box, Menu } from "#/features/ui"
 import { css, cx } from "#/styles/styled-system/css"
 import { useMap } from "../fabric-map"
 
@@ -21,41 +20,6 @@ const controlButton = css({
 
 export function MapControls() {
 	const map = useMap()
-	const [bearing, setBearing] = useState(() => map.getBearing())
-	const dragRef = useRef<{ startX: number; startBearing: number } | null>(null)
-
-	useEffect(() => {
-		function onRotate() {
-			setBearing(map.getBearing())
-		}
-		map.on("rotate", onRotate)
-		return () => {
-			map.off("rotate", onRotate)
-		}
-	}, [map])
-
-	function onMouseDown(e: React.MouseEvent) {
-		e.preventDefault()
-		dragRef.current = { startX: e.clientX, startBearing: map.getBearing() }
-
-		function onMouseMove(e: MouseEvent) {
-			if (!dragRef.current) return
-			const delta = e.clientX - dragRef.current.startX
-			map.setBearing(dragRef.current.startBearing + delta * 0.5)
-		}
-
-		function onMouseUp(e: MouseEvent) {
-			const moved = Math.abs(e.clientX - (dragRef.current?.startX ?? e.clientX))
-			dragRef.current = null
-			window.removeEventListener("mousemove", onMouseMove)
-			window.removeEventListener("mouseup", onMouseUp)
-			// Treat as click-to-reset if barely moved
-			if (moved < 4) map.resetNorth()
-		}
-
-		window.addEventListener("mousemove", onMouseMove)
-		window.addEventListener("mouseup", onMouseUp)
-	}
 
 	return (
 		<Box
@@ -63,21 +27,12 @@ export function MapControls() {
 				justifySelf: "start",
 				pointerEvents: "all",
 				display: "flex",
-				flexDirection: "column",
 				alignItems: "center",
 				borderRadius: "md",
 				overflow: "hidden",
 				background: "white",
 			})}
 		>
-			<button
-				type="button"
-				className={controlButton}
-				title="Zoom in"
-				onClick={() => map.zoomIn()}
-			>
-				<Plus size={12} />
-			</button>
 			<button
 				type="button"
 				className={controlButton}
@@ -88,26 +43,58 @@ export function MapControls() {
 			</button>
 			<div
 				className={css({
-					width: "4",
-					height: "px",
+					width: "px",
+					height: "4",
 					background: "stone.200",
 					flexShrink: 0,
 				})}
 			/>
 			<button
 				type="button"
-				className={cx(controlButton, css({ cursor: "ew-resize" }))}
-				title="Drag to rotate · Click to reset north"
-				onMouseDown={onMouseDown}
+				className={controlButton}
+				title="Zoom in"
+				onClick={() => map.zoomIn()}
 			>
-				<Compass
-					size={12}
-					style={{
-						transform: `rotate(${-bearing}deg)`,
-						transition: bearing === 0 ? "transform 300ms ease-out" : "none",
-					}}
-				/>
+				<Plus size={12} />
 			</button>
+			<div
+				className={css({
+					width: "px",
+					height: "4",
+					background: "stone.200",
+					flexShrink: 0,
+				})}
+			/>
+			<Menu>
+				<Menu.Trigger>
+					<button
+						type="button"
+						className={cx(
+							controlButton,
+							css({ fontSize: "xs", fontWeight: "bold" }),
+						)}
+						title="Help & documentation"
+					>
+						?
+					</button>
+				</Menu.Trigger>
+				<Menu.Content>
+					<Menu.Item
+						icon={<KeyboardIcon size={14} />}
+						kbd="⇧ ?"
+						// onClick={onOpenShortcuts}
+					>
+						Keyboard shortcuts
+					</Menu.Item>
+
+					<Menu.Item
+						icon={<InfoIcon size={14} />}
+						// onClick={onOpenToolRef}
+					>
+						Tool reference
+					</Menu.Item>
+				</Menu.Content>
+			</Menu>
 		</Box>
 	)
 }

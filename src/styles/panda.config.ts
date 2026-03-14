@@ -5,6 +5,7 @@ import { button } from "./recipes/button"
 import { card } from "./recipes/card"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
+import { menu } from "./recipes/menu"
 import { segmented } from "./recipes/segmented"
 import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
@@ -45,6 +46,7 @@ export default defineConfig({
 			segmented: ["*"],
 			stepper: ["*"],
 			select: ["*"],
+			menu: ["*"],
 		},
 		css: [
 			{
@@ -1759,6 +1761,7 @@ export default defineConfig({
 			segmented,
 			stepper,
 			select,
+			menu,
 		},
 		recipes: {
 			input,
