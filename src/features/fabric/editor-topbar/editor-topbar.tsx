@@ -25,7 +25,7 @@ export function EditorTopbar({ title, id, onTitleSave }: Props) {
 				position: "fixed",
 				top: 0,
 				left: 0,
-				zIndex: 1000,
+				zIndex: "sticky",
 				inset: "0 0 auto 0",
 				display: "flex",
 				alignItems: "center",

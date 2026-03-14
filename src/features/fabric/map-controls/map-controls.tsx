@@ -1,5 +1,11 @@
-import { InfoIcon, KeyboardIcon, Minus, Plus } from "lucide-react"
-import { Box, Menu } from "#/features/ui"
+import { InfoIcon, KeyboardIcon, LocateFixed, Minus, Plus } from "lucide-react"
+import {
+	getFabricShortcutHint,
+	MAP_CONTROL_SHORTCUT_IDS,
+	useFabricKeyboardShortcuts,
+} from "#/features/fabric/keyboard-shortcuts"
+import { Box, Menu, useToast } from "#/features/ui"
+import { useModalStore } from "#/stores"
 import { css, cx } from "#/styles/styled-system/css"
 import { useMap } from "../fabric-map"
 
@@ -20,6 +26,48 @@ const controlButton = css({
 
 export function MapControls() {
 	const map = useMap()
+	const { open } = useModalStore()
+	const toast = useToast()
+
+	const handleGetLocation = () => {
+		if (!("geolocation" in navigator)) {
+			toast.error("Unable to get location", {
+				description: "Geolocation is not supported by this browser.",
+			})
+			return
+		}
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				const { longitude, latitude } = position.coords
+				map.flyTo({
+					center: [longitude, latitude],
+					zoom: Math.max(map.getZoom(), 16),
+					duration: 700,
+				})
+			},
+			(error) => {
+				const description =
+					error.code === error.PERMISSION_DENIED
+						? "Location access was denied. Please enable it in your browser settings."
+						: error.code === error.POSITION_UNAVAILABLE
+							? "Your location is currently unavailable."
+							: "Timed out while trying to get your location."
+
+				toast.error("Unable to get location", { description })
+			},
+			{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+		)
+	}
+
+	useFabricKeyboardShortcuts({
+		ids: MAP_CONTROL_SHORTCUT_IDS,
+		deps: {
+			zoomIn: () => map.zoomIn(),
+			zoomOut: () => map.zoomOut(),
+			openShortcuts: () => open("shortcuts"),
+		},
+	})
 
 	return (
 		<Box
@@ -36,10 +84,26 @@ export function MapControls() {
 			<button
 				type="button"
 				className={controlButton}
+				title="Get current location"
+				onClick={handleGetLocation}
+			>
+				<LocateFixed size={14} />
+			</button>
+			<div
+				className={css({
+					width: "px",
+					height: "4",
+					background: "stone.200",
+					flexShrink: 0,
+				})}
+			/>
+			<button
+				type="button"
+				className={controlButton}
 				title="Zoom out"
 				onClick={() => map.zoomOut()}
 			>
-				<Minus size={12} />
+				<Minus size={14} />
 			</button>
 			<div
 				className={css({
@@ -55,7 +119,7 @@ export function MapControls() {
 				title="Zoom in"
 				onClick={() => map.zoomIn()}
 			>
-				<Plus size={12} />
+				<Plus size={14} />
 			</button>
 			<div
 				className={css({
@@ -71,7 +135,7 @@ export function MapControls() {
 						type="button"
 						className={cx(
 							controlButton,
-							css({ fontSize: "xs", fontWeight: "bold" }),
+							css({ fontSize: "14px", fontWeight: "bold" }),
 						)}
 						title="Help & documentation"
 					>
@@ -81,15 +145,15 @@ export function MapControls() {
 				<Menu.Content>
 					<Menu.Item
 						icon={<KeyboardIcon size={14} />}
-						kbd="⇧ ?"
-						// onClick={onOpenShortcuts}
+						kbd={getFabricShortcutHint("openShortcuts")}
+						onClick={() => open("shortcuts")}
 					>
 						Keyboard shortcuts
 					</Menu.Item>
 
 					<Menu.Item
 						icon={<InfoIcon size={14} />}
-						// onClick={onOpenToolRef}
+						onClick={() => open("toolRef")}
 					>
 						Tool reference
 					</Menu.Item>

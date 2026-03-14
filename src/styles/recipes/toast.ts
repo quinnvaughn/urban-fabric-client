@@ -15,16 +15,6 @@ export const toast = defineRecipe({
 		pointerEvents: "auto",
 		position: "relative",
 		overflow: "hidden",
-
-		// Entry animation — slides in from the right
-		"@keyframes toastIn": {
-			from: { opacity: "0", transform: "translateX(16px)" },
-			to: { opacity: "1", transform: "translateX(0)" },
-		},
-		"@keyframes toastOut": {
-			from: { opacity: "1", transform: "translateX(0)" },
-			to: { opacity: "0", transform: "translateX(16px)" },
-		},
 		animation: "toastIn 0.2s ease forwards",
 
 		"&[data-closing]": {
@@ -35,24 +25,24 @@ export const toast = defineRecipe({
 	variants: {
 		intent: {
 			success: {
-				bg: "success.subtle",
-				borderColor: "success.muted",
+				bg: "success.default",
+				borderColor: "success.emphasis",
 				color: "success.fg",
 			},
 			error: {
-				bg: "danger.subtle",
-				borderColor: "danger.muted",
+				bg: "danger.default",
+				borderColor: "danger.emphasis",
 				color: "danger.fg",
 			},
 			warning: {
-				bg: "warning.subtle",
-				borderColor: "warning.muted",
+				bg: "warning.default",
+				borderColor: "warning.emphasis",
 				color: "warning.fg",
 			},
 			info: {
-				bg: "bg.base",
-				borderColor: "border.default",
-				color: "fg.default",
+				bg: "bg.emphasis",
+				borderColor: "border.strong",
+				color: "fg.onDark",
 			},
 		},
 

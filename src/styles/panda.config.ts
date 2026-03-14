@@ -6,6 +6,7 @@ import { card } from "./recipes/card"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { menu } from "./recipes/menu"
+import { modal } from "./recipes/modal"
 import { segmented } from "./recipes/segmented"
 import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
@@ -47,6 +48,7 @@ export default defineConfig({
 			stepper: ["*"],
 			select: ["*"],
 			menu: ["*"],
+			modal: ["*"],
 		},
 		css: [
 			{
@@ -1531,6 +1533,22 @@ export default defineConfig({
 					transform: "translateY(0)",
 				},
 			},
+			modalFadeIn: {
+				"0%": { opacity: "0" },
+				"100%": { opacity: "1" },
+			},
+			modalSlideUp: {
+				"0%": { opacity: "0", transform: "translateY(14px) scale(0.98)" },
+				"100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+			},
+			toastIn: {
+				from: { opacity: "0", transform: "translateX(16px)" },
+				to: { opacity: "1", transform: "translateX(0)" },
+			},
+			toastOut: {
+				from: { opacity: "1", transform: "translateX(0)" },
+				to: { opacity: "0", transform: "translateX(16px)" },
+			},
 		},
 
 		tokens: {
@@ -1618,6 +1636,7 @@ export default defineConfig({
 				3: { value: "12px" },
 				3.5: { value: "14px" },
 				4: { value: "16px" },
+				4.5: { value: "18px" },
 				5: { value: "20px" },
 				6: { value: "24px" },
 				7: { value: "28px" },
@@ -1729,13 +1748,13 @@ export default defineConfig({
 				hide: { value: "-1" },
 				base: { value: "0" },
 				raised: { value: "1" },
-				dropdown: { value: "10" },
-				sticky: { value: "20" },
-				overlay: { value: "30" },
-				modal: { value: "40" },
-				popover: { value: "50" },
-				toast: { value: "60" },
-				tooltip: { value: "70" },
+				dropdown: { value: "100" },
+				sticky: { value: "1000" },
+				overlay: { value: "1050" },
+				modal: { value: "1100" },
+				popover: { value: "1200" },
+				toast: { value: "9999" },
+				tooltip: { value: "10000" },
 				panel: { value: "100" },
 				floating: { value: "200" },
 			},
@@ -1762,6 +1781,7 @@ export default defineConfig({
 			stepper,
 			select,
 			menu,
+			modal,
 		},
 		recipes: {
 			input,

@@ -176,6 +176,7 @@ export interface InlineProps
 	color?: Color
 	tracking?: Tracking
 	transform?: Transform
+	size?: TextSize
 }
 
 function TypographyInline({
@@ -188,9 +189,16 @@ function TypographyInline({
 	transform,
 	className,
 	style,
+	size,
 	...rest
 }: InlineProps) {
-	const styles = typography({ weight, tone, tracking, transform })
+	const styles = typography({
+		weight,
+		tone,
+		tracking,
+		transform,
+		textSize: size,
+	})
 	const Tag = as ?? "span"
 	return (
 		<Tag

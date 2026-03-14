@@ -11,7 +11,7 @@ export function EditorHUD() {
 				bottom: "20px",
 				left: "20px",
 				right: "20px",
-				zIndex: 100,
+				zIndex: "panel",
 				pointerEvents: "none",
 				display: "flex",
 				justifyContent: "space-between",

@@ -29,14 +29,14 @@ export const typography = defineSlotRecipe({
 	variants: {
 		// ── Text size ─────────────────────────────────────────────────────────
 		textSize: {
-			xxs: { text: { fontSize: "xxs" } },
-			xs: { text: { fontSize: "xs" } },
-			sm: { text: { fontSize: "sm" } },
-			md: { text: { fontSize: "md" } },
-			lg: { text: { fontSize: "lg" } },
-			xl: { text: { fontSize: "xl" } },
-			"2xl": { text: { fontSize: "2xl" } },
-			"3xl": { text: { fontSize: "3xl" } },
+			xxs: { text: { fontSize: "xxs" }, inline: { fontSize: "xxs" } },
+			xs: { text: { fontSize: "xs" }, inline: { fontSize: "xs" } },
+			sm: { text: { fontSize: "sm" }, inline: { fontSize: "sm" } },
+			md: { text: { fontSize: "md" }, inline: { fontSize: "md" } },
+			lg: { text: { fontSize: "lg" }, inline: { fontSize: "lg" } },
+			xl: { text: { fontSize: "xl" }, inline: { fontSize: "xl" } },
+			"2xl": { text: { fontSize: "2xl" }, inline: { fontSize: "2xl" } },
+			"3xl": { text: { fontSize: "3xl" }, inline: { fontSize: "3xl" } },
 		},
 
 		// ── Heading size ──────────────────────────────────────────────────────

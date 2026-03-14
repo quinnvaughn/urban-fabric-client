@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { useEffect, useState } from "react"
 import { ToastProvider } from "#/features/ui"
 import { MeDocument } from "#/graphql/generated"
+import { ModalRenderer } from "#/providers"
 import appCss from "../index.css?url"
 
 export const Route =
@@ -75,6 +76,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
+				<ModalRenderer />
 				<ToastProvider>{children}</ToastProvider>
 				{isClient ? (
 					<TanStackDevtools

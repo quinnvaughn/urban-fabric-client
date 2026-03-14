@@ -13,7 +13,7 @@ export const menu = defineSlotRecipe({
 			borderWidth: "1",
 			borderStyle: "solid",
 			borderColor: "border.subtle",
-			bg: "bg.subtle",
+			bg: "white",
 			boxShadow: "lg",
 			backdropFilter: "blur(16px)",
 			// entry animation — driven by data-state

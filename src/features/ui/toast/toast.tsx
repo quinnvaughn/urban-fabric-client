@@ -210,13 +210,15 @@ function Toaster({
 		<div
 			aria-live="polite"
 			style={{
+				// middle of the bottom of the screen
 				position: "fixed",
-				bottom: 24,
-				right: 24,
+				bottom: 20,
+				left: "50%",
+				transform: "translateX(-50%)",
 				display: "flex",
 				flexDirection: "column",
 				gap: 8,
-				zIndex: 9999,
+				zIndex: "var(--z-index-toast)",
 				pointerEvents: "none",
 			}}
 		>
@@ -302,8 +304,12 @@ function ToastItem({
 					paddingTop: 1,
 					transition: "opacity 0.12s",
 				}}
-				onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85" }}
-				onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.45" }}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.opacity = "0.85"
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.opacity = "0.45"
+				}}
 			>
 				<svg
 					width="12"

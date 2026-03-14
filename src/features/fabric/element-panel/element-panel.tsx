@@ -1,8 +1,11 @@
 import { MousePointer2, PencilLine, Redo, Undo } from "lucide-react"
 import { ELEMENT_CATEGORIES } from "#/features/fabric/element-types"
 import type { ElementDescriptor } from "#/features/fabric/element-types/types"
+import {
+	PANEL_SHORTCUT_IDS,
+	useFabricKeyboardShortcuts,
+} from "#/features/fabric/keyboard-shortcuts"
 import { Box, Grid, HStack, Typography, VStack } from "#/features/ui"
-import { useKeyboardShortcuts } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
@@ -10,13 +13,11 @@ type Tool = {
 	title: "select" | "draw"
 	icon: React.ReactNode
 	fill?: boolean
-	shortcut?: string
 }
 
 type Action = {
 	title: "undo" | "redo"
 	icon: React.ReactNode
-	shortcut?: string
 }
 
 const tools: Tool[] = [
@@ -24,14 +25,13 @@ const tools: Tool[] = [
 		title: "select",
 		icon: <MousePointer2 size={14} />,
 		fill: true,
-		shortcut: "s",
 	},
-	{ title: "draw", icon: <PencilLine size={14} />, shortcut: "d" },
+	{ title: "draw", icon: <PencilLine size={14} /> },
 ]
 
 const actions: Action[] = [
-	{ title: "undo", icon: <Undo size={14} />, shortcut: "u" },
-	{ title: "redo", icon: <Redo size={14} />, shortcut: "r" },
+	{ title: "undo", icon: <Undo size={14} /> },
+	{ title: "redo", icon: <Redo size={14} /> },
 ]
 
 export function ElementPanel() {
@@ -43,11 +43,46 @@ export function ElementPanel() {
 	const redo = useFabricStore((state) => state.redo)
 	const canUndo = useFabricStore((state) => state.canUndo)
 	const canRedo = useFabricStore((state) => state.canRedo)
-	const elements = useFabricStore((state) => state.elements)
+	const deleteElement = useFabricStore((state) => state.deleteElement)
 	const selectedInstanceId = useFabricStore((state) => state.selectedInstanceId)
 	const setSelectedInstanceId = useFabricStore(
 		(state) => state.setSelectedInstanceId,
 	)
+
+	useFabricKeyboardShortcuts({
+		ids: PANEL_SHORTCUT_IDS,
+		deps: {
+			selectTool: () => {
+				setActiveTool("select")
+				setActiveElement(null)
+			},
+			drawTool: () => {
+				setActiveTool("draw")
+			},
+			deleteSelected: () => {
+				if (!selectedInstanceId) return
+				deleteElement(selectedInstanceId)
+				setSelectedInstanceId(null)
+			},
+			undo,
+			redo,
+			finishDrawing: () => {
+				if (activeTool !== "draw") return
+				setActiveTool("select")
+				setActiveElement(null)
+			},
+			cancelDrawing: () => {
+				if (activeTool === "draw") {
+					setActiveTool("select")
+					setActiveElement(null)
+					return
+				}
+
+				if (!selectedInstanceId) return
+				setSelectedInstanceId(null)
+			},
+		},
+	})
 
 	function isActiveElement(element: ElementDescriptor) {
 		return activeElement?.id === element.id
@@ -67,41 +102,6 @@ export function ElementPanel() {
 		if (tool.title === "select") setActiveElement(null)
 	}
 
-	useKeyboardShortcuts([
-		...tools.map((tool) => ({
-			shortcut: tool.shortcut,
-			handler: () => {
-				setActiveTool(tool.title)
-				if (tool.title === "select") setActiveElement(null)
-			},
-		})),
-		...actions.map((action) => ({
-			shortcut: action.shortcut,
-			handler: () => {
-				if (action.title === "undo") undo()
-				else if (action.title === "redo") redo()
-			},
-		})),
-		{
-			shortcut: "e",
-			handler: () => {
-				if (!elements.length) return
-				setActiveTool("select")
-				setActiveElement(null)
-				setSelectedInstanceId(elements[elements.length - 1].id)
-			},
-		},
-		{
-			shortcut: "Escape",
-			handler: () => {
-				if (!selectedInstanceId) return
-				setActiveTool("select")
-				setActiveElement(null)
-				setSelectedInstanceId(null)
-			},
-		},
-	])
-
 	return (
 		<Box
 			className={css({
@@ -109,7 +109,7 @@ export function ElementPanel() {
 				top: "calc(var(--uf-header-height) + 20px)",
 				background: "white",
 				left: "5",
-				zIndex: 100,
+				zIndex: "panel",
 				width: "200px",
 				display: "flex",
 				flexDirection: "column",

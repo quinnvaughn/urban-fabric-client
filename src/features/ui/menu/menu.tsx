@@ -1,6 +1,6 @@
 import * as React from "react"
-import { createPortal } from "react-dom"
-import { cx } from "@/styles/styled-system/css"
+import * as ReactDOM from "react-dom"
+import { css, cx } from "@/styles/styled-system/css"
 import { menu as menuRecipe } from "@/styles/styled-system/recipes"
 
 // ---------- Context ----------
@@ -39,7 +39,7 @@ function MenuRoot({
 	gap = 6,
 }: MenuRootProps) {
 	const [openState, setOpenState] = React.useState(false)
-	const triggerRef = React.useRef<HTMLElement>(null)
+	const triggerRef = React.useRef<HTMLElement | null>(null)
 
 	const open = openProp ?? openState
 	const setOpen: React.Dispatch<React.SetStateAction<boolean>> =
@@ -63,16 +63,19 @@ MenuRoot.displayName = "Menu"
 // ---------- Trigger ----------
 
 export interface MenuTriggerProps {
-	children: React.ReactElement<any>
+	children: React.ReactElement
 }
 
 function MenuTrigger({ children }: MenuTriggerProps) {
 	const { open, setOpen, triggerRef } = useMenuContext()
+	const child = children as React.ReactElement<
+		React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement>
+	>
 
-	return React.cloneElement(children, {
+	return React.cloneElement(child, {
 		ref: triggerRef,
-		onClick: (e: React.MouseEvent) => {
-			;(children as React.ReactElement<any>).props.onClick?.(e)
+		onClick: (e: React.MouseEvent<HTMLElement>) => {
+			child.props.onClick?.(e)
 			setOpen((v) => !v)
 		},
 		"aria-haspopup": "true",
@@ -97,9 +100,9 @@ function useMenuPosition(
 			if (!triggerRef.current) return
 			const rect = triggerRef.current.getBoundingClientRect()
 			setPos({
-				position: "fixed",
 				bottom: window.innerHeight - rect.top + gap,
-				right: window.innerWidth - rect.right,
+				left: rect.right,
+				transform: "translateX(-100%)",
 			})
 		}
 
@@ -152,16 +155,20 @@ function MenuContent({ className, children, ...rest }: MenuContentProps) {
 
 	if (!open) return null
 
-	return createPortal(
+	return ReactDOM.createPortal(
 		<div
 			ref={contentRef}
-			role="menu"
-			data-state="open"
-			className={cx(styles.content, className)}
-			style={{ ...pos, zIndex: 200 }}
-			{...rest}
+			className={css({ position: "fixed", zIndex: "floating" })}
+			style={pos}
 		>
-			{children}
+			<div
+				role="menu"
+				data-state="open"
+				className={cx(styles.content, className)}
+				{...rest}
+			>
+				{children}
+			</div>
 		</div>,
 		document.body,
 	)

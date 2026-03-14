@@ -45,7 +45,7 @@ export function Steps() {
 					right: "calc(33.33% / 2)",
 					h: "px",
 					background: "border.subtle",
-					zIndex: 0,
+					zIndex: "base",
 				})}
 			/>
 			{steps.map((step, i) => (
@@ -55,7 +55,7 @@ export function Steps() {
 						px: "10",
 						pt: "0",
 						pb: "10",
-						zIndex: 1,
+						zIndex: "raised",
 						borderLeft: i > 0 ? "1px solid {colors.border.subtle}" : undefined,
 					})}
 				>
