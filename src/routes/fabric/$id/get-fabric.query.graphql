@@ -3,12 +3,12 @@ query GetFabric($fabricId: ID!) {
 		... on Fabric {
 			id
 			title
-			viewportBearing
-			viewportCenter {
+			bearing
+			center {
 				lng
 				lat
 			}
-			viewportZoom
+			zoom
 			elements
 		}
 		... on NotFoundError {

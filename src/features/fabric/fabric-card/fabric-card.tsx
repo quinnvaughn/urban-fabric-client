@@ -9,7 +9,7 @@ type Props = {
 	id: string
 	location: string
 	// at the moment this is an svg but eventually it will be a url to an image
-	mapImage: React.ReactNode
+	mapImage: string
 }
 
 export function FabricCard({
@@ -22,7 +22,9 @@ export function FabricCard({
 	return (
 		<Link to="/fabric/$id" params={{ id }}>
 			<Card size="sm" lift="md" shadow="sm">
-				<Card.Media>{mapImage}</Card.Media>
+				<Card.Media>
+					<img src={mapImage} alt={`${title} map`} />
+				</Card.Media>
 				<Card.Body>
 					<VStack gap="1">
 						<Typography.Text

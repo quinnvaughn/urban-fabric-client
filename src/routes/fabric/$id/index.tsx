@@ -59,9 +59,9 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 			<ElementPanel />
 			<PropertiesPanel />
 			<FabricMap
-				center={[fabric.viewportCenter.lng, fabric.viewportCenter.lat]}
-				zoom={fabric.viewportZoom}
-				bearing={fabric.viewportBearing}
+				center={[fabric.center.lng, fabric.center.lat]}
+				zoom={fabric.zoom}
+				bearing={fabric.bearing}
 			>
 				<DrawingLayer />
 				<SelectLayer />
