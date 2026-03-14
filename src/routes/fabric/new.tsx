@@ -40,7 +40,6 @@ type GuestFabric = {
 	title: string
 	center: { lat: number; lng: number }
 	zoom: number
-	bearing: number
 }
 
 function getOrCreateGuestFabric(center: {
@@ -49,12 +48,11 @@ function getOrCreateGuestFabric(center: {
 }): GuestFabric {
 	const existing = localStorage.getItem(GUEST_FABRIC_KEY)
 	if (existing) return JSON.parse(existing)
-	const fabric = {
+	const fabric: GuestFabric = {
 		id: crypto.randomUUID(),
 		title: "Untitled Fabric",
 		center,
 		zoom: 15,
-		bearing: 0,
 	}
 	localStorage.setItem(GUEST_FABRIC_KEY, JSON.stringify(fabric))
 	return fabric
@@ -139,18 +137,18 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 			<FabricMap
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}
-				bearing={fabric.bearing}
+				bearing={0}
 			>
 				<DrawingLayer />
 				<SelectLayer />
 				<ViewportTracker
-					onViewportChange={async ({ center, zoom, bearing }) => {
+					onViewportChange={async ({ center, zoom }) => {
 						const existing = JSON.parse(
 							localStorage.getItem(GUEST_FABRIC_KEY) ?? "{}",
 						)
 						localStorage.setItem(
 							GUEST_FABRIC_KEY,
-							JSON.stringify({ ...existing, center, zoom, bearing }),
+							JSON.stringify({ ...existing, center, zoom }),
 						)
 					}}
 				/>

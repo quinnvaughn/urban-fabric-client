@@ -78,7 +78,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 			<FabricMap
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}
-				bearing={fabric.bearing}
+				bearing={0}
 			>
 				<DrawingLayer />
 				<SelectLayer />

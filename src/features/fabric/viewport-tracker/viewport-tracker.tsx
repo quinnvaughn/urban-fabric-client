@@ -5,7 +5,6 @@ type Props = {
 	onViewportChange: (viewport: {
 		center: { lng: number; lat: number }
 		zoom: number
-		bearing: number
 		thumbnail: string
 	}) => Promise<void>
 }
@@ -33,14 +32,12 @@ export function ViewportTracker({ onViewportChange }: Props) {
 			timerRef.current = setTimeout(() => {
 				const { lng, lat } = map.getCenter()
 				const zoom = map.getZoom()
-				const bearing = map.getBearing()
 
 				map.once("render", async () => {
 					const thumbnail = await getCanvasBase64(map.getCanvas())
 					onViewportChange({
 						center: { lng, lat },
 						zoom,
-						bearing,
 						thumbnail,
 					})
 				})

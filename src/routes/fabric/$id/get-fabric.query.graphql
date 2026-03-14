@@ -3,7 +3,6 @@ query GetFabric($fabricId: ID!) {
 		... on Fabric {
 			id
 			title
-			bearing
 			center {
 				lng
 				lat
