@@ -172,7 +172,10 @@ export const STREETS_CATEGORY: ElementCategory = {
 							white: "#ffffff",
 						}
 						const color = paintColors[value as string]
-						return color ? { "line-color": color } : {}
+						if (!color) return {}
+						return value === "white"
+							? { "line-color": color, "line-casing-opacity": 0.65 }
+							: { "line-color": color }
 					},
 				},
 			],

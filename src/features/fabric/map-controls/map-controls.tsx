@@ -4,7 +4,7 @@ import {
 	MAP_CONTROL_SHORTCUT_IDS,
 	useFabricKeyboardShortcuts,
 } from "#/features/fabric/keyboard-shortcuts"
-import { Box, Menu, useToast } from "#/features/ui"
+import { Box, Menu, Tooltip, useToast } from "#/features/ui"
 import { useModalStore } from "#/stores"
 import { css, cx } from "#/styles/styled-system/css"
 import { useMap } from "../fabric-map"
@@ -81,14 +81,18 @@ export function MapControls() {
 				background: "white",
 			})}
 		>
-			<button
-				type="button"
-				className={controlButton}
-				title="Get current location"
-				onClick={handleGetLocation}
-			>
-				<LocateFixed size={14} />
-			</button>
+			<Tooltip>
+				<Tooltip.Trigger>
+					<button
+						type="button"
+						className={controlButton}
+						onClick={handleGetLocation}
+					>
+						<LocateFixed size={14} />
+					</button>
+				</Tooltip.Trigger>
+				<Tooltip.Content side="left">Get current location</Tooltip.Content>
+			</Tooltip>
 			<div
 				className={css({
 					width: "px",
@@ -97,14 +101,18 @@ export function MapControls() {
 					flexShrink: 0,
 				})}
 			/>
-			<button
-				type="button"
-				className={controlButton}
-				title="Zoom out"
-				onClick={() => map.zoomOut()}
-			>
-				<Minus size={14} />
-			</button>
+			<Tooltip>
+				<Tooltip.Trigger>
+					<button
+						type="button"
+						className={controlButton}
+						onClick={() => map.zoomOut()}
+					>
+						<Minus size={14} />
+					</button>
+				</Tooltip.Trigger>
+				<Tooltip.Content side="left">Zoom out</Tooltip.Content>
+			</Tooltip>
 			<div
 				className={css({
 					width: "px",
@@ -113,14 +121,18 @@ export function MapControls() {
 					flexShrink: 0,
 				})}
 			/>
-			<button
-				type="button"
-				className={controlButton}
-				title="Zoom in"
-				onClick={() => map.zoomIn()}
-			>
-				<Plus size={14} />
-			</button>
+			<Tooltip>
+				<Tooltip.Trigger>
+					<button
+						type="button"
+						className={controlButton}
+						onClick={() => map.zoomIn()}
+					>
+						<Plus size={14} />
+					</button>
+				</Tooltip.Trigger>
+				<Tooltip.Content side="left">Zoom in</Tooltip.Content>
+			</Tooltip>
 			<div
 				className={css({
 					width: "px",
@@ -131,16 +143,20 @@ export function MapControls() {
 			/>
 			<Menu>
 				<Menu.Trigger>
-					<button
-						type="button"
-						className={cx(
-							controlButton,
-							css({ fontSize: "14px", fontWeight: "bold" }),
-						)}
-						title="Help & documentation"
-					>
-						?
-					</button>
+					<Tooltip>
+						<Tooltip.Trigger>
+							<button
+								type="button"
+								className={cx(
+									controlButton,
+									css({ fontSize: "14px", fontWeight: "bold" }),
+								)}
+							>
+								?
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
+					</Tooltip>
 				</Menu.Trigger>
 				<Menu.Content>
 					<Menu.Item

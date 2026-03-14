@@ -5,33 +5,37 @@ import {
 	PANEL_SHORTCUT_IDS,
 	useFabricKeyboardShortcuts,
 } from "#/features/fabric/keyboard-shortcuts"
-import { Box, Grid, HStack, Typography, VStack } from "#/features/ui"
+import { Box, Grid, HStack, Tooltip, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
 type Tool = {
 	title: "select" | "draw"
+	tooltip: string
 	icon: React.ReactNode
 	fill?: boolean
 }
 
 type Action = {
 	title: "undo" | "redo"
+	tooltip: string
 	icon: React.ReactNode
 }
 
 const tools: Tool[] = [
 	{
 		title: "select",
+		tooltip: "Select V",
 		icon: <MousePointer2 size={14} />,
 		fill: true,
 	},
-	{ title: "draw", icon: <PencilLine size={14} /> },
+	{ title: "draw", tooltip: "Draw D", icon: <PencilLine size={14} /> },
 ]
 
 const actions: Action[] = [
-	{ title: "undo", icon: <Undo size={14} /> },
-	{ title: "redo", icon: <Redo size={14} /> },
+	// command icon and shift icon. redo is command + shift + z on mac, ctrl + y on windows, so we can show both shortcuts in the tooltip but only one icon
+	{ title: "undo", tooltip: "Undo ⌘+Z", icon: <Undo size={14} /> },
+	{ title: "redo", tooltip: "Redo ⌘+⇧+Z", icon: <Redo size={14} /> },
 ]
 
 export function ElementPanel() {
@@ -132,36 +136,41 @@ export function ElementPanel() {
 				})}
 			>
 				{tools.map((tool) => (
-					<button
-						type="button"
-						key={tool.title}
-						data-active={isActiveTool(tool.title)}
-						onClick={() => handleToolClick(tool)}
-						className={css({
-							position: "relative",
-							width: "8",
-							height: "8",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							border: "none",
-							borderRadius: "md",
-							background: "transparent",
-							cursor: "pointer",
-							flexShrink: 0,
-							color: "stone.600",
-							transition:
-								"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
-							_hover: { background: "stone.200", color: "stone.900" },
-							"& svg": { fill: tool.fill ? "currentColor" : "none" },
-							"&[data-active='true']": {
-								background: { base: "teal.700", _hover: "teal.700" },
-								color: { base: "white", _hover: "white" },
-							},
-						})}
-					>
-						{tool.icon}
-					</button>
+					<Tooltip key={tool.title}>
+						<Tooltip.Trigger>
+							<button
+								type="button"
+								key={tool.title}
+								data-active={isActiveTool(tool.title)}
+								onClick={() => handleToolClick(tool)}
+								className={css({
+									position: "relative",
+									width: "8",
+									height: "8",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									border: "none",
+									borderRadius: "md",
+									background: "transparent",
+									cursor: "pointer",
+									flexShrink: 0,
+									color: "stone.600",
+									transition:
+										"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
+									_hover: { background: "stone.200", color: "stone.900" },
+									"& svg": { fill: tool.fill ? "currentColor" : "none" },
+									"&[data-active='true']": {
+										background: { base: "teal.700", _hover: "teal.700" },
+										color: { base: "white", _hover: "white" },
+									},
+								})}
+							>
+								{tool.icon}
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content side="bottom">{tool.tooltip}</Tooltip.Content>
+					</Tooltip>
 				))}
 				<Box
 					className={css({
@@ -173,44 +182,48 @@ export function ElementPanel() {
 					})}
 				/>
 				{actions.map((action) => (
-					<button
-						type="button"
-						key={action.title}
-						disabled={
-							(action.title === "undo" && !canUndo) ||
-							(action.title === "redo" && !canRedo)
-						}
-						onClick={action.title === "undo" ? undo : redo}
-						className={css({
-							width: "8",
-							height: "8",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							border: "none",
-							borderRadius: "md",
-							background: "transparent",
-							cursor: "pointer",
-							flexShrink: 0,
-							color: "stone.600",
-							transition:
-								"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
-							_hover: { background: "stone.200", color: "stone.900" },
-							_disabled: {
-								cursor: "not-allowed",
-								color: "stone.400",
-								_hover: { background: "transparent", color: "stone.400" },
-								"& svg": { stroke: "currentColor" },
-								"&[data-active='true']": {
+					<Tooltip key={action.title}>
+						<Tooltip.Trigger>
+							<button
+								type="button"
+								disabled={
+									(action.title === "undo" && !canUndo) ||
+									(action.title === "redo" && !canRedo)
+								}
+								onClick={action.title === "undo" ? undo : redo}
+								className={css({
+									width: "8",
+									height: "8",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									border: "none",
+									borderRadius: "md",
 									background: "transparent",
-									color: "stone.400",
-									_hover: { background: "transparent", color: "stone.400" },
-								},
-							},
-						})}
-					>
-						{action.icon}
-					</button>
+									cursor: "pointer",
+									flexShrink: 0,
+									color: "stone.600",
+									transition:
+										"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
+									_hover: { background: "stone.200", color: "stone.900" },
+									_disabled: {
+										cursor: "not-allowed",
+										color: "stone.400",
+										_hover: { background: "transparent", color: "stone.400" },
+										"& svg": { stroke: "currentColor" },
+										"&[data-active='true']": {
+											background: "transparent",
+											color: "stone.400",
+											_hover: { background: "transparent", color: "stone.400" },
+										},
+									},
+								})}
+							>
+								{action.icon}
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content side="bottom">{action.tooltip}</Tooltip.Content>
+					</Tooltip>
 				))}
 			</Grid>
 

@@ -8,6 +8,7 @@ import {
 	Segmented,
 	Select,
 	Stepper,
+	Tooltip,
 	Typography,
 } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
@@ -215,16 +216,20 @@ export function PropertiesPanel() {
 				})}
 			>
 				{prop.label}
-				<span
-					title={prop.description}
-					className={css({
-						display: "inline-flex",
-						color: "stone.400",
-						cursor: "help",
-					})}
-				>
-					<Info size={12} />
-				</span>
+				<Tooltip>
+					<Tooltip.Trigger>
+						<span
+							className={css({
+								display: "inline-flex",
+								color: "stone.400",
+								cursor: "help",
+							})}
+						>
+							<Info size={12} />
+						</span>
+					</Tooltip.Trigger>
+					<Tooltip.Content side="top">{prop.description}</Tooltip.Content>
+				</Tooltip>
 			</span>
 		) : (
 			prop.label
@@ -352,25 +357,30 @@ export function PropertiesPanel() {
 						>
 							{descriptor.title}
 						</Typography.Text>
-						<button
-							type="button"
-							onClick={() => setSelectedInstanceId(null)}
-							className={css({
-								width: "6",
-								height: "6",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								border: "none",
-								background: { base: "transparent", _hover: "stone.200" },
-								borderRadius: "sm",
-								color: { base: "stone.500", _hover: "stone.900" },
-								cursor: "pointer",
-								transition: "background 150ms, color 150ms",
-							})}
-						>
-							<X size={12} />
-						</button>
+						<Tooltip>
+							<Tooltip.Trigger>
+								<button
+									type="button"
+									onClick={() => setSelectedInstanceId(null)}
+									className={css({
+										width: "6",
+										height: "6",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										border: "none",
+										background: { base: "transparent", _hover: "stone.200" },
+										borderRadius: "sm",
+										color: { base: "stone.500", _hover: "stone.900" },
+										cursor: "pointer",
+										transition: "background 150ms, color 150ms",
+									})}
+								>
+									<X size={12} />
+								</button>
+							</Tooltip.Trigger>
+							<Tooltip.Content side="bottom">Close Esc</Tooltip.Content>
+						</Tooltip>
 					</Box>
 					<Box
 						className={css({

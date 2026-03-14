@@ -275,6 +275,16 @@ export function DrawingLayer() {
 							paint["line-dasharray"] ?? null,
 						)
 					}
+					if (hasLayer(map, casingLayerId(el.id))) {
+						const paint = computeBasePaint(descriptor, el)
+						map.setPaintProperty(
+							casingLayerId(el.id),
+							"line-opacity",
+							paint["line-casing-opacity"] ??
+								descriptor.baseMapStyle.casingOpacity ??
+								0.15,
+						)
+					}
 					continue
 				}
 

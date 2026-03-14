@@ -12,6 +12,7 @@ import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
 import { tabs } from "./recipes/tabs"
 import { toast } from "./recipes/toast"
+import { tooltip } from "./recipes/tooltip"
 import { typography } from "./recipes/typography"
 
 export default defineConfig({
@@ -49,6 +50,7 @@ export default defineConfig({
 			select: ["*"],
 			menu: ["*"],
 			modal: ["*"],
+			tooltip: ["*"],
 		},
 		css: [
 			{
@@ -1549,6 +1551,10 @@ export default defineConfig({
 				from: { opacity: "1", transform: "translateX(0)" },
 				to: { opacity: "0", transform: "translateX(16px)" },
 			},
+			tooltipFadeIn: {
+				"0%": { opacity: "0", transform: "scale(0.95)" },
+				"100%": { opacity: "1", transform: "scale(1)" },
+			},
 		},
 
 		tokens: {
@@ -1782,6 +1788,7 @@ export default defineConfig({
 			select,
 			menu,
 			modal,
+			tooltip,
 		},
 		recipes: {
 			input,

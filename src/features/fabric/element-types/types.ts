@@ -42,15 +42,16 @@ export type PropertyDescriptor<T = unknown> = {
 	description?: string
 	default: T
 	input: PropertyInput
-	toMapStyle: (value: T) => Partial<LinePaintOverrides>
+	toMapStyle: (value: T) => Partial<LinePaint>
 	constraints?: PropertyConstraint[]
 }
 
-type LinePaintOverrides = {
-	"line-width"?: number
+export type LinePaint = {
 	"line-color"?: string
+	"line-width"?: number
 	"line-opacity"?: number
 	"line-dasharray"?: number[]
+	"line-casing-opacity"?: number // applied to casing layer, not the main stroke
 }
 
 // ── Line layer visual style ───────────────────────────────────────────────────
