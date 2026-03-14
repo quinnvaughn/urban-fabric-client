@@ -23,7 +23,7 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 
 		mapRef.current = new maplibregl.Map({
 			container: containerRef.current,
-			style: `https://tiles.stadiamaps.com/styles/outdoors.json?api_key=${import.meta.env.VITE_STADIA_API_KEY}`,
+			style: `https://tiles.stadiamaps.com/styles/osm_bright.json?api_key=${import.meta.env.VITE_STADIA_API_KEY}`,
 			center,
 			zoom,
 			pitch: 0,
