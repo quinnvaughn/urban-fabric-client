@@ -1,15 +1,28 @@
-const OSRM_BASE =
-	import.meta.env.VITE_OSRM_URL ?? "https://router.project-osrm.org"
+import polyline from "@mapbox/polyline"
+
+const STADIA_BASE = "https://api.stadiamaps.com"
+const API_KEY = process.env.STADIA_API_KEY
 
 export async function snapToRoad(
 	lng: number,
 	lat: number,
 ): Promise<[number, number]> {
 	const res = await fetch(
-		`${OSRM_BASE}/nearest/v1/driving/${lng},${lat}?number=1`,
+		`${STADIA_BASE}/nearest_roads/v1?api_key=${API_KEY}`,
+		{
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				locations: [{ lon: lng, lat }],
+			}),
+		},
 	)
 	const data = await res.json()
-	return data.waypoints[0].location as [number, number]
+	const edge = data.edges?.[0]
+	// fall back to input if no snap found
+	if (!edge) return [lng, lat]
+	const snapped = edge.snapped_location
+	return [snapped.lon, snapped.lat]
 }
 
 export async function nearestRoadName(
@@ -17,25 +30,45 @@ export async function nearestRoadName(
 	lat: number,
 ): Promise<string | null> {
 	const res = await fetch(
-		`${OSRM_BASE}/nearest/v1/driving/${lng},${lat}?number=1`,
+		`${STADIA_BASE}/nearest_roads/v1?api_key=${API_KEY}`,
+		{
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				locations: [{ lon: lng, lat, radius: 50 }],
+				verbose: true,
+			}),
+		},
 	)
 	const data = await res.json()
-	const name = data.waypoints?.[0]?.name
-	if (typeof name !== "string") return null
-	const trimmed = name.trim()
-	return trimmed.length > 0 ? trimmed : null
+	const edges = data?.[0]?.edges ?? []
+	for (const edge of edges) {
+		const name = edge?.edge_info?.names?.[0]
+		if (typeof name === "string" && name.trim().length > 0) return name.trim()
+	}
+	return null
 }
 
 export async function routeBetween(
 	a: [number, number],
 	b: [number, number],
 ): Promise<[number, number][]> {
-	const coords = `${a[0]},${a[1]};${b[0]},${b[1]}`
-	const res = await fetch(
-		`${OSRM_BASE}/route/v1/driving/${coords}?overview=full&geometries=geojson`,
-	)
+	const res = await fetch(`${STADIA_BASE}/route/v1?api_key=${API_KEY}`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			locations: [
+				{ lon: a[0], lat: a[1], type: "break" },
+				{ lon: b[0], lat: b[1], type: "break" },
+			],
+			costing: "auto",
+		}),
+	})
 	const data = await res.json()
-	return data.routes[0].geometry.coordinates as [number, number][]
+	// Valhalla returns an encoded polyline with precision 6
+	const decoded = polyline.decode(data.trip.legs[0].shape, 6)
+	// polyline.decode returns [lat, lng] pairs — swap to [lng, lat] for MapLibre
+	return decoded.map(([lat, lng]) => [lng, lat])
 }
 
 export function flattenSegments(

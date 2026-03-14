@@ -2,7 +2,6 @@ import maplibregl from "maplibre-gl"
 import { useEffect, useRef, useState } from "react"
 import "maplibre-gl/dist/maplibre-gl.css"
 import { MapProvider } from "./map-context"
-import { buildMapStyle } from "./style"
 
 type Props = {
 	center: [number, number] // [lng, lat]
@@ -24,7 +23,7 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 
 		mapRef.current = new maplibregl.Map({
 			container: containerRef.current,
-			style: buildMapStyle(import.meta.env.VITE_PROTOMAPS_KEY),
+			style: `https://tiles.stadiamaps.com/styles/alidade_smooth.json?api_key=${import.meta.env.VITE_STADIA_API_KEY}`,
 			center,
 			zoom,
 			pitch: 0,
