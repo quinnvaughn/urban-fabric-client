@@ -1,21 +1,19 @@
-import { useMutation } from "@apollo/client/react"
 import { useEffect, useRef } from "react"
 import { Box } from "#/features/ui"
-import { UpdateFabricTitleDocument } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
 type Props = {
 	id: string
 	title: string
+	onTitleSave: (title: string) => Promise<void>
 }
 
-export function EditorTitleInput({ id, title }: Props) {
+export function EditorTitleInput({ id, title, onTitleSave }: Props) {
 	const text = useFabricStore((state) => state.title)
 	const initTitle = useFabricStore((state) => state.initTitle)
 	const setText = useFabricStore((state) => state.setTitle)
 	const setSaveStatus = useFabricStore((state) => state.setSaveStatus)
-	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const initializedFabricId = useRef<string | null>(null)
 
 	// Initialize local title from server data when opening a fabric.
@@ -64,9 +62,7 @@ export function EditorTitleInput({ id, title }: Props) {
 					}
 					setSaveStatus("saving")
 					try {
-						await updateTitle({
-							variables: { input: { id, title: text.trim() } },
-						})
+						await onTitleSave(text.trim())
 						setSaveStatus("saved")
 						setTimeout(() => setSaveStatus("idle"), 2000)
 					} catch {

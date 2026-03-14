@@ -1,4 +1,8 @@
-import { useApolloClient, useReadQuery } from "@apollo/client/react"
+import {
+	useApolloClient,
+	useMutation,
+	useReadQuery,
+} from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {
@@ -16,7 +20,12 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { ViewportTracker } from "#/features/fabric/viewport-tracker"
-import { GetFabricDocument, type GetFabricQuery } from "#/graphql/generated"
+import {
+	GetFabricDocument,
+	type GetFabricQuery,
+	SyncViewportDocument,
+	UpdateFabricTitleDocument,
+} from "#/graphql/generated"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -46,6 +55,8 @@ type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const client = useApolloClient()
 	const initElements = useFabricStore((state) => state.initElements)
+	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
+	const [syncViewport] = useMutation(SyncViewportDocument)
 	useFabricPersistence(apiHandler(fabric.id, client))
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
@@ -55,7 +66,13 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<EditorTopbar id={fabric.id} title={fabric.title} />
+			<EditorTopbar
+				id={fabric.id}
+				title={fabric.title}
+				onTitleSave={async (title) => {
+					await updateTitle({ variables: { input: { id: fabric.id, title } } })
+				}}
+			/>
 			<ElementPanel />
 			<PropertiesPanel />
 			<FabricMap
@@ -65,7 +82,13 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 			>
 				<DrawingLayer />
 				<SelectLayer />
-				<ViewportTracker id={fabric.id} />
+				<ViewportTracker
+					onViewportChange={async (viewport) => {
+						await syncViewport({
+							variables: { input: { id: fabric.id, ...viewport } },
+						})
+					}}
+				/>
 				<EditorHUD />
 			</FabricMap>
 		</div>

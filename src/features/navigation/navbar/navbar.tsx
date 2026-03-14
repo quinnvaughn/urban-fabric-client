@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Avatar, HStack, Logo, Typography } from "#/features/ui"
+import { Avatar, HStack, Logo } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
@@ -59,7 +59,7 @@ export function Navbar() {
 								Sign in
 							</Link>
 							<Link
-								to="/fabric"
+								to="/fabric/new"
 								className={button({
 									appearance: "solid",
 									intent: "brand",

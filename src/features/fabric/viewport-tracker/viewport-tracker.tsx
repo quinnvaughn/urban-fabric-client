@@ -1,10 +1,13 @@
-import { useMutation } from "@apollo/client/react"
 import { useEffect, useRef } from "react"
-import { SyncViewportDocument } from "#/graphql/generated"
 import { useMap } from "../fabric-map"
 
 type Props = {
-	id: string
+	onViewportChange: (viewport: {
+		center: { lng: number; lat: number }
+		zoom: number
+		bearing: number
+		thumbnail: string
+	}) => Promise<void>
 }
 
 const VIEWPORT_EVENTS = ["moveend", "zoomend", "rotateend"] as const
@@ -20,9 +23,8 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 	})
 }
 
-export function ViewportTracker({ id }: Props) {
+export function ViewportTracker({ onViewportChange }: Props) {
 	const map = useMap()
-	const [syncViewport] = useMutation(SyncViewportDocument)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	useEffect(() => {
@@ -35,16 +37,11 @@ export function ViewportTracker({ id }: Props) {
 
 				map.once("render", async () => {
 					const thumbnail = await getCanvasBase64(map.getCanvas())
-					syncViewport({
-						variables: {
-							input: {
-								id,
-								center: { lng, lat },
-								zoom,
-								bearing,
-								thumbnail,
-							},
-						},
+					onViewportChange({
+						center: { lng, lat },
+						zoom,
+						bearing,
+						thumbnail,
 					})
 				})
 
@@ -63,7 +60,7 @@ export function ViewportTracker({ id }: Props) {
 				map.off(event, handleViewportChange)
 			}
 		}
-	}, [map, id, syncViewport])
+	}, [map, onViewportChange])
 
 	return null
 }

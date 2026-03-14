@@ -10,9 +10,10 @@ import { SaveIndicator } from "./save-indicator"
 type Props = {
 	title: string
 	id: string
+	onTitleSave: (title: string) => Promise<void>
 }
 
-export function EditorTopbar({ title, id }: Props) {
+export function EditorTopbar({ title, id, onTitleSave }: Props) {
 	return (
 		<header
 			className={css({
@@ -50,7 +51,7 @@ export function EditorTopbar({ title, id }: Props) {
 						flexShrink: 0,
 					})}
 				/>
-				<EditorTitleInput id={id} title={title} />
+				<EditorTitleInput id={id} title={title} onTitleSave={onTitleSave} />
 			</Box>
 			<SaveIndicator />
 			<Box className={css({ flexShrink: 0 })}>

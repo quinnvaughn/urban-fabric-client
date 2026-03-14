@@ -154,10 +154,12 @@ export type PersistenceHandler = {
 // Two implementations you swap in depending on auth state:
 export const localStorageHandler = (fabricId: string): PersistenceHandler => ({
 	load: async () => {
+		if (typeof window === "undefined") return []
 		const raw = localStorage.getItem(`fabric:${fabricId}:elements`)
 		return raw ? JSON.parse(raw) : []
 	},
 	save: async (elements) => {
+		if (typeof window === "undefined") return
 		localStorage.setItem(
 			`fabric:${fabricId}:elements`,
 			JSON.stringify(elements),

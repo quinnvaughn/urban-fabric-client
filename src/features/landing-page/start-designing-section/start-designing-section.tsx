@@ -35,7 +35,7 @@ export function StartDesigningSection() {
 					</Typography.Text>
 					<HStack gap="4" align="center" wrap>
 						<Link
-							to="/proposal/new"
+							to="/fabric/new"
 							className={cx(
 								button({
 									appearance: "solid",

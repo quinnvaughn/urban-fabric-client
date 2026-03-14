@@ -66,7 +66,7 @@ export function HeroSection() {
 					<VStack gap="4">
 						<HStack gap="4" align="center" wrap>
 							<Link
-								to="/proposal/new"
+								to="/fabric/new"
 								className={cx(
 									button({
 										appearance: "solid",
