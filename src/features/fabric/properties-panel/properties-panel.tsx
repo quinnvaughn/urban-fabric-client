@@ -74,6 +74,15 @@ function getCalculatedValue(
 		return lineLengthFeet(instance.coordinates)
 	}
 
+	if (key === "lanes-removed") {
+		const before = Number(instance.properties["lanes-before"])
+		const after = Number(instance.properties["lanes-after"])
+		if (Number.isFinite(before) && Number.isFinite(after)) {
+			return Math.max(0, before - after)
+		}
+		return "--"
+	}
+
 	const points = instance.waypoints.length
 		? instance.waypoints
 		: instance.coordinates
@@ -82,6 +91,15 @@ function getCalculatedValue(
 	}
 	if (key === "to") {
 		return streetNames?.to ?? formatCoordinate(points[points.length - 1])
+	}
+
+	if (key === "width-gained") {
+		const before = Number(instance.properties["width-before"])
+		const after = Number(instance.properties["width-after"])
+		if (Number.isFinite(before) && Number.isFinite(after)) {
+			return Math.max(0, after - before)
+		}
+		return "--"
 	}
 
 	return "--"
@@ -248,21 +266,38 @@ export function PropertiesPanel() {
 					</Select.Options>
 				</Select>
 			))
-			.with({ kind: "stepper" }, (step) => (
-				<Stepper
-					key={prop.key}
-					size="md"
-					value={Number(currentValue)}
-					onChange={(val) => handleChange(String(val))}
-					min={step.min}
-					max={step.max}
-					step={step.step}
-					format={(val) => (step.unit ? `${val} ${step.unit}` : String(val))}
-				>
-					<Stepper.Label>{label}</Stepper.Label>
-					<Stepper.Control />
-				</Stepper>
-			))
+			.with({ kind: "stepper" }, (step) => {
+				let min = step.min
+				let max = step.max
+
+				for (const constraint of prop.constraints ?? []) {
+					const siblingVal = Number(
+						selectedInstance?.properties[constraint.sibling],
+					)
+					if (Number.isFinite(siblingVal)) {
+						if (constraint.kind === "max-sibling")
+							max = Math.min(max, siblingVal - constraint.offset)
+						if (constraint.kind === "min-sibling")
+							min = Math.max(min, siblingVal + constraint.offset)
+					}
+				}
+
+				return (
+					<Stepper
+						key={prop.key}
+						size="md"
+						value={Number(currentValue)}
+						onChange={(val) => handleChange(String(val))}
+						min={min}
+						max={max}
+						step={step.step}
+						format={(val) => (step.unit ? `${val} ${step.unit}` : String(val))}
+					>
+						<Stepper.Label>{label}</Stepper.Label>
+						<Stepper.Control />
+					</Stepper>
+				)
+			})
 			.with({ kind: "toggle" }, () => <div key={prop.key}>toggle</div>)
 			.exhaustive()
 	}

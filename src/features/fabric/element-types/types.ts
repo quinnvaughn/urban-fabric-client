@@ -32,6 +32,10 @@ type ToggleInput = { kind: "toggle" }
 
 type PropertyInput = StepperInput | SelectInput | SegmentedInput | ToggleInput
 
+type PropertyConstraint =
+	| { kind: "max-sibling"; sibling: string; offset: number } // value must be < sibling - offset
+	| { kind: "min-sibling"; sibling: string; offset: number } // value must be > sibling + offset
+
 export type PropertyDescriptor<T = unknown> = {
 	key: string
 	label: string
@@ -39,6 +43,7 @@ export type PropertyDescriptor<T = unknown> = {
 	default: T
 	input: PropertyInput
 	toMapStyle: (value: T) => Partial<LinePaintOverrides>
+	constraints?: PropertyConstraint[]
 }
 
 type LinePaintOverrides = {
@@ -120,7 +125,6 @@ export type LineLayerStyle = {
 		dasharray: number[]
 		lineCap: "butt" | "round" | "square"
 	}
-
 }
 
 // ── Element instance — what gets persisted ───────────────────────────────────
