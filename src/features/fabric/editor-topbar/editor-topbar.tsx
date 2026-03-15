@@ -23,7 +23,9 @@ const InnerText = () => (
 
 export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 	const saveStatus = useFabricStore((state) => state.saveStatus)
+	const hasElements = useFabricStore((state) => state.elements.length > 0)
 	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
+	const isPublishDisabled = isSaving || !hasElements
 	return (
 		<header
 			className={css({
@@ -71,7 +73,7 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 						intent="brand"
 						size="sm"
 						onClick={onPublish}
-						disabled={isSaving}
+						disabled={isPublishDisabled}
 					>
 						<InnerText />
 					</Button>
@@ -84,7 +86,12 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 							intent: "brand",
 							size: "sm",
 						})}
-						disabled={isSaving}
+						data-disabled={isPublishDisabled ? "" : undefined}
+						aria-disabled={isPublishDisabled}
+						tabIndex={isPublishDisabled ? -1 : undefined}
+						onClick={(event) => {
+							if (isPublishDisabled) event.preventDefault()
+						}}
 					>
 						<InnerText />
 					</Link>

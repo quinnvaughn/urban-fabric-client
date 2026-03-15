@@ -12,6 +12,7 @@ import {
 	Typography,
 } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
+import { lineLengthFeet } from "../element-metrics"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import type {
 	ElementInstance,
@@ -19,41 +20,6 @@ import type {
 } from "../element-types/types"
 import { useFabricStore } from "../fabric-store"
 import { nearestRoadName } from "../osrm-utils"
-
-const EARTH_RADIUS_METERS = 6371008.8
-const METERS_TO_FEET = 3.28084
-
-function toRadians(degrees: number) {
-	return (degrees * Math.PI) / 180
-}
-
-function segmentLengthMeters(a: [number, number], b: [number, number]): number {
-	const [lng1, lat1] = a
-	const [lng2, lat2] = b
-	const dLat = toRadians(lat2 - lat1)
-	const dLng = toRadians(lng2 - lng1)
-	const lat1Rad = toRadians(lat1)
-	const lat2Rad = toRadians(lat2)
-
-	const sinLat = Math.sin(dLat / 2)
-	const sinLng = Math.sin(dLng / 2)
-	const haversine =
-		sinLat * sinLat + Math.cos(lat1Rad) * Math.cos(lat2Rad) * sinLng * sinLng
-	const c = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
-
-	return EARTH_RADIUS_METERS * c
-}
-
-function lineLengthFeet(coordinates: [number, number][]): number {
-	if (coordinates.length < 2) return 0
-
-	let meters = 0
-	for (let i = 1; i < coordinates.length; i += 1) {
-		meters += segmentLengthMeters(coordinates[i - 1], coordinates[i])
-	}
-
-	return meters * METERS_TO_FEET
-}
 
 function formatCoordinate(coord?: [number, number]) {
 	if (!coord) return "--"
