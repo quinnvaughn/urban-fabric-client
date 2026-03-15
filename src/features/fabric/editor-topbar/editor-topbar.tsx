@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { ChevronRight } from "lucide-react"
+import { useFabricStore } from "#/features/fabric/fabric-store"
 import { Box, Button } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
@@ -21,6 +22,8 @@ const InnerText = () => (
 )
 
 export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
+	const saveStatus = useFabricStore((state) => state.saveStatus)
+	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
 	return (
 		<header
 			className={css({
@@ -63,19 +66,25 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 			<SaveIndicator />
 			<Box className={css({ flexShrink: 0 })}>
 				{onPublish ? (
-					<Button type="button" intent="brand" size="sm" onClick={onPublish}>
+					<Button
+						type="button"
+						intent="brand"
+						size="sm"
+						onClick={onPublish}
+						disabled={isSaving}
+					>
 						<InnerText />
 					</Button>
 				) : (
 					<Link
 						to={"/fabric/$id/publish"}
 						params={{ id }}
-						onClick={onPublish}
 						className={button({
 							appearance: "solid",
 							intent: "brand",
 							size: "sm",
 						})}
+						disabled={isSaving}
 					>
 						<InnerText />
 					</Link>
