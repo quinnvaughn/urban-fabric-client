@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { ChevronRight } from "lucide-react"
-import { Box } from "#/features/ui"
+import { Box, Button } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { BackButton } from "./back-button"
@@ -11,9 +11,16 @@ type Props = {
 	title: string
 	id: string
 	onTitleSave: (title: string) => Promise<void>
+	onPublish?: () => Promise<void> | void
 }
 
-export function EditorTopbar({ title, id, onTitleSave }: Props) {
+const InnerText = () => (
+	<>
+		Publish proposal <ChevronRight size={12} />
+	</>
+)
+
+export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 	return (
 		<header
 			className={css({
@@ -55,17 +62,24 @@ export function EditorTopbar({ title, id, onTitleSave }: Props) {
 			</Box>
 			<SaveIndicator />
 			<Box className={css({ flexShrink: 0 })}>
-				<Link
-					to="/fabric/$id/publish"
-					params={{ id }}
-					className={button({
-						appearance: "solid",
-						intent: "brand",
-						size: "sm",
-					})}
-				>
-					Publish proposal <ChevronRight size={12} />
-				</Link>
+				{onPublish ? (
+					<Button type="button" intent="brand" size="sm" onClick={onPublish}>
+						<InnerText />
+					</Button>
+				) : (
+					<Link
+						to={"/fabric/$id/publish"}
+						params={{ id }}
+						onClick={onPublish}
+						className={button({
+							appearance: "solid",
+							intent: "brand",
+							size: "sm",
+						})}
+					>
+						<InnerText />
+					</Link>
+				)}
 			</Box>
 		</header>
 	)

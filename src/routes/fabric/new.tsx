@@ -1,7 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { useApolloClient, useMutation } from "@apollo/client/react"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeader } from "@tanstack/react-start/server"
-import { useRef, useSyncExternalStore } from "react"
+import {
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useSyncExternalStore,
+} from "react"
 import { match } from "ts-pattern"
 import {
 	DrawingLayer,
@@ -14,8 +21,18 @@ import {
 	SelectLayer,
 	ViewportTracker,
 } from "#/features/fabric"
-import { localStorageHandler } from "#/features/fabric/element-types/types"
-import { useFabricPersistence } from "#/features/fabric/fabric-store"
+import {
+	type GuestFabric,
+	getOrCreateGuestFabric,
+	localStorageHandler,
+	readGuestFabric,
+	updateGuestFabric,
+} from "#/features/fabric/element-types/types"
+import {
+	useFabricPersistence,
+	useFabricStore,
+} from "#/features/fabric/fabric-store"
+import { AuthModal } from "#/features/modals/auth-modal"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
 
 const getLocationFromIp = createServerFn({ method: "GET" }).handler(
@@ -35,29 +52,6 @@ const getLocationFromIp = createServerFn({ method: "GET" }).handler(
 )
 
 const GUEST_FABRIC_KEY = "guest-fabric"
-
-type GuestFabric = {
-	id: string
-	title: string
-	center: { lat: number; lng: number }
-	zoom: number
-}
-
-function getOrCreateGuestFabric(center: {
-	lat: number
-	lng: number
-}): GuestFabric {
-	const existing = localStorage.getItem(GUEST_FABRIC_KEY)
-	if (existing) return JSON.parse(existing)
-	const fabric: GuestFabric = {
-		id: crypto.randomUUID(),
-		title: "Untitled Fabric",
-		center,
-		zoom: 15,
-	}
-	localStorage.setItem(GUEST_FABRIC_KEY, JSON.stringify(fabric))
-	return fabric
-}
 
 export const Route = createFileRoute("/fabric/new")({
 	component: RouteComponent,
@@ -104,7 +98,7 @@ function RouteComponent() {
 		() => () => {},
 		() => {
 			if (!fabricRef.current) {
-				fabricRef.current = getOrCreateGuestFabric(center)
+				fabricRef.current = getOrCreateGuestFabric(center, GUEST_FABRIC_KEY)
 			}
 			return fabricRef.current
 		},
@@ -116,7 +110,53 @@ function RouteComponent() {
 }
 
 function Editor({ fabric }: { fabric: GuestFabric }) {
-	const handler = localStorageHandler(fabric.id)
+	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
+	const initElements = useFabricStore((state) => state.initElements)
+	const client = useApolloClient()
+	const navigate = useNavigate()
+	const [createFabric] = useMutation(CreateFabricDocument)
+
+	useEffect(() => {
+		let cancelled = false
+
+		void handler.load?.().then((elements) => {
+			if (cancelled) return
+			initElements(elements)
+		})
+
+		return () => {
+			cancelled = true
+		}
+	}, [handler, initElements])
+
+	const [isAuthModalOpen, setAuthModalOpen] = useState(false)
+
+	async function handleAuthSuccess() {
+		const guest = readGuestFabric(GUEST_FABRIC_KEY)
+		if (!guest) return
+
+		const fabricResult = await createFabric({
+			variables: {
+				input: {
+					center: guest.center,
+					zoom: guest.zoom,
+					title: guest.title,
+					elements: guest.elements,
+					thumbnail: guest.thumbnail,
+				},
+			},
+		})
+
+		const created = fabricResult.data?.createFabric
+		if (created?.__typename !== "Fabric") return
+
+		const { id } = created
+
+		localStorage.removeItem(GUEST_FABRIC_KEY)
+		await client.resetStore()
+		navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
+	}
+
 	useFabricPersistence(handler)
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -124,14 +164,12 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				id={fabric.id}
 				title={fabric.title}
 				onTitleSave={async (t) => {
-					const existing = JSON.parse(
-						localStorage.getItem(GUEST_FABRIC_KEY) ?? "{}",
-					)
-					localStorage.setItem(
+					updateGuestFabric(
+						(existing) => ({ ...existing, title: t }),
 						GUEST_FABRIC_KEY,
-						JSON.stringify({ ...existing, title: t }),
 					)
 				}}
+				onPublish={() => setAuthModalOpen(true)}
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
@@ -144,18 +182,20 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				<DrawingLayer />
 				<SelectLayer />
 				<ViewportTracker
-					onViewportChange={async ({ center, zoom }) => {
-						const existing = JSON.parse(
-							localStorage.getItem(GUEST_FABRIC_KEY) ?? "{}",
-						)
-						localStorage.setItem(
+					onViewportChange={async ({ center, zoom, thumbnail }) => {
+						updateGuestFabric(
+							(existing) => ({ ...existing, center, zoom, thumbnail }),
 							GUEST_FABRIC_KEY,
-							JSON.stringify({ ...existing, center, zoom }),
 						)
 					}}
 				/>
 				<EditorHUD />
 			</FabricMap>
+			<AuthModal
+				open={isAuthModalOpen}
+				onClose={() => setAuthModalOpen(false)}
+				onAuthSuccess={handleAuthSuccess}
+			/>
 		</div>
 	)
 }

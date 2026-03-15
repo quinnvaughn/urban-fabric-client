@@ -22,6 +22,8 @@ import { GoogleSignInButton } from "../google-button"
 
 type Props = {
 	mode: "login" | "register"
+	onAuthSuccess?: () => Promise<void> | void
+	onModeChange?: (mode: "login" | "register") => void
 }
 
 const LoginSchema = z.object({
@@ -42,7 +44,7 @@ const RegisterSchema = z.object({
 
 const AuthSchema = z.discriminatedUnion("mode", [LoginSchema, RegisterSchema])
 
-export function AuthForm({ mode }: Props) {
+export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	const [showPassword, setShowPassword] = useState(false)
 	const [login] = useMutation(LoginDocument)
 	const [register] = useMutation(RegisterDocument)
@@ -84,7 +86,11 @@ export function AuthForm({ mode }: Props) {
 							.with({ __typename: "User" }, async () => {
 								await client.resetStore()
 								toast.success("Logged in successfully")
-								navigate({ to: "/dashboard", replace: true })
+								if (onAuthSuccess) {
+									await onAuthSuccess()
+								} else {
+									navigate({ to: "/dashboard", replace: true })
+								}
 							})
 							.with(undefined, () => {
 								form.setFormError("An unknown error occurred")
@@ -113,7 +119,11 @@ export function AuthForm({ mode }: Props) {
 							.with({ __typename: "User" }, async () => {
 								await client.resetStore()
 								toast.success("Account created successfully")
-								navigate({ to: "/dashboard", replace: true })
+								if (onAuthSuccess) {
+									await onAuthSuccess()
+								} else {
+									navigate({ to: "/dashboard", replace: true })
+								}
 							})
 							.with(undefined, () => {
 								form.setFormError("An unknown error occurred")
@@ -215,9 +225,24 @@ export function AuthForm({ mode }: Props) {
 									<Typography.Text size="sm" color="stone.500">
 										No account?
 									</Typography.Text>
-									<Link to="/register" size="sm">
-										Join Urban Fabric
-									</Link>
+									{onModeChange ? (
+										<button
+											type="button"
+											onClick={() => onModeChange("register")}
+											className={css({
+												fontSize: "sm",
+												color: "teal.600",
+												cursor: "pointer",
+												_hover: { textDecoration: "underline" },
+											})}
+										>
+											Join Urban Fabric
+										</button>
+									) : (
+										<Link to="/register" size="sm">
+											Join Urban Fabric
+										</Link>
+									)}
 								</HStack>
 							))
 							.with("register", () => (
@@ -225,9 +250,24 @@ export function AuthForm({ mode }: Props) {
 									<Typography.Text size="sm" color="stone.500">
 										Already a member?
 									</Typography.Text>
-									<Link to="/login" size="sm">
-										Sign in
-									</Link>
+									{onModeChange ? (
+										<button
+											type="button"
+											onClick={() => onModeChange("login")}
+											className={css({
+												fontSize: "sm",
+												color: "teal.600",
+												cursor: "pointer",
+												_hover: { textDecoration: "underline" },
+											})}
+										>
+											Sign in
+										</button>
+									) : (
+										<Link to="/login" size="sm">
+											Sign in
+										</Link>
+									)}
 								</HStack>
 							))
 							.exhaustive()}

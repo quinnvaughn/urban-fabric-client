@@ -145,6 +145,62 @@ export type ElementInstance = {
 	properties: Record<string, unknown>
 }
 
+export type GuestFabric = {
+	id: string
+	title: string
+	center: { lat: number; lng: number }
+	zoom: number
+	elements: ElementInstance[]
+	thumbnail?: string
+}
+
+export function readGuestFabric(guestStorageKey = "guest-fabric") {
+	if (typeof window === "undefined") return null
+	const raw = localStorage.getItem(guestStorageKey)
+	if (!raw) return null
+	return JSON.parse(raw) as GuestFabric
+}
+
+export function writeGuestFabric(
+	fabric: GuestFabric,
+	guestStorageKey = "guest-fabric",
+) {
+	if (typeof window === "undefined") return
+	localStorage.setItem(guestStorageKey, JSON.stringify(fabric))
+}
+
+export function updateGuestFabric(
+	updater: (current: GuestFabric) => GuestFabric,
+	guestStorageKey = "guest-fabric",
+) {
+	const existing = readGuestFabric(guestStorageKey)
+	if (!existing) return
+	writeGuestFabric(updater(existing), guestStorageKey)
+}
+
+export function getOrCreateGuestFabric(
+	center: { lat: number; lng: number },
+	guestStorageKey = "guest-fabric",
+) {
+	const existing = readGuestFabric(guestStorageKey)
+	if (existing) {
+		if (Array.isArray(existing.elements)) return existing
+		const migrated: GuestFabric = { ...existing, elements: [] }
+		writeGuestFabric(migrated, guestStorageKey)
+		return migrated
+	}
+
+	const fabric: GuestFabric = {
+		id: crypto.randomUUID(),
+		title: "Untitled Fabric",
+		center,
+		zoom: 15,
+		elements: [],
+	}
+	writeGuestFabric(fabric, guestStorageKey)
+	return fabric
+}
+
 // ── Persistence handler — agnostic of auth state ────────────────────────────
 
 export type PersistenceHandler = {
@@ -153,17 +209,23 @@ export type PersistenceHandler = {
 }
 
 // Two implementations you swap in depending on auth state:
-export const localStorageHandler = (fabricId: string): PersistenceHandler => ({
+export const localStorageHandler = (
+	guestStorageKey = "guest-fabric",
+): PersistenceHandler => ({
 	load: async () => {
 		if (typeof window === "undefined") return []
-		const raw = localStorage.getItem(`fabric:${fabricId}:elements`)
-		return raw ? JSON.parse(raw) : []
+		const raw = localStorage.getItem(guestStorageKey)
+		if (!raw) return []
+		const parsed = JSON.parse(raw) as { elements?: ElementInstance[] }
+		return Array.isArray(parsed.elements) ? parsed.elements : []
 	},
 	save: async (elements) => {
 		if (typeof window === "undefined") return
+		const raw = localStorage.getItem(guestStorageKey)
+		const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
 		localStorage.setItem(
-			`fabric:${fabricId}:elements`,
-			JSON.stringify(elements),
+			guestStorageKey,
+			JSON.stringify({ ...parsed, elements }),
 		)
 	},
 })

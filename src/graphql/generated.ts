@@ -40,6 +40,10 @@ export type CoordinateInput = {
 
 export type CreateFabricInput = {
   center: CoordinateInput;
+  elements?: InputMaybe<Scalars['JSON']['input']>;
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  zoom?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CreateFabricResult = Fabric | UnauthorizedError;
