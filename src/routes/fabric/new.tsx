@@ -5,6 +5,7 @@ import { useRef, useSyncExternalStore } from "react"
 import { match } from "ts-pattern"
 import {
 	DrawingLayer,
+	EditorCommandPalette,
 	EditorHUD,
 	EditorTopbar,
 	ElementPanel,
@@ -134,6 +135,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
+			<EditorCommandPalette />
 			<FabricMap
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}

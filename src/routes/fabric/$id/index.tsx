@@ -7,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {
 	DrawingLayer,
+	EditorCommandPalette,
 	EditorHUD,
 	EditorTopbar,
 	ElementPanel,
@@ -75,6 +76,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
+			<EditorCommandPalette />
 			<FabricMap
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}

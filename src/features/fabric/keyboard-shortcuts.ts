@@ -13,6 +13,7 @@ export type FabricShortcutId =
 	| "zoomIn"
 	| "zoomOut"
 	| "openShortcuts"
+	| "openCommandPalette"
 
 export type FabricShortcutDefinition = {
 	id: FabricShortcutId
@@ -93,6 +94,13 @@ export const FABRIC_SHORTCUTS: FabricShortcutDefinition[] = [
 		shortcut: "Shift+?",
 		keys: ["⇧", "?"],
 	},
+	{
+		id: "openCommandPalette",
+		label: "Open command palette",
+		group: "Tools",
+		shortcut: "/",
+		keys: ["/"],
+	},
 ]
 
 export const PANEL_SHORTCUT_IDS = [
@@ -101,8 +109,8 @@ export const PANEL_SHORTCUT_IDS = [
 	"deleteSelected",
 	"undo",
 	"redo",
-	"finishDrawing",
 	"cancelDrawing",
+	"openCommandPalette",
 ] as const satisfies readonly FabricShortcutId[]
 
 export const MAP_CONTROL_SHORTCUT_IDS = [

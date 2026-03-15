@@ -21,6 +21,10 @@ type FabricStore = {
 	selectedInstanceId: string | null
 	setSelectedInstanceId: (id: string | null) => void
 
+	commandPaletteOpen: boolean
+	openCommandPalette: () => void
+	closeCommandPalette: () => void
+
 	past: ElementInstance[][]
 	future: ElementInstance[][]
 	canUndo: boolean
@@ -43,6 +47,9 @@ export const useFabricStore = create<FabricStore>((set) => ({
 	setActiveTool: (tool) => set({ activeTool: tool }),
 	setTitle: (title) => set({ title, saveStatus: "dirty" }),
 	initElements: (elements) => set({ elements }),
+	commandPaletteOpen: false,
+	openCommandPalette: () => set({ commandPaletteOpen: true }),
+	closeCommandPalette: () => set({ commandPaletteOpen: false }),
 	addElement: (element) =>
 		set((state) => ({
 			elements: [...state.elements, element],

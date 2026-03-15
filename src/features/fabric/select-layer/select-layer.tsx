@@ -1,6 +1,6 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { ELEMENT_TYPE_MAP } from "../element-types"
+import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
 import {
 	hasImage,
 	removeImageIfPresent,
@@ -339,6 +339,8 @@ export function SelectLayer() {
 		const el = elements.find((e) => e.id === selectedInstanceId)
 		const descriptor = el ? ELEMENT_TYPE_MAP[el.typeId] : undefined
 		const s = descriptor?.baseMapStyle
+		const computedPaint =
+			el && descriptor ? computeBasePaint(descriptor, el) : undefined
 		const sel = s?.selected
 		const ep = s?.endpoints
 		const mh = s?.midHandle
@@ -379,7 +381,28 @@ export function SelectLayer() {
 		map.setPaintProperty(
 			"select-drag-preview",
 			"line-color",
-			sel.color ?? s.color,
+			sel.color ?? computedPaint?.["line-color"] ?? s.color,
+		)
+		const hasDashedMain = Boolean(computedPaint?.["line-dasharray"]?.length)
+		map.setPaintProperty(
+			"select-main",
+			"line-color",
+			sel.color ?? computedPaint?.["line-color"] ?? s.color,
+		)
+		map.setPaintProperty(
+			"select-main",
+			"line-width",
+			sel.width ?? computedPaint?.["line-width"] ?? s.width,
+		)
+		map.setPaintProperty(
+			"select-main",
+			"line-dasharray",
+			computedPaint?.["line-dasharray"] ?? null,
+		)
+		map.setLayoutProperty(
+			"select-main",
+			"line-cap",
+			sel.lineCap ?? s.lineCap ?? "round",
 		)
 
 		// Outlines
@@ -387,10 +410,18 @@ export function SelectLayer() {
 		const outlineWidth = sel.outlineWidth ?? 1.5
 		const offset = sel.outlineOffset ?? 8
 
-		map.setPaintProperty("select-outline-above", "line-color", s.color)
+		map.setPaintProperty(
+			"select-outline-above",
+			"line-color",
+			computedPaint?.["line-color"] ?? s.color,
+		)
 		map.setPaintProperty("select-outline-above", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-above", "line-offset", offset)
-		map.setPaintProperty("select-outline-below", "line-color", s.color)
+		map.setPaintProperty(
+			"select-outline-below",
+			"line-color",
+			computedPaint?.["line-color"] ?? s.color,
+		)
 		map.setPaintProperty("select-outline-below", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-below", "line-offset", -offset)
 		if (sel.outlineDasharray) {
@@ -420,7 +451,7 @@ export function SelectLayer() {
 			map.setPaintProperty(
 				"select-endpoints-node",
 				"circle-stroke-color",
-				s.color,
+				computedPaint?.["line-color"] ?? s.color,
 			)
 			map.setPaintProperty(
 				"select-endpoints-node",
@@ -432,7 +463,11 @@ export function SelectLayer() {
 				"circle-radius",
 				ep.glowRadius,
 			)
-			map.setPaintProperty("select-endpoints-glow", "circle-color", s.color)
+			map.setPaintProperty(
+				"select-endpoints-glow",
+				"circle-color",
+				computedPaint?.["line-color"] ?? s.color,
+			)
 			map.setPaintProperty(
 				"select-endpoints-glow",
 				"circle-opacity",
@@ -446,7 +481,7 @@ export function SelectLayer() {
 			map.setPaintProperty(
 				"select-endpoints-snap-ring",
 				"circle-stroke-color",
-				s.color,
+				computedPaint?.["line-color"] ?? s.color,
 			)
 			map.setPaintProperty(
 				"select-endpoints-snap-ring",
@@ -475,7 +510,7 @@ export function SelectLayer() {
 				mh.height,
 				mh.radius,
 				mh.fillColor,
-				s.color,
+				computedPaint?.["line-color"] ?? s.color,
 				mh.strokeWidth,
 			).then(({ img, pixelRatio }) => {
 				// Discard if selection changed before the image finished building.
@@ -513,6 +548,7 @@ export function SelectLayer() {
 
 		map.setPaintProperty("select-outline-above", "line-opacity", outlineOpacity)
 		map.setPaintProperty("select-outline-below", "line-opacity", outlineOpacity)
+		map.setPaintProperty("select-main", "line-opacity", hasDashedMain ? 0 : 1)
 		if (ep) {
 			map.setPaintProperty("select-endpoints-node", "circle-opacity", 1)
 			map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 1)

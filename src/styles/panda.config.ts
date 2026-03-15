@@ -3,6 +3,7 @@ import { avatar } from "./recipes/avatar"
 import { badge } from "./recipes/badge"
 import { button } from "./recipes/button"
 import { card } from "./recipes/card"
+import { commandPalette } from "./recipes/command-pallete"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { menu } from "./recipes/menu"
@@ -51,6 +52,7 @@ export default defineConfig({
 			menu: ["*"],
 			modal: ["*"],
 			tooltip: ["*"],
+			commandPalette: ["*"],
 		},
 		css: [
 			{
@@ -1555,6 +1557,14 @@ export default defineConfig({
 				"0%": { opacity: "0", transform: "scale(0.95)" },
 				"100%": { opacity: "1", transform: "scale(1)" },
 			},
+			paletteFadeIn: {
+				"0%": { opacity: "0" },
+				"100%": { opacity: "1" },
+			},
+			paletteSlideDown: {
+				"0%": { opacity: "0", transform: "translateY(-10px) scale(0.98)" },
+				"100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+			},
 		},
 
 		tokens: {
@@ -1789,6 +1799,7 @@ export default defineConfig({
 			menu,
 			modal,
 			tooltip,
+			commandPalette,
 		},
 		recipes: {
 			input,

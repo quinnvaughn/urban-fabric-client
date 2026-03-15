@@ -1,4 +1,5 @@
 export * from "./drawing-layer"
+export * from "./editor-command-palette"
 export * from "./editor-hud"
 export * from "./editor-topbar"
 export * from "./element-panel"

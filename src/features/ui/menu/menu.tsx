@@ -21,6 +21,19 @@ function useMenuContext() {
 	return ctx
 }
 
+function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+	return (node: T) => {
+		for (const ref of refs) {
+			if (!ref) continue
+			if (typeof ref === "function") {
+				ref(node)
+			} else {
+				;(ref as React.RefObject<T>).current = node
+			}
+		}
+	}
+}
+
 // ---------- Root ----------
 
 export interface MenuRootProps {
@@ -63,25 +76,32 @@ MenuRoot.displayName = "Menu"
 // ---------- Trigger ----------
 
 export interface MenuTriggerProps {
-	children: React.ReactElement
-}
-
-function MenuTrigger({ children }: MenuTriggerProps) {
-	const { open, setOpen, triggerRef } = useMenuContext()
-	const child = children as React.ReactElement<
+	children: React.ReactElement<
 		React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement>
 	>
-
-	return React.cloneElement(child, {
-		ref: triggerRef,
-		onClick: (e: React.MouseEvent<HTMLElement>) => {
-			child.props.onClick?.(e)
-			setOpen((v) => !v)
-		},
-		"aria-haspopup": "true",
-		"aria-expanded": open,
-	})
 }
+
+const MenuTrigger = React.forwardRef<HTMLElement, MenuTriggerProps>(
+	function MenuTrigger({ children }, forwardedRef) {
+		const { open, setOpen, triggerRef } = useMenuContext()
+		const childRef = (
+			children as React.ReactElement & { ref?: React.Ref<HTMLElement> }
+		).ref
+		const childProps = children.props as React.HTMLAttributes<HTMLElement> &
+			React.RefAttributes<HTMLElement>
+
+		return React.cloneElement(children, {
+			...childProps,
+			ref: composeRefs(triggerRef, forwardedRef, childRef),
+			onClick: (e: React.MouseEvent<HTMLElement>) => {
+				childProps.onClick?.(e)
+				if (!e.defaultPrevented) setOpen((v) => !v)
+			},
+			"aria-haspopup": "true",
+			"aria-expanded": open,
+		})
+	},
+)
 MenuTrigger.displayName = "Menu.Trigger"
 
 // ---------- Positioning hook ----------

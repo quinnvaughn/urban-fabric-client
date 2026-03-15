@@ -142,9 +142,9 @@ export function MapControls() {
 				})}
 			/>
 			<Menu>
-				<Menu.Trigger>
-					<Tooltip>
-						<Tooltip.Trigger>
+				<Tooltip>
+					<Tooltip.Trigger>
+						<Menu.Trigger>
 							<button
 								type="button"
 								className={cx(
@@ -154,10 +154,10 @@ export function MapControls() {
 							>
 								?
 							</button>
-						</Tooltip.Trigger>
-						<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
-					</Tooltip>
-				</Menu.Trigger>
+						</Menu.Trigger>
+					</Tooltip.Trigger>
+					<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
+				</Tooltip>
 				<Menu.Content>
 					<Menu.Item
 						icon={<KeyboardIcon size={14} />}

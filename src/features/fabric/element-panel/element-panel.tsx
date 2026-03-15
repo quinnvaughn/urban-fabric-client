@@ -52,6 +52,7 @@ export function ElementPanel() {
 	const setSelectedInstanceId = useFabricStore(
 		(state) => state.setSelectedInstanceId,
 	)
+	const openCommandPalette = useFabricStore((state) => state.openCommandPalette)
 
 	useFabricKeyboardShortcuts({
 		ids: PANEL_SHORTCUT_IDS,
@@ -70,11 +71,6 @@ export function ElementPanel() {
 			},
 			undo,
 			redo,
-			finishDrawing: () => {
-				if (activeTool !== "draw") return
-				setActiveTool("select")
-				setActiveElement(null)
-			},
 			cancelDrawing: () => {
 				if (activeTool === "draw") {
 					setActiveTool("select")
@@ -85,6 +81,7 @@ export function ElementPanel() {
 				if (!selectedInstanceId) return
 				setSelectedInstanceId(null)
 			},
+			openCommandPalette,
 		},
 	})
 

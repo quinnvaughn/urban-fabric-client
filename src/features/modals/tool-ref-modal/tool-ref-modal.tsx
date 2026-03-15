@@ -3,7 +3,7 @@ import { HStack, Modal, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 
 type Tool = {
-	title: "select" | "draw"
+	title: "select" | "draw" | "command palette"
 	keyboardShortcut: string
 	description: ReactNode
 }
@@ -47,6 +47,17 @@ const tools: Tool[] = [
 				Click to place waypoints along a road. Press{" "}
 				<kbd className={kbd}>↵</kbd> to finish or <kbd className={kbd}>Esc</kbd>{" "}
 				to cancel. Snaps to the road network automatically.
+			</>
+		),
+	},
+	{
+		title: "command palette",
+		keyboardShortcut: "/",
+		description: (
+			<>
+				Press <kbd className={kbd}>/</kbd> to open the command palette. Search
+				for any element type by name and press <kbd className={kbd}>↵</kbd> to
+				immediately start drawing it.
 			</>
 		),
 	},
