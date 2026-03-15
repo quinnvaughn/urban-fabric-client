@@ -14,7 +14,7 @@ export function StatCard({ label, value, delta, neutral }: Props) {
 			<Card.Body>
 				<VStack gap="1.5">
 					<Typography.Text
-						size="xs"
+						size="xxs"
 						color="stone.500"
 						transform={"uppercase"}
 						weight="medium"

@@ -5,7 +5,7 @@ import type { SystemStyleObject } from "@/styles/styled-system/types"
 
 // ---------- Context ----------
 
-interface InputContextValue {
+interface TextareaContextValue {
 	id: string
 	invalid?: boolean
 	describedByIds: Set<string>
@@ -14,13 +14,13 @@ interface InputContextValue {
 	classes: ReturnType<typeof inputRecipe>
 }
 
-const InputContext = React.createContext<InputContextValue | null>(null)
+const TextareaContext = React.createContext<TextareaContextValue | null>(null)
 
-function useInputContext() {
-	const ctx = React.useContext(InputContext)
+function useTextareaContext() {
+	const ctx = React.useContext(TextareaContext)
 	if (!ctx) {
 		throw new Error(
-			"Input.Label, Input.Field, Input.Error, and Input.Description must be used within <Input>",
+			"Textarea.Label, Textarea.Field, Textarea.Error, and Textarea.Description must be used within <Textarea>",
 		)
 	}
 	return ctx
@@ -28,14 +28,15 @@ function useInputContext() {
 
 // ---------- Root ----------
 
-export interface InputRootProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TextareaRootProps
+	extends React.HTMLAttributes<HTMLDivElement> {
 	id?: string
 	invalid?: boolean
 	required?: boolean
 	size?: "sm" | "md" | "lg"
 }
 
-function InputRoot({
+function TextareaRoot({
 	id: idProp,
 	invalid,
 	size,
@@ -43,7 +44,7 @@ function InputRoot({
 	children,
 	required,
 	...rest
-}: InputRootProps) {
+}: TextareaRootProps) {
 	const autoId = React.useId()
 	const id = idProp ?? autoId
 	const classes = inputRecipe({ size, invalid: invalid ? true : undefined })
@@ -70,26 +71,26 @@ function InputRoot({
 	)
 
 	return (
-		<InputContext.Provider value={ctxValue}>
+		<TextareaContext.Provider value={ctxValue}>
 			<div className={cx(classes.root, className)} {...rest}>
 				{children}
 			</div>
-		</InputContext.Provider>
+		</TextareaContext.Provider>
 	)
 }
 
 // ---------- Label ----------
 
-export interface InputLabelProps
+export interface TextareaLabelProps
 	extends React.LabelHTMLAttributes<HTMLLabelElement> {}
 
-function InputLabel({
+function TextareaLabel({
 	className,
 	htmlFor,
 	children,
 	...rest
-}: InputLabelProps) {
-	const { id, required, classes } = useInputContext()
+}: TextareaLabelProps) {
+	const { id, required, classes } = useTextareaContext()
 
 	const { counters, rest: otherChildren } = React.Children.toArray(
 		children,
@@ -98,7 +99,7 @@ function InputLabel({
 		rest: React.ReactNode[]
 	}>(
 		(acc, child) => {
-			if (React.isValidElement(child) && child.type === InputCounter) {
+			if (React.isValidElement(child) && child.type === TextareaCounter) {
 				acc.counters.push(child)
 			} else {
 				acc.rest.push(child)
@@ -126,25 +127,25 @@ function InputLabel({
 		</label>
 	)
 }
-InputLabel.displayName = "Input.Label"
+TextareaLabel.displayName = "Textarea.Label"
 
 // ---------- Counter ----------
 
-export interface InputCounterProps
+export interface TextareaCounterProps
 	extends React.HTMLAttributes<HTMLSpanElement> {
 	current: number
 	max: number
 	warnAt?: number
 }
 
-function InputCounter({
+function TextareaCounter({
 	current,
 	max,
 	warnAt,
 	className,
 	...rest
-}: InputCounterProps) {
-	const { classes } = useInputContext()
+}: TextareaCounterProps) {
+	const { classes } = useTextareaContext()
 	const threshold = warnAt ?? Math.floor(max * 0.9)
 	const isWarn = current >= threshold
 	const isOver = current >= max
@@ -161,18 +162,19 @@ function InputCounter({
 		</span>
 	)
 }
-InputCounter.displayName = "Input.Counter"
+TextareaCounter.displayName = "Textarea.Counter"
 
 // ---------- Field ----------
 
-export interface InputFieldProps
-	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
+export interface TextareaFieldProps
+	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
 	invalid?: boolean
-	startAdornment?: React.ReactNode
-	endAdornment?: React.ReactNode
+	minRows?: number
+	maxRows?: number
+	resize?: "none" | "vertical" | "horizontal" | "both"
 }
 
-const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
+const TextareaField = React.forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
 	(
 		{
 			invalid: invalidProp,
@@ -180,12 +182,14 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
 			id: idProp,
 			"aria-describedby": describedByProp,
 			required: requiredProp,
-			startAdornment,
-			endAdornment,
 			disabled,
 			readOnly,
 			onFocus,
 			onBlur,
+			minRows = 3,
+			maxRows,
+			resize = "none",
+			style,
 			...rest
 		},
 		ref,
@@ -196,7 +200,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
 			describedByIds,
 			required: ctxRequired,
 			classes,
-		} = useInputContext()
+		} = useTextareaContext()
 		const id = idProp ?? ctxId
 		const invalid = invalidProp ?? ctxInvalid
 		const [focused, setFocused] = React.useState(false)
@@ -219,10 +223,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
 				data-disabled={disabled ? "" : undefined}
 				data-read-only={readOnly ? "" : undefined}
 			>
-				{startAdornment && (
-					<div className={classes.adornment}>{startAdornment}</div>
-				)}
-				<input
+				<textarea
 					ref={ref}
 					id={id}
 					className={cx(classes.input, className)}
@@ -231,6 +232,17 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
 					required={requiredProp ?? ctxRequired}
 					disabled={disabled}
 					readOnly={readOnly}
+					rows={minRows}
+					style={{
+						resize,
+						...(maxRows
+							? {
+									maxHeight: `calc(${maxRows} * 1.6em + 20px)`,
+									overflowY: "auto",
+								}
+							: {}),
+						...style,
+					}}
 					onFocus={(e) => {
 						setFocused(true)
 						onFocus?.(e)
@@ -241,29 +253,26 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
 					}}
 					{...rest}
 				/>
-				{endAdornment && (
-					<div className={classes.adornment}>{endAdornment}</div>
-				)}
 			</div>
 		)
 	},
 )
-InputField.displayName = "Input.Field"
+TextareaField.displayName = "Textarea.Field"
 
 // ---------- Description ----------
 
-export interface InputDescriptionProps
+export interface TextareaDescriptionProps
 	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {
 	sx?: SystemStyleObject
 }
 
-function InputDescription({
+function TextareaDescription({
 	className,
 	id,
 	sx,
 	...rest
-}: InputDescriptionProps) {
-	const { id: baseId, registerDescribedBy, classes } = useInputContext()
+}: TextareaDescriptionProps) {
+	const { id: baseId, registerDescribedBy, classes } = useTextareaContext()
 	const descId = id ?? `${baseId}-desc`
 
 	React.useEffect(
@@ -279,15 +288,15 @@ function InputDescription({
 		/>
 	)
 }
-InputDescription.displayName = "Input.Description"
+TextareaDescription.displayName = "Textarea.Description"
 
 // ---------- Error ----------
 
-export interface InputErrorProps
+export interface TextareaErrorProps
 	extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-function InputError({ className, id, ...rest }: InputErrorProps) {
-	const { id: baseId, registerDescribedBy, classes } = useInputContext()
+function TextareaError({ className, id, ...rest }: TextareaErrorProps) {
+	const { id: baseId, registerDescribedBy, classes } = useTextareaContext()
 	const errorId = id ?? `${baseId}-error`
 
 	React.useEffect(
@@ -297,14 +306,14 @@ function InputError({ className, id, ...rest }: InputErrorProps) {
 
 	return <p className={cx(classes.error, className)} id={errorId} {...rest} />
 }
-InputError.displayName = "Input.Error"
+TextareaError.displayName = "Textarea.Error"
 
 // ---------- Dot-notation export ----------
 
-export const Input = Object.assign(InputRoot, {
-	Label: InputLabel,
-	Counter: InputCounter,
-	Field: InputField,
-	Error: InputError,
-	Description: InputDescription,
+export const Textarea = Object.assign(TextareaRoot, {
+	Label: TextareaLabel,
+	Counter: TextareaCounter,
+	Field: TextareaField,
+	Error: TextareaError,
+	Description: TextareaDescription,
 })

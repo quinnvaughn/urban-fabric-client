@@ -205,6 +205,7 @@ function TypographyInline({
 			className={cx(styles.inline, className)}
 			style={{
 				fontStyle: italic ? "italic" : undefined,
+				fontSize: size ? undefined : "inherit",
 				...colorStyle(color),
 				...style,
 			}}

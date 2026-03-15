@@ -1,35 +1,17 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import type { LinePaint } from "../element-types"
-import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
-import type { LineLayerStyle } from "../element-types/types"
+import { ELEMENT_TYPE_MAP } from "../element-types"
+import { syncElementsToMap } from "../elements-layer/map-elements-utils"
 import {
 	DRAW_LAYER_IDS,
 	DRAW_SOURCE_IDS,
 	hasLayer,
-	hasSource,
 	removeLayersIfPresent,
 	removeSourcesIfPresent,
 	useMap,
 } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
 import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
-
-function toMaplibrePaint(
-	paint: LinePaint,
-): Omit<LinePaint, "line-casing-opacity"> {
-	const { "line-casing-opacity": _, ...rest } = paint
-	return rest
-}
-
-function computeCasingPaint(s: LineLayerStyle): LinePaint | null {
-	if (!s.casingWidth) return null
-	return {
-		"line-color": s.color,
-		"line-width": s.casingWidth,
-		"line-opacity": s.casingOpacity ?? 0.15,
-	}
-}
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -47,20 +29,6 @@ function makeLineFeature(
 		geometry: { type: "LineString", coordinates: coords },
 		properties: {},
 	}
-}
-
-// ── Layer ID helpers ──────────────────────────────────────────────────────────
-
-const casingLayerId = (id: string) => `el-${id}-casing`
-const mainLayerId = (id: string) => `el-${id}`
-const casingSourceId = (id: string) => `el-${id}-casing`
-const mainSourceId = (id: string) => `el-${id}`
-
-function removeElementLayers(map: maplibregl.Map, id: string) {
-	const layers = [casingLayerId(id), mainLayerId(id)]
-	const sources = [casingSourceId(id), mainSourceId(id)]
-	removeLayersIfPresent(map, layers)
-	removeSourcesIfPresent(map, sources)
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -237,118 +205,12 @@ export function DrawingLayer() {
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {
-		const currentIds = new Set(elements.map((e) => e.id))
-
-		// Remove layers for deleted elements
-		for (const id of elementLayerIds.current) {
-			if (!currentIds.has(id)) {
-				removeElementLayers(map, id)
-				elementLayerIds.current.delete(id)
-			}
-		}
-
-		// Add or update layers for current elements
-		for (const el of elements) {
-			const descriptor = ELEMENT_TYPE_MAP[el.typeId]
-			if (!descriptor) continue
-
-			const data = makeLineFeature(el.coordinates)
-
-			// ── Update existing sources ──────────────────────────────────────
-			if (hasSource(map, mainSourceId(el.id))) {
-				;(
-					map.getSource(mainSourceId(el.id)) as maplibregl.GeoJSONSource
-				).setData(data)
-				if (hasSource(map, casingSourceId(el.id))) {
-					;(
-						map.getSource(casingSourceId(el.id)) as maplibregl.GeoJSONSource
-					).setData(data)
-				}
-				// Re-apply paint in case properties changed
-				if (hasLayer(map, mainLayerId(el.id))) {
-					const paint = toMaplibrePaint(computeBasePaint(descriptor, el))
-					map.setPaintProperty(
-						mainLayerId(el.id),
-						"line-color",
-						paint["line-color"],
-					)
-					map.setPaintProperty(
-						mainLayerId(el.id),
-						"line-width",
-						paint["line-width"],
-					)
-					map.setPaintProperty(
-						mainLayerId(el.id),
-						"line-opacity",
-						paint["line-opacity"],
-					)
-					// null explicitly clears the dasharray in MapLibre when not set
-					map.setPaintProperty(
-						mainLayerId(el.id),
-						"line-dasharray",
-						paint["line-dasharray"] ?? null,
-					)
-				}
-				if (hasLayer(map, casingLayerId(el.id))) {
-					const paint = computeBasePaint(descriptor, el)
-					map.setPaintProperty(
-						casingLayerId(el.id),
-						"line-opacity",
-						paint["line-casing-opacity"] ??
-							descriptor.baseMapStyle.casingOpacity ??
-							0.15,
-					)
-				}
-				continue
-			}
-
-			// ── Add new layers ───────────────────────────────────────────────
-			// Insert everything below the draw layers so new elements never
-			// appear on top of an in-progress drawing.
-			const belowLayer = hasLayer(map, "draw-active")
-				? "draw-active"
-				: undefined
-
-			// 1. Casing — rendered beneath the main stroke
-			const casingPaint = computeCasingPaint(descriptor.baseMapStyle)
-			if (casingPaint) {
-				map.addSource(casingSourceId(el.id), { type: "geojson", data })
-				map.addLayer(
-					{
-						id: casingLayerId(el.id),
-						type: "line",
-						source: casingSourceId(el.id),
-						layout: { "line-join": "round", "line-cap": "round" },
-						paint: casingPaint,
-					},
-					belowLayer,
-				)
-			}
-
-			// 2. Main stroke — on top of casing, below draw layers
-			map.addSource(mainSourceId(el.id), { type: "geojson", data })
-			map.addLayer(
-				{
-					id: mainLayerId(el.id),
-					type: "line",
-					source: mainSourceId(el.id),
-					layout: {
-						"line-join": descriptor.baseMapStyle.lineJoin ?? "round",
-						"line-cap": descriptor.baseMapStyle.lineCap ?? "square",
-					},
-					paint: toMaplibrePaint(computeBasePaint(descriptor, el)),
-				},
-				belowLayer,
-			)
-
-			elementLayerIds.current.add(el.id)
-		}
-
-		// Force MapLibre to re-render after any sync. Without this, dynamically
-		// added layers with line-dasharray don't generate their SDF atlas until
-		// the next viewport change (zoom/pan), causing the dash pattern to appear
-		// missing until the user moves the map.
-		map.triggerRepaint()
+		syncElementsToMap({
+			map,
+			elements,
+			elementLayerIds: elementLayerIds.current,
+			belowLayerId: hasLayer(map, "draw-active") ? "draw-active" : undefined,
+		})
 	}, [elements, map])
 
 	return null

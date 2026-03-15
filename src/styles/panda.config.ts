@@ -3,6 +3,7 @@ import { avatar } from "./recipes/avatar"
 import { badge } from "./recipes/badge"
 import { button } from "./recipes/button"
 import { card } from "./recipes/card"
+import { chipGroup } from "./recipes/chip-group"
 import { commandPalette } from "./recipes/command-pallete"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
@@ -53,6 +54,7 @@ export default defineConfig({
 			modal: ["*"],
 			tooltip: ["*"],
 			commandPalette: ["*"],
+			chipGroup: ["*"],
 		},
 		css: [
 			{
@@ -1067,33 +1069,40 @@ export default defineConfig({
 		borderWidth: {
 			shorthand: "borderW",
 			className: "border",
-			values: { 0: "0px", 1: "1px", 2: "2px", 4: "4px", 8: "8px" },
+			values: {
+				0: "0px",
+				1: "1px",
+				1.5: "1.5px",
+				2: "2px",
+				4: "4px",
+				8: "8px",
+			},
 		},
 		borderTopWidth: {
 			className: "border-t",
-			values: { 0: "0px", 1: "1px", 2: "2px", 4: "4px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px", 4: "4px" },
 		},
 		borderRightWidth: {
 			className: "border-r",
-			values: { 0: "0px", 1: "1px", 2: "2px", 4: "4px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px", 4: "4px" },
 		},
 		borderBottomWidth: {
 			className: "border-b",
-			values: { 0: "0px", 1: "1px", 2: "2px", 4: "4px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px", 4: "4px" },
 		},
 		borderLeftWidth: {
 			className: "border-l",
-			values: { 0: "0px", 1: "1px", 2: "2px", 4: "4px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px", 4: "4px" },
 		},
 		borderInlineWidth: {
 			shorthand: "borderXW",
 			className: "border-x",
-			values: { 0: "0px", 1: "1px", 2: "2px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px" },
 		},
 		borderBlockWidth: {
 			shorthand: "borderYW",
 			className: "border-y",
-			values: { 0: "0px", 1: "1px", 2: "2px" },
+			values: { 0: "0px", 1: "1px", 1.5: "1.5px", 2: "2px" },
 		},
 		borderStyle: {
 			className: "border",
@@ -1684,7 +1693,8 @@ export default defineConfig({
 				},
 			},
 			fontSizes: {
-				xxs: { value: "0.625rem" },
+				"3xs": { value: "0.65rem" },
+				xxs: { value: "0.71875rem" },
 				xs: { value: "0.75rem" },
 				sm: { value: "0.875rem" },
 				md: { value: "1rem" },
@@ -1800,9 +1810,10 @@ export default defineConfig({
 			modal,
 			tooltip,
 			commandPalette,
+			input,
+			chipGroup,
 		},
 		recipes: {
-			input,
 			link,
 			button,
 			toast,

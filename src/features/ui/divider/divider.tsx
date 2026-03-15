@@ -1,5 +1,21 @@
 import { css, cx } from "@/styles/styled-system/css"
 
+const dividerWithLabelStyles = css({
+	display: "flex",
+	alignItems: "center",
+	gap: "2",
+})
+
+const dividerLabelStyles = css({
+	fontSize: "3xs",
+	fontWeight: "semibold",
+	letterSpacing: "wider",
+	textTransform: "uppercase",
+	color: "stone.400",
+	whiteSpace: "nowrap",
+	flexShrink: 0,
+})
+
 const hrStyles = css({
 	flex: "1 1 auto",
 	border: "none",
@@ -7,22 +23,6 @@ const hrStyles = css({
 	borderTopStyle: "solid",
 	borderTopColor: "stone.200",
 	margin: 0,
-})
-
-const dividerWithLabelStyles = css({
-	display: "flex",
-	alignItems: "center",
-	gap: "3",
-})
-
-const dividerLabelStyles = css({
-	fontSize: "xs",
-	fontWeight: "medium",
-	letterSpacing: "wider",
-	textTransform: "uppercase",
-	color: "stone.400",
-	whiteSpace: "nowrap",
-	flexShrink: 0,
 })
 
 export interface DividerProps {
@@ -37,7 +37,6 @@ export function Divider({ label, className }: DividerProps) {
 
 	return (
 		<div className={cx(dividerWithLabelStyles, className)}>
-			<hr className={hrStyles} />
 			<span className={dividerLabelStyles}>{label}</span>
 			<hr className={hrStyles} />
 		</div>
