@@ -1,6 +1,6 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Save, Send } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
 import z from "zod"
 import { FabricMap, StaticElementsLayer, ViewportSync } from "#/features/fabric"
@@ -12,6 +12,7 @@ import { ELEMENT_TYPE_MAP } from "#/features/fabric/element-types"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import {
 	Box,
+	Button,
 	ChipGroup,
 	Divider,
 	HStack,
@@ -469,6 +470,40 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								</Typography.Text>
 							</HStack>
 						</VStack>
+					</Box>
+					<Box
+						className={css({
+							flexShrink: 0,
+							px: "7",
+							py: "3.5",
+							display: "flex",
+							justifyContent: "flex",
+							alignItems: "center",
+							gap: "2.5",
+						})}
+						id="panel-footer"
+					>
+						<Box className={css({ flex: 1 })} id="panel-footer-left">
+							<Button size="sm" appearance="outline" intent="neutral">
+								<Save size={14} />
+								Save draft
+							</Button>
+						</Box>
+						<form.Subscribe
+							selector={(s) => [s.meta.canSubmit, s.meta.isSubmitting]}
+						>
+							{([canSubmit, isSubmitting]) => (
+								<Button
+									size="sm"
+									intent="brand"
+									type="submit"
+									disabled={!canSubmit || isSubmitting}
+								>
+									<Send size={14} />
+									Publish
+								</Button>
+							)}
+						</form.Subscribe>
 					</Box>
 				</Box>
 				<Box
