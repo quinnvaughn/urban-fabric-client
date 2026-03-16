@@ -24,7 +24,11 @@ const controlButton = css({
 	flexShrink: 0,
 })
 
-export function MapControls() {
+type Props = {
+	showHelp?: boolean
+}
+
+export function MapControls({ showHelp = true }: Props) {
 	const map = useMap()
 	const { open } = useModalStore()
 	const toast = useToast()
@@ -76,7 +80,10 @@ export function MapControls() {
 				pointerEvents: "all",
 				display: "flex",
 				alignItems: "center",
+				border: "1px solid",
+				borderColor: "stone.200",
 				borderRadius: "md",
+				boxShadow: "sm",
 				overflow: "hidden",
 				background: "white",
 			})}
@@ -141,40 +148,42 @@ export function MapControls() {
 					flexShrink: 0,
 				})}
 			/>
-			<Menu>
-				<Tooltip>
-					<Tooltip.Trigger>
-						<Menu.Trigger>
-							<button
-								type="button"
-								className={cx(
-									controlButton,
-									css({ fontSize: "14px", fontWeight: "bold" }),
-								)}
-							>
-								?
-							</button>
-						</Menu.Trigger>
-					</Tooltip.Trigger>
-					<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
-				</Tooltip>
-				<Menu.Content>
-					<Menu.Item
-						icon={<KeyboardIcon size={14} />}
-						kbd={getFabricShortcutHint("openShortcuts")}
-						onClick={() => open("shortcuts")}
-					>
-						Keyboard shortcuts
-					</Menu.Item>
+			{showHelp && (
+				<Menu>
+					<Tooltip>
+						<Tooltip.Trigger>
+							<Menu.Trigger>
+								<button
+									type="button"
+									className={cx(
+										controlButton,
+										css({ fontSize: "14px", fontWeight: "bold" }),
+									)}
+								>
+									?
+								</button>
+							</Menu.Trigger>
+						</Tooltip.Trigger>
+						<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
+					</Tooltip>
+					<Menu.Content>
+						<Menu.Item
+							icon={<KeyboardIcon size={14} />}
+							kbd={getFabricShortcutHint("openShortcuts")}
+							onClick={() => open("shortcuts")}
+						>
+							Keyboard shortcuts
+						</Menu.Item>
 
-					<Menu.Item
-						icon={<InfoIcon size={14} />}
-						onClick={() => open("toolRef")}
-					>
-						Tool reference
-					</Menu.Item>
-				</Menu.Content>
-			</Menu>
+						<Menu.Item
+							icon={<InfoIcon size={14} />}
+							onClick={() => open("toolRef")}
+						>
+							Tool reference
+						</Menu.Item>
+					</Menu.Content>
+				</Menu>
+			)}
 		</Box>
 	)
 }

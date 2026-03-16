@@ -48,15 +48,6 @@ export type CreateFabricInput = {
 
 export type CreateFabricResult = Fabric | UnauthorizedError;
 
-export type CreateProposalInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  fabricId: Scalars['ID']['input'];
-  slug: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
-export type CreateProposalResult = Proposal | UnauthorizedError;
-
 export type DeleteFabricInput = {
   id: Scalars['ID']['input'];
 };
@@ -107,28 +98,21 @@ export type LoginResult = ConflictError | UnauthorizedError | User;
 export type Mutation = {
   __typename: 'Mutation';
   createFabric: CreateFabricResult;
-  createProposal: CreateProposalResult;
   deleteFabric: DeleteFabricResult;
   deleteProposal: DeleteProposalResult;
   login: LoginResult;
   logout: Scalars['Boolean']['output'];
   publishProposal: PublishProposalResult;
   register: RegisterResult;
+  saveDraftProposal: SaveDraftProposalResult;
   syncViewport: SyncViewportResult;
-  unpublishProposal: UnpublishProposalResult;
   updateFabricElements: UpdateFabricElementsResult;
   updateFabricTitle: UpdateFabricTitleResult;
-  updateProposal: UpdateProposalResult;
 };
 
 
 export type MutationCreateFabricArgs = {
   input: CreateFabricInput;
-};
-
-
-export type MutationCreateProposalArgs = {
-  input: CreateProposalInput;
 };
 
 
@@ -157,13 +141,13 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationSyncViewportArgs = {
-  input: SyncViewportInput;
+export type MutationSaveDraftProposalArgs = {
+  input: SaveDraftProposalInput;
 };
 
 
-export type MutationUnpublishProposalArgs = {
-  input: UnpublishProposalInput;
+export type MutationSyncViewportArgs = {
+  input: SyncViewportInput;
 };
 
 
@@ -174,11 +158,6 @@ export type MutationUpdateFabricElementsArgs = {
 
 export type MutationUpdateFabricTitleArgs = {
   input: UpdateFabricTitleInput;
-};
-
-
-export type MutationUpdateProposalArgs = {
-  input: UpdateProposalInput;
 };
 
 export type MyFabricsResponse = {
@@ -202,6 +181,7 @@ export type NotFoundError = ApplicationError & {
 
 export type Proposal = {
   __typename: 'Proposal';
+  categories: Array<ProposalCategory>;
   createdAt: Scalars['DateTime']['output'];
   creatorId: Scalars['ID']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -211,7 +191,7 @@ export type Proposal = {
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   slug: Scalars['String']['output'];
   snapshotCenter?: Maybe<Coordinate>;
-  snapshotElements: Scalars['JSON']['output'];
+  snapshotElements?: Maybe<Scalars['JSON']['output']>;
   snapshotLocationCity?: Maybe<Scalars['String']['output']>;
   snapshotLocationCountry?: Maybe<Scalars['String']['output']>;
   snapshotLocationRegion?: Maybe<Scalars['String']['output']>;
@@ -223,10 +203,26 @@ export type Proposal = {
 
 export type ProposalBySlugResult = NotFoundError | Proposal;
 
+export enum ProposalCategory {
+  BikeInfrastructure = 'BIKE_INFRASTRUCTURE',
+  Parking = 'PARKING',
+  Pedestrian = 'PEDESTRIAN',
+  Streetscape = 'STREETSCAPE',
+  TrafficSafety = 'TRAFFIC_SAFETY',
+  Transit = 'TRANSIT'
+}
+
 export type ProposalResult = NotFoundError | Proposal;
 
 export type PublishProposalInput = {
-  id: Scalars['ID']['input'];
+  categories: Array<ProposalCategory>;
+  center: CoordinateInput;
+  description?: InputMaybe<Scalars['String']['input']>;
+  elements: Array<Scalars['JSON']['input']>;
+  fabricId: Scalars['ID']['input'];
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+  zoom: Scalars['Float']['input'];
 };
 
 export type PublishProposalResult = ForbiddenError | NotFoundError | Proposal | UnauthorizedError;
@@ -238,8 +234,8 @@ export type Query = {
   myFabrics: MyFabricsResult;
   myProposals: MyProposalsResult;
   proposal: ProposalResult;
+  proposalByFabricId?: Maybe<Proposal>;
   proposalBySlug: ProposalBySlugResult;
-  proposalsByFabricId: Array<Proposal>;
   user: UserResult;
 };
 
@@ -259,14 +255,14 @@ export type QueryProposalArgs = {
 };
 
 
-export type QueryProposalBySlugArgs = {
-  slug: Scalars['String']['input'];
+export type QueryProposalByFabricIdArgs = {
+  fabricId: Scalars['ID']['input'];
+  publishedOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
-export type QueryProposalsByFabricIdArgs = {
-  fabricId: Scalars['ID']['input'];
-  publishedOnly?: InputMaybe<Scalars['Boolean']['input']>;
+export type QueryProposalBySlugArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -282,6 +278,19 @@ export type RegisterInput = {
 
 export type RegisterResult = ConflictError | User | ValidationError;
 
+export type SaveDraftProposalInput = {
+  categories?: InputMaybe<Array<ProposalCategory>>;
+  center: CoordinateInput;
+  description?: InputMaybe<Scalars['String']['input']>;
+  elements: Array<Scalars['JSON']['input']>;
+  fabricId: Scalars['ID']['input'];
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  zoom: Scalars['Float']['input'];
+};
+
+export type SaveDraftProposalResult = ForbiddenError | NotFoundError | Proposal | UnauthorizedError;
+
 export type SyncViewportInput = {
   center: CoordinateInput;
   id: Scalars['ID']['input'];
@@ -296,12 +305,6 @@ export type UnauthorizedError = ApplicationError & {
   message: Scalars['String']['output'];
 };
 
-export type UnpublishProposalInput = {
-  id: Scalars['ID']['input'];
-};
-
-export type UnpublishProposalResult = ForbiddenError | NotFoundError | Proposal | UnauthorizedError;
-
 export type UpdateFabricElementsInput = {
   elements: Array<Scalars['JSON']['input']>;
   id: Scalars['ID']['input'];
@@ -315,15 +318,6 @@ export type UpdateFabricTitleInput = {
 };
 
 export type UpdateFabricTitleResult = Fabric | ForbiddenError | NotFoundError | UnauthorizedError;
-
-export type UpdateProposalInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  slug?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateProposalResult = ForbiddenError | NotFoundError | Proposal | UnauthorizedError;
 
 export type User = {
   __typename: 'User';
@@ -421,6 +415,37 @@ export type GetFabricQuery = { __typename: 'Query', fabric:
     | { __typename: 'NotFoundError', message: string }
    };
 
+export type ProposalByFabricIdQueryVariables = Exact<{
+  fabricId: Scalars['ID']['input'];
+}>;
+
+
+export type ProposalByFabricIdQuery = { __typename: 'Query', proposalByFabricId?: { __typename: 'Proposal', id: string, slug: string } | null };
+
+export type PublishProposalMutationVariables = Exact<{
+  input: PublishProposalInput;
+}>;
+
+
+export type PublishProposalMutation = { __typename: 'Mutation', publishProposal:
+    | { __typename: 'ForbiddenError', message: string }
+    | { __typename: 'NotFoundError', message: string }
+    | { __typename: 'Proposal', id: string, slug: string }
+    | { __typename: 'UnauthorizedError', message: string }
+   };
+
+export type SaveDraftProposalMutationVariables = Exact<{
+  input: SaveDraftProposalInput;
+}>;
+
+
+export type SaveDraftProposalMutation = { __typename: 'Mutation', saveDraftProposal:
+    | { __typename: 'ForbiddenError', message: string }
+    | { __typename: 'NotFoundError', message: string }
+    | { __typename: 'Proposal', id: string }
+    | { __typename: 'UnauthorizedError', message: string }
+   };
+
 export type UpdateFabricElementsMutationVariables = Exact<{
   input: UpdateFabricElementsInput;
 }>;
@@ -442,4 +467,7 @@ export const CreateFabricDocument = {"kind":"Document","definitions":[{"kind":"O
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
 export const RecentFabricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RecentFabrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myFabrics"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnauthorizedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MyFabricsResponse"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationCity"}},{"kind":"Field","name":{"kind":"Name","value":"locationCountry"}},{"kind":"Field","name":{"kind":"Name","value":"locationRegion"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnail"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecentFabricsQuery, RecentFabricsQueryVariables>;
 export const GetFabricDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFabric"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fabricId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fabric"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fabricId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Fabric"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"center"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lng"}},{"kind":"Field","name":{"kind":"Name","value":"lat"}}]}},{"kind":"Field","name":{"kind":"Name","value":"zoom"}},{"kind":"Field","name":{"kind":"Name","value":"elements"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<GetFabricQuery, GetFabricQueryVariables>;
+export const ProposalByFabricIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProposalByFabricId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fabricId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"proposalByFabricId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"fabricId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fabricId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]} as unknown as DocumentNode<ProposalByFabricIdQuery, ProposalByFabricIdQueryVariables>;
+export const PublishProposalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PublishProposal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PublishProposalInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publishProposal"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForbiddenError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Proposal"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnauthorizedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<PublishProposalMutation, PublishProposalMutationVariables>;
+export const SaveDraftProposalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveDraftProposal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveDraftProposalInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saveDraftProposal"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForbiddenError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Proposal"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnauthorizedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<SaveDraftProposalMutation, SaveDraftProposalMutationVariables>;
 export const UpdateFabricElementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFabricElements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateFabricElementsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFabricElements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Fabric"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForbiddenError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnauthorizedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateFabricElementsMutation, UpdateFabricElementsMutationVariables>;

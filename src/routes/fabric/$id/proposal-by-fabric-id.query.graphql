@@ -1,0 +1,6 @@
+query ProposalByFabricId($fabricId: ID!) {
+	proposalByFabricId(fabricId: $fabricId) {
+		id
+		slug
+	}
+}

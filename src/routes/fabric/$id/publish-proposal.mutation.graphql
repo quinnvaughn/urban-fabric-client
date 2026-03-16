@@ -1,0 +1,17 @@
+mutation PublishProposal($input: PublishProposalInput!) {
+	publishProposal(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on Proposal {
+			id
+			slug
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

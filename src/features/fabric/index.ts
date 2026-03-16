@@ -1,3 +1,4 @@
+export * from "./back-button"
 export * from "./drawing-layer"
 export * from "./editor-command-palette"
 export * from "./editor-hud"
@@ -9,5 +10,4 @@ export * from "./fabric-map"
 export * from "./map-controls"
 export * from "./properties-panel"
 export * from "./select-layer"
-
 export * from "./viewport-tracker"

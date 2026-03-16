@@ -4,7 +4,7 @@ import { useFabricStore } from "#/features/fabric/fabric-store"
 import { Box, Button } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
-import { BackButton } from "./back-button"
+import { BackButton } from "../back-button"
 import { EditorTitleInput } from "./editor-title-input"
 import { SaveIndicator } from "./save-indicator"
 

@@ -1,0 +1,16 @@
+mutation SaveDraftProposal($input: SaveDraftProposalInput!) {
+	saveDraftProposal(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on Proposal {
+			id
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

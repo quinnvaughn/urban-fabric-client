@@ -19,10 +19,8 @@ export const tabs = defineSlotRecipe({
 			display: "inline-flex",
 			alignItems: "center",
 			fontFamily: "sans",
-			fontWeight: "semibold",
-			letterSpacing: "wider",
-			textTransform: "uppercase",
-			color: "fg.subtle",
+			fontWeight: "medium",
+			color: "fg.muted",
 			background: "none",
 			border: "none",
 			borderBottomWidth: "2px",
@@ -30,7 +28,7 @@ export const tabs = defineSlotRecipe({
 			borderBottomColor: "transparent",
 			cursor: "pointer",
 			position: "relative",
-			marginBottom: "-1px", // overlap the list border
+			marginBottom: "-1px",
 			transition: "colors 0.12s ease",
 
 			_hover: {
@@ -45,10 +43,8 @@ export const tabs = defineSlotRecipe({
 			display: "inline-flex",
 			alignItems: "center",
 			fontFamily: "sans",
-			fontWeight: "semibold",
-			letterSpacing: "wider",
-			textTransform: "uppercase",
-			color: "fg.subtle",
+			fontWeight: "medium",
+			color: "fg.muted",
 			textDecoration: "none",
 			borderBottomWidth: "2px",
 			borderBottomStyle: "solid",
@@ -83,14 +79,14 @@ export const tabs = defineSlotRecipe({
 			},
 			md: {
 				trigger: {
-					fontSize: "xs",
+					fontSize: "sm",
 					paddingBottom: "2.5",
-					marginRight: "6",
+					marginRight: "5",
 				},
 				link: {
-					fontSize: "xs",
+					fontSize: "sm",
 					paddingBottom: "2.5",
-					marginRight: "6",
+					marginRight: "5",
 				},
 			},
 		},

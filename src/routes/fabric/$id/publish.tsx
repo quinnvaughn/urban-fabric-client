@@ -1,15 +1,25 @@
-import { useReadQuery } from "@apollo/client/react"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { ChevronLeft, ChevronRight, Save, Send } from "lucide-react"
+import { useMutation, useReadQuery } from "@apollo/client/react"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import { ChevronRight, ExternalLink, Save, Send } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
+import { match } from "ts-pattern"
 import z from "zod"
-import { FabricMap, StaticElementsLayer, ViewportSync } from "#/features/fabric"
+import {
+	BackButton,
+	FabricMap,
+	StaticElementsLayer,
+	ViewportSync,
+} from "#/features/fabric"
 import {
 	summarizeElementsByType,
 	totalElementLengthMiles,
 } from "#/features/fabric/element-metrics"
 import { ELEMENT_TYPE_MAP } from "#/features/fabric/element-types"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
+import {
+	PublishProposalMapHud,
+	PublishProposalMapTopbar,
+} from "#/features/proposal"
 import {
 	Box,
 	Button,
@@ -20,14 +30,45 @@ import {
 	Textarea,
 	Tooltip,
 	Typography,
+	useToast,
 	VStack,
 } from "#/features/ui"
-import { GetFabricDocument, type GetFabricQuery } from "#/graphql/generated"
+import {
+	GetFabricDocument,
+	type GetFabricQuery,
+	ProposalByFabricIdDocument,
+	ProposalCategory,
+	PublishProposalDocument,
+	SaveDraftProposalDocument,
+} from "#/graphql/generated"
 import { useForm } from "#/lib/form"
+import {
+	formatLatitude,
+	formatLongitude,
+	isSameViewport,
+	type Viewport,
+} from "#/lib/geo"
+import { enumValueToReadableLabel, singularOrPlural } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/fabric/$id/publish")({
 	component: RouteComponent,
+	beforeLoad: async ({ context, params }) => {
+		// if draft proposal exists, redirect to it instead of creating a new one
+		const { data } = await context.apolloClient.query({
+			query: ProposalByFabricIdDocument,
+			variables: {
+				fabricId: params.id,
+			},
+		})
+
+		if (data?.proposalByFabricId?.__typename === "Proposal") {
+			throw redirect({
+				to: "/proposal/$slug",
+				params: { slug: data.proposalByFabricId.slug },
+			})
+		}
+	},
 	loader: ({ context, params }) => {
 		const fabricQuery = context.preloadQuery(GetFabricDocument, {
 			variables: {
@@ -52,35 +93,9 @@ function RouteComponent() {
 
 type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
-type Viewport = {
-	center: { lat: number; lng: number }
-	zoom: number
-}
-
-const VIEWPORT_EPSILON = {
-	center: 1e-5,
-	zoom: 1e-3,
-}
-
 const TITLE_MAX_LENGTH = 80
 const DESCRIPTION_MAX_LENGTH = 500
 const MILES_PRECISION = 2
-
-function isSameViewport(a: Viewport, b: Viewport): boolean {
-	return (
-		Math.abs(a.center.lng - b.center.lng) < VIEWPORT_EPSILON.center &&
-		Math.abs(a.center.lat - b.center.lat) < VIEWPORT_EPSILON.center &&
-		Math.abs(a.zoom - b.zoom) < VIEWPORT_EPSILON.zoom
-	)
-}
-
-function formatLatitude(lat: number) {
-	return `${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? "N" : "S"}`
-}
-
-function formatLongitude(lng: number) {
-	return `${Math.abs(lng).toFixed(4)}° ${lng >= 0 ? "E" : "W"}`
-}
 
 function formatMiles(miles: number) {
 	return `${miles.toFixed(MILES_PRECISION)} mi`
@@ -103,15 +118,6 @@ const schema = z.object({
 	categories: z.array(z.string()),
 })
 
-const categories = [
-	"Bike infrastructure",
-	"Pedestrian",
-	"Transit",
-	"Parking",
-	"Traffic safety",
-	"Streetscape",
-]
-
 function Publish({ fabric }: { fabric: Fabric }) {
 	const elements: ElementInstance[] = Array.isArray(fabric.elements)
 		? (fabric.elements as ElementInstance[])
@@ -132,6 +138,12 @@ function Publish({ fabric }: { fabric: Fabric }) {
 		}
 	}, [elements])
 
+	const [saveDraft] = useMutation(SaveDraftProposalDocument)
+	const [publishProposal] = useMutation(PublishProposalDocument)
+	const { toast } = useToast()
+	const navigate = Route.useNavigate()
+	const [isSaving, setIsSaving] = useState(false)
+
 	const [viewport, setViewport] = useState<Viewport>({
 		zoom: fabric.zoom,
 		center: {
@@ -150,7 +162,87 @@ function Publish({ fabric }: { fabric: Fabric }) {
 			description: "",
 		},
 		schema,
+		onSubmit: async (values) => {
+			try {
+				const response = await publishProposal({
+					variables: {
+						input: {
+							fabricId: fabric.id,
+							title: values.title,
+							description: values.description,
+							categories: values.categories as ProposalCategory[],
+							elements: elements,
+							center: { lat: viewport.center.lat, lng: viewport.center.lng },
+							zoom: viewport.zoom,
+						},
+					},
+				})
+				match(response.data?.publishProposal)
+					.with({ __typename: "ForbiddenError" }, () => {
+						toast({
+							title: "You don't have permission to publish",
+							intent: "error",
+						})
+					})
+					.with({ __typename: "UnauthorizedError" }, () => {
+						navigate({ to: "/login", replace: true })
+					})
+					.with({ __typename: "NotFoundError" }, () => {
+						toast({ title: "Fabric not found", intent: "error" })
+					})
+					.with({ __typename: "Proposal" }, (proposal) => {
+						navigate({ to: "/proposal/$slug", params: { slug: proposal.slug } })
+					})
+					.otherwise(() => {})
+			} catch {
+				toast({ title: "Failed to publish proposal", intent: "error" })
+			}
+		},
 	})
+
+	async function saveDraftProposal(values: z.infer<typeof schema>) {
+		setIsSaving(true)
+		try {
+			const response = await saveDraft({
+				variables: {
+					input: {
+						fabricId: fabric.id,
+						title: values.title || undefined,
+						description: values.description || undefined,
+						categories: values.categories.length
+							? (values.categories as ProposalCategory[])
+							: undefined,
+						elements: elements,
+						center: { lat: viewport.center.lat, lng: viewport.center.lng },
+						zoom: viewport.zoom,
+					},
+				},
+			})
+			match(response.data?.saveDraftProposal)
+				.with({ __typename: "ForbiddenError" }, ({ message }) => {
+					toast({
+						title: message,
+						intent: "error",
+					})
+				})
+				.with({ __typename: "UnauthorizedError" }, () => {
+					navigate({ to: "/login", replace: true })
+				})
+				.with({ __typename: "NotFoundError" }, () => {
+					toast({ title: "Fabric not found", intent: "error" })
+				})
+				.with({ __typename: "Proposal" }, () => {
+					toast({ title: "Draft saved", intent: "success" })
+				})
+				.otherwise(() => {
+					toast({ title: "An unexpected error occurred", intent: "error" })
+				})
+		} catch {
+			toast({ title: "Failed to save draft", intent: "error" })
+		} finally {
+			setIsSaving(false)
+		}
+	}
 
 	return (
 		<Box
@@ -180,7 +272,38 @@ function Publish({ fabric }: { fabric: Fabric }) {
 					zIndex: "raised",
 				})}
 			>
-				<ChevronLeft size={16} />
+				<Box
+					id="topbar-left"
+					className={css({
+						display: "flex",
+						alignItems: "center",
+						gap: "2.5",
+						flex: 1,
+						minWidth: 0,
+					})}
+				>
+					<BackButton />
+					<Box
+						className={css({
+							width: "px",
+							height: "18px",
+							background: "stone.200",
+							flexShrink: 0,
+						})}
+					/>
+					<Typography.Text
+						size="sm"
+						weight="semibold"
+						color="stone.900"
+						truncate
+					>
+						{fabric.title}
+					</Typography.Text>
+				</Box>
+				<Button size="sm" appearance="outline" intent="neutral">
+					<ExternalLink size={14} />
+					Preview
+				</Button>
 			</Box>
 			<Box
 				id="main-content"
@@ -191,7 +314,8 @@ function Publish({ fabric }: { fabric: Fabric }) {
 					animation: "fadeInLeft 0.42s var(--easings-spring) 0.06s both",
 				})}
 			>
-				<Box
+				<form
+					onSubmit={form.handleSubmit}
 					id="form-panel"
 					className={css({
 						width: "440px",
@@ -293,6 +417,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 							gap: "5",
 						})}
 					>
+						<Divider label="Proposal details" />
 						<form.Field name="title">
 							{(field) => (
 								<Input invalid={!!field.meta.error} required>
@@ -339,9 +464,9 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								<ChipGroup value={field.value} onChange={field.onChange}>
 									<ChipGroup.Label>Categories</ChipGroup.Label>
 									<ChipGroup.Group>
-										{categories.map((category) => (
+										{Object.values(ProposalCategory).map((category) => (
 											<ChipGroup.Chip key={category} value={category}>
-												{category}
+												{enumValueToReadableLabel(category)}
 											</ChipGroup.Chip>
 										))}
 									</ChipGroup.Group>
@@ -450,7 +575,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 												whiteSpace: "nowrap",
 											})}
 										>
-											{`${entry.count} elements · ${formatMiles(entry.totalLengthMiles)}`}
+											{`${entry.count} ${singularOrPlural("element", "elements", entry.count)} · ${formatMiles(entry.totalLengthMiles)}`}
 										</Typography.Text>
 									</HStack>
 								))}
@@ -466,7 +591,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 									Total
 								</Typography.Text>
 								<Typography.Text size="sm" weight="semibold" color="stone.700">
-									{`${elementStats.totalCount} elements · ${formatMiles(elementStats.totalMiles)}`}
+									{`${elementStats.totalCount} ${singularOrPlural("element", "elements", elementStats.totalCount)} · ${formatMiles(elementStats.totalMiles)}`}
 								</Typography.Text>
 							</HStack>
 						</VStack>
@@ -484,10 +609,21 @@ function Publish({ fabric }: { fabric: Fabric }) {
 						id="panel-footer"
 					>
 						<Box className={css({ flex: 1 })} id="panel-footer-left">
-							<Button size="sm" appearance="outline" intent="neutral">
-								<Save size={14} />
-								Save draft
-							</Button>
+							<form.Subscribe selector={(s) => s.meta.isSubmitting}>
+								{(isSubmitting) => (
+									<Button
+										size="sm"
+										appearance="outline"
+										intent="neutral"
+										type="button"
+										disabled={isSaving || isSubmitting}
+										onClick={() => saveDraftProposal(form.values())}
+									>
+										<Save size={14} />
+										{isSaving ? "Saving..." : "Save draft"}
+									</Button>
+								)}
+							</form.Subscribe>
 						</Box>
 						<form.Subscribe
 							selector={(s) => [s.meta.canSubmit, s.meta.isSubmitting]}
@@ -497,15 +633,15 @@ function Publish({ fabric }: { fabric: Fabric }) {
 									size="sm"
 									intent="brand"
 									type="submit"
-									disabled={!canSubmit || isSubmitting}
+									disabled={!canSubmit || isSubmitting || isSaving}
 								>
 									<Send size={14} />
-									Publish
+									{isSubmitting ? "Publishing..." : "Publish"}
 								</Button>
 							)}
 						</form.Subscribe>
 					</Box>
-				</Box>
+				</form>
 				<Box
 					id="map-area"
 					className={css({
@@ -523,6 +659,17 @@ function Publish({ fabric }: { fabric: Fabric }) {
 						<ViewportSync
 							viewport={viewport}
 							onViewportChange={handleViewportChange}
+						/>
+						<PublishProposalMapTopbar />
+						<PublishProposalMapHud
+							currentViewport={{
+								center: [viewport.center.lng, viewport.center.lat],
+								zoom: viewport.zoom,
+							}}
+							fabricViewport={{
+								center: [fabric.center.lng, fabric.center.lat],
+								zoom: fabric.zoom,
+							}}
 						/>
 					</FabricMap>
 				</Box>
