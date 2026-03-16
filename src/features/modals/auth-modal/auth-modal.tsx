@@ -7,6 +7,7 @@ type Props = {
 	onClose: () => void
 	initialMode?: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
+	title?: string
 }
 
 export function AuthModal({
@@ -14,15 +15,14 @@ export function AuthModal({
 	onClose,
 	initialMode = "register",
 	onAuthSuccess,
+	title,
 }: Props) {
 	const [mode, setMode] = useState<"login" | "register">(initialMode)
 
 	return (
 		<Modal open={open} onClose={onClose} size="lg">
 			<Modal.Header>
-				<Modal.Title>
-					{mode === "login" ? "Sign in" : "Create account"}
-				</Modal.Title>
+				{title ? <Modal.Title>{title}</Modal.Title> : <div />}
 				<Modal.CloseBtn />
 			</Modal.Header>
 			<Modal.Body>

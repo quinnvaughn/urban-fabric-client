@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { Box, Card, Tabs, Typography, VStack } from "#/features/ui"
+import { Box, Card, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/_marketing/_auth")({
@@ -52,12 +52,6 @@ function RouteComponent() {
 					</Box>
 					<Card>
 						<Card.Body>
-							<Tabs>
-								<Tabs.List>
-									<Tabs.Link to="/login">Sign in</Tabs.Link>
-									<Tabs.Link to="/register">Create account</Tabs.Link>
-								</Tabs.List>
-							</Tabs>
 							<Outlet />
 						</Card.Body>
 					</Card>

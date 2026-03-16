@@ -27,18 +27,20 @@ const hrStyles = css({
 
 export interface DividerProps {
 	label?: string
+	lines?: "left" | "right" | "both"
 	className?: string
 }
 
-export function Divider({ label, className }: DividerProps) {
+export function Divider({ label, lines = "right", className }: DividerProps) {
 	if (!label) {
 		return <hr className={cx(hrStyles, className)} />
 	}
 
 	return (
 		<div className={cx(dividerWithLabelStyles, className)}>
+			{(lines === "left" || lines === "both") && <hr className={hrStyles} />}
 			<span className={dividerLabelStyles}>{label}</span>
-			<hr className={hrStyles} />
+			{(lines === "right" || lines === "both") && <hr className={hrStyles} />}
 		</div>
 	)
 }

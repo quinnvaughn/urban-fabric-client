@@ -21,7 +21,6 @@ import {
 	SelectLayer,
 	ViewportTracker,
 } from "#/features/fabric"
-import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import {
 	type GuestFabric,
 	getOrCreateGuestFabric,
@@ -33,6 +32,7 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
+import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { AuthModal } from "#/features/modals/auth-modal"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
 
@@ -130,7 +130,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 		}
 	}, [handler, initElements])
 
-	const [isAuthModalOpen, setAuthModalOpen] = useState(false)
+	const [authIntent, setAuthIntent] = useState<"save" | "publish" | null>(null)
 
 	async function handleAuthSuccess() {
 		const guest = readGuestFabric(GUEST_FABRIC_KEY)
@@ -155,7 +155,11 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 
 		localStorage.removeItem(GUEST_FABRIC_KEY)
 		await client.resetStore()
-		navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
+		if (authIntent === "publish") {
+			navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
+		} else {
+			navigate({ to: "/fabric/$id", params: { id }, replace: true })
+		}
 	}
 
 	useFabricPersistence(handler)
@@ -170,7 +174,8 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 						GUEST_FABRIC_KEY,
 					)
 				}}
-				onPublish={() => setAuthModalOpen(true)}
+				onPublish={() => setAuthIntent("publish")}
+				onSave={() => setAuthIntent("save")}
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
@@ -201,9 +206,10 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				<EditorHUD />
 			</FabricMap>
 			<AuthModal
-				open={isAuthModalOpen}
-				onClose={() => setAuthModalOpen(false)}
+				open={authIntent !== null}
+				onClose={() => setAuthIntent(null)}
 				onAuthSuccess={handleAuthSuccess}
+				title={authIntent === "publish" ? "Create an account to publish" : "Save your fabric to your account"}
 			/>
 		</div>
 	)

@@ -11,6 +11,7 @@ import {
 	HStack,
 	Input,
 	Link,
+	Tabs,
 	Typography,
 	useToast,
 	VStack,
@@ -138,10 +139,25 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	})
 	return (
 		<form onSubmit={form.handleSubmit} noValidate>
+			{onModeChange ? (
+				<Tabs value={mode} onValueChange={(v) => onModeChange(v as "login" | "register")}>
+					<Tabs.List>
+						<Tabs.Trigger value="login">Sign in</Tabs.Trigger>
+						<Tabs.Trigger value="register">Create account</Tabs.Trigger>
+					</Tabs.List>
+				</Tabs>
+			) : (
+				<Tabs>
+					<Tabs.List>
+						<Tabs.Link to="/login">Sign in</Tabs.Link>
+						<Tabs.Link to="/register">Create account</Tabs.Link>
+					</Tabs.List>
+				</Tabs>
+			)}
 			<Box sx={{ py: "6" }}>
 				<VStack gap="6">
 					<GoogleSignInButton label={googleText} />
-					<Divider label="or email" />
+					<Divider label="or email" lines="both" />
 					<VStack gap="3">
 						<form.Field name="email">
 							{(field) => (

@@ -23,7 +23,9 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 export function ThumbnailSync({ onThumbnail }: Props) {
 	const map = useMap()
 	const saveStatus = useFabricStore((s) => s.saveStatus)
+	const selectedInstanceId = useFabricStore((s) => s.selectedInstanceId)
 	const prevSaveStatus = useRef(saveStatus)
+	const pendingCapture = useRef(false)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	const captureAndSync = useCallback(() => {
@@ -34,7 +36,7 @@ export function ThumbnailSync({ onThumbnail }: Props) {
 		map.triggerRepaint()
 	}, [map, onThumbnail])
 
-	// Capture on element save
+	// On element save, capture immediately if nothing selected, otherwise defer
 	useEffect(() => {
 		const wasJustSaved =
 			prevSaveStatus.current === "saving" && saveStatus === "saved"
@@ -42,8 +44,22 @@ export function ThumbnailSync({ onThumbnail }: Props) {
 
 		if (!wasJustSaved) return
 
-		captureAndSync()
+		if (useFabricStore.getState().selectedInstanceId === null) {
+			captureAndSync()
+		} else {
+			pendingCapture.current = true
+		}
 	}, [saveStatus, captureAndSync])
+
+	// Fire pending capture once selection is cleared.
+	// rAF defers by one frame so the map's feature-state update (visual deselection)
+	// has time to apply before we capture the canvas.
+	useEffect(() => {
+		if (selectedInstanceId !== null || !pendingCapture.current) return
+		pendingCapture.current = false
+		const raf = requestAnimationFrame(() => captureAndSync())
+		return () => cancelAnimationFrame(raf)
+	}, [selectedInstanceId, captureAndSync])
 
 	// Capture on viewport change
 	useEffect(() => {

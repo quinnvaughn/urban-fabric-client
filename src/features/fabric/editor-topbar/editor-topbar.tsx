@@ -13,6 +13,7 @@ type Props = {
 	id: string
 	onTitleSave: (title: string) => Promise<void>
 	onPublish?: () => Promise<void> | void
+	onSave?: () => void
 }
 
 const InnerText = () => (
@@ -21,7 +22,7 @@ const InnerText = () => (
 	</>
 )
 
-export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
+export function EditorTopbar({ title, id, onTitleSave, onPublish, onSave }: Props) {
 	const saveStatus = useFabricStore((state) => state.saveStatus)
 	const hasElements = useFabricStore((state) => state.elements.length > 0)
 	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
@@ -66,17 +67,24 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish }: Props) {
 				<EditorTitleInput id={id} title={title} onTitleSave={onTitleSave} />
 			</Box>
 			<SaveIndicator />
-			<Box className={css({ flexShrink: 0 })}>
+			<Box className={css({ flexShrink: 0, display: "flex", gap: "2" })}>
 				{onPublish ? (
-					<Button
-						type="button"
-						intent="brand"
-						size="sm"
-						onClick={onPublish}
-						disabled={isPublishDisabled}
-					>
-						<InnerText />
-					</Button>
+					<>
+						{onSave && (
+							<Button type="button" intent="neutral" size="sm" onClick={onSave}>
+								Save to account
+							</Button>
+						)}
+						<Button
+							type="button"
+							intent="brand"
+							size="sm"
+							onClick={onPublish}
+							disabled={isPublishDisabled}
+						>
+							<InnerText />
+						</Button>
+					</>
 				) : (
 					<Link
 						to={"/fabric/$id/publish"}
