@@ -20,11 +20,13 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
+import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { ViewportTracker } from "#/features/fabric/viewport-tracker"
 import {
 	GetFabricDocument,
 	type GetFabricQuery,
 	SyncViewportDocument,
+	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
 
@@ -58,6 +60,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const initElements = useFabricStore((state) => state.initElements)
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const [syncViewport] = useMutation(SyncViewportDocument)
+	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)
 	useFabricPersistence(apiHandler(fabric.id, client))
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
@@ -88,6 +91,13 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 					onViewportChange={async (viewport) => {
 						await syncViewport({
 							variables: { input: { id: fabric.id, ...viewport } },
+						})
+					}}
+				/>
+				<ThumbnailSync
+					onThumbnail={async (thumbnail) => {
+						await updateThumbnail({
+							variables: { input: { id: fabric.id, thumbnail } },
 						})
 					}}
 				/>

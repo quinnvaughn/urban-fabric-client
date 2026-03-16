@@ -2,6 +2,13 @@ mutation SyncViewport($input: SyncViewportInput!) {
 	syncViewport(input: $input) {
 		... on Fabric {
 			id
+			center {
+				lat
+				lng
+			}
+			zoom
+			thumbnail
+			updatedAt
 		}
 		... on ForbiddenError {
 			message

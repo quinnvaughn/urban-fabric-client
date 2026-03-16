@@ -2,6 +2,8 @@ mutation UpdateFabricTitle($input: UpdateFabricTitleInput!) {
 	updateFabricTitle(input: $input) {
 		... on Fabric {
 			id
+			title
+			updatedAt
 		}
 		... on NotFoundError {
 			message

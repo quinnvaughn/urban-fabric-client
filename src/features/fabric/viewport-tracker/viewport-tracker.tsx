@@ -5,22 +5,10 @@ type Props = {
 	onViewportChange: (viewport: {
 		center: { lng: number; lat: number }
 		zoom: number
-		thumbnail: string
 	}) => Promise<void>
 }
 
 const VIEWPORT_EVENTS = ["moveend", "zoomend", "rotateend"] as const
-
-function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
-	return new Promise((resolve) => {
-		canvas.toBlob((blob) => {
-			if (!blob) return resolve("")
-			const reader = new FileReader()
-			reader.onloadend = () => resolve(reader.result as string)
-			reader.readAsDataURL(blob)
-		}, "image/png")
-	})
-}
 
 export function ViewportTracker({ onViewportChange }: Props) {
 	const map = useMap()
@@ -32,18 +20,7 @@ export function ViewportTracker({ onViewportChange }: Props) {
 			timerRef.current = setTimeout(() => {
 				const { lng, lat } = map.getCenter()
 				const zoom = map.getZoom()
-
-				map.once("render", async () => {
-					const thumbnail = await getCanvasBase64(map.getCanvas())
-					onViewportChange({
-						center: { lng, lat },
-						zoom,
-						thumbnail,
-					})
-				})
-
-				// trigger a render if the map is idle
-				map.triggerRepaint()
+				onViewportChange({ center: { lng, lat }, zoom })
 			}, 600)
 		}
 

@@ -1,0 +1,17 @@
+mutation UpdateFabricThumbnail($input: UpdateFabricThumbnailInput!) {
+	updateFabricThumbnail(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on Fabric {
+			id
+			thumbnail
+		}
+	}
+}

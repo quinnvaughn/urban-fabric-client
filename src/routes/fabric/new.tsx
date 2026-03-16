@@ -21,6 +21,7 @@ import {
 	SelectLayer,
 	ViewportTracker,
 } from "#/features/fabric"
+import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import {
 	type GuestFabric,
 	getOrCreateGuestFabric,
@@ -182,9 +183,17 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				<DrawingLayer />
 				<SelectLayer />
 				<ViewportTracker
-					onViewportChange={async ({ center, zoom, thumbnail }) => {
+					onViewportChange={async ({ center, zoom }) => {
 						updateGuestFabric(
-							(existing) => ({ ...existing, center, zoom, thumbnail }),
+							(existing) => ({ ...existing, center, zoom }),
+							GUEST_FABRIC_KEY,
+						)
+					}}
+				/>
+				<ThumbnailSync
+					onThumbnail={async (thumbnail) => {
+						updateGuestFabric(
+							(existing) => ({ ...existing, thumbnail }),
 							GUEST_FABRIC_KEY,
 						)
 					}}

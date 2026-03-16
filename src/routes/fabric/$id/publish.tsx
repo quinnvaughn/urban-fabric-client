@@ -10,6 +10,7 @@ import {
 	StaticElementsLayer,
 	ViewportSync,
 } from "#/features/fabric"
+import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import {
 	summarizeElementsByType,
 	totalElementLengthMiles,
@@ -143,6 +144,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 	const { toast } = useToast()
 	const navigate = Route.useNavigate()
 	const [isSaving, setIsSaving] = useState(false)
+	const [thumbnail, setThumbnail] = useState(fabric.thumbnail ?? "")
 
 	const [viewport, setViewport] = useState<Viewport>({
 		zoom: fabric.zoom,
@@ -174,6 +176,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 							elements: elements,
 							center: { lat: viewport.center.lat, lng: viewport.center.lng },
 							zoom: viewport.zoom,
+							thumbnail,
 						},
 					},
 				})
@@ -215,6 +218,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 						elements: elements,
 						center: { lat: viewport.center.lat, lng: viewport.center.lng },
 						zoom: viewport.zoom,
+						thumbnail,
 					},
 				},
 			})
@@ -656,6 +660,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 						zoom={viewport.zoom}
 					>
 						<StaticElementsLayer elements={elements} />
+						<ThumbnailSync onThumbnail={async (t) => setThumbnail(t)} />
 						<ViewportSync
 							viewport={viewport}
 							onViewportChange={handleViewportChange}

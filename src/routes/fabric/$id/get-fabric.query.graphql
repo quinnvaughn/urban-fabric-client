@@ -9,6 +9,7 @@ query GetFabric($fabricId: ID!) {
 			}
 			zoom
 			elements
+			thumbnail
 		}
 		... on NotFoundError {
 			message
