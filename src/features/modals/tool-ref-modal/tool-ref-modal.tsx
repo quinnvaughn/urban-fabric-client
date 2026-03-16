@@ -52,12 +52,12 @@ const tools: Tool[] = [
 	},
 	{
 		title: "command palette",
-		keyboardShortcut: "/",
+		keyboardShortcut: "⌘ K",
 		description: (
 			<>
-				Press <kbd className={kbd}>/</kbd> to open the command palette. Search
-				for any element type by name and press <kbd className={kbd}>↵</kbd> to
-				immediately start drawing it.
+				Press <kbd className={kbd}>⌘</kbd> + <kbd className={kbd}>K</kbd> to
+				open the command palette. Search for any element type by name and press{" "}
+				<kbd className={kbd}>↵</kbd> to immediately start drawing it.
 			</>
 		),
 	},

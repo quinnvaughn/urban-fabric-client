@@ -98,8 +98,8 @@ export const FABRIC_SHORTCUTS: FabricShortcutDefinition[] = [
 		id: "openCommandPalette",
 		label: "Open command palette",
 		group: "Tools",
-		shortcut: "/",
-		keys: ["/"],
+		shortcut: "CMD+K",
+		keys: ["⌘", "K"],
 	},
 ]
 
