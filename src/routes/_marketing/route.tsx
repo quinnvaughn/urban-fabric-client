@@ -1,11 +1,19 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { Navbar } from "#/features/navigation"
 import { HStack } from "#/features/ui/layout/layout"
 import { Typography } from "#/features/ui/typography/typography"
+import { MeDocument } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/_marketing")({
 	component: RouteComponent,
+	beforeLoad: ({ context }) => {
+		const user = context.apolloClient.readQuery({ query: MeDocument })
+
+		if (user?.me) {
+			throw redirect({ to: "/dashboard", replace: true })
+		}
+	},
 })
 
 function RouteComponent() {
