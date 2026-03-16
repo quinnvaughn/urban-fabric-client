@@ -63,7 +63,7 @@ function RouteComponent() {
 				<VStack gap="6">
 					<Greeting
 						userName={userData.me.name.split(" ")[0] ?? ""}
-						numLikes={dashboardStatsData.myDashboardStats.totalProposalLikes}
+						numLikes={dashboardStatsData.myDashboardStats.proposalLikesDelta}
 					/>
 					<StatRow
 						stats={[
@@ -112,6 +112,7 @@ function RouteComponent() {
 									lastEdited={fabric.updatedAt}
 									title={fabric.title}
 									key={fabric.id}
+									hasProposal={fabric.hasProposal}
 									id={fabric.id}
 									location={`${fabric.locationCity}, ${fabric.locationRegion}`}
 									mapImage={fabric.thumbnail ?? ""}

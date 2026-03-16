@@ -12,6 +12,7 @@ query RecentFabrics($limit: Int) {
 				locationRegion
 				title
 				thumbnail
+				hasProposal
 			}
 			total
 		}

@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { MapPin } from "lucide-react"
 import { DateTime } from "luxon"
-import { Card, HStack, Typography, VStack } from "#/features/ui"
+import { Badge, Card, HStack, Typography, VStack } from "#/features/ui"
+import { css } from "#/styles/styled-system/css"
 
 type Props = {
 	lastEdited: string
@@ -10,6 +11,7 @@ type Props = {
 	location: string
 	// at the moment this is an svg but eventually it will be a url to an image
 	mapImage: string
+	hasProposal: boolean
 }
 
 export function FabricCard({
@@ -18,12 +20,24 @@ export function FabricCard({
 	location,
 	mapImage,
 	id,
+	hasProposal,
 }: Props) {
+	console.log("title", title, "has proposal", hasProposal)
 	return (
 		<Link to="/fabric/$id" params={{ id }}>
 			<Card size="sm" lift="md" shadow="sm">
-				<Card.Media>
+				<Card.Media className={css({ position: "relative" })}>
 					<img src={mapImage} alt={`${title} map`} />
+					{hasProposal && (
+						<Badge
+							appearance="solid"
+							tone="accent"
+							size="xs"
+							className={css({ position: "absolute", top: "2", right: "2" })}
+						>
+							Proposal
+						</Badge>
+					)}
 				</Card.Media>
 				<Card.Body>
 					<VStack gap="1">
