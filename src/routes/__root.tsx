@@ -33,13 +33,27 @@ export const Route =
 			links: [
 				{
 					rel: "icon",
-					href: "/logo.svg",
+					href: "/favicon.svg",
 					type: "image/svg+xml",
 				},
 				{
 					rel: "icon",
+					href: "/favicon-96x96.png",
+					type: "image/png",
+					sizes: "96x96",
+				},
+				{
+					rel: "icon",
 					href: "/favicon.ico",
-					type: "image/x-icon",
+					sizes: "48x48",
+				},
+				{
+					rel: "apple-touch-icon",
+					href: "/apple-touch-icon.png",
+				},
+				{
+					rel: "manifest",
+					href: "/manifest.json",
 				},
 				{
 					rel: "preconnect",

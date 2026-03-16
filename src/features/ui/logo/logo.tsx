@@ -4,7 +4,7 @@ import { Typography } from "../typography"
 export function Logo() {
 	return (
 		<HStack align="center" gap="2">
-			<img src="/logo.svg" alt="Urban Fabric" width={24} height={24} />
+			<img src="/logo.svg" alt="Urban Fabric" width={35} height={35} />
 			<Typography.Text size="sm" weight="bold" font={"sans"}>
 				Urban Fabric
 			</Typography.Text>
