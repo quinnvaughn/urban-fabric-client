@@ -10,7 +10,7 @@ export function SectionHeader({ total, type }: Props) {
 		<HStack align="baseline" justify="between">
 			<HStack gap="2.5" align="baseline">
 				<Typography.Text size="md" weight="semibold">
-					{type === "fabrics" ? "Recent Fabrics" : "My Proposals"}
+					{type === "fabrics" ? "Recent Fabrics" : "Recent Proposals"}
 				</Typography.Text>
 				<Typography.Text size="sm" weight="normal" color="stone.400">
 					{total} total

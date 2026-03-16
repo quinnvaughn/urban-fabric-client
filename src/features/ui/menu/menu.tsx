@@ -201,6 +201,7 @@ export interface MenuItemProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	icon?: React.ReactNode
 	kbd?: React.ReactNode
+	intent?: "neutral" | "danger"
 	/** Render as an <a> instead of <button> */
 	href?: string
 	target?: string
@@ -215,9 +216,11 @@ function MenuItem({
 	href,
 	target,
 	rel,
+	intent,
 	...rest
 }: MenuItemProps) {
 	const { setOpen } = useMenuContext()
+	const itemStyles = menuRecipe({ intent })
 
 	const inner = (
 		<>
@@ -234,7 +237,7 @@ function MenuItem({
 				href={href}
 				target={target}
 				rel={rel ?? (target === "_blank" ? "noopener noreferrer" : undefined)}
-				className={cx(styles.item, className)}
+				className={cx(itemStyles.item, className)}
 				onClick={() => setOpen(false)}
 			>
 				{inner}
@@ -246,7 +249,7 @@ function MenuItem({
 		<button
 			role="menuitem"
 			type="button"
-			className={cx(styles.item, className)}
+			className={cx(itemStyles.item, className)}
 			{...rest}
 			onClick={(e) => {
 				rest.onClick?.(e)

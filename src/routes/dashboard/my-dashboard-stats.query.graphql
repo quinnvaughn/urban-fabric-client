@@ -1,0 +1,16 @@
+query MyDashboardStats {
+	myDashboardStats {
+		... on DashboardStats {
+			fabricCount
+			proposalCount
+			proposalLikesDelta
+			proposalViewsDelta
+			totalProposalLikes
+			totalProposalViews
+			unpublishedProposalCount
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

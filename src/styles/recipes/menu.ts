@@ -78,4 +78,29 @@ export const menu = defineSlotRecipe({
 			my: "1",
 		},
 	},
+
+	variants: {
+		intent: {
+			neutral: {}, // default — base styles apply
+			danger: {
+				item: {
+					color: "danger.default",
+					_hover: {
+						bg: "danger.subtle",
+						color: "danger.emphasis",
+					},
+					"& [data-slot=icon]": {
+						color: "danger.default",
+					},
+					"&:hover [data-slot=icon]": {
+						color: "danger.emphasis",
+					},
+				},
+			},
+		},
+	},
+
+	defaultVariants: {
+		intent: "neutral",
+	},
 })

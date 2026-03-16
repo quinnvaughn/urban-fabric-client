@@ -1,0 +1,21 @@
+query RecentProposals($limit: Int) {
+	myProposals(limit: $limit) {
+		... on MyProposalsPayload {
+			total
+			proposals {
+				id
+				title
+				slug
+				isPublished
+				snapshotLocationCity
+				snapshotLocationRegion
+				snapshotThumbnail
+				updatedAt
+				likeCount
+			}
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

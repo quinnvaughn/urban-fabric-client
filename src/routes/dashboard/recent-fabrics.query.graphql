@@ -3,8 +3,8 @@ query RecentFabrics($limit: Int) {
 		... on UnauthorizedError {
 			message
 		}
-		... on MyFabricsResponse {
-			data {
+		... on MyFabricsPayload {
+			fabrics {
 				updatedAt
 				id
 				locationCity
@@ -13,6 +13,7 @@ query RecentFabrics($limit: Int) {
 				title
 				thumbnail
 			}
+			total
 		}
 	}
 }
