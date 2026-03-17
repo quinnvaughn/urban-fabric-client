@@ -1,0 +1,26 @@
+query GetProposal($slug: String!) {
+	proposalBySlug(slug: $slug) {
+		... on NotFoundError {
+			message
+		}
+		... on Proposal {
+			id
+			isLikedByMe
+			description
+			createdAt
+			categories
+			likeCount
+			snapshotCenter {
+				lat
+				lng
+			}
+			snapshotElements
+			snapshotLocationCity
+			snapshotLocationRegion
+			snapshotLocationRegionAbbr
+			snapshotZoom
+			title
+			viewCount
+		}
+	}
+}
