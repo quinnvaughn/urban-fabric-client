@@ -29,24 +29,33 @@ function RouteComponent() {
 	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search)
 
-	const { items: fabrics, hasMore, total, loading, loadMore } =
-		usePaginatedQuery(MyFabricsDocument, {
-			initialData: {
-				items: data.myFabrics.fabrics,
-				hasMore: data.myFabrics.hasMore,
-				total: data.myFabrics.total,
-			},
-			extractPayload: (d) =>
-				d.myFabrics.__typename === "MyFabricsPayload"
-					? { items: d.myFabrics.fabrics, hasMore: d.myFabrics.hasMore, total: d.myFabrics.total }
-					: null,
-			filterVars: { search: debouncedSearch },
-		})
+	const {
+		items: fabrics,
+		hasMore,
+		total,
+		loading,
+		loadMore,
+	} = usePaginatedQuery(MyFabricsDocument, {
+		initialData: {
+			items: data.myFabrics.fabrics,
+			hasMore: data.myFabrics.hasMore,
+			total: data.myFabrics.total,
+		},
+		extractPayload: (d) =>
+			d.myFabrics.__typename === "MyFabricsPayload"
+				? {
+						items: d.myFabrics.fabrics,
+						hasMore: d.myFabrics.hasMore,
+						total: d.myFabrics.total,
+					}
+				: null,
+		filterVars: { search: debouncedSearch },
+	})
 
 	return (
 		<VStack gap="5">
 			<VStack gap="0.5">
-				<Typography.Text as="h1" leading="none" weight="semibold">
+				<Typography.Text as="h1" leading="none" weight="semibold" size="lg">
 					My fabrics
 				</Typography.Text>
 				<Typography.Text color="stone.400" size="sm">
