@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { css, cx } from "@/styles/styled-system/css"
@@ -163,7 +164,6 @@ function MenuContent({ className, children, ...rest }: MenuContentProps) {
 	const pos = useMenuPosition(triggerRef, open, gap, placement)
 	const contentRef = React.useRef<HTMLDivElement>(null)
 
-	// Close on outside click — exclude the trigger so its own toggle handler fires cleanly
 	React.useEffect(() => {
 		if (!open) return
 		function handlePointerDown(e: PointerEvent) {
@@ -180,7 +180,6 @@ function MenuContent({ className, children, ...rest }: MenuContentProps) {
 		return () => document.removeEventListener("pointerdown", handlePointerDown)
 	}, [open, setOpen, triggerRef])
 
-	// Close on Escape
 	React.useEffect(() => {
 		if (!open) return
 		function handleKeyDown(e: KeyboardEvent) {
@@ -219,7 +218,6 @@ export interface MenuItemProps
 	icon?: React.ReactNode
 	kbd?: React.ReactNode
 	intent?: "neutral" | "danger"
-	/** Render as an <a> instead of <button> */
 	href?: string
 	target?: string
 	rel?: string
@@ -279,6 +277,59 @@ function MenuItem({
 }
 MenuItem.displayName = "Menu.Item"
 
+// ---------- CheckItem ----------
+
+export interface MenuCheckItemProps
+	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
+	checked: boolean
+	onCheckedChange: (checked: boolean) => void
+}
+
+function MenuCheckItem({
+	checked,
+	onCheckedChange,
+	className,
+	children,
+	disabled,
+	...rest
+}: MenuCheckItemProps) {
+	return (
+		<button
+			role="menuitemcheckbox"
+			type="button"
+			aria-checked={checked}
+			data-checked={checked ? "" : undefined}
+			disabled={disabled}
+			className={cx(styles.checkItem, className)}
+			{...rest}
+			onClick={(e) => {
+				rest.onClick?.(e)
+				if (!e.defaultPrevented) onCheckedChange(!checked)
+			}}
+		>
+			<span className={styles.checkBox} aria-hidden="true">
+				{checked && (
+					<svg
+						width="9"
+						height="9"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="3.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					>
+						<title>Check</title>
+						<polyline points="20 6 9 17 4 12" />
+					</svg>
+				)}
+			</span>
+			{children}
+		</button>
+	)
+}
+MenuCheckItem.displayName = "Menu.CheckItem"
+
 // ---------- Separator ----------
 
 export interface MenuSeparatorProps
@@ -289,11 +340,43 @@ function MenuSeparator({ className, ...rest }: MenuSeparatorProps) {
 }
 MenuSeparator.displayName = "Menu.Separator"
 
+// ---------- FilterTrigger ----------
+
+export interface MenuFilterTriggerProps {
+	children: React.ReactNode
+	className?: string
+}
+
+function MenuFilterTrigger({ children, className }: MenuFilterTriggerProps) {
+	const { open } = useMenuContext()
+
+	return (
+		<MenuTrigger>
+			<button
+				type="button"
+				className={cx(styles.filterTrigger, className)}
+			>
+				{children}
+				<ChevronDown
+					size={12}
+					className={css({
+						transition: "transform 150ms",
+						transform: open ? "rotate(180deg)" : "rotate(0deg)",
+					})}
+				/>
+			</button>
+		</MenuTrigger>
+	)
+}
+MenuFilterTrigger.displayName = "Menu.FilterTrigger"
+
 // ---------- Dot-notation export ----------
 
 export const Menu = Object.assign(MenuRoot, {
 	Trigger: MenuTrigger,
+	FilterTrigger: MenuFilterTrigger,
 	Content: MenuContent,
 	Item: MenuItem,
+	CheckItem: MenuCheckItem,
 	Separator: MenuSeparator,
 })

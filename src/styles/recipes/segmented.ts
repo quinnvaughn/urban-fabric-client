@@ -125,8 +125,65 @@ export const segmented = defineSlotRecipe({
 				group: { width: "full" },
 			},
 		},
+		variant: {
+			default: {},
+			pill: {
+				root: {
+					flexDirection: "row",
+				},
+				group: {
+					gap: "1",
+				},
+				option: {
+					flex: "none",
+					flexDirection: "row",
+					borderRadius: "full",
+					borderWidth: "1px",
+					borderColor: "transparent",
+					bg: "transparent",
+					color: "fg.muted",
+					minH: "auto",
+					_hover: {
+						bg: "stone.100",
+						borderColor: "transparent",
+						color: "fg.default",
+					},
+					"&[data-selected]": {
+						bg: "brand.subtle",
+						borderColor: "brand.muted",
+						borderWidth: "1px",
+						borderStyle: "solid",
+						color: "brand.emphasis",
+					},
+					"&[data-selected]:hover": {
+						bg: "brand.subtle",
+						borderColor: "brand.muted",
+						color: "brand.emphasis",
+					},
+					_disabled: {
+						opacity: "50",
+						cursor: "not-allowed",
+						_hover: {
+							bg: "transparent",
+							borderColor: "transparent",
+							color: "fg.muted",
+						},
+					},
+					"&[data-disabled]": {
+						opacity: "50",
+						cursor: "not-allowed",
+						_hover: {
+							bg: "transparent",
+							borderColor: "transparent",
+							color: "fg.muted",
+						},
+					},
+				},
+			},
+		},
 	},
 	defaultVariants: {
 		size: "md",
+		variant: "default",
 	},
 })

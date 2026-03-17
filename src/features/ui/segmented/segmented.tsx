@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cx } from "@/styles/styled-system/css"
+import type { SegmentedVariantProps } from "@/styles/styled-system/recipes"
 import { segmented as segmentedRecipe } from "@/styles/styled-system/recipes"
 
 // ---------- Context ----------
@@ -8,7 +9,6 @@ interface SegmentedContextValue {
 	value: string
 	onSelect: (value: string) => void
 	name: string
-	size: "sm" | "md" | "lg"
 	disabled?: boolean
 	labelId: string
 	slots: ReturnType<typeof segmentedRecipe>
@@ -19,9 +19,7 @@ const SegmentedContext = React.createContext<SegmentedContextValue | null>(null)
 function useSegmentedContext() {
 	const ctx = React.useContext(SegmentedContext)
 	if (!ctx) {
-		throw new Error(
-			"Segmented sub-components must be used within <Segmented>",
-		)
+		throw new Error("Segmented sub-components must be used within <Segmented>")
 	}
 	return ctx
 }
@@ -29,7 +27,8 @@ function useSegmentedContext() {
 // ---------- Root ----------
 
 export interface SegmentedProps
-	extends Omit<React.FieldsetHTMLAttributes<HTMLFieldSetElement>, "onChange"> {
+	extends Omit<React.FieldsetHTMLAttributes<HTMLFieldSetElement>, "onChange">,
+		SegmentedVariantProps {
 	/** The currently selected value (controlled). */
 	value?: string
 	/** Default selected value (uncontrolled). */
@@ -38,9 +37,6 @@ export interface SegmentedProps
 	name?: string
 	/** Called when a new option is selected. */
 	onChange?: (value: string) => void
-	size?: "sm" | "md" | "lg"
-	/** Stretch to fill the available width, options share space equally. */
-	fullWidth?: boolean
 	/** Disables all options. */
 	disabled?: boolean
 }
@@ -50,13 +46,14 @@ function SegmentedRoot({
 	defaultValue,
 	name,
 	onChange,
-	size = "md",
-	fullWidth,
 	disabled,
 	className,
 	children,
 	...rest
 }: SegmentedProps) {
+	const [variantProps, fieldsetProps] = segmentedRecipe.splitVariantProps(rest)
+	const slots = segmentedRecipe(variantProps)
+
 	const [internalValue, setInternalValue] = React.useState(defaultValue ?? "")
 	const generatedName = React.useId()
 	const labelId = React.useId()
@@ -73,11 +70,9 @@ function SegmentedRoot({
 		[isControlled, onChange],
 	)
 
-	const slots = segmentedRecipe({ size, fullWidth })
-
 	const ctx = React.useMemo(
-		() => ({ value, onSelect, name: groupName, size, disabled, labelId, slots }),
-		[value, onSelect, groupName, size, disabled, labelId, slots],
+		() => ({ value, onSelect, name: groupName, disabled, labelId, slots }),
+		[value, onSelect, groupName, disabled, labelId, slots],
 	)
 
 	return (
@@ -86,13 +81,14 @@ function SegmentedRoot({
 				aria-labelledby={labelId}
 				disabled={disabled}
 				className={cx(slots.root, className)}
-				{...rest}
+				{...fieldsetProps}
 			>
 				{children}
 			</fieldset>
 		</SegmentedContext.Provider>
 	)
 }
+SegmentedRoot.displayName = "Segmented"
 
 // ---------- Legend ----------
 
@@ -131,7 +127,7 @@ SegmentedGroup.displayName = "Segmented.Group"
 export interface SegmentedOptionProps
 	extends Omit<React.LabelHTMLAttributes<HTMLLabelElement>, "onChange"> {
 	value: string
-	/** Optional icon rendered above the label. */
+	/** Optional icon rendered above or beside the label. */
 	icon?: React.ReactNode
 	disabled?: boolean
 }

@@ -2,7 +2,7 @@ import { defineSlotRecipe } from "@pandacss/dev"
 
 export const menu = defineSlotRecipe({
 	className: "menu",
-	slots: ["content", "item", "separator"],
+	slots: ["content", "item", "checkItem", "checkBox", "separator", "filterTrigger"],
 
 	base: {
 		content: {
@@ -16,7 +16,6 @@ export const menu = defineSlotRecipe({
 			bg: "white",
 			boxShadow: "lg",
 			backdropFilter: "blur(16px)",
-			// entry animation — driven by data-state
 			"&[data-state=open]": {
 				animation: "menuFadeUp 0.18s {easings.spring} both",
 			},
@@ -51,7 +50,6 @@ export const menu = defineSlotRecipe({
 					bg: "transparent",
 				},
 			},
-			// icon slot inside the item
 			"& [data-slot=icon]": {
 				color: "fg.subtle",
 				flexShrink: "0",
@@ -59,7 +57,6 @@ export const menu = defineSlotRecipe({
 			"&:hover [data-slot=icon]": {
 				color: "fg.muted",
 			},
-			// kbd badge slot inside the item
 			"& [data-slot=kbd]": {
 				marginLeft: "auto",
 				fontSize: "xxs",
@@ -72,16 +69,93 @@ export const menu = defineSlotRecipe({
 				flexShrink: "0",
 			},
 		},
+		checkItem: {
+			display: "flex",
+			alignItems: "center",
+			gap: "2",
+			w: "full",
+			px: "2.5",
+			py: "1.5",
+			borderRadius: "md",
+			border: "none",
+			background: "transparent",
+			fontSize: "sm",
+			fontWeight: "medium",
+			color: "fg.default",
+			cursor: "pointer",
+			textAlign: "left",
+			whiteSpace: "nowrap",
+			transition: "colors 0.12s ease",
+			userSelect: "none",
+
+			_hover: {
+				bg: "stone.100",
+				color: "fg.default",
+			},
+			// Checked state — color shifts to brand
+			_checked: {
+				color: "brand.emphasis",
+				// Explicitly re-assert checked color on hover so it always wins
+				_hover: {
+					bg: "stone.100",
+					color: "brand.emphasis",
+				},
+			},
+			_disabled: {
+				opacity: "50",
+				cursor: "not-allowed",
+				_hover: {
+					bg: "transparent",
+				},
+			},
+		},
+		checkBox: {
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+			flexShrink: "0",
+			w: "3.5",
+			h: "3.5",
+			borderRadius: "sm",
+			borderWidth: "1.5",
+			borderStyle: "solid",
+			borderColor: "border.strong",
+			color: "transparent",
+			transition: "all 0.12s ease",
+
+			// Filled when parent checkItem carries data-checked
+			"[data-checked] &": {
+				bg: "brand.default",
+				borderColor: "brand.default",
+				color: "brand.fg",
+			},
+		},
 		separator: {
 			height: "px",
 			bg: "border.subtle",
 			my: "1",
 		},
+		filterTrigger: {
+			display: "flex",
+			alignItems: "center",
+			gap: "2",
+			px: "2",
+			py: "1.5",
+			borderRadius: "full",
+			border: "none",
+			background: "transparent",
+			color: "stone.600",
+			cursor: "pointer",
+			fontSize: "xs",
+			fontWeight: "medium",
+			transition: "background 150ms, color 150ms",
+			_hover: { color: "fg.default", bg: "stone.100" },
+		},
 	},
 
 	variants: {
 		intent: {
-			neutral: {}, // default — base styles apply
+			neutral: {},
 			danger: {
 				item: {
 					color: "danger.default",

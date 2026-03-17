@@ -1,0 +1,20 @@
+query MyProposals($offset: Int, $limit: Int) {
+	myProposals(offset: $offset, limit: $limit) {
+		... on UnauthorizedError {
+			message
+		}
+		... on MyProposalsPayload {
+			total
+			hasMore
+			proposals {
+				id
+				title
+				updatedAt
+				viewCount
+				slug
+				likeCount
+				isPublished
+			}
+		}
+	}
+}
