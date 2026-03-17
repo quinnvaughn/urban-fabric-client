@@ -25,10 +25,17 @@ export const filterBar = defineSlotRecipe({
 			borderTopWidth: "1",
 			borderTopStyle: "solid",
 			borderTopColor: "border.subtle",
+			overflowX: "auto",
+			// Hide scrollbar but allow scrolling
+			"&::-webkit-scrollbar": {
+				display: "none",
+			},
+			"-ms-overflow-style": "none",
+			"scrollbar-width": "none",
 		},
 		separator: {
 			w: "px",
-			h: "4.5",
+			h: "18px",
 			bg: "border.subtle",
 			flexShrink: "0",
 		},

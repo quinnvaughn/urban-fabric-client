@@ -66,19 +66,28 @@ function RouteComponent() {
 	const categories =
 		selectedCategories.length > 0 ? selectedCategories : undefined
 
-	const { items: proposals, hasMore, total, loading, loadMore } =
-		usePaginatedQuery(MyProposalsDocument, {
-			initialData: {
-				items: data.myProposals.proposals,
-				hasMore: data.myProposals.hasMore,
-				total: data.myProposals.total,
-			},
-			extractPayload: (d) =>
-				d.myProposals.__typename === "MyProposalsPayload"
-					? { items: d.myProposals.proposals, hasMore: d.myProposals.hasMore, total: d.myProposals.total }
-					: null,
-			filterVars: { status: selectedStatus, categories, search: debouncedSearch },
-		})
+	const {
+		items: proposals,
+		hasMore,
+		total,
+		loading,
+		loadMore,
+	} = usePaginatedQuery(MyProposalsDocument, {
+		initialData: {
+			items: data.myProposals.proposals,
+			hasMore: data.myProposals.hasMore,
+			total: data.myProposals.total,
+		},
+		extractPayload: (d) =>
+			d.myProposals.__typename === "MyProposalsPayload"
+				? {
+						items: d.myProposals.proposals,
+						hasMore: d.myProposals.hasMore,
+						total: d.myProposals.total,
+					}
+				: null,
+		filterVars: { status: selectedStatus, categories, search: debouncedSearch },
+	})
 
 	return (
 		<VStack gap="5">
@@ -120,22 +129,22 @@ function RouteComponent() {
 									})}
 							</Segmented.Group>
 						</HStack>
-						<FilterBar.Separator />
-						<Menu placement="bottom-end">
-							<Menu.FilterTrigger>Category</Menu.FilterTrigger>
-							<Menu.Content>
-								{Object.values(ProposalCategory).map((category) => (
-									<Menu.CheckItem
-										key={category}
-										checked={selectedCategories.includes(category)}
-										onCheckedChange={() => toggleCategory(category)}
-									>
-										{enumValueToReadableLabel(category)}
-									</Menu.CheckItem>
-								))}
-							</Menu.Content>
-						</Menu>
 					</Segmented>
+					<FilterBar.Separator />
+					<Menu placement="bottom-end">
+						<Menu.FilterTrigger>Category</Menu.FilterTrigger>
+						<Menu.Content>
+							{Object.values(ProposalCategory).map((category) => (
+								<Menu.CheckItem
+									key={category}
+									checked={selectedCategories.includes(category)}
+									onCheckedChange={() => toggleCategory(category)}
+								>
+									{enumValueToReadableLabel(category)}
+								</Menu.CheckItem>
+							))}
+						</Menu.Content>
+					</Menu>
 				</FilterBar.Filters>
 			</FilterBar>
 			<VStack gap="10">
