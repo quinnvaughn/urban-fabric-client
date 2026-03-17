@@ -136,10 +136,10 @@ export const button = defineRecipe({
 			appearance: "solid",
 			intent: "neutral",
 			css: {
-				bg: "bg.muted",
+				bg: "white",
 				color: "fg.default",
 				"&:not([data-disabled]):not([data-loading]):hover": {
-					bg: "bg.subtle",
+					bg: "stone.100",
 				},
 			},
 		},
@@ -196,11 +196,12 @@ export const button = defineRecipe({
 			appearance: "outline",
 			intent: "neutral",
 			css: {
+				bg: "white",
 				borderColor: "border.default",
 				color: "fg.default",
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					borderColor: "border.strong",
-					bg: "bg.base",
+					bg: "stone.100",
 				},
 				"&:not([data-disabled]):not([data-loading]):active": {
 					bg: "bg.muted",

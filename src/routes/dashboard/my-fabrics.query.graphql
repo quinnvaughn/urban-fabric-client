@@ -1,0 +1,20 @@
+query MyFabrics($limit: Int, $offset: Int) {
+	myFabrics(limit: $limit, offset: $offset) {
+		... on MyFabricsPayload {
+			total
+			hasMore
+			fabrics {
+				id
+				hasProposal
+				locationCity
+				locationRegion
+				thumbnail
+				title
+				updatedAt
+			}
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

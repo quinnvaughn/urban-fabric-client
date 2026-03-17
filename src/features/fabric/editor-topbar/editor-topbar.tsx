@@ -8,7 +8,7 @@ import { BackButton } from "../back-button"
 import { EditorTitleInput } from "./editor-title-input"
 import { SaveIndicator } from "./save-indicator"
 
-type Props = {
+type BaseProps = {
 	title: string
 	id: string
 	onTitleSave: (title: string) => Promise<void>
@@ -16,13 +16,25 @@ type Props = {
 	onSave?: () => void
 }
 
-const InnerText = () => (
+type Props =
+	| (BaseProps & { hasProposal: true; slug: string })
+	| (BaseProps & { hasProposal: false; slug?: never })
+
+const InnerText = ({ hasProposal }: { hasProposal: boolean }) => (
 	<>
-		Publish proposal <ChevronRight size={12} />
+		{hasProposal ? "Edit" : "Publish"} proposal <ChevronRight size={12} />
 	</>
 )
 
-export function EditorTopbar({ title, id, onTitleSave, onPublish, onSave }: Props) {
+export function EditorTopbar({
+	title,
+	id,
+	onTitleSave,
+	onPublish,
+	onSave,
+	hasProposal,
+	slug,
+}: Props) {
 	const saveStatus = useFabricStore((state) => state.saveStatus)
 	const hasElements = useFabricStore((state) => state.elements.length > 0)
 	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
@@ -82,13 +94,13 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish, onSave }: Prop
 							onClick={onPublish}
 							disabled={isPublishDisabled}
 						>
-							<InnerText />
+							<InnerText hasProposal={hasProposal} />
 						</Button>
 					</>
 				) : (
 					<Link
-						to={"/fabric/$id/publish"}
-						params={{ id }}
+						to={hasProposal ? "/proposal/$slug/edit" : "/fabric/$id/publish"}
+						params={hasProposal ? { slug } : { id }}
 						className={button({
 							appearance: "solid",
 							intent: "brand",
@@ -101,7 +113,7 @@ export function EditorTopbar({ title, id, onTitleSave, onPublish, onSave }: Prop
 							if (isPublishDisabled) event.preventDefault()
 						}}
 					>
-						<InnerText />
+						<InnerText hasProposal={hasProposal} />
 					</Link>
 				)}
 			</Box>

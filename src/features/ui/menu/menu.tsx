@@ -10,6 +10,7 @@ interface MenuContextValue {
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>
 	triggerRef: React.RefObject<HTMLElement | null>
 	gap: number
+	placement: MenuPlacement
 }
 
 const MenuContext = React.createContext<MenuContextValue | null>(null)
@@ -36,6 +37,8 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
 
 // ---------- Root ----------
 
+export type MenuPlacement = "top-end" | "bottom-start" | "bottom-end"
+
 export interface MenuRootProps {
 	children: React.ReactNode
 	/** Controlled open state */
@@ -43,6 +46,8 @@ export interface MenuRootProps {
 	onOpenChange?: (open: boolean) => void
 	/** Gap between the trigger and the menu edge, in px. Default: 6 */
 	gap?: number
+	/** Where the menu opens relative to the trigger. Default: "top-end" */
+	placement?: MenuPlacement
 }
 
 function MenuRoot({
@@ -50,6 +55,7 @@ function MenuRoot({
 	open: openProp,
 	onOpenChange,
 	gap = 6,
+	placement = "top-end",
 }: MenuRootProps) {
 	const [openState, setOpenState] = React.useState(false)
 	const triggerRef = React.useRef<HTMLElement | null>(null)
@@ -66,7 +72,7 @@ function MenuRoot({
 		)
 
 	return (
-		<MenuContext.Provider value={{ open, setOpen, triggerRef, gap }}>
+		<MenuContext.Provider value={{ open, setOpen, triggerRef, gap, placement }}>
 			{children}
 		</MenuContext.Provider>
 	)
@@ -110,6 +116,7 @@ function useMenuPosition(
 	triggerRef: React.RefObject<HTMLElement | null>,
 	open: boolean,
 	gap: number,
+	placement: MenuPlacement,
 ) {
 	const [pos, setPos] = React.useState<React.CSSProperties>({})
 
@@ -119,17 +126,27 @@ function useMenuPosition(
 		function calculate() {
 			if (!triggerRef.current) return
 			const rect = triggerRef.current.getBoundingClientRect()
-			setPos({
-				bottom: window.innerHeight - rect.top + gap,
-				left: rect.right,
-				transform: "translateX(-100%)",
-			})
+			if (placement === "bottom-start") {
+				setPos({ top: rect.bottom + gap, left: rect.left })
+			} else if (placement === "bottom-end") {
+				setPos({
+					top: rect.bottom + gap,
+					left: rect.right,
+					transform: "translateX(-100%)",
+				})
+			} else {
+				setPos({
+					bottom: window.innerHeight - rect.top + gap,
+					left: rect.right,
+					transform: "translateX(-100%)",
+				})
+			}
 		}
 
 		calculate()
 		window.addEventListener("resize", calculate)
 		return () => window.removeEventListener("resize", calculate)
-	}, [triggerRef, open, gap])
+	}, [triggerRef, open, gap, placement])
 
 	return pos
 }
@@ -142,8 +159,8 @@ export interface MenuContentProps
 	extends React.HTMLAttributes<HTMLDivElement> {}
 
 function MenuContent({ className, children, ...rest }: MenuContentProps) {
-	const { open, setOpen, triggerRef, gap } = useMenuContext()
-	const pos = useMenuPosition(triggerRef, open, gap)
+	const { open, setOpen, triggerRef, gap, placement } = useMenuContext()
+	const pos = useMenuPosition(triggerRef, open, gap, placement)
 	const contentRef = React.useRef<HTMLDivElement>(null)
 
 	// Close on outside click — exclude the trigger so its own toggle handler fires cleanly

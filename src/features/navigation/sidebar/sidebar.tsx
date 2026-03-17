@@ -24,7 +24,7 @@ export function Sidebar() {
 		>
 			<Box
 				sx={{
-					paddingInline: "2",
+					paddingInline: "2.5",
 					borderBottomWidth: "1px",
 					borderBottomStyle: "solid",
 					borderBottomColor: "stone.200",

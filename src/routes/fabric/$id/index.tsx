@@ -73,6 +73,9 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 			<EditorTopbar
 				id={fabric.id}
 				title={fabric.title}
+				{...(fabric.proposal
+					? { hasProposal: true, slug: fabric.proposal.slug }
+					: { hasProposal: false })}
 				onTitleSave={async (title) => {
 					await updateTitle({ variables: { input: { id: fabric.id, title } } })
 				}}

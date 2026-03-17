@@ -1,8 +1,16 @@
 import { Link } from "@tanstack/react-router"
-import { MapPin } from "lucide-react"
+import { Copy, EllipsisVertical, MapPin, Trash } from "lucide-react"
 import { DateTime } from "luxon"
-import { Badge, Card, HStack, Typography, VStack } from "#/features/ui"
-import { css } from "#/styles/styled-system/css"
+import {
+	Badge,
+	Box,
+	Card,
+	HStack,
+	Menu,
+	Typography,
+	VStack,
+} from "#/features/ui"
+import { css, cx } from "#/styles/styled-system/css"
 
 type Props = {
 	lastEdited: string
@@ -22,22 +30,67 @@ export function FabricCard({
 	id,
 	hasProposal,
 }: Props) {
-	console.log("title", title, "has proposal", hasProposal)
 	return (
-		<Link to="/fabric/$id" params={{ id }}>
+		<Box
+			className={cx(
+				"group",
+				css({
+					position: "relative",
+					animation: "fadeUp 200ms var(--easings-out)",
+				}),
+			)}
+		>
+			<Link
+				to="/fabric/$id"
+				params={{ id }}
+				className={css({
+					position: "absolute",
+					inset: "0",
+					zIndex: "base",
+				})}
+			/>
+			<Menu placement="bottom-end">
+				<Menu.Trigger>
+					<button
+						type="button"
+						className={css({
+							position: "absolute",
+							top: "2",
+							right: "2",
+							padding: "1",
+							borderRadius: "full",
+							color: "stone.400",
+							visibility: "hidden",
+							transition: "color 100ms, background 100ms",
+							_groupHover: {
+								visibility: "visible",
+								background: "rgb(255 255 255 / 0.8)",
+								_hover: {
+									color: "stone.900",
+									background: "white",
+								},
+							},
+							zIndex: "floating",
+							cursor: "pointer",
+						})}
+					>
+						<EllipsisVertical />
+					</button>
+				</Menu.Trigger>
+				<Menu.Content>
+					<Menu.Item>
+						<Copy />
+						Duplicate
+					</Menu.Item>
+					<Menu.Item intent="danger">
+						<Trash />
+						Delete
+					</Menu.Item>
+				</Menu.Content>
+			</Menu>
 			<Card size="sm" lift="md" shadow="sm">
-				<Card.Media className={css({ position: "relative" })}>
+				<Card.Media>
 					<img src={mapImage} alt={`${title} map`} />
-					{hasProposal && (
-						<Badge
-							appearance="solid"
-							tone="accent"
-							size="xs"
-							className={css({ position: "absolute", top: "2", right: "2" })}
-						>
-							Proposal
-						</Badge>
-					)}
 				</Card.Media>
 				<Card.Body>
 					<VStack gap="1">
@@ -55,12 +108,24 @@ export function FabricCard({
 								{location}
 							</Typography.Text>
 						</HStack>
-						<Typography.Text size="xs" color="stone.400">
-							Edited {DateTime.fromISO(lastEdited).toFormat("LLL d")}
-						</Typography.Text>
+						<HStack
+							gap="1"
+							align="end"
+							justify="space-between"
+							className={css({ minHeight: "6" })}
+						>
+							<Typography.Text size="xs" color="stone.400">
+								Edited {DateTime.fromISO(lastEdited).toFormat("LLL d")}
+							</Typography.Text>
+							{hasProposal && (
+								<Badge appearance="solid" tone="accent" size="xs">
+									Proposal
+								</Badge>
+							)}
+						</HStack>
 					</VStack>
 				</Card.Body>
 			</Card>
-		</Link>
+		</Box>
 	)
 }
