@@ -78,6 +78,7 @@ export function ProposalRow({
 				"group",
 				css({
 					position: "relative",
+					animation: "fadeUp 200ms var(--easings-out)",
 					background: "white",
 					borderWidth: "1",
 					borderStyle: "solid",

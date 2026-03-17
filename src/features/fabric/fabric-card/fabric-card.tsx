@@ -79,11 +79,11 @@ export function FabricCard({
 				</Menu.Trigger>
 				<Menu.Content>
 					<Menu.Item>
-						<Copy />
+						<Copy size={12} />
 						Duplicate
 					</Menu.Item>
 					<Menu.Item intent="danger">
-						<Trash />
+						<Trash size={12} />
 						Delete
 					</Menu.Item>
 				</Menu.Content>

@@ -1,9 +1,10 @@
-import { useLazyQuery, useReadQuery } from "@apollo/client/react"
+import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FabricCard } from "#/features/fabric"
-import { Button, Grid, Typography, VStack } from "#/features/ui"
+import { Button, FilterBar, Grid, Typography, VStack } from "#/features/ui"
 import { MyFabricsDocument } from "#/graphql/generated"
+import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 
 export const Route = createFileRoute("/dashboard/fabrics")({
 	component: RouteComponent,
@@ -24,26 +25,24 @@ function RouteComponent() {
 	if (!data || data.myFabrics.__typename === "UnauthorizedError") {
 		throw redirect({ to: "/login", replace: true })
 	}
-	const initial = data.myFabrics
-	const [fabrics, setFabrics] = useState(initial.fabrics)
-	const [hasMore, setHasMore] = useState(initial.hasMore)
-	const [total, setTotal] = useState(initial.total)
-	const [offset, setOffset] = useState(initial.fabrics.length)
-	const [loadMoreFabrics, { loading, data: moreData }] =
-		useLazyQuery(MyFabricsDocument)
-	useEffect(() => {
-		if (moreData?.myFabrics.__typename === "MyFabricsPayload") {
-			const {
-				fabrics: newFabrics,
-				hasMore: newHasMore,
-				total: newTotal,
-			} = moreData.myFabrics
-			setFabrics((prev) => [...prev, ...newFabrics])
-			setHasMore(newHasMore)
-			setTotal(newTotal)
-			setOffset((prev) => prev + newFabrics.length)
-		}
-	}, [moreData])
+
+	const [search, setSearch] = useState("")
+	const debouncedSearch = useDebounce(search)
+
+	const { items: fabrics, hasMore, total, loading, loadMore } =
+		usePaginatedQuery(MyFabricsDocument, {
+			initialData: {
+				items: data.myFabrics.fabrics,
+				hasMore: data.myFabrics.hasMore,
+				total: data.myFabrics.total,
+			},
+			extractPayload: (d) =>
+				d.myFabrics.__typename === "MyFabricsPayload"
+					? { items: d.myFabrics.fabrics, hasMore: d.myFabrics.hasMore, total: d.myFabrics.total }
+					: null,
+			filterVars: { search: debouncedSearch },
+		})
+
 	return (
 		<VStack gap="5">
 			<VStack gap="0.5">
@@ -55,19 +54,28 @@ function RouteComponent() {
 				</Typography.Text>
 			</VStack>
 			<VStack gap="10">
-				<Grid gap="3" cols={3}>
-					{fabrics.map((fabric) => (
-						<FabricCard
-							hasProposal={fabric.hasProposal}
-							id={fabric.id}
-							key={fabric.id}
-							lastEdited={fabric.updatedAt}
-							location={`${fabric.locationCity}, ${fabric.locationRegion}`}
-							mapImage={fabric.thumbnail ?? ""}
-							title={fabric.title}
+				<VStack gap="4">
+					<FilterBar>
+						<FilterBar.Search
+							placeholder="Search fabrics..."
+							value={search}
+							onChange={setSearch}
 						/>
-					))}
-				</Grid>
+					</FilterBar>
+					<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
+						{fabrics.map((fabric) => (
+							<FabricCard
+								hasProposal={fabric.hasProposal}
+								id={fabric.id}
+								key={fabric.id}
+								lastEdited={fabric.updatedAt}
+								location={`${fabric.locationCity}, ${fabric.locationRegion}`}
+								mapImage={fabric.thumbnail ?? ""}
+								title={fabric.title}
+							/>
+						))}
+					</Grid>
+				</VStack>
 				<VStack id="load-more" align="center" gap="4">
 					<Typography.Text color="stone.400" size="sm">
 						{hasMore
@@ -80,9 +88,7 @@ function RouteComponent() {
 							intent="neutral"
 							loading={loading}
 							disabled={loading}
-							onClick={() =>
-								loadMoreFabrics({ variables: { limit: 3, offset } })
-							}
+							onClick={() => loadMore()}
 						>
 							Load more
 						</Button>

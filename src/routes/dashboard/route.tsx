@@ -5,6 +5,7 @@ import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/dashboard")({
 	component: RouteComponent,
+	pendingComponent: () => <div className={css({ background: "stone.100" })} />,
 	beforeLoad: async ({ context }) => {
 		const { apolloClient } = context
 		const data = apolloClient.readQuery({ query: MeDocument })

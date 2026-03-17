@@ -126,6 +126,29 @@ export const input = defineSlotRecipe({
 		},
 	},
 	variants: {
+		variant: {
+			outline: {},
+			ghost: {
+				field: {
+					borderColor: "transparent",
+					bg: "transparent",
+					boxShadow: "none",
+					_hover: {
+						borderColor: "transparent",
+						bg: "transparent",
+					},
+					"&[data-focused]": {
+						borderColor: "transparent",
+						bg: "transparent",
+						boxShadow: "none",
+						_hover: {
+							borderColor: "transparent",
+							bg: "transparent",
+						},
+					},
+				},
+			},
+		},
 		size: {
 			sm: {
 				field: { py: "1.5", minH: "9", fontSize: "sm", lineHeight: "snug" },
@@ -153,6 +176,7 @@ export const input = defineSlotRecipe({
 		},
 	},
 	defaultVariants: {
+		variant: "outline",
 		size: "md",
 	},
 })

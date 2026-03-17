@@ -5,6 +5,7 @@ import { button } from "./recipes/button"
 import { card } from "./recipes/card"
 import { chipGroup } from "./recipes/chip-group"
 import { commandPalette } from "./recipes/command-pallete"
+import { filterBar } from "./recipes/filter-bar"
 import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { menu } from "./recipes/menu"
@@ -55,9 +56,12 @@ export default defineConfig({
 			tooltip: ["*"],
 			commandPalette: ["*"],
 			chipGroup: ["*"],
+			grid: ["*"],
+			filterBar: ["*"],
 		},
 		css: [
 			{
+				responsive: true,
 				properties: {
 					gap: ["*"],
 					columnGap: ["*"],
@@ -1812,6 +1816,7 @@ export default defineConfig({
 			commandPalette,
 			input,
 			chipGroup,
+			filterBar,
 		},
 		recipes: {
 			link,

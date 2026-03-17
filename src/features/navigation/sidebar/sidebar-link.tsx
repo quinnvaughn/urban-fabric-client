@@ -20,7 +20,7 @@ const SidebarLinkInner = forwardRef<HTMLAnchorElement, SidebarLinkProps>(
 					py: "2",
 					px: "2.5",
 					color: "stone.600",
-					fontSize: "sm",
+					fontSize: "md",
 					borderRadius: "md",
 					textDecoration: "none",
 					transition:

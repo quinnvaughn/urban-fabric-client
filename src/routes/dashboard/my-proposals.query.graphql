@@ -1,5 +1,17 @@
-query MyProposals($offset: Int, $limit: Int) {
-	myProposals(offset: $offset, limit: $limit) {
+query MyProposals(
+	$offset: Int
+	$limit: Int
+	$status: ProposalStatusFilter
+	$categories: [ProposalCategory!]
+	$search: String
+) {
+	myProposals(
+		offset: $offset
+		limit: $limit
+		status: $status
+		categories: $categories
+		search: $search
+	) {
 		... on UnauthorizedError {
 			message
 		}
@@ -14,6 +26,9 @@ query MyProposals($offset: Int, $limit: Int) {
 				slug
 				likeCount
 				isPublished
+				snapshotLocationCity
+				snapshotLocationRegion
+				snapshotThumbnail
 			}
 		}
 	}

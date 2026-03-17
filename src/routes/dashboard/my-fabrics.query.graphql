@@ -1,5 +1,5 @@
-query MyFabrics($limit: Int, $offset: Int) {
-	myFabrics(limit: $limit, offset: $offset) {
+query MyFabrics($limit: Int, $offset: Int, $search: String) {
+	myFabrics(limit: $limit, offset: $offset, search: $search) {
 		... on MyFabricsPayload {
 			total
 			hasMore

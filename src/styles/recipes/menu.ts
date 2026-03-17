@@ -2,7 +2,14 @@ import { defineSlotRecipe } from "@pandacss/dev"
 
 export const menu = defineSlotRecipe({
 	className: "menu",
-	slots: ["content", "item", "checkItem", "checkBox", "separator", "filterTrigger"],
+	slots: [
+		"content",
+		"item",
+		"checkItem",
+		"checkBox",
+		"separator",
+		"filterTrigger",
+	],
 
 	base: {
 		content: {
@@ -40,7 +47,7 @@ export const menu = defineSlotRecipe({
 			userSelect: "none",
 
 			_hover: {
-				bg: "bg.muted",
+				bg: "stone.100",
 				color: "fg.default",
 			},
 			_disabled: {
@@ -92,10 +99,8 @@ export const menu = defineSlotRecipe({
 				bg: "stone.100",
 				color: "fg.default",
 			},
-			// Checked state — color shifts to brand
 			_checked: {
 				color: "brand.emphasis",
-				// Explicitly re-assert checked color on hover so it always wins
 				_hover: {
 					bg: "stone.100",
 					color: "brand.emphasis",
@@ -123,7 +128,6 @@ export const menu = defineSlotRecipe({
 			color: "transparent",
 			transition: "all 0.12s ease",
 
-			// Filled when parent checkItem carries data-checked
 			"[data-checked] &": {
 				bg: "brand.default",
 				borderColor: "brand.default",

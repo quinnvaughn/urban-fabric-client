@@ -33,12 +33,14 @@ export interface InputRootProps extends React.HTMLAttributes<HTMLDivElement> {
 	invalid?: boolean
 	required?: boolean
 	size?: "sm" | "md" | "lg"
+	variant?: "outline" | "ghost"
 }
 
 function InputRoot({
 	id: idProp,
 	invalid,
 	size,
+	variant,
 	className,
 	children,
 	required,
@@ -46,7 +48,7 @@ function InputRoot({
 }: InputRootProps) {
 	const autoId = React.useId()
 	const id = idProp ?? autoId
-	const classes = inputRecipe({ size, invalid: invalid ? true : undefined })
+	const classes = inputRecipe({ size, variant, invalid: invalid ? true : undefined })
 
 	const describedByIds = React.useRef<Set<string>>(new Set())
 
