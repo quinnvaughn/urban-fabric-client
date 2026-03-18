@@ -1,5 +1,6 @@
 import { DateTime } from "luxon"
 import { Typography, VStack } from "#/features/ui"
+import { singularOrPlural } from "#/lib/string"
 
 type Props = {
 	userName: string
@@ -29,7 +30,8 @@ export function Greeting({ userName, numLikes }: Props) {
 			</Typography.Heading>
 			{numLikes > 0 && (
 				<Typography.Text as="p" font="sans" size="sm" color="stone.500">
-					You have {numLikes} new likes on your proposals this week.
+					You have {numLikes} {singularOrPlural("like", "likes", numLikes)} new
+					likes on your proposals this week.
 				</Typography.Text>
 			)}
 		</VStack>

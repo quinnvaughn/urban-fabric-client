@@ -8,6 +8,10 @@ query GetProposal($slug: String!) {
 			isLikedByMe
 			description
 			createdAt
+			creator {
+				id
+				name
+			}
 			categories
 			likeCount
 			snapshotCenter {

@@ -68,6 +68,12 @@ export const button = defineRecipe({
 		// size
 		// ---------------------------------------------------------------
 		size: {
+			xs: {
+				fontSize: "xs",
+				px: "1.5",
+				py: "1",
+				minH: "6",
+			},
 			sm: {
 				fontSize: "xs",
 				px: "3",

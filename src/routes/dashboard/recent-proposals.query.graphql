@@ -12,6 +12,7 @@ query RecentProposals($limit: Int) {
 				snapshotThumbnail
 				updatedAt
 				likeCount
+				viewCount
 			}
 		}
 		... on UnauthorizedError {

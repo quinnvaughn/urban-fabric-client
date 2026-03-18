@@ -31,6 +31,7 @@ interface TabsRootProps
 	value?: string
 	defaultValue?: string
 	onValueChange?: (value: string) => void
+	stretch?: boolean
 }
 
 function TabsRoot({
@@ -40,6 +41,7 @@ function TabsRoot({
 	children,
 	className,
 	size,
+	stretch,
 	...rest
 }: TabsRootProps) {
 	const [uncontrolled, setUncontrolled] = React.useState<string | null>(
@@ -57,7 +59,7 @@ function TabsRoot({
 		[isControlled, onValueChange],
 	)
 
-	const styles = tabs({ size })
+	const styles = tabs({ size, stretch })
 
 	return (
 		<TabsContext.Provider value={{ value, setValue, styles }}>

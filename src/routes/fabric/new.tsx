@@ -168,6 +168,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 			<EditorTopbar
 				id={fabric.id}
 				title={fabric.title}
+				hasProposal={false}
 				onTitleSave={async (t) => {
 					updateGuestFabric(
 						(existing) => ({ ...existing, title: t }),
@@ -209,7 +210,11 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				open={authIntent !== null}
 				onClose={() => setAuthIntent(null)}
 				onAuthSuccess={handleAuthSuccess}
-				title={authIntent === "publish" ? "Create an account to publish" : "Save your fabric to your account"}
+				title={
+					authIntent === "publish"
+						? "Create an account to publish"
+						: "Save your fabric to your account"
+				}
 			/>
 		</div>
 	)

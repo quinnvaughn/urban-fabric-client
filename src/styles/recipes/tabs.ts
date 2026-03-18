@@ -90,6 +90,23 @@ export const tabs = defineSlotRecipe({
 				},
 			},
 		},
+		stretch: {
+			true: {
+				list: {
+					gap: 0,
+				},
+				trigger: {
+					flex: 1,
+					justifyContent: "center",
+					marginRight: 0,
+				},
+				link: {
+					flex: 1,
+					justifyContent: "center",
+					marginRight: 0,
+				},
+			},
+		},
 	},
 
 	defaultVariants: {

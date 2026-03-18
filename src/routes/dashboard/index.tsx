@@ -86,7 +86,7 @@ function RouteComponent() {
 								value: dashboardStatsData.myDashboardStats.totalProposalViews,
 								delta: deltaText(
 									dashboardStatsData.myDashboardStats.proposalViewsDelta,
-									`^ ${dashboardStatsData.myDashboardStats.proposalViewsDelta} this week`,
+									`^ +${dashboardStatsData.myDashboardStats.proposalViewsDelta}% this week`,
 								),
 							},
 							{
@@ -132,7 +132,7 @@ function RouteComponent() {
 									date={proposal.updatedAt}
 									isPublished={proposal.isPublished}
 									location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
-									views={0}
+									views={proposal.viewCount}
 									likes={proposal.likeCount}
 									slug={proposal.slug}
 									mapImage={proposal.snapshotThumbnail}
