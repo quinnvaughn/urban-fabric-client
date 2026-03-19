@@ -16,6 +16,7 @@ import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
+import { Route as DashboardExploreRouteImport } from './routes/dashboard/explore'
 import { Route as FabricIdRouteRouteImport } from './routes/fabric/$id/route'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
 import { Route as ProposalSlugIndexRouteImport } from './routes/proposal/$slug/index'
@@ -57,6 +58,11 @@ const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
 const DashboardFabricsRoute = DashboardFabricsRouteImport.update({
   id: '/fabrics',
   path: '/fabrics',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardExploreRoute = DashboardExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const FabricIdRouteRoute = FabricIdRouteRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
+  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
+  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
+  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/fabric/$id'
+    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/_marketing/_auth'
     | '/fabric/$id'
+    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -251,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/fabrics'
       fullPath: '/dashboard/fabrics'
       preLoaderRoute: typeof DashboardFabricsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/explore': {
+      id: '/dashboard/explore'
+      path: '/explore'
+      fullPath: '/dashboard/explore'
+      preLoaderRoute: typeof DashboardExploreRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/fabric/$id': {
@@ -340,12 +359,14 @@ const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
+  DashboardExploreRoute: typeof DashboardExploreRoute
   DashboardFabricsRoute: typeof DashboardFabricsRoute
   DashboardProposalsRoute: typeof DashboardProposalsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardExploreRoute: DashboardExploreRoute,
   DashboardFabricsRoute: DashboardFabricsRoute,
   DashboardProposalsRoute: DashboardProposalsRoute,
   DashboardIndexRoute: DashboardIndexRoute,

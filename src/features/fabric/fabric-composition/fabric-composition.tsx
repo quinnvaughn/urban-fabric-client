@@ -78,7 +78,7 @@ export function FabricComposition({
 					color="stone.400"
 					weight="semibold"
 					transform="uppercase"
-					tracking="wider"
+					letterSpacing="wider"
 				>
 					Total
 				</Typography.Text>

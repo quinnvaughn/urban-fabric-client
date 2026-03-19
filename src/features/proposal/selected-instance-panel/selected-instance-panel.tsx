@@ -56,7 +56,7 @@ export function SelectedInstancePanel({
 						color="coral.500"
 						weight="semibold"
 						transform="uppercase"
-						tracking="wider"
+						letterSpacing="wider"
 					>
 						Element
 					</Typography.Text>
@@ -134,8 +134,8 @@ export function SelectedInstancePanel({
 						<Typography.Text
 							size="sm"
 							color="stone.400"
-							italic
-							leading="relaxed"
+							fontStyle="italic"
+							lineHeight="relaxed"
 						>
 							No note for this element.
 						</Typography.Text>

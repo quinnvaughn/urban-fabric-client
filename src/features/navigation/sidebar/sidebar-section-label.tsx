@@ -19,7 +19,7 @@ export function SidebarSectionLabel({ children }: Props) {
 				color="stone.400"
 				font="sans"
 				transform="uppercase"
-				leading="tight"
+				lineHeight="tight"
 			>
 				{children}
 			</Typography.Text>

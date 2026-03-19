@@ -12,7 +12,7 @@ export function WhoItIsForSection() {
 						size="xs"
 						transform="uppercase"
 						weight="medium"
-						tracking="wider"
+						letterSpacing="wider"
 					>
 						Who it's for
 					</Typography.Text>
@@ -21,12 +21,12 @@ export function WhoItIsForSection() {
 						size="lg"
 						weight="light"
 						font="serif"
-						leading="tight"
+						lineHeight="tight"
 						tone="onDark"
 					>
 						If you've ever thought
 						<br />
-						<Typography.Inline italic tone="accent">
+						<Typography.Inline fontStyle="italic" tone="accent">
 							"this could be so much better" —
 						</Typography.Inline>
 						<br />

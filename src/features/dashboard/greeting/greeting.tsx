@@ -22,9 +22,9 @@ export function Greeting({ userName, numLikes }: Props) {
 	const timeOfDay = getTimeOfDay()
 	return (
 		<VStack gap="1">
-			<Typography.Heading as="h1" font="serif" weight="light" leading="tight">
+			<Typography.Heading as="h1" font="serif" weight="light" lineHeight="tight">
 				Good {timeOfDay},{" "}
-				<Typography.Inline tone="accent" italic>
+				<Typography.Inline tone="accent" fontStyle="italic">
 					{userName}.
 				</Typography.Inline>
 			</Typography.Heading>

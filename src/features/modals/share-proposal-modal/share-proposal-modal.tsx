@@ -114,7 +114,7 @@ export function ShareProposalModal({
 					<Modal.Title
 						font="serif"
 						color="stone.900"
-						italic
+						fontStyle="italic"
 						size="lg"
 						weight="light"
 					>

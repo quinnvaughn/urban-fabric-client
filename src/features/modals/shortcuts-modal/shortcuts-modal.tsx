@@ -57,7 +57,7 @@ export function ShortcutsModal({
 										<Typography.Text
 											size="xxs"
 											weight="semibold"
-											tracking="wider"
+											letterSpacing="wider"
 											transform="uppercase"
 											color="stone.400"
 										>

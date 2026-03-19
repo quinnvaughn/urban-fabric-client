@@ -43,19 +43,19 @@ export function HeroSection() {
 								as="h1"
 								weight="light"
 								font="serif"
-								leading="tight"
-								tracking="tight"
+								lineHeight="tight"
+								letterSpacing="tight"
 								style={{ fontSize: "clamp(2.6rem, 4.5vw, 3.75rem)" }}
 							>
 								That stroad outside <br />
 								your house?
 								<br />
-								<Typography.Inline italic tone="accent">
+								<Typography.Inline fontStyle="italic" tone="accent">
 									Fix it. Make the case.
 								</Typography.Inline>
 							</Typography.Heading>
 							<Box className={css({ maxW: "md" })}>
-								<Typography.Text tone="muted" leading="loose">
+								<Typography.Text tone="muted" lineHeight="loose">
 									Urban Fabric lets you redesign streets, intersections, and
 									neighborhoods on a real map — then share your proposal where
 									it'll actually be seen.
@@ -126,7 +126,7 @@ export function HeroSection() {
 									weight="normal"
 									size="md"
 									font="serif"
-									leading="snug"
+									lineHeight="snug"
 								>
 									Main St: protected bike lanes & roundabouts at every
 									intersection

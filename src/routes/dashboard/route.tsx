@@ -37,18 +37,7 @@ function RouteComponent() {
 				})}
 			>
 				<Topbar />
-				<div
-					className={css({
-						flex: 1,
-						overflowY: "auto",
-						paddingTop: "7",
-						paddingBottom: "12",
-						px: "7",
-						animation: "fadeUp 0.5s var(--easings-spring) both",
-					})}
-				>
-					<Outlet />
-				</div>
+				<Outlet />
 			</main>
 		</div>
 	)

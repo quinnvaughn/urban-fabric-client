@@ -41,7 +41,7 @@ export function WhatIsAFabricSection() {
 								size="xs"
 								transform="uppercase"
 								weight="medium"
-								tracking="wider"
+								letterSpacing="wider"
 							>
 								What's a fabric?
 							</Typography.Text>
@@ -50,16 +50,16 @@ export function WhatIsAFabricSection() {
 								size="lg"
 								weight="light"
 								font="serif"
-								leading="tight"
+								lineHeight="tight"
 							>
 								Your vision,
 								<br /> drawn on a{" "}
-								<Typography.Inline italic tone="accent">
+								<Typography.Inline fontStyle="italic" tone="accent">
 									real map.
 								</Typography.Inline>
 							</Typography.Heading>
 						</VStack>
-						<Typography.Text tone="muted" leading="relaxed" size="sm">
+						<Typography.Text tone="muted" lineHeight="relaxed" size="sm">
 							A Fabric is your design layer on top of the real world. You're not
 							working in the abstract — you're drawing on actual streets in your
 							actual city. Add a protected bike lane on the road you cross every

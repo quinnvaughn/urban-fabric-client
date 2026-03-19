@@ -2,7 +2,10 @@ import { ChevronDown } from "lucide-react"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { css, cx } from "@/styles/styled-system/css"
-import { menu as menuRecipe } from "@/styles/styled-system/recipes"
+import {
+	menu as menuRecipe,
+	type MenuVariantProps,
+} from "@/styles/styled-system/recipes"
 
 // ---------- Context ----------
 
@@ -157,11 +160,14 @@ function useMenuPosition(
 const styles = menuRecipe()
 
 export interface MenuContentProps
-	extends React.HTMLAttributes<HTMLDivElement> {}
+	extends React.HTMLAttributes<HTMLDivElement> {
+	size?: MenuVariantProps["size"]
+}
 
-function MenuContent({ className, children, ...rest }: MenuContentProps) {
+function MenuContent({ className, children, size, ...rest }: MenuContentProps) {
 	const { open, setOpen, triggerRef, gap, placement } = useMenuContext()
 	const pos = useMenuPosition(triggerRef, open, gap, placement)
+	const contentStyles = menuRecipe({ size })
 	const contentRef = React.useRef<HTMLDivElement>(null)
 
 	React.useEffect(() => {
@@ -200,7 +206,7 @@ function MenuContent({ className, children, ...rest }: MenuContentProps) {
 			<div
 				role="menu"
 				data-state="open"
-				className={cx(styles.content, className)}
+				className={cx(contentStyles.content, className)}
 				{...rest}
 			>
 				{children}

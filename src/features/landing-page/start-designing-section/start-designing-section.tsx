@@ -19,17 +19,17 @@ export function StartDesigningSection() {
 					<Typography.Heading
 						style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
 						weight="light"
-						leading={"snug"}
-						tracking={"snug"}
+						lineHeight={"snug"}
+						letterSpacing={"snug"}
 						font="serif"
 					>
 						Your street is
 						<br /> waiting to be{" "}
-						<Typography.Inline italic tone="accent">
+						<Typography.Inline fontStyle="italic" tone="accent">
 							reimagined.
 						</Typography.Inline>
 					</Typography.Heading>
-					<Typography.Text tone="muted" leading="loose">
+					<Typography.Text tone="muted" lineHeight="loose">
 						No account required. No expertise needed. Just open a map and start
 						designing.
 					</Typography.Text>

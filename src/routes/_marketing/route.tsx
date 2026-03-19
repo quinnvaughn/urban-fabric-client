@@ -37,7 +37,7 @@ function RouteComponent() {
 							weight="bold"
 							font="sans"
 							color="stone.500"
-							tracking="wide"
+							letterSpacing="wide"
 							transform="uppercase"
 						>
 							Urban Fabric

@@ -91,7 +91,7 @@ export function Steps() {
 						<Typography.Heading as="h3" size="sm" font="serif" weight="light">
 							{step.label}
 						</Typography.Heading>
-						<Typography.Text size="sm" tone="muted" leading="relaxed">
+						<Typography.Text size="sm" tone="muted" lineHeight="relaxed">
 							{step.description}
 						</Typography.Text>
 					</VStack>

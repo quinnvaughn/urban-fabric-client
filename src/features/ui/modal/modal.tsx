@@ -186,7 +186,7 @@ function ModalEyebrow({ color, ...rest }: ModalEyebrowProps) {
 			size="xxs"
 			weight="semibold"
 			transform="uppercase"
-			tracking="wider"
+			letterSpacing="wider"
 			color={color}
 			{...rest}
 		/>

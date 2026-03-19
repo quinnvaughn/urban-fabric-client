@@ -84,7 +84,7 @@ export function ToolRefModal({
 								<Typography.Text
 									weight="bold"
 									size="xxs"
-									tracking="wider"
+									letterSpacing="wider"
 									transform="uppercase"
 									color="stone.400"
 								>
@@ -94,7 +94,7 @@ export function ToolRefModal({
 									{tool.keyboardShortcut}
 								</Typography.Text>
 							</HStack>
-							<Typography.Text size="sm" color="stone.700" leading="relaxed">
+							<Typography.Text size="sm" color="stone.700" lineHeight="relaxed">
 								{tool.description}
 							</Typography.Text>
 						</VStack>

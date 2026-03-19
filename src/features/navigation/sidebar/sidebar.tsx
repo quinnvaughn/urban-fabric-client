@@ -1,4 +1,4 @@
-import { Layers, LayoutGrid, ScrollText } from "lucide-react"
+import { Layers, LayoutGrid, ScrollText, Search } from "lucide-react"
 import { Box, Logo } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { SidebarLink } from "./sidebar-link"
@@ -59,6 +59,10 @@ export function Sidebar() {
 				</SidebarLink>
 				<SidebarLink icon={<ScrollText size={16} />} to="/dashboard/proposals">
 					Proposals
+				</SidebarLink>
+				<SidebarSectionLabel>Community</SidebarSectionLabel>
+				<SidebarLink icon={<Search size={16} />} to="/dashboard/explore">
+					Explore
 				</SidebarLink>
 			</Box>
 		</aside>

@@ -223,7 +223,7 @@ function Stat({ label, value, isPublished }: StatProps) {
 			<Typography.Text
 				size="sm"
 				weight="bold"
-				leading={"none"}
+				lineHeight={"none"}
 				color={isPublished ? "stone.900" : "stone.400"}
 			>
 				{value != null
@@ -234,7 +234,7 @@ function Stat({ label, value, isPublished }: StatProps) {
 			</Typography.Text>
 			<Typography.Text
 				size="xxs"
-				tracking="wider"
+				letterSpacing="wider"
 				weight="normal"
 				transform="uppercase"
 				color="stone.400"

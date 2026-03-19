@@ -192,7 +192,7 @@ export function PropertiesPanel() {
 						<Typography.Text
 							size="xxs"
 							weight="semibold"
-							tracking="wider"
+							letterSpacing="wider"
 							color="stone.500"
 							transform="uppercase"
 						>

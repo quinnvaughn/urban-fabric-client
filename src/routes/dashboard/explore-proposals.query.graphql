@@ -1,0 +1,39 @@
+query ExploreProposals(
+	$categories: [ProposalCategory!]
+	$limit: Int
+	$offset: Int
+	$search: String
+	$sortBy: ExploreSortBy
+) {
+	exploreProposals(
+		categories: $categories
+		limit: $limit
+		offset: $offset
+		search: $search
+		sortBy: $sortBy
+	) {
+		hasMore
+		total
+		proposals {
+			...ProposalCard
+		}
+	}
+}
+
+fragment ProposalCard on Proposal {
+	id
+	title
+	viewCount
+	slug
+	likeCount
+	isLikedByMe
+	snapshotLocationCity
+	snapshotLocationRegion
+	snapshotThumbnail
+	publishedAt
+	creator {
+		id
+		name
+	}
+	categories
+}

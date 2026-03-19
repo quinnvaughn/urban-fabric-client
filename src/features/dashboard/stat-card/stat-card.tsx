@@ -18,12 +18,12 @@ export function StatCard({ label, value, delta, neutral }: Props) {
 						color="stone.500"
 						transform={"uppercase"}
 						weight="medium"
-						leading="none"
-						tracking="wide"
+						lineHeight="none"
+						letterSpacing="wide"
 					>
 						{label}
 					</Typography.Text>
-					<Typography.Text size="2xl" weight="bold" leading="none">
+					<Typography.Text size="2xl" weight="bold" lineHeight="none">
 						{new Intl.NumberFormat("en-US", { notation: "compact" }).format(
 							value,
 						)}
@@ -31,7 +31,7 @@ export function StatCard({ label, value, delta, neutral }: Props) {
 					<Typography.Text
 						size="xs"
 						color={neutral ? "stone.500" : "teal.700"}
-						leading="none"
+						lineHeight="none"
 						weight="medium"
 					>
 						{delta}

@@ -41,14 +41,14 @@ export function WhoCard({ title, body, quote, icon, iconBgColor }: Props) {
 					<Typography.Text size="lg" weight="light" font="serif" tone="onDark">
 						{title}
 					</Typography.Text>
-					<Typography.Text size="sm" tone="onDarkMuted" leading="relaxed">
+					<Typography.Text size="sm" tone="onDarkMuted" lineHeight="relaxed">
 						{body}
 					</Typography.Text>
 					<Typography.Text
 						size="xs"
 						tone="onDarkMuted"
 						font="serif"
-						italic
+						fontStyle="italic"
 						className={css({
 							paddingTop: "4",
 							borderTop: "1px solid rgba(255,255,255,0.08)",

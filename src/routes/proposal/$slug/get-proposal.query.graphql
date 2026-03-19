@@ -7,7 +7,7 @@ query GetProposal($slug: String!) {
 			id
 			isLikedByMe
 			description
-			createdAt
+			publishedAt
 			creator {
 				id
 				name

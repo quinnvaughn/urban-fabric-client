@@ -10,8 +10,9 @@ import type { ColorToken } from "@/styles/styled-system/tokens"
 type Tone = NonNullable<TypographyVariantProps["tone"]>
 type Font = NonNullable<TypographyVariantProps["font"]>
 type Weight = NonNullable<TypographyVariantProps["weight"]>
-type Leading = NonNullable<TypographyVariantProps["leading"]>
-type Tracking = NonNullable<TypographyVariantProps["tracking"]>
+type LineHeight = NonNullable<TypographyVariantProps["lineHeight"]>
+type LetterSpacing = NonNullable<TypographyVariantProps["letterSpacing"]>
+type FontStyle = NonNullable<TypographyVariantProps["fontStyle"]>
 type Transform = NonNullable<TypographyVariantProps["transform"]>
 type Clamp = NonNullable<TypographyVariantProps["clamp"]>
 type Color = ColorToken
@@ -45,12 +46,12 @@ export interface TextProps
 	weight?: Weight
 	tone?: Tone
 	font?: Font
-	leading?: Leading
-	tracking?: Tracking
+	lineHeight?: LineHeight
+	letterSpacing?: LetterSpacing
 	transform?: Transform
 	color?: Color
 	clamp?: Clamp
-	italic?: boolean
+	fontStyle?: FontStyle
 	truncate?: boolean
 	textAlign?: TextAlign
 	whiteSpace?: WhiteSpace
@@ -62,11 +63,11 @@ function TypographyText({
 	weight,
 	tone,
 	font,
-	leading,
-	tracking,
+	lineHeight,
+	letterSpacing,
 	transform,
 	color,
-	italic,
+	fontStyle,
 	className,
 	style,
 	clamp,
@@ -81,9 +82,10 @@ function TypographyText({
 		tone,
 		font,
 		clamp,
-		leading,
-		tracking,
+		lineHeight,
+		letterSpacing,
 		transform,
+		fontStyle,
 		truncate,
 		textAlign,
 		whiteSpace,
@@ -93,7 +95,6 @@ function TypographyText({
 		<Tag
 			className={cx(styles.text, className)}
 			style={{
-				fontStyle: italic ? "italic" : undefined,
 				...colorStyle(color),
 				...style,
 			}}
@@ -127,11 +128,11 @@ export interface HeadingProps
 	weight?: Weight
 	tone?: Tone
 	font?: Font
-	leading?: Leading
-	tracking?: Tracking
+	lineHeight?: LineHeight
+	letterSpacing?: LetterSpacing
 	transform?: Transform
 	color?: Color
-	italic?: boolean
+	fontStyle?: FontStyle
 }
 
 function TypographyHeading({
@@ -140,11 +141,11 @@ function TypographyHeading({
 	weight,
 	tone,
 	font,
-	leading,
-	tracking,
+	lineHeight,
+	letterSpacing,
 	transform,
 	color,
-	italic,
+	fontStyle,
 	className,
 	style,
 	...rest
@@ -154,16 +155,16 @@ function TypographyHeading({
 		weight,
 		tone,
 		font,
-		leading,
-		tracking,
+		lineHeight,
+		letterSpacing,
 		transform,
+		fontStyle,
 	})
 	const Tag = as ?? HEADING_ELEMENT_MAP[size]
 	return (
 		<Tag
 			className={cx(styles.heading, className)}
 			style={{
-				fontStyle: italic ? "italic" : undefined,
 				...colorStyle(color),
 				...style,
 			}}
@@ -178,22 +179,22 @@ TypographyHeading.displayName = "Typography.Heading"
 export interface InlineProps
 	extends Omit<React.HTMLAttributes<HTMLElement>, "color"> {
 	as?: React.ElementType
-	italic?: boolean
+	fontStyle?: FontStyle
 	weight?: Weight
 	tone?: Tone
 	color?: Color
-	tracking?: Tracking
+	letterSpacing?: LetterSpacing
 	transform?: Transform
 	size?: TextSize
 }
 
 function TypographyInline({
 	as,
-	italic,
+	fontStyle,
 	weight,
 	tone,
 	color,
-	tracking,
+	letterSpacing,
 	transform,
 	className,
 	style,
@@ -203,8 +204,9 @@ function TypographyInline({
 	const styles = typography({
 		weight,
 		tone,
-		tracking,
+		letterSpacing,
 		transform,
+		fontStyle,
 		textSize: size,
 	})
 	const Tag = as ?? "span"
@@ -212,7 +214,6 @@ function TypographyInline({
 		<Tag
 			className={cx(styles.inline, className)}
 			style={{
-				fontStyle: italic ? "italic" : undefined,
 				fontSize: size ? undefined : "inherit",
 				...colorStyle(color),
 				...style,

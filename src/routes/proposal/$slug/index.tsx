@@ -247,7 +247,7 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 										color="coral.500"
 										weight="semibold"
 										transform="uppercase"
-										tracking="wider"
+										letterSpacing="wider"
 									>
 										Proposal
 									</Typography.Text>
@@ -256,9 +256,9 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 										font="serif"
 										size="md"
 										weight="light"
-										leading="tight"
-										tracking="snug"
-										italic
+										lineHeight="tight"
+										letterSpacing="snug"
+										fontStyle="italic"
 									>
 										{proposal.title}
 									</Typography.Heading>
@@ -285,9 +285,9 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 							</HStack>
 							<HStack gap="2" wrap>
 								<Typography.Text size="sm" color="stone.500">
-									{DateTime.fromISO(proposal.createdAt).toLocaleString(
-										DateTime.DATE_MED,
-									)}
+									{DateTime.fromISO(
+										proposal.publishedAt as string,
+									).toLocaleString(DateTime.DATE_MED)}
 								</Typography.Text>
 								<Box
 									className={css({
@@ -361,7 +361,7 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 									<Typography.Text
 										color="stone.700"
 										size="md"
-										leading="relaxed"
+										lineHeight="relaxed"
 										className={css({ whiteSpace: "pre-wrap" })}
 									>
 										{proposal.description}

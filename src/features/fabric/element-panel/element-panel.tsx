@@ -238,7 +238,7 @@ export function ElementPanel() {
 							<Typography.Text
 								size="xxs"
 								weight="semibold"
-								tracking="wider"
+								letterSpacing="wider"
 								transform="uppercase"
 								color="stone.400"
 							>
@@ -300,7 +300,7 @@ export function ElementPanel() {
 									<Typography.Text
 										size="sm"
 										font="sans"
-										leading="tight"
+										lineHeight="tight"
 										className={css({ flex: 1 })}
 									>
 										{element.title}

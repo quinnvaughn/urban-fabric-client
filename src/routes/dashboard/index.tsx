@@ -1,6 +1,11 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { Greeting, SectionHeader, StatRow } from "#/features/dashboard"
+import {
+	DashboardContainer,
+	Greeting,
+	SectionHeader,
+	StatRow,
+} from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
 import { ProposalRow } from "#/features/proposal"
 import { Grid, VStack } from "#/features/ui"
@@ -58,7 +63,7 @@ function RouteComponent() {
 	}
 
 	return (
-		<div>
+		<DashboardContainer>
 			<VStack gap="8">
 				<VStack gap="6">
 					<Greeting
@@ -143,6 +148,6 @@ function RouteComponent() {
 					</VStack>
 				</VStack>
 			</VStack>
-		</div>
+		</DashboardContainer>
 	)
 }

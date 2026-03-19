@@ -49,7 +49,7 @@ export function BuiltToSpreadSection() {
 								size="xs"
 								transform="uppercase"
 								weight="medium"
-								tracking="wider"
+								letterSpacing="wider"
 							>
 								Built to spread
 							</Typography.Text>
@@ -58,19 +58,19 @@ export function BuiltToSpreadSection() {
 								size="lg"
 								weight="light"
 								font="serif"
-								leading="tight"
+								lineHeight="tight"
 							>
 								Designed to drop
 								<br />
 								into the places
 								<br />
 								where{" "}
-								<Typography.Inline italic tone="accent">
+								<Typography.Inline fontStyle="italic" tone="accent">
 									change happens.
 								</Typography.Inline>
 							</Typography.Heading>
 						</VStack>
-						<Typography.Text tone="muted" leading="relaxed" size="sm">
+						<Typography.Text tone="muted" lineHeight="relaxed" size="sm">
 							Every proposal gets its own shareable page. Post it in the
 							subreddit. Quote-tweet the city's planning announcement. Send it
 							to your council member. The link does the work.

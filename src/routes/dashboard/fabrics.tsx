@@ -1,6 +1,7 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useState } from "react"
+import { DashboardContainer } from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
 import { Button, FilterBar, Grid, Typography, VStack } from "#/features/ui"
 import { MyFabricsDocument } from "#/graphql/generated"
@@ -53,57 +54,59 @@ function RouteComponent() {
 	})
 
 	return (
-		<VStack gap="5">
-			<VStack gap="0.5">
-				<Typography.Text as="h1" leading="none" weight="semibold" size="lg">
-					My fabrics
-				</Typography.Text>
-				<Typography.Text color="stone.400" size="sm">
-					{total} total
-				</Typography.Text>
-			</VStack>
-			<VStack gap="10">
-				<VStack gap="4">
-					<FilterBar>
-						<FilterBar.Search
-							placeholder="Search fabrics..."
-							value={search}
-							onChange={setSearch}
-						/>
-					</FilterBar>
-					<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
-						{fabrics.map((fabric) => (
-							<FabricCard
-								hasProposal={fabric.hasProposal}
-								id={fabric.id}
-								key={fabric.id}
-								lastEdited={fabric.updatedAt}
-								location={`${fabric.locationCity}, ${fabric.locationRegion}`}
-								mapImage={fabric.thumbnail ?? ""}
-								title={fabric.title}
-							/>
-						))}
-					</Grid>
-				</VStack>
-				<VStack id="load-more" align="center" gap="4">
-					<Typography.Text color="stone.400" size="sm">
-						{hasMore
-							? `Showing ${fabrics.length} of ${total}`
-							: `Showing all ${total}`}
+		<DashboardContainer>
+			<VStack gap="5">
+				<VStack gap="0.5">
+					<Typography.Text as="h1" lineHeight="none" weight="semibold" size="lg">
+						My fabrics
 					</Typography.Text>
-					{hasMore && (
-						<Button
-							appearance="outline"
-							intent="neutral"
-							loading={loading}
-							disabled={loading}
-							onClick={() => loadMore()}
-						>
-							Load more
-						</Button>
-					)}
+					<Typography.Text color="stone.400" size="sm">
+						{total} total
+					</Typography.Text>
+				</VStack>
+				<VStack gap="10">
+					<VStack gap="4">
+						<FilterBar>
+							<FilterBar.Search
+								placeholder="Search fabrics..."
+								value={search}
+								onChange={setSearch}
+							/>
+						</FilterBar>
+						<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
+							{fabrics.map((fabric) => (
+								<FabricCard
+									hasProposal={fabric.hasProposal}
+									id={fabric.id}
+									key={fabric.id}
+									lastEdited={fabric.updatedAt}
+									location={`${fabric.locationCity}, ${fabric.locationRegion}`}
+									mapImage={fabric.thumbnail ?? ""}
+									title={fabric.title}
+								/>
+							))}
+						</Grid>
+					</VStack>
+					<VStack id="load-more" align="center" gap="4">
+						<Typography.Text color="stone.400" size="sm">
+							{hasMore
+								? `Showing ${fabrics.length} of ${total}`
+								: `Showing all ${total}`}
+						</Typography.Text>
+						{hasMore && (
+							<Button
+								appearance="outline"
+								intent="neutral"
+								loading={loading}
+								disabled={loading}
+								onClick={() => loadMore()}
+							>
+								Load more
+							</Button>
+						)}
+					</VStack>
 				</VStack>
 			</VStack>
-		</VStack>
+		</DashboardContainer>
 	)
 }

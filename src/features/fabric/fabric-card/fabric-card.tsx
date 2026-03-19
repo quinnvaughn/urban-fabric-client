@@ -97,7 +97,7 @@ export function FabricCard({
 						<Typography.Text
 							size="sm"
 							weight="semibold"
-							leading="normal"
+							lineHeight="normal"
 							clamp={"2"}
 						>
 							{title}

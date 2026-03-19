@@ -11,6 +11,7 @@ export function Topbar() {
 		"/dashboard/": "Dashboard",
 		"/dashboard/fabrics": "Fabrics",
 		"/dashboard/proposals": "Proposals",
+		"/dashboard/explore": "Explore",
 	}
 
 	const currentMatch = matches[matches.length - 1]

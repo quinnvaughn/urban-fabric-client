@@ -24,6 +24,7 @@ export const badge = defineRecipe({
 			true: { textTransform: "uppercase", letterSpacing: "wider" },
 		},
 		size: {
+			xxs: { fontSize: "3xs", paddingInline: "1", paddingBlock: "0.5" }, // 0.65rem, 4px/2px
 			xs: { fontSize: "xxs", paddingInline: "1.5", paddingBlock: "0.5" }, // 0.75rem, 6px/2px
 			sm: { fontSize: "xs", paddingInline: "2", paddingBlock: "1" }, // 0.75rem, 8px/4px
 			md: { fontSize: "sm", paddingInline: "2.5", paddingBlock: "1" }, // 0.875rem, 10px/4px

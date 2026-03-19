@@ -12,7 +12,7 @@ export function HowItWorksSection() {
 						size="xs"
 						transform="uppercase"
 						weight="medium"
-						tracking="wider"
+						letterSpacing="wider"
 					>
 						How it works
 					</Typography.Text>
@@ -21,11 +21,11 @@ export function HowItWorksSection() {
 						size="lg"
 						weight="light"
 						font="serif"
-						leading="tight"
+						lineHeight="tight"
 					>
 						Three steps from frustration
 						<br /> to{" "}
-						<Typography.Inline italic tone="accent">
+						<Typography.Inline fontStyle="italic" tone="accent">
 							momentum.
 						</Typography.Inline>
 					</Typography.Heading>

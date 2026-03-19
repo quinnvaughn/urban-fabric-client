@@ -324,16 +324,16 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								id="pane-eyebrow"
 								size="xxs"
 								color="coral.500"
-								tracking="wider"
+								letterSpacing="wider"
 								transform="uppercase"
 								weight="semibold"
 							>
 								New proposal
 							</Typography.Text>
-							<Typography.Text font="serif" size="2xl" italic weight="light">
+							<Typography.Text font="serif" size="2xl" fontStyle="italic" weight="light">
 								Tell people what you built
 							</Typography.Text>
-							<Typography.Text size="sm" color="stone.600" leading="relaxed">
+							<Typography.Text size="sm" color="stone.600" lineHeight="relaxed">
 								A proposal is a public snapshot of your fabric. Give it a title
 								and description so others understand what you're proposing and
 								why.
@@ -461,7 +461,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								id="view-center-label"
 								size="xs"
 								color="stone.700"
-								leading="normal"
+								lineHeight="normal"
 								weight="semibold"
 							>
 								Default view center
@@ -482,7 +482,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 									})}
 								>
 									<Typography.Text
-										leading="none"
+										lineHeight="none"
 										size="sm"
 										weight="normal"
 										color="stone.700"

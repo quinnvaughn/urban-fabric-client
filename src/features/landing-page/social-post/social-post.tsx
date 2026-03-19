@@ -52,7 +52,7 @@ export function SocialPost(props: Props) {
 							<Typography.Text
 								color="stone.400"
 								size="xs"
-								tracking="wider"
+								letterSpacing="wider"
 								transform={"uppercase"}
 							>
 								{props.platform === "reddit"

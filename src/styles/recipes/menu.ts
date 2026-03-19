@@ -158,6 +158,11 @@ export const menu = defineSlotRecipe({
 	},
 
 	variants: {
+		size: {
+			sm: { content: { minWidth: "160px" } },
+			md: { content: { minWidth: "220px" } },
+			lg: { content: { minWidth: "280px" } },
+		},
 		intent: {
 			neutral: {},
 			danger: {
@@ -180,5 +185,6 @@ export const menu = defineSlotRecipe({
 
 	defaultVariants: {
 		intent: "neutral",
+		size: "md",
 	},
 })

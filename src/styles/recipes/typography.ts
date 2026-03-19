@@ -94,7 +94,7 @@ export const typography = defineSlotRecipe({
 		},
 
 		// ── Line height ───────────────────────────────────────────────────────
-		leading: {
+		lineHeight: {
 			none: { text: { lineHeight: "none" }, heading: { lineHeight: "none" } },
 			tight: {
 				text: { lineHeight: "tight" },
@@ -116,7 +116,7 @@ export const typography = defineSlotRecipe({
 		},
 
 		// ── Letter spacing ────────────────────────────────────────────────────
-		tracking: {
+		letterSpacing: {
 			tight: {
 				text: { letterSpacing: "tight" },
 				heading: { letterSpacing: "tight" },
@@ -146,6 +146,20 @@ export const typography = defineSlotRecipe({
 				text: { letterSpacing: "widest" },
 				heading: { letterSpacing: "widest" },
 				inline: { letterSpacing: "widest" },
+			},
+		},
+
+		// ── Font style ────────────────────────────────────────────────────────
+		fontStyle: {
+			italic: {
+				text: { fontStyle: "italic" },
+				heading: { fontStyle: "italic" },
+				inline: { fontStyle: "italic" },
+			},
+			normal: {
+				text: { fontStyle: "normal" },
+				heading: { fontStyle: "normal" },
+				inline: { fontStyle: "normal" },
 			},
 		},
 
@@ -282,7 +296,7 @@ export const typography = defineSlotRecipe({
 		headingSize: "md",
 		font: "sans",
 		tone: "default",
-		leading: "normal",
-		tracking: "normal",
+		lineHeight: "normal",
+		letterSpacing: "normal",
 	},
 })
