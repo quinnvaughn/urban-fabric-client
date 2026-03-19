@@ -58,7 +58,7 @@ export function FabricCard({
 							top: "2",
 							right: "2",
 							padding: "1",
-							borderRadius: "full",
+							borderRadius: "md",
 							color: "stone.400",
 							visibility: "hidden",
 							transition: "color 100ms, background 100ms",
@@ -74,7 +74,7 @@ export function FabricCard({
 							cursor: "pointer",
 						})}
 					>
-						<EllipsisVertical />
+						<EllipsisVertical size={16} />
 					</button>
 				</Menu.Trigger>
 				<Menu.Content>

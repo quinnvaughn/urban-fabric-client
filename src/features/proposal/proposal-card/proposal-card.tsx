@@ -23,7 +23,12 @@ export function ProposalCard({ proposal }: Props) {
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
 	const [isPending, startTransition] = useTransition()
 	return (
-		<Card size="sm">
+		<Card
+			size="sm"
+			className={css({
+				animation: "fadeUp 200ms var(--easings-out)",
+			})}
+		>
 			<Card.Media>
 				<img src={proposal.snapshotThumbnail} alt="Proposal Snapshot" />
 			</Card.Media>
