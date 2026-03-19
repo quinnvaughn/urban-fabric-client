@@ -18,6 +18,7 @@ export const avatar = defineRecipe({
 			subtle: {}, // tones override via compoundVariants
 		},
 		size: {
+			xxs: { width: "4.5", height: "4.5", fontSize: "4xs" },
 			xs: { width: "6", height: "6", fontSize: "xxs" },
 			sm: { width: "8", height: "8", fontSize: "xs" },
 			md: { width: "10", height: "10", fontSize: "sm" },

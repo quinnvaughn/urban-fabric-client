@@ -29,6 +29,7 @@ fragment ProposalCard on Proposal {
 	isLikedByMe
 	snapshotLocationCity
 	snapshotLocationRegion
+	snapshotLocationRegionAbbr
 	snapshotThumbnail
 	publishedAt
 	creator {

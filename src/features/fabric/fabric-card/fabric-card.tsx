@@ -1,16 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { Copy, EllipsisVertical, MapPin, Trash } from "lucide-react"
 import { DateTime } from "luxon"
-import {
-	Badge,
-	Box,
-	Card,
-	HStack,
-	Menu,
-	Typography,
-	VStack,
-} from "#/features/ui"
-import { css, cx } from "#/styles/styled-system/css"
+import { Badge, Card, HStack, Menu, Typography, VStack } from "#/features/ui"
+import { css } from "#/styles/styled-system/css"
 
 type Props = {
 	lastEdited: string
@@ -31,14 +23,14 @@ export function FabricCard({
 	hasProposal,
 }: Props) {
 	return (
-		<Box
-			className={cx(
-				"group",
-				css({
-					position: "relative",
-					animation: "fadeUp 200ms var(--easings-out)",
-				}),
-			)}
+		<Card
+			size="sm"
+			lift="md"
+			shadow="sm"
+			className={css({
+				position: "relative",
+				animation: "fadeUp 200ms var(--easings-out)",
+			})}
 		>
 			<Link
 				to="/fabric/$id"
@@ -88,44 +80,42 @@ export function FabricCard({
 					</Menu.Item>
 				</Menu.Content>
 			</Menu>
-			<Card size="sm" lift="md" shadow="sm">
-				<Card.Media>
-					<img src={mapImage} alt={`${title} map`} />
-				</Card.Media>
-				<Card.Body>
-					<VStack gap="1">
-						<Typography.Text
-							size="sm"
-							weight="semibold"
-							lineHeight="normal"
-							clamp={"2"}
-						>
-							{title}
+			<Card.Media>
+				<img src={mapImage} alt={`${title} map`} />
+			</Card.Media>
+			<Card.Body>
+				<VStack gap="1">
+					<Typography.Text
+						size="sm"
+						weight="semibold"
+						lineHeight="normal"
+						clamp={"2"}
+					>
+						{title}
+					</Typography.Text>
+					<HStack gap="1" align="center">
+						<MapPin size={12} color={"var(--colors-stone-400)"} />
+						<Typography.Text size="xs" color="stone.400">
+							{location}
 						</Typography.Text>
-						<HStack gap="1" align="center">
-							<MapPin size={12} color={"var(--colors-stone-400)"} />
-							<Typography.Text size="xs" color="stone.400">
-								{location}
-							</Typography.Text>
-						</HStack>
-						<HStack
-							gap="1"
-							align="end"
-							justify="space-between"
-							className={css({ minHeight: "6" })}
-						>
-							<Typography.Text size="xs" color="stone.400">
-								Edited {DateTime.fromISO(lastEdited).toFormat("LLL d")}
-							</Typography.Text>
-							{hasProposal && (
-								<Badge appearance="solid" tone="accent" size="xs">
-									Proposal
-								</Badge>
-							)}
-						</HStack>
-					</VStack>
-				</Card.Body>
-			</Card>
-		</Box>
+					</HStack>
+					<HStack
+						gap="1"
+						align="end"
+						justify="space-between"
+						className={css({ minHeight: "6" })}
+					>
+						<Typography.Text size="xs" color="stone.400">
+							Edited {DateTime.fromISO(lastEdited).toFormat("LLL d")}
+						</Typography.Text>
+						{hasProposal && (
+							<Badge appearance="solid" tone="accent" size="xs">
+								Proposal
+							</Badge>
+						)}
+					</HStack>
+				</VStack>
+			</Card.Body>
+		</Card>
 	)
 }
