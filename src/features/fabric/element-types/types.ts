@@ -143,6 +143,8 @@ export type ElementInstance = {
 	segments?: [number, number][][]
 	// Current values for each property in the descriptor
 	properties: Record<string, unknown>
+	title?: string
+	note?: string
 }
 
 export type GuestFabric = {

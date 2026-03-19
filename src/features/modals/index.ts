@@ -1,3 +1,4 @@
 export * from "./registry"
+export * from "./share-proposal-modal"
 export * from "./shortcuts-modal"
 export * from "./tool-ref-modal"

@@ -3,6 +3,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { cx } from "@/styles/styled-system/css"
 import { commandPalette as paletteRecipe } from "@/styles/styled-system/recipes"
+import { Swatch } from "../swatch"
 
 // ---------- Types ----------
 
@@ -162,10 +163,7 @@ export function CommandPalette({
 											}}
 										>
 											{item.color && (
-												<span
-													className={styles.itemSwatch}
-													style={{ background: item.color }}
-												/>
+												<Swatch size="2.5" color={item.color} />
 											)}
 											<span data-slot="label" className={styles.itemLabel}>
 												{item.label}

@@ -15,6 +15,8 @@ type Tracking = NonNullable<TypographyVariantProps["tracking"]>
 type Transform = NonNullable<TypographyVariantProps["transform"]>
 type Clamp = NonNullable<TypographyVariantProps["clamp"]>
 type Color = ColorToken
+type TextAlign = NonNullable<TypographyVariantProps["textAlign"]>
+type WhiteSpace = NonNullable<TypographyVariantProps["whiteSpace"]>
 
 function colorStyle(color?: Color): React.CSSProperties | undefined {
 	if (!color) return undefined
@@ -50,6 +52,8 @@ export interface TextProps
 	clamp?: Clamp
 	italic?: boolean
 	truncate?: boolean
+	textAlign?: TextAlign
+	whiteSpace?: WhiteSpace
 }
 
 function TypographyText({
@@ -67,6 +71,8 @@ function TypographyText({
 	style,
 	clamp,
 	truncate,
+	textAlign,
+	whiteSpace,
 	...rest
 }: TextProps) {
 	const styles = typography({
@@ -79,6 +85,8 @@ function TypographyText({
 		tracking,
 		transform,
 		truncate,
+		textAlign,
+		whiteSpace,
 	})
 	const Tag = as ?? TEXT_ELEMENT_MAP[size]
 	return (

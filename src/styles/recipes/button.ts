@@ -42,7 +42,7 @@ export const button = defineRecipe({
 		// appearance — how the button is drawn
 		// ---------------------------------------------------------------
 		appearance: {
-			solid: {}, // filled bg, no border — compound variants flesh this out
+			solid: {}, // filled bg — compound variants flesh this out
 			outline: {
 				// transparent bg, visible border
 				bg: "transparent",
@@ -52,15 +52,18 @@ export const button = defineRecipe({
 				bg: "transparent",
 				borderColor: "transparent",
 			},
+			subtle: {
+				// tinted bg, light-tinted border — compound variants set colors
+			},
 		},
 
 		// ---------------------------------------------------------------
 		// intent — semantic colour role
 		// ---------------------------------------------------------------
 		intent: {
-			brand: {}, // teal — primary product colour (Sign up, New fabric filled)
+			brand: {}, // teal — primary product colour
 			accent: {}, // coral — calls to action with energy
-			neutral: {}, // grey — secondary actions (Sign in, outline buttons)
+			neutral: {}, // grey — secondary actions
 			danger: {}, // red — destructive actions
 		},
 
@@ -98,9 +101,7 @@ export const button = defineRecipe({
 			true: { w: "full" },
 		},
 
-		// Opt-in hover lift — use only on prominent CTAs (sign up, auth submit, etc.)
-		// Transforms live in compoundVariants (at the end) so they win the cascade
-		// over the appearance×intent blocks above.
+		// Opt-in hover lift — use only on prominent CTAs
 		lift: {
 			true: {},
 		},
@@ -108,7 +109,6 @@ export const button = defineRecipe({
 
 	// ---------------------------------------------------------------
 	// Compound variants — appearance × intent matrix
-	// Only define combinations that are actually used; add more as needed.
 	// ---------------------------------------------------------------
 	compoundVariants: [
 		// ── solid × brand ──────────────────────────────────────────────
@@ -273,6 +273,78 @@ export const button = defineRecipe({
 				"&:not([data-disabled]):not([data-loading]):hover": {
 					bg: "danger.subtle",
 					color: "danger.emphasis",
+				},
+				"&:not([data-disabled]):not([data-loading]):active": {
+					bg: "danger.muted",
+				},
+			},
+		},
+
+		// ── subtle × brand ─────────────────────────────────────────────
+		{
+			appearance: "subtle",
+			intent: "brand",
+			css: {
+				bg: "brand.subtle",
+				color: "brand.emphasis",
+				borderColor: "brand.muted",
+				"&:not([data-disabled]):not([data-loading]):hover": {
+					bg: "brand.muted",
+					borderColor: "teal.300",
+				},
+				"&:not([data-disabled]):not([data-loading]):active": {
+					bg: "brand.muted",
+				},
+			},
+		},
+
+		// ── subtle × accent ────────────────────────────────────────────
+		{
+			appearance: "subtle",
+			intent: "accent",
+			css: {
+				bg: "accent.subtle",
+				color: "accent.emphasis",
+				borderColor: "accent.muted",
+				"&:not([data-disabled]):not([data-loading]):hover": {
+					bg: "accent.muted",
+					borderColor: "coral.300",
+				},
+				"&:not([data-disabled]):not([data-loading]):active": {
+					bg: "accent.muted",
+				},
+			},
+		},
+
+		// ── subtle × neutral ───────────────────────────────────────────
+		{
+			appearance: "subtle",
+			intent: "neutral",
+			css: {
+				bg: "bg.muted",
+				color: "fg.default",
+				borderColor: "border.subtle",
+				"&:not([data-disabled]):not([data-loading]):hover": {
+					bg: "border.default",
+					borderColor: "border.default",
+				},
+				"&:not([data-disabled]):not([data-loading]):active": {
+					bg: "border.strong",
+				},
+			},
+		},
+
+		// ── subtle × danger ────────────────────────────────────────────
+		{
+			appearance: "subtle",
+			intent: "danger",
+			css: {
+				bg: "danger.subtle",
+				color: "danger.emphasis",
+				borderColor: "danger.muted",
+				"&:not([data-disabled]):not([data-loading]):hover": {
+					bg: "danger.muted",
+					borderColor: "danger.default",
 				},
 				"&:not([data-disabled]):not([data-loading]):active": {
 					bg: "danger.muted",

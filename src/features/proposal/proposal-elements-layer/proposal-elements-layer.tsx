@@ -9,7 +9,7 @@ import { useProposalStore } from "../proposal-store"
 
 export function ProposalElementsLayer() {
 	const map = useMap()
-	const elements = useProposalStore((s) => s.elements)
+	const { elements, setSelectedInstanceId } = useProposalStore()
 	const elementLayerIds = useRef<Set<string>>(new Set())
 
 	useEffect(() => {
@@ -26,6 +26,7 @@ export function ProposalElementsLayer() {
 		}
 	}, [map])
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
 		const handleClick = (e: maplibregl.MapMouseEvent) => {
 			const layerIds = [...elementLayerIds.current].map((id) =>
@@ -35,7 +36,6 @@ export function ProposalElementsLayer() {
 			if (features.length === 0) return
 
 			const elementId = features[0].layer.id.replace(/^el-/, "")
-			const { setSelectedInstanceId } = useProposalStore.getState()
 			setSelectedInstanceId(elementId)
 		}
 

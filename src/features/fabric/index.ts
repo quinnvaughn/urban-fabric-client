@@ -1,5 +1,6 @@
 export * from "./back-button"
 export * from "./drawing-layer"
+export * from "./fabric-composition"
 export * from "./editor-command-palette"
 export * from "./editor-hud"
 export * from "./editor-topbar"

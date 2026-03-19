@@ -1,22 +1,18 @@
 import { useMutation, useReadQuery } from "@apollo/client/react"
 import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, Save, Send } from "lucide-react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useState } from "react"
 import { match } from "ts-pattern"
 import z from "zod"
 import {
 	BackButton,
+	FabricComposition,
 	FabricMap,
 	StaticElementsLayer,
 	ViewportSync,
 } from "#/features/fabric"
-import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
-import {
-	summarizeElementsByType,
-	totalElementLengthMiles,
-} from "#/features/fabric/element-metrics"
-import { ELEMENT_TYPE_MAP } from "#/features/fabric/element-types"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
+import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import {
 	PublishProposalMapHud,
 	PublishProposalMapTopbar,
@@ -49,7 +45,7 @@ import {
 	isSameViewport,
 	type Viewport,
 } from "#/lib/geo"
-import { enumValueToReadableLabel, singularOrPlural } from "#/lib/string"
+import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/fabric/$id/publish")({
@@ -96,11 +92,6 @@ type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
 const TITLE_MAX_LENGTH = 80
 const DESCRIPTION_MAX_LENGTH = 500
-const MILES_PRECISION = 2
-
-function formatMiles(miles: number) {
-	return `${miles.toFixed(MILES_PRECISION)} mi`
-}
 
 const schema = z.object({
 	title: z
@@ -123,22 +114,6 @@ function Publish({ fabric }: { fabric: Fabric }) {
 	const elements: ElementInstance[] = Array.isArray(fabric.elements)
 		? (fabric.elements as ElementInstance[])
 		: []
-	const elementStats = useMemo(() => {
-		const grouped = summarizeElementsByType(elements)
-			.map((entry) => ({
-				...entry,
-				title: ELEMENT_TYPE_MAP[entry.typeId]?.title ?? "Unknown element",
-				color: ELEMENT_TYPE_MAP[entry.typeId]?.baseMapStyle.color ?? "#a8a29e",
-			}))
-			.sort((a, b) => b.totalLengthMiles - a.totalLengthMiles)
-
-		return {
-			grouped,
-			totalCount: elements.length,
-			totalMiles: totalElementLengthMiles(elements),
-		}
-	}, [elements])
-
 	const [saveDraft] = useMutation(SaveDraftProposalDocument)
 	const [publishProposal] = useMutation(PublishProposalDocument)
 	const { toast } = useToast()
@@ -532,73 +507,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								they first open this proposal.
 							</Typography.Text>
 						</VStack>
-						<Divider label="What's in this fabric" />
-						<VStack gap="4" justify="start">
-							<VStack gap="0" justify="start">
-								{elementStats.grouped.map((entry) => (
-									<HStack
-										key={entry.typeId}
-										justify="space-between"
-										align="center"
-										gap="2"
-										id="fabric-summary-row"
-										className={css({
-											borderBottom: "1px solid",
-											borderBottomColor: {
-												base: "stone.200",
-												_lastOfType: "transparent",
-											},
-											py: "2",
-										})}
-									>
-										<Box
-											as="span"
-											aria-hidden="true"
-											id="fabric-summary-swatch"
-											className={css({
-												width: "2.5",
-												height: "2.5",
-												borderRadius: "2px",
-												flexShrink: 0,
-											})}
-											style={{ backgroundColor: entry.color }}
-										/>
-										<Typography.Text
-											size="sm"
-											color="stone.800"
-											weight="medium"
-											className={css({ flex: 1 })}
-										>
-											{entry.title}
-										</Typography.Text>
-										<Typography.Text
-											size="xs"
-											color="stone.500"
-											className={css({
-												fontVariantNumeric: "tabular-nums",
-												whiteSpace: "nowrap",
-											})}
-										>
-											{`${entry.count} ${singularOrPlural("element", "elements", entry.count)} · ${formatMiles(entry.totalLengthMiles)}`}
-										</Typography.Text>
-									</HStack>
-								))}
-							</VStack>
-							<HStack justify="space-between" align="center" gap="2">
-								<Typography.Text
-									size="xxs"
-									color="stone.400"
-									weight="semibold"
-									transform="uppercase"
-									tracking="wider"
-								>
-									Total
-								</Typography.Text>
-								<Typography.Text size="sm" weight="semibold" color="stone.700">
-									{`${elementStats.totalCount} ${singularOrPlural("element", "elements", elementStats.totalCount)} · ${formatMiles(elementStats.totalMiles)}`}
-								</Typography.Text>
-							</HStack>
-						</VStack>
+						<FabricComposition elements={elements} />
 					</Box>
 					<Box
 						className={css({

@@ -911,6 +911,13 @@ export function SelectLayer() {
 
 		function handleKeyDown(e: KeyboardEvent) {
 			if (e.key !== "Delete" && e.key !== "Backspace") return
+			const active = document.activeElement
+			if (
+				active instanceof HTMLInputElement ||
+				active instanceof HTMLTextAreaElement ||
+				(active instanceof HTMLElement && active.isContentEditable)
+			)
+				return
 			const id = useFabricStore.getState().selectedInstanceId
 			if (!id) return
 			deleteElement(id)

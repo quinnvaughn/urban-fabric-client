@@ -22,7 +22,7 @@ type Props =
 
 const InnerText = ({ hasProposal }: { hasProposal: boolean }) => (
 	<>
-		{hasProposal ? "Edit" : "Publish"} proposal <ChevronRight size={12} />
+		{hasProposal ? "Update" : "Publish"} proposal <ChevronRight size={12} />
 	</>
 )
 

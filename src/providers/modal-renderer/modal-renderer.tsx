@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { modalRegistry } from "#/features/modals"
 import { useModalStore } from "#/stores"
 
@@ -6,6 +7,11 @@ export function ModalRenderer() {
 
 	if (!current) return null
 
-	const ModalComponent = modalRegistry[current]
-	return <ModalComponent open={true} onClose={close} />
+	// Cast is safe: the store's typed `open` ensures id and props are correlated.
+	const ModalComponent = modalRegistry[current.id] as React.ComponentType<{
+		open: boolean
+		onClose: () => void
+		[key: string]: unknown
+	}>
+	return <ModalComponent open={true} onClose={close} {...current.props} />
 }

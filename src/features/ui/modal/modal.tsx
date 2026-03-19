@@ -3,6 +3,8 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { cx } from "@/styles/styled-system/css"
 import { modal as modalRecipe } from "@/styles/styled-system/recipes"
+import type { ColorToken } from "@/styles/styled-system/tokens"
+import { Typography, type TextProps } from "../typography"
 
 // ---------- Types ----------
 
@@ -110,14 +112,24 @@ ModalHeader.displayName = "Modal.Header"
 
 // ---------- Title ----------
 
-export interface ModalTitleProps extends React.HTMLAttributes<HTMLSpanElement> {
-	size?: ModalSize
-}
+export type ModalTitleProps = TextProps
 
-function ModalTitle({ className, size = "md", ...rest }: ModalTitleProps) {
-	const styles = modalRecipe({ size })
+function ModalTitle({
+	size = "md",
+	weight = "semibold",
+	color = "fg.default",
+	...rest
+}: ModalTitleProps) {
 	const { titleId } = useModalContext()
-	return <span id={titleId} className={cx(styles.title, className)} {...rest} />
+	return (
+		<Typography.Text
+			id={titleId}
+			size={size}
+			weight={weight}
+			color={color}
+			{...rest}
+		/>
+	)
 }
 ModalTitle.displayName = "Modal.Title"
 
@@ -161,6 +173,27 @@ function ModalBody({ className, size = "md", ...rest }: ModalBodyProps) {
 }
 ModalBody.displayName = "Modal.Body"
 
+// ---------- Eyebrow ----------
+
+export interface ModalEyebrowProps
+	extends React.HTMLAttributes<HTMLSpanElement> {
+	color?: ColorToken
+}
+
+function ModalEyebrow({ color, ...rest }: ModalEyebrowProps) {
+	return (
+		<Typography.Text
+			size="xxs"
+			weight="semibold"
+			transform="uppercase"
+			tracking="wider"
+			color={color}
+			{...rest}
+		/>
+	)
+}
+ModalEyebrow.displayName = "Modal.Eyebrow"
+
 // ---------- Dot-notation export ----------
 
 export const Modal = Object.assign(ModalRoot, {
@@ -168,4 +201,5 @@ export const Modal = Object.assign(ModalRoot, {
 	Title: ModalTitle,
 	CloseBtn: ModalCloseBtn,
 	Body: ModalBody,
+	Eyebrow: ModalEyebrow,
 })

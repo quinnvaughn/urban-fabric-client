@@ -1,82 +1,22 @@
 import { Info, Trash, X } from "lucide-react"
-import { useEffect, useMemo, useRef, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { match, P } from "ts-pattern"
 import {
 	Box,
 	Button,
+	Input,
 	Segmented,
 	Select,
 	Stepper,
+	Textarea,
 	Tooltip,
 	Typography,
 } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
-import { lineLengthFeet } from "../element-metrics"
 import { ELEMENT_TYPE_MAP } from "../element-types"
-import type {
-	ElementInstance,
-	PropertyDescriptor,
-} from "../element-types/types"
+import type { PropertyDescriptor } from "../element-types/types"
 import { useFabricStore } from "../fabric-store"
-import { nearestRoadName } from "../osrm-utils"
-
-function formatCoordinate(coord?: [number, number]) {
-	if (!coord) return "--"
-	const [lng, lat] = coord
-	return `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-}
-
-function coordinateKey(coord?: [number, number]) {
-	if (!coord) return ""
-	return `${coord[0].toFixed(5)},${coord[1].toFixed(5)}`
-}
-
-function getCalculatedValue(
-	key: string,
-	instance: ElementInstance,
-	streetNames?: { from: string | null; to: string | null },
-) {
-	if (key === "length") {
-		return lineLengthFeet(instance.coordinates)
-	}
-
-	if (key === "lanes-removed") {
-		const before = Number(instance.properties["lanes-before"])
-		const after = Number(instance.properties["lanes-after"])
-		if (Number.isFinite(before) && Number.isFinite(after)) {
-			return Math.max(0, before - after)
-		}
-		return "--"
-	}
-
-	const points = instance.waypoints.length
-		? instance.waypoints
-		: instance.coordinates
-	if (key === "from") {
-		return streetNames?.from ?? formatCoordinate(points[0])
-	}
-	if (key === "to") {
-		return streetNames?.to ?? formatCoordinate(points[points.length - 1])
-	}
-
-	if (key === "width-gained") {
-		const before = Number(instance.properties["width-before"])
-		const after = Number(instance.properties["width-after"])
-		if (Number.isFinite(before) && Number.isFinite(after)) {
-			return Math.max(0, after - before)
-		}
-		return "--"
-	}
-
-	return "--"
-}
-
-function formatCalculatedValue(value: string | number, unit?: string) {
-	if (typeof value !== "number") return value
-	const rounded = value >= 100 ? Math.round(value) : Math.round(value * 10) / 10
-	return unit ? `${rounded} ${unit}` : String(rounded)
-}
+import { useCalculatedRows } from "../use-calculated-rows"
 
 export function PropertiesPanel() {
 	const selectedInstance = useFabricStore(
@@ -94,72 +34,7 @@ export function PropertiesPanel() {
 		? ELEMENT_TYPE_MAP[selectedInstance.typeId]
 		: null
 
-	const routeEndpoints = useMemo(() => {
-		if (!selectedInstance) return { from: undefined, to: undefined }
-		const points = selectedInstance.waypoints.length
-			? selectedInstance.waypoints
-			: selectedInstance.coordinates
-		return {
-			from: points[0],
-			to: points[points.length - 1],
-		}
-	}, [selectedInstance])
-
-	const fromKey = coordinateKey(routeEndpoints.from)
-	const toKey = coordinateKey(routeEndpoints.to)
-	const streetNameCacheRef = useRef(new Map<string, string>())
-	const [streetNames, setStreetNames] = useState<{
-		from: string | null
-		to: string | null
-	}>({ from: null, to: null })
-
-	useEffect(() => {
-		if (!selectedInstance || !routeEndpoints.from || !routeEndpoints.to) {
-			setStreetNames({ from: null, to: null })
-			return
-		}
-
-		let cancelled = false
-
-		async function resolveStreetName(
-			coord: [number, number],
-			key: string,
-		): Promise<string | null> {
-			const cached = streetNameCacheRef.current.get(key)
-			if (cached) return cached
-
-			try {
-				const name = await nearestRoadName(coord[0], coord[1])
-				if (name) {
-					streetNameCacheRef.current.set(key, name)
-				}
-				return name
-			} catch {
-				return null
-			}
-		}
-
-		Promise.all([
-			resolveStreetName(routeEndpoints.from, fromKey),
-			resolveStreetName(routeEndpoints.to, toKey),
-		]).then(([fromName, toName]) => {
-			if (cancelled) return
-			setStreetNames({ from: fromName, to: toName })
-		})
-
-		return () => {
-			cancelled = true
-		}
-	}, [selectedInstance, routeEndpoints, fromKey, toKey])
-
-	const calculatedRows = descriptor
-		? descriptor.calculated.map((field) => ({
-				...field,
-				value: selectedInstance
-					? getCalculatedValue(field.key, selectedInstance, streetNames)
-					: "--",
-			}))
-		: []
+	const calculatedRows = useCalculatedRows(selectedInstance, descriptor ?? null)
 
 	function renderComponent(prop: PropertyDescriptor) {
 		const currentValue =
@@ -310,7 +185,7 @@ export function PropertiesPanel() {
 							paddingTop: "3",
 							paddingBottom: "2.5",
 							borderBottom: "1px solid",
-							borderColor: "border.subtle",
+							borderBottomColor: "border.subtle",
 							flexShrink: 0,
 						})}
 					>
@@ -360,6 +235,30 @@ export function PropertiesPanel() {
 							scrollbarColor: "stone.300 transparent",
 						})}
 					>
+						<Input>
+							<Input.Label>Title</Input.Label>
+							<Input.Field
+								placeholder={descriptor.title}
+								value={selectedInstance.title ?? ""}
+								onChange={(e) =>
+									updateElement(selectedInstance.id, { title: e.target.value })
+								}
+							/>
+						</Input>
+
+						<Textarea>
+							<Textarea.Label>Note</Textarea.Label>
+							<Textarea.Field
+								placeholder="Add a note…"
+								value={selectedInstance.note ?? ""}
+								minRows={2}
+								maxRows={6}
+								resize="none"
+								onChange={(e) =>
+									updateElement(selectedInstance.id, { note: e.target.value })
+								}
+							/>
+						</Textarea>
 						{match(descriptor.properties)
 							.with([], () => (
 								<Typography.Text
@@ -406,7 +305,7 @@ export function PropertiesPanel() {
 										{field.label}
 									</Typography.Text>
 									<Typography.Text size="sm" color="stone.800" weight="medium">
-										{formatCalculatedValue(field.value, field.unit)}
+										{field.value}
 									</Typography.Text>
 								</Box>
 							))}

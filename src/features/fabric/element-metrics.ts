@@ -71,10 +71,69 @@ export function summarizeElementsByType(
 	return [...grouped.values()]
 }
 
+const MILES_PRECISION = 2
+
+export function formatMiles(miles: number) {
+	return `${miles.toFixed(MILES_PRECISION)} mi`
+}
+
 export function totalElementLengthMiles(elements: ElementInstance[]): number {
 	let total = 0
 	for (const element of elements) {
 		total += lineLengthMiles(element.coordinates)
 	}
 	return total
+}
+
+export function getCalculatedValue(
+	key: string,
+	instance: ElementInstance,
+	streetNames?: { from: string | null; to: string | null },
+): string | number {
+	if (key === "length") {
+		return lineLengthFeet(instance.coordinates)
+	}
+
+	if (key === "lanes-removed") {
+		const before = Number(instance.properties["lanes-before"])
+		const after = Number(instance.properties["lanes-after"])
+		if (Number.isFinite(before) && Number.isFinite(after)) {
+			return Math.max(0, before - after)
+		}
+		return "--"
+	}
+
+	const points = instance.waypoints.length
+		? instance.waypoints
+		: instance.coordinates
+
+	if (key === "from") {
+		return streetNames?.from ?? formatCoordinate(points[0])
+	}
+	if (key === "to") {
+		return streetNames?.to ?? formatCoordinate(points[points.length - 1])
+	}
+
+	if (key === "width-gained") {
+		const before = Number(instance.properties["width-before"])
+		const after = Number(instance.properties["width-after"])
+		if (Number.isFinite(before) && Number.isFinite(after)) {
+			return Math.max(0, after - before)
+		}
+		return "--"
+	}
+
+	return "--"
+}
+
+function formatCoordinate(coord?: [number, number]) {
+	if (!coord) return "--"
+	const [lng, lat] = coord
+	return `${lat.toFixed(5)}, ${lng.toFixed(5)}`
+}
+
+export function formatCalculatedValue(value: string | number, unit?: string) {
+	if (typeof value !== "number") return value
+	const rounded = value >= 100 ? Math.round(value) : Math.round(value * 10) / 10
+	return unit ? `${rounded} ${unit}` : String(rounded)
 }

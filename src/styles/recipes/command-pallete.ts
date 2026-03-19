@@ -10,7 +10,6 @@ export const commandPalette = defineSlotRecipe({
 		"results",
 		"sectionLabel",
 		"item",
-		"itemSwatch",
 		"itemLabel",
 		"itemDesc",
 		"empty",
@@ -111,12 +110,6 @@ export const commandPalette = defineSlotRecipe({
 			"&[data-active] [data-slot=label]": {
 				color: "brand.emphasis",
 			},
-		},
-		itemSwatch: {
-			width: "10px",
-			height: "10px",
-			borderRadius: "2px",
-			flexShrink: "0",
 		},
 		itemLabel: {
 			fontSize: "sm",

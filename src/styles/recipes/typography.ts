@@ -208,6 +208,20 @@ export const typography = defineSlotRecipe({
 				},
 			},
 		},
+		// ── Text align ────────────────────────────────────────────────────────
+		textAlign: {
+			left: { text: { textAlign: "left" }, heading: { textAlign: "left" } },
+			center: { text: { textAlign: "center" }, heading: { textAlign: "center" } },
+			right: { text: { textAlign: "right" }, heading: { textAlign: "right" } },
+		},
+		// ── White space ───────────────────────────────────────────────────────
+		whiteSpace: {
+			normal: { text: { whiteSpace: "normal" }, heading: { whiteSpace: "normal" } },
+			nowrap: { text: { whiteSpace: "nowrap" }, heading: { whiteSpace: "nowrap" } },
+			pre: { text: { whiteSpace: "pre" }, heading: { whiteSpace: "pre" } },
+			"pre-wrap": { text: { whiteSpace: "pre-wrap" }, heading: { whiteSpace: "pre-wrap" } },
+			"pre-line": { text: { whiteSpace: "pre-line" }, heading: { whiteSpace: "pre-line" } },
+		},
 		// ── Tone ──────────────────────────────────────────────────────────────
 		tone: {
 			default: {

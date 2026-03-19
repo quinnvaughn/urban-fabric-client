@@ -1,9 +1,23 @@
-import { useReadQuery } from "@apollo/client/react"
+import { useMutation, useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
-import { ChevronLeft, EllipsisVertical, Eye, MapPin } from "lucide-react"
+import {
+	ChevronLeft,
+	EllipsisVertical,
+	Eye,
+	Heart,
+	MapPin,
+	Share,
+} from "lucide-react"
 import { DateTime } from "luxon"
-import { FabricMap } from "#/features/fabric"
-import { ProposalElementsLayer, useProposalStore } from "#/features/proposal"
+import { useEffect, useTransition } from "react"
+import { FabricComposition, FabricMap, MapControls } from "#/features/fabric"
+import { Attribution } from "#/features/fabric/attribution"
+import {
+	ProposalElementsLayer,
+	ProposalSelectLayer,
+	SelectedInstancePanel,
+	useProposalStore,
+} from "#/features/proposal"
 import {
 	Avatar,
 	Badge,
@@ -12,13 +26,19 @@ import {
 	Divider,
 	HStack,
 	Logo,
+	Swatch,
 	Tabs,
 	Tooltip,
 	Typography,
 	VStack,
 } from "#/features/ui"
-import { GetProposalDocument } from "#/graphql/generated"
+import {
+	GetProposalDocument,
+	type GetProposalQuery,
+	ToggleProposalLikeDocument,
+} from "#/graphql/generated"
 import { enumValueToReadableLabel } from "#/lib/string"
+import { openModal } from "#/stores"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/")({
@@ -38,15 +58,14 @@ export const Route = createFileRoute("/proposal/$slug/")({
 function RouteComponent() {
 	const { getProposalQuery } = Route.useLoaderData()
 	const { data } = useReadQuery(getProposalQuery)
-	const isPanelOpen = useProposalStore((state) => state.isPanelOpen)
-	const togglePanel = useProposalStore((state) => state.togglePanel)
-	const activeTab = useProposalStore((state) => state.activeTab)
-	const setActiveTab = useProposalStore((state) => state.setActiveTab)
-	const initElements = useProposalStore((state) => state.initElements)
-	const selectedInstance = useProposalStore(
-		(state) =>
-			state.elements.find((e) => e.id === state.selectedInstanceId) ?? null,
-	)
+	const { initElements } = useProposalStore()
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
+	useEffect(() => {
+		if (data?.proposalBySlug?.__typename !== "NotFoundError") {
+			initElements(data.proposalBySlug.snapshotElements as any)
+		}
+	}, [data])
 
 	if (
 		!data ||
@@ -57,8 +76,28 @@ function RouteComponent() {
 		return <div>Proposal not found</div>
 	}
 
-	initElements(data.proposalBySlug.snapshotElements as any)
+	return <ProposalView proposal={data.proposalBySlug} />
+}
 
+type Proposal = Extract<
+	GetProposalQuery["proposalBySlug"],
+	{ __typename: "Proposal" }
+>
+
+function ProposalView({ proposal }: { proposal: Proposal }) {
+	const {
+		togglePanel,
+		isPanelOpen,
+		setActiveTab,
+		activeTab,
+		activeElementTypes,
+		selectedInstance,
+		setSelectedInstanceId,
+		elements,
+	} = useProposalStore()
+
+	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
+	const [isPending, startTransition] = useTransition()
 	return (
 		<Box
 			className={css({
@@ -105,7 +144,7 @@ function RouteComponent() {
 						})}
 					/>
 					<Typography.Text truncate color="stone.700" weight="medium" size="md">
-						{data.proposalBySlug.title}
+						{proposal.title}
 					</Typography.Text>
 					<HStack
 						gap="1"
@@ -116,7 +155,7 @@ function RouteComponent() {
 						<Typography.Text
 							size="xs"
 							className={css({ color: "inherit" })}
-						>{`${data.proposalBySlug.snapshotLocationCity}, ${data.proposalBySlug.snapshotLocationRegionAbbr ?? data.proposalBySlug.snapshotLocationRegion}`}</Typography.Text>
+						>{`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`}</Typography.Text>
 					</HStack>
 				</HStack>
 			</Box>
@@ -221,7 +260,7 @@ function RouteComponent() {
 										tracking="snug"
 										italic
 									>
-										{data.proposalBySlug.title}
+										{proposal.title}
 									</Typography.Heading>
 								</VStack>
 								<Tooltip>
@@ -239,16 +278,16 @@ function RouteComponent() {
 								</Tooltip>
 							</HStack>
 							<HStack align="center" gap="2" wrap>
-								<Avatar size="xs" name={data.proposalBySlug.creator.name} />
+								<Avatar size="xs" name={proposal.creator.name} />
 								<Typography.Text size="sm" color="stone.700" weight="medium">
-									{data.proposalBySlug.creator.name}
+									{proposal.creator.name}
 								</Typography.Text>
 							</HStack>
 							<HStack gap="2" wrap>
 								<Typography.Text size="sm" color="stone.500">
-									{DateTime.fromISO(
-										data.proposalBySlug.createdAt,
-									).toLocaleString(DateTime.DATE_MED)}
+									{DateTime.fromISO(proposal.createdAt).toLocaleString(
+										DateTime.DATE_MED,
+									)}
 								</Typography.Text>
 								<Box
 									className={css({
@@ -259,7 +298,7 @@ function RouteComponent() {
 									})}
 								/>
 								<Typography.Text size="sm" color="stone.500">
-									{`${data.proposalBySlug.snapshotLocationCity}, ${data.proposalBySlug.snapshotLocationRegionAbbr ?? data.proposalBySlug.snapshotLocationRegion}`}
+									{`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`}
 								</Typography.Text>
 								<Box
 									className={css({
@@ -287,11 +326,11 @@ function RouteComponent() {
 									/>
 									{new Intl.NumberFormat("en-US", {
 										notation: "compact",
-									}).format(data.proposalBySlug.viewCount)}
+									}).format(proposal.viewCount)}
 								</Box>
 							</HStack>
 							<HStack gap="1" wrap>
-								{data.proposalBySlug.categories.map((category) => (
+								{proposal.categories.map((category) => (
 									<Badge key={category} size="xs" tone="accent">
 										{enumValueToReadableLabel(category)}
 									</Badge>
@@ -312,26 +351,101 @@ function RouteComponent() {
 						</VStack>
 					</Box>
 					<Box
-						className={css({ flex: 1, overflowY: "auto", px: "5" })}
+						className={css({ flex: 1, overflowY: "auto", px: "5", py: "4" })}
 						id="panel-body"
 					>
-						{activeTab === "about" ? (
-							<VStack gap="2.5" className={css({ paddingTop: "4" })}>
-								<Divider label="Description" />
+						<VStack gap="0">
+							{activeTab === "about" ? (
+								<VStack gap="2.5">
+									<Divider label="Description" />
+									<Typography.Text
+										color="stone.700"
+										size="md"
+										leading="relaxed"
+										className={css({ whiteSpace: "pre-wrap" })}
+									>
+										{proposal.description}
+									</Typography.Text>
+									<FabricComposition elements={elements} />
+								</VStack>
+							) : (
+								<VStack>
+									<Divider label="Element Types" />
+									{activeElementTypes.map((type) => (
+										<HStack key={type.id} gap="3">
+											<Swatch size="3.5" color={type.baseMapStyle.color} />
+											<Typography.Text size="sm" color="stone.800">
+												{type.title}
+											</Typography.Text>
+										</HStack>
+									))}
+								</VStack>
+							)}
+						</VStack>
+					</Box>
+					<Box
+						id="panel-footer"
+						className={css({
+							flexShrink: 0,
+							borderTop: "1px solid",
+							borderTopColor: "border.subtle",
+							px: "5",
+							py: "3.5",
+							display: "flex",
+							gap: "2",
+							alignItems: "center",
+						})}
+					>
+						<Button
+							size="md"
+							intent="brand"
+							appearance={proposal.isLikedByMe ? "solid" : "subtle"}
+							startIcon={<Heart size={16} />}
+							className={css({ flex: 1 })}
+							endIcon={
 								<Typography.Text
-									color="stone.700"
-									size="md"
-									leading="loose"
-									className={css({ whiteSpace: "pre-wrap" })}
+									className={css({ color: "inherit", opacity: 0.7 })}
+									weight="normal"
 								>
-									{data.proposalBySlug.description}
+									{new Intl.NumberFormat("en-US", {
+										notation: "compact",
+									}).format(proposal.likeCount)}
 								</Typography.Text>
-							</VStack>
-						) : (
-							<VStack className={css({ paddingTop: "4" })}>
-								<Divider label="Element Types" />
-							</VStack>
-						)}
+							}
+							loading={isPending}
+							onClick={() => {
+								startTransition(async () => {
+									await toggleLike({
+										variables: {
+											input: {
+												proposalId: proposal.id,
+											},
+										},
+									})
+								})
+							}}
+						>
+							<Typography.Text
+								className={css({ color: "inherit" })}
+								weight="medium"
+							>
+								{proposal.isLikedByMe ? "Liked" : "Like"}
+							</Typography.Text>
+						</Button>
+						<Button
+							type="button"
+							size="md"
+							intent="neutral"
+							appearance="outline"
+							onClick={() =>
+								openModal("shareProposal", {
+									link: window.location.href,
+									title: proposal.title,
+								})
+							}
+						>
+							<Share size={16} />
+						</Button>
 					</Box>
 				</Box>
 				<Box
@@ -353,15 +467,33 @@ function RouteComponent() {
 						zIndex: "floating",
 					})}
 				>
-					Box
+					{selectedInstance && (
+						<SelectedInstancePanel
+							instance={selectedInstance}
+							onClose={() => setSelectedInstanceId("")}
+						/>
+					)}
 				</Box>
 				<FabricMap
-					center={[
-						data.proposalBySlug.snapshotCenter.lng,
-						data.proposalBySlug.snapshotCenter.lat,
-					]}
-					zoom={data.proposalBySlug.snapshotZoom}
+					center={[proposal.snapshotCenter.lng, proposal.snapshotCenter.lat]}
+					zoom={proposal.snapshotZoom}
 				>
+					<ProposalSelectLayer />
+					<Box
+						className={css({
+							position: "absolute",
+							bottom: "20px",
+							left: "20px",
+							right: "20px",
+							zIndex: "panel",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "end",
+						})}
+					>
+						<Attribution />
+						<MapControls showHelp={false} />
+					</Box>
 					<ProposalElementsLayer />
 				</FabricMap>
 			</Box>
