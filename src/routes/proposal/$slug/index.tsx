@@ -9,7 +9,7 @@ import {
 	Share,
 } from "lucide-react"
 import { DateTime } from "luxon"
-import { useEffect, useTransition } from "react"
+import { useEffect, useRef, useTransition } from "react"
 import { FabricComposition, FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import {
@@ -35,6 +35,7 @@ import {
 import {
 	GetProposalDocument,
 	type GetProposalQuery,
+	RecordProposalViewDocument,
 	ToggleProposalLikeDocument,
 } from "#/graphql/generated"
 import { enumValueToReadableLabel } from "#/lib/string"
@@ -98,6 +99,23 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
 	const [isPending, startTransition] = useTransition()
+	const [recordView] = useMutation(RecordProposalViewDocument)
+	const hasRecordedView = useRef(false)
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
+	useEffect(() => {
+		if (!hasRecordedView.current) {
+			recordView({
+				variables: {
+					input: {
+						proposalId: proposal.id,
+					},
+				},
+			})
+			hasRecordedView.current = true
+		}
+	}, [proposal.id])
+
 	return (
 		<Box
 			className={css({

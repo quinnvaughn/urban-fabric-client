@@ -20,11 +20,15 @@ type ExploreProposalsProps = {
 		total: number
 	}
 	ipLocation: LatLng
+	usePageScroll?: boolean
+	stickyTopOffset?: number | string
 }
 
 export function ExploreProposals({
 	initialData,
 	ipLocation,
+	usePageScroll = false,
+	stickyTopOffset,
 }: ExploreProposalsProps) {
 	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search)
@@ -80,7 +84,7 @@ export function ExploreProposals({
 				display: "flex",
 				flexDir: "column",
 				flex: 1,
-				overflowY: "auto",
+				overflowY: usePageScroll ? undefined : "auto",
 			})}
 		>
 			<ExploreHero />
@@ -100,6 +104,7 @@ export function ExploreProposals({
 				}}
 				focusLat={focusLocation.lat}
 				focusLng={focusLocation.lng}
+				stickyTopOffset={stickyTopOffset}
 			/>
 			<Box className={css({ px: "7", paddingTop: "5", paddingBottom: "12" })}>
 				<VStack gap="4">

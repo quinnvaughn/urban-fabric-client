@@ -81,7 +81,7 @@ export function HeroSection() {
 								Start designing
 							</Link>
 							<Link
-								to="/proposal/explore"
+								to="/explore"
 								className={cx(
 									button({
 										size: "lg",

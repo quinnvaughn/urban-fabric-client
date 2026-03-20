@@ -21,7 +21,7 @@ export function Navbar() {
 		>
 			<nav
 				className={css({
-					px: "4",
+					px: "7",
 					h: "var(--uf-header-height)",
 					display: "flex",
 					alignItems: "center",

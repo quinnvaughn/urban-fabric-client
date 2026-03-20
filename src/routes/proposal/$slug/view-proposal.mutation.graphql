@@ -1,0 +1,6 @@
+mutation RecordProposalView($input: RecordProposalViewInput!) {
+	recordProposalView(input: $input) {
+		id
+		viewCount
+	}
+}

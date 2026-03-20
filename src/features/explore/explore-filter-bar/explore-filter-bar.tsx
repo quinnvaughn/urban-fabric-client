@@ -1,11 +1,4 @@
-import {
-	Box,
-	Button,
-	FilterBar,
-	HStack,
-	Menu,
-	Segmented,
-} from "#/features/ui"
+import { Box, Button, FilterBar, HStack, Menu, Segmented } from "#/features/ui"
 import { ExploreSortBy, ProposalCategory } from "#/graphql/generated"
 import { useSticky } from "#/lib/hooks/use-sticky"
 import { enumValueToReadableLabel } from "#/lib/string"
@@ -25,6 +18,7 @@ type ExploreFilterBarProps = {
 	onClearFilters: () => void
 	focusLat: number
 	focusLng: number
+	stickyTopOffset?: number | string
 }
 
 export function ExploreFilterBar({
@@ -40,6 +34,7 @@ export function ExploreFilterBar({
 	onClearFilters,
 	focusLat,
 	focusLng,
+	stickyTopOffset = 0,
 }: ExploreFilterBarProps) {
 	const { sentinelRef, isStuck } = useSticky()
 
@@ -47,9 +42,9 @@ export function ExploreFilterBar({
 		<>
 			<div ref={sentinelRef} />
 			<Box
+				style={{ top: stickyTopOffset }}
 				className={css({
 					position: "sticky",
-					top: 0,
 					zIndex: "raised",
 					py: "4",
 					px: "7",

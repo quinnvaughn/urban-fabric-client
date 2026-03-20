@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
@@ -26,6 +27,11 @@ import { Route as FabricIdPublishRouteImport } from './routes/fabric/$id/publish
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
 import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
 
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -108,6 +114,7 @@ const MarketingAuthLoginRoute = MarketingAuthLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/explore': typeof ExploreRoute
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
   '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/proposal/$slug/': typeof ProposalSlugIndexRoute
 }
 export interface FileRoutesByTo {
+  '/explore': typeof ExploreRoute
   '/': typeof MarketingIndexRoute
   '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_marketing': typeof MarketingRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/explore': typeof ExploreRoute
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
   '/dashboard/explore': typeof DashboardExploreRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/explore'
     | '/fabric/$id'
     | '/dashboard/explore'
     | '/dashboard/fabrics'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/proposal/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/explore'
     | '/'
     | '/dashboard/explore'
     | '/dashboard/fabrics'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_marketing'
     | '/dashboard'
+    | '/explore'
     | '/_marketing/_auth'
     | '/fabric/$id'
     | '/dashboard/explore'
@@ -208,6 +220,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  ExploreRoute: typeof ExploreRoute
   FabricIdRouteRoute: typeof FabricIdRouteRouteWithChildren
   FabricNewRoute: typeof FabricNewRoute
   ProposalSlugEditRoute: typeof ProposalSlugEditRoute
@@ -216,6 +229,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -393,6 +413,7 @@ const FabricIdRouteRouteWithChildren = FabricIdRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  ExploreRoute: ExploreRoute,
   FabricIdRouteRoute: FabricIdRouteRouteWithChildren,
   FabricNewRoute: FabricNewRoute,
   ProposalSlugEditRoute: ProposalSlugEditRoute,
