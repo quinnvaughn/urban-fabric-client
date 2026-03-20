@@ -12,6 +12,7 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
+import { capitalize } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 export function SelectedInstancePanel({
@@ -30,7 +31,7 @@ export function SelectedInstancePanel({
 				const raw = instance.properties?.[p.key]
 				if (raw == null) return null
 				const unit = p.input.kind === "stepper" ? p.input.unit : undefined
-				const value = unit ? `${raw} ${unit}` : String(raw)
+				const value = unit ? `${raw} ${unit}` : capitalize(String(raw))
 				return { key: p.key, label: p.label, value }
 			})
 			.filter((r) => r != null) ?? []
@@ -111,7 +112,6 @@ export function SelectedInstancePanel({
 										color="stone.900"
 										textAlign="right"
 										weight="medium"
-										transform="capitalize"
 									>
 										{row.value as string}
 									</Typography.Text>
