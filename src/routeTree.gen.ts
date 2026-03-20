@@ -15,6 +15,7 @@ import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
 import { Route as DashboardExploreRouteImport } from './routes/dashboard/explore'
@@ -55,6 +56,11 @@ const FabricNewRoute = FabricNewRouteImport.update({
   id: '/fabric/new',
   path: '/fabric/new',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
   id: '/proposals',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/fabric/new': typeof FabricNewRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/fabric/new': typeof FabricNewRoute
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/fabric/new': typeof FabricNewRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/dashboard/settings'
     | '/fabric/new'
     | '/dashboard/'
     | '/login'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/dashboard/settings'
     | '/fabric/new'
     | '/dashboard'
     | '/login'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
+    | '/dashboard/settings'
     | '/fabric/new'
     | '/_marketing/'
     | '/dashboard/'
@@ -270,6 +282,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/fabric/new'
       preLoaderRoute: typeof FabricNewRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/proposals': {
       id: '/dashboard/proposals'
@@ -382,6 +401,7 @@ interface DashboardRouteRouteChildren {
   DashboardExploreRoute: typeof DashboardExploreRoute
   DashboardFabricsRoute: typeof DashboardFabricsRoute
   DashboardProposalsRoute: typeof DashboardProposalsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -389,6 +409,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardExploreRoute: DashboardExploreRoute,
   DashboardFabricsRoute: DashboardFabricsRoute,
   DashboardProposalsRoute: DashboardProposalsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 

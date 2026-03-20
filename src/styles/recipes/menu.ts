@@ -135,8 +135,9 @@ export const menu = defineSlotRecipe({
 			},
 		},
 		separator: {
+			border: "none",
 			height: "px",
-			bg: "border.subtle",
+			bg: "stone.200",
 			my: "1",
 		},
 		filterTrigger: {

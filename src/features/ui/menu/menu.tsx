@@ -1,3 +1,4 @@
+import { createLink, type LinkComponentProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
@@ -41,7 +42,11 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
 
 // ---------- Root ----------
 
-export type MenuPlacement = "top-end" | "bottom-start" | "bottom-end"
+export type MenuPlacement =
+	| "top-start"
+	| "top-end"
+	| "bottom-start"
+	| "bottom-end"
 
 export interface MenuRootProps {
 	children: React.ReactNode
@@ -137,6 +142,11 @@ function useMenuPosition(
 					top: rect.bottom + gap,
 					left: rect.right,
 					transform: "translateX(-100%)",
+				})
+			} else if (placement === "top-start") {
+				setPos({
+					bottom: window.innerHeight - rect.top + gap,
+					left: rect.left,
 				})
 			} else {
 				setPos({
@@ -282,6 +292,64 @@ function MenuItem({
 }
 MenuItem.displayName = "Menu.Item"
 
+// ---------- Link (TanStack Router) ----------
+
+export interface MenuLinkAnchorProps
+	extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+	icon?: React.ReactNode
+	kbd?: React.ReactNode
+	intent?: "neutral" | "danger"
+}
+
+const MenuLinkAnchor = React.forwardRef<HTMLAnchorElement, MenuLinkAnchorProps>(
+	function MenuLinkAnchor(
+		{ icon, kbd, intent, className, children, href, onClick, ...rest },
+		ref,
+	) {
+		const { setOpen } = useMenuContext()
+		const itemStyles = menuRecipe({ intent })
+
+		return (
+			<a
+				ref={ref}
+				role="menuitem"
+				href={href}
+				className={cx(itemStyles.item, className)}
+				{...rest}
+				onClick={(e) => {
+					onClick?.(e)
+					setOpen(false)
+				}}
+			>
+				{icon && <span data-slot="icon">{icon}</span>}
+				{children}
+				{kbd && <span data-slot="kbd">{kbd}</span>}
+			</a>
+		)
+	},
+)
+MenuLinkAnchor.displayName = "MenuLinkAnchor"
+
+const CreatedMenuLink = createLink(MenuLinkAnchor)
+
+export type MenuLinkProps = LinkComponentProps<typeof MenuLinkAnchor> & {
+	exact?: boolean
+}
+
+function MenuLink({ exact, activeOptions, ...props }: MenuLinkProps) {
+	return (
+		<CreatedMenuLink
+			preload="intent"
+			activeOptions={{
+				...activeOptions,
+				exact: exact ?? activeOptions?.exact,
+			}}
+			{...props}
+		/>
+	)
+}
+MenuLink.displayName = "Menu.Link"
+
 // ---------- CheckItem ----------
 
 export interface MenuCheckItemProps
@@ -388,6 +456,7 @@ export const Menu = Object.assign(MenuRoot, {
 	FilterTrigger: MenuFilterTrigger,
 	Content: MenuContent,
 	Item: MenuItem,
+	Link: MenuLink,
 	CheckItem: MenuCheckItem,
 	Separator: MenuSeparator,
 })
