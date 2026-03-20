@@ -68,12 +68,6 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-export type SubmitPayload = {
-	values: FormValues
-	viewport: Viewport
-	thumbnail: string
-}
-
 export type ProposalFormData = {
 	topbarTitle: string
 	fabricId: string
@@ -106,8 +100,6 @@ export type ProposalFormPageProps =
 			/** Called after a draft is published via the Publish button. */
 			onPublishSuccess?: (slug: string) => void
 			onUnauthorized: () => void
-			/** Available when published — saves changes to the live proposal. */
-			onSaveChanges?: (payload: SubmitPayload) => Promise<void>
 	  }
 
 export function ProposalFormPage(props: ProposalFormPageProps) {
@@ -242,11 +234,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 		},
 		schema,
 		onSubmit: async (values) => {
-			if (isPublished) {
-				await props.onSaveChanges?.({ values, viewport, thumbnail })
-			} else {
-				await publishProposal(values)
-			}
+			await publishProposal(values)
 		},
 	})
 
