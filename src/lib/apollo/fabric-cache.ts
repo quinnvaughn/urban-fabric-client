@@ -4,7 +4,9 @@ import {
 	FabricCardFragmentDoc,
 } from "#/graphql/generated"
 
-function parseLimitFromStoreFieldName(storeFieldName: string): number | null {
+export function parseLimitFromStoreFieldName(
+	storeFieldName: string,
+): number | null {
 	const argsStart = storeFieldName.indexOf("(")
 	if (argsStart < 0) return null
 

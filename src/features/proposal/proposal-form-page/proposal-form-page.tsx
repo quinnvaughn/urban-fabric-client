@@ -30,11 +30,13 @@ import {
 	VStack,
 } from "#/features/ui"
 import {
+	ProposalByFabricIdDocument,
 	ProposalCategory,
 	PublishProposalDocument,
 	SaveDraftProposalDocument,
 	UnpublishProposalDocument,
 } from "#/graphql/generated"
+import { addProposalToMyProposalsCache } from "#/lib/apollo"
 import { useForm } from "#/lib/form"
 import {
 	formatLatitude,
@@ -139,10 +141,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 
 	async function saveDraft(values: FormValues) {
 		const currentThumbnail = await getThumbnailForSubmit()
+		const fabricId = data.fabricId
+		const isCreateMode = props.mode === "create"
 		const response = await saveDraftMutation({
 			variables: {
 				input: {
-					fabricId: data.fabricId,
+					fabricId,
 					title: values.title || undefined,
 					description: values.description || undefined,
 					categories: values.categories.length
@@ -153,6 +157,25 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					zoom: viewport.zoom,
 					thumbnail: currentThumbnail,
 				},
+			},
+			update(cache, { data: mutationData }) {
+				if (mutationData?.saveDraftProposal.__typename !== "Proposal") return
+				const proposal = mutationData.saveDraftProposal
+				if (isCreateMode) {
+					addProposalToMyProposalsCache(cache, proposal)
+					cache.writeQuery({
+						query: ProposalByFabricIdDocument,
+						variables: { fabricId },
+						data: {
+							__typename: "Query" as const,
+							proposalByFabricId: {
+								__typename: "Proposal" as const,
+								id: proposal.id,
+								slug: proposal.slug,
+							},
+						},
+					})
+				}
 			},
 		})
 		match(response.data?.saveDraftProposal)
@@ -175,10 +198,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 
 	async function publishProposal(values: FormValues) {
 		const currentThumbnail = await getThumbnailForSubmit()
+		const fabricId = data.fabricId
+		const isCreateMode = props.mode === "create"
 		const response = await publishProposalMutation({
 			variables: {
 				input: {
-					fabricId: data.fabricId,
+					fabricId,
 					title: values.title,
 					description: values.description,
 					categories: values.categories as ProposalCategory[],
@@ -187,6 +212,27 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					zoom: viewport.zoom,
 					thumbnail: currentThumbnail,
 				},
+			},
+			update(cache, { data: mutationData }) {
+				if (mutationData?.publishProposal.__typename !== "Proposal") return
+				const proposal = mutationData.publishProposal
+				if (isCreateMode) {
+					addProposalToMyProposalsCache(cache, proposal)
+					cache.writeQuery({
+						query: ProposalByFabricIdDocument,
+						variables: { fabricId },
+						data: {
+							__typename: "Query",
+							proposalByFabricId: {
+								__typename: "Proposal",
+								id: proposal.id,
+								slug: proposal.slug,
+							},
+						},
+					})
+				}
+				cache.evict({ fieldName: "exploreProposals" })
+				cache.gc()
 			},
 		})
 		match(response.data?.publishProposal)
