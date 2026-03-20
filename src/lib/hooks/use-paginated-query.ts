@@ -36,27 +36,40 @@ export function usePaginatedQuery<
 	const [total, setTotal] = useState(initialData.total)
 	const [offset, setOffset] = useState(initialData.items.length)
 	const isFilterChange = useRef(false)
-	const isFirstRender = useRef(true)
+	const initialFilterVarsJson = useRef(JSON.stringify(filterVars))
+	const hasFilterChangedFromInitial = useRef(false)
+	const isFetchPending = useRef(false)
 	const extractPayloadRef = useRef(extractPayload)
 	extractPayloadRef.current = extractPayload
 
 	const [fetch, { loading, data }] = useLazyQuery(document)
 
-	// Re-fetch and replace when filters change
+	// Re-fetch and replace when filters change.
+	// Skips when filterVars haven't changed from the initial value so that
+	// React Strict Mode's double-invoke of effects doesn't trigger a spurious
+	// fetch (which would cause a visible reorder/"flip" of the cards).
 	// biome-ignore lint/correctness/useExhaustiveDependencies: JSON.stringify used for deep object comparison
 	useEffect(() => {
-		if (isFirstRender.current) {
-			isFirstRender.current = false
+		const currentJson = JSON.stringify(filterVars)
+		if (
+			!hasFilterChangedFromInitial.current &&
+			currentJson === initialFilterVarsJson.current
+		) {
 			return
 		}
+		hasFilterChangedFromInitial.current = true
 		isFilterChange.current = true
+		isFetchPending.current = true
 		fetch({ variables: { ...filterVars, limit, offset: 0 } })
 	}, [JSON.stringify(filterVars), fetch, limit])
 
 	// Apply fetched data — replace on filter change, append on load more
+	// Only process when we explicitly triggered a fetch, not on cache-update re-renders
 	useEffect(() => {
+		if (!isFetchPending.current) return
 		const payload = data ? extractPayloadRef.current(data) : null
 		if (!payload) return
+		isFetchPending.current = false
 		if (isFilterChange.current) {
 			setItems(payload.items)
 			setOffset(payload.items.length)
@@ -71,6 +84,7 @@ export function usePaginatedQuery<
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: JSON.stringify used for deep object comparison
 	const loadMore = useCallback(() => {
+		isFetchPending.current = true
 		fetch({ variables: { ...filterVars, limit, offset } })
 	}, [fetch, limit, offset, JSON.stringify(filterVars)])
 

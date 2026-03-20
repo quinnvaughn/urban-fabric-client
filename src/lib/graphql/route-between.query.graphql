@@ -1,0 +1,6 @@
+query RouteBetween($a: CoordinateInput!, $b: CoordinateInput!) {
+	routeBetween(a: $a, b: $b) {
+		lng
+		lat
+	}
+}

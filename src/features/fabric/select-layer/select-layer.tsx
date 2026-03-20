@@ -11,7 +11,7 @@ import {
 	useMap,
 } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
-import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
+import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
 
 const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	type: "Feature",
@@ -175,6 +175,8 @@ export function SelectLayer() {
 	const deleteElement = useFabricStore((s) => s.deleteElement)
 	const updateElement = useFabricStore((s) => s.updateElement)
 	const snapshot = useFabricStore((s) => s.snapshot)
+	const snapToRoad = useSnapToRoad()
+	const routeBetween = useRouteBetween()
 
 	const dragging = useRef<{
 		waypointIndex: number
@@ -954,6 +956,8 @@ export function SelectLayer() {
 		setSelectedInstanceId,
 		updateElement,
 		snapshot,
+		snapToRoad,
+		routeBetween,
 	])
 
 	return null

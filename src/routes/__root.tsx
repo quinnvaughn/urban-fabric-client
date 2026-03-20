@@ -90,8 +90,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<ModalRenderer />
-				<ToastProvider>{children}</ToastProvider>
+				<ToastProvider>
+					<ModalRenderer />
+					{children}
+				</ToastProvider>
 				{isClient ? (
 					<TanStackDevtools
 						config={{

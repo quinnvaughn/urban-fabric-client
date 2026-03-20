@@ -9,7 +9,7 @@ import {
 	type ProposalCategory,
 } from "#/graphql/generated"
 import type { LatLng } from "#/lib/geo"
-import { useDebounce, useFocusLocation, usePaginatedQuery } from "#/lib/hooks"
+import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 import { ExploreHero } from "../explore-hero"
 
@@ -41,8 +41,6 @@ export function ExploreProposals({
 		lng: number
 		label: string
 	} | null>(null)
-
-	const focusLocation = useFocusLocation({ ipLocation })
 
 	const toggleCategory = (category: ProposalCategory) => {
 		setSelectedCategories((prev) =>
@@ -102,8 +100,8 @@ export function ExploreProposals({
 					setSelectedCategories([])
 					setSelectedLocation(null)
 				}}
-				focusLat={focusLocation.lat}
-				focusLng={focusLocation.lng}
+				focusLat={ipLocation.lat}
+				focusLng={ipLocation.lng}
 				stickyTopOffset={stickyTopOffset}
 			/>
 			<Box className={css({ px: "7", paddingTop: "5", paddingBottom: "12" })}>

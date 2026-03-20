@@ -5,7 +5,6 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
-	useState,
 	useSyncExternalStore,
 } from "react"
 import { match } from "ts-pattern"
@@ -32,8 +31,8 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
-import { AuthModal } from "#/features/modals/auth-modal"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
+import { openModal } from "#/stores"
 
 const GUEST_FABRIC_KEY = "guest-fabric"
 
@@ -113,11 +112,9 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 		}
 	}, [handler, initElements])
 
-	const [authIntent, setAuthIntent] = useState<"save" | "publish" | null>(null)
-
-	async function handleAuthSuccess() {
+	async function migrateGuestFabric() {
 		const guest = readGuestFabric(GUEST_FABRIC_KEY)
-		if (!guest) return
+		if (!guest) return null
 
 		const fabricResult = await createFabric({
 			variables: {
@@ -132,17 +129,29 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 		})
 
 		const created = fabricResult.data?.createFabric
-		if (created?.__typename !== "Fabric") return
-
-		const { id } = created
+		if (created?.__typename !== "Fabric") return null
 
 		localStorage.removeItem(GUEST_FABRIC_KEY)
 		await client.resetStore()
-		if (authIntent === "publish") {
-			navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
-		} else {
-			navigate({ to: "/fabric/$id", params: { id }, replace: true })
-		}
+		return created.id
+	}
+
+	function openAuthModal(intent: "save" | "publish") {
+		openModal("auth", {
+			title:
+				intent === "publish"
+					? "Create an account to publish"
+					: "Save your fabric to your account",
+			onAuthSuccess: async () => {
+				const id = await migrateGuestFabric()
+				if (!id) return
+				if (intent === "publish") {
+					navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
+				} else {
+					navigate({ to: "/fabric/$id", params: { id }, replace: true })
+				}
+			},
+		})
 	}
 
 	useFabricPersistence(handler)
@@ -158,8 +167,8 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 						GUEST_FABRIC_KEY,
 					)
 				}}
-				onPublish={() => setAuthIntent("publish")}
-				onSave={() => setAuthIntent("save")}
+				onPublish={() => openAuthModal("publish")}
+				onSave={() => openAuthModal("save")}
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
@@ -189,16 +198,6 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				/>
 				<EditorHUD />
 			</FabricMap>
-			<AuthModal
-				open={authIntent !== null}
-				onClose={() => setAuthIntent(null)}
-				onAuthSuccess={handleAuthSuccess}
-				title={
-					authIntent === "publish"
-						? "Create an account to publish"
-						: "Save your fabric to your account"
-				}
-			/>
 		</div>
 	)
 }

@@ -1,0 +1,3 @@
+query NearestRoadName($lat: Float!, $lng: Float!) {
+	nearestRoadName(lat: $lat, lng: $lng)
+}

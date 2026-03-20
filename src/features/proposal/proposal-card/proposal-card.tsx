@@ -1,8 +1,7 @@
-import { useMutation } from "@apollo/client/react"
+import { useFragment, useMutation } from "@apollo/client/react"
 import { Link } from "@tanstack/react-router"
 import { Eye, Heart, MapPin } from "lucide-react"
 import { DateTime } from "luxon"
-import { useTransition } from "react"
 import {
 	Avatar,
 	Badge,
@@ -14,16 +13,48 @@ import {
 } from "#/features/ui"
 import {
 	type ProposalCardFragment,
+	ProposalCardFragmentDoc,
 	ToggleProposalLikeDocument,
 } from "#/graphql/generated"
+import { useRequireAuth } from "#/lib/graphql"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 type Props = { proposal: ProposalCardFragment }
 
-export function ProposalCard({ proposal }: Props) {
+export function ProposalCard({ proposal: proposalRef }: Props) {
+	const { data, complete } = useFragment({
+		fragment: ProposalCardFragmentDoc,
+		fragmentName: "ProposalCard",
+		from: { __typename: "Proposal", id: proposalRef.id },
+	})
+	const proposal: ProposalCardFragment = complete
+		? (data as ProposalCardFragment)
+		: proposalRef
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
-	const [isPending, startTransition] = useTransition()
+	const requireAuth = useRequireAuth(
+		"Create an account or sign in to like this proposal",
+	)
+
+	function handleLike() {
+		requireAuth(() => {
+			toggleLike({
+				variables: { input: { proposalId: proposal.id } },
+				optimisticResponse: {
+					__typename: "Mutation",
+					toggleProposalLike: {
+						__typename: "Proposal",
+						id: proposal.id,
+						isLikedByMe: !proposal.isLikedByMe,
+						likeCount: proposal.isLikedByMe
+							? proposal.likeCount - 1
+							: proposal.likeCount + 1,
+					},
+				},
+			})
+		})
+	}
+
 	return (
 		<Card
 			size="sm"
@@ -122,15 +153,10 @@ export function ProposalCard({ proposal }: Props) {
 							fontWeight: "medium",
 							borderRadius: "full",
 							minH: "0",
+							position: "relative",
+							zIndex: "raised",
 						})}
-						loading={isPending}
-						onClick={() => {
-							startTransition(() => {
-								toggleLike({
-									variables: { input: { proposalId: proposal.id } },
-								})
-							})
-						}}
+						onClick={handleLike}
 						startIcon={<Heart size={12} />}
 					>
 						{proposal.likeCount}

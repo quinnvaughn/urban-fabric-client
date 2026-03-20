@@ -11,7 +11,7 @@ import {
 	useMap,
 } from "../fabric-map"
 import { useFabricStore } from "../fabric-store"
-import { flattenSegments, routeBetween, snapToRoad } from "../osrm-utils"
+import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -39,6 +39,8 @@ export function DrawingLayer() {
 	const activeElement = useFabricStore((s) => s.activeElement)
 	const elements = useFabricStore((s) => s.elements)
 	const addElement = useFabricStore((s) => s.addElement)
+	const snapToRoad = useSnapToRoad()
+	const routeBetween = useRouteBetween()
 
 	// Mutable drawing state — lives in refs so map event handlers never go stale
 	const waypointsRef = useRef<[number, number][]>([])
@@ -201,7 +203,7 @@ export function DrawingLayer() {
 			window.removeEventListener("keydown", handleKeyDown)
 			reset()
 		}
-	}, [activeTool, activeElement, map, addElement])
+	}, [activeTool, activeElement, map, addElement, snapToRoad, routeBetween])
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {

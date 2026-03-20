@@ -91,7 +91,7 @@ export function getCalculatedValue(
 	streetNames?: { from: string | null; to: string | null },
 ): string | number {
 	if (key === "length") {
-		return lineLengthFeet(instance.coordinates)
+		return formatLength(lineLengthFeet(instance.coordinates))
 	}
 
 	if (key === "lanes-removed") {
@@ -124,6 +124,14 @@ export function getCalculatedValue(
 	}
 
 	return "--"
+}
+
+function formatLength(feet: number): string {
+	if (feet < FEET_PER_MILE) {
+		return `${Math.round(feet).toLocaleString()} ft`
+	}
+	const miles = feet / FEET_PER_MILE
+	return `${miles >= 10 ? Math.round(miles) : Math.round(miles * 10) / 10} mi`
 }
 
 function formatCoordinate(coord?: [number, number]) {

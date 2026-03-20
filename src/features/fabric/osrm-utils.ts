@@ -1,74 +1,51 @@
-import polyline from "@mapbox/polyline"
+import { useLazyQuery } from "@apollo/client/react"
+import { useCallback } from "react"
+import {
+	NearestRoadNameDocument,
+	RouteBetweenDocument,
+	SnapToRoadDocument,
+} from "#/graphql/generated"
 
-const STADIA_BASE = "https://api.stadiamaps.com"
-const API_KEY = process.env.STADIA_API_KEY
-
-export async function snapToRoad(
-	lng: number,
-	lat: number,
-): Promise<[number, number]> {
-	const res = await fetch(
-		`${STADIA_BASE}/nearest_roads/v1?api_key=${API_KEY}`,
-		{
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				locations: [{ lon: lng, lat }],
-			}),
+export function useSnapToRoad() {
+	const [execute] = useLazyQuery(SnapToRoadDocument)
+	return useCallback(
+		async (lng: number, lat: number): Promise<[number, number]> => {
+			const result = await execute({ variables: { lat, lng } })
+			const coord = result.data?.snapToRoad
+			if (!coord) return [lng, lat]
+			return [coord.lng, coord.lat]
 		},
+		[execute],
 	)
-	const data = await res.json()
-	const edge = data.edges?.[0]
-	// fall back to input if no snap found
-	if (!edge) return [lng, lat]
-	const snapped = edge.snapped_location
-	return [snapped.lon, snapped.lat]
 }
 
-export async function nearestRoadName(
-	lng: number,
-	lat: number,
-): Promise<string | null> {
-	const res = await fetch(
-		`${STADIA_BASE}/nearest_roads/v1?api_key=${API_KEY}`,
-		{
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				locations: [{ lon: lng, lat, radius: 50 }],
-				verbose: true,
-			}),
+export function useNearestRoadName() {
+	const [execute] = useLazyQuery(NearestRoadNameDocument)
+	return useCallback(
+		async (lng: number, lat: number): Promise<string | null> => {
+			const result = await execute({ variables: { lat, lng } })
+			return result.data?.nearestRoadName ?? null
 		},
+		[execute],
 	)
-	const data = await res.json()
-	const edges = data?.[0]?.edges ?? []
-	for (const edge of edges) {
-		const name = edge?.edge_info?.names?.[0]
-		if (typeof name === "string" && name.trim().length > 0) return name.trim()
-	}
-	return null
 }
 
-export async function routeBetween(
-	a: [number, number],
-	b: [number, number],
-): Promise<[number, number][]> {
-	const res = await fetch(`${STADIA_BASE}/route/v1?api_key=${API_KEY}`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			locations: [
-				{ lon: a[0], lat: a[1], type: "break" },
-				{ lon: b[0], lat: b[1], type: "break" },
-			],
-			costing: "auto",
-		}),
-	})
-	const data = await res.json()
-	// Valhalla returns an encoded polyline with precision 6
-	const decoded = polyline.decode(data.trip.legs[0].shape, 6)
-	// polyline.decode returns [lat, lng] pairs — swap to [lng, lat] for MapLibre
-	return decoded.map(([lat, lng]) => [lng, lat])
+export function useRouteBetween() {
+	const [execute] = useLazyQuery(RouteBetweenDocument)
+	return useCallback(
+		async (
+			a: [number, number],
+			b: [number, number],
+		): Promise<[number, number][]> => {
+			const result = await execute({
+				variables: { a: { lng: a[0], lat: a[1] }, b: { lng: b[0], lat: b[1] } },
+			})
+			return (result.data?.routeBetween ?? []).map(
+				(c) => [c.lng, c.lat] as [number, number],
+			)
+		},
+		[execute],
+	)
 }
 
 export function flattenSegments(

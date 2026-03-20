@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import {
-	formatCalculatedValue,
-	getCalculatedValue,
-} from "./element-metrics"
+import { formatCalculatedValue, getCalculatedValue } from "./element-metrics"
 import type { ElementDescriptor, ElementInstance } from "./element-types/types"
-import { nearestRoadName } from "./osrm-utils"
+import { useNearestRoadName } from "./osrm-utils"
 
 function coordinateKey(coord?: [number, number]) {
 	if (!coord) return ""
@@ -21,6 +18,9 @@ export function useCalculatedRows(
 	instance: ElementInstance | null,
 	descriptor: ElementDescriptor | null,
 ): CalculatedRow[] {
+	const nearestRoadNameFrom = useNearestRoadName()
+	const nearestRoadNameTo = useNearestRoadName()
+
 	const routeEndpoints = useMemo(() => {
 		if (!instance) return { from: undefined, to: undefined }
 		const points = instance.waypoints.length
@@ -45,14 +45,15 @@ export function useCalculatedRows(
 
 		let cancelled = false
 
-		async function resolveStreetName(
+		async function resolve(
+			fn: (lng: number, lat: number) => Promise<string | null>,
 			coord: [number, number],
 			key: string,
 		): Promise<string | null> {
 			const cached = streetNameCacheRef.current.get(key)
 			if (cached) return cached
 			try {
-				const name = await nearestRoadName(coord[0], coord[1])
+				const name = await fn(coord[0], coord[1])
 				if (name) streetNameCacheRef.current.set(key, name)
 				return name
 			} catch {
@@ -61,8 +62,8 @@ export function useCalculatedRows(
 		}
 
 		Promise.all([
-			resolveStreetName(routeEndpoints.from, fromKey),
-			resolveStreetName(routeEndpoints.to, toKey),
+			resolve(nearestRoadNameFrom, routeEndpoints.from, fromKey),
+			resolve(nearestRoadNameTo, routeEndpoints.to, toKey),
 		]).then(([fromName, toName]) => {
 			if (cancelled) return
 			setStreetNames({ from: fromName, to: toName })
@@ -71,7 +72,14 @@ export function useCalculatedRows(
 		return () => {
 			cancelled = true
 		}
-	}, [instance, routeEndpoints, fromKey, toKey])
+	}, [
+		instance,
+		routeEndpoints,
+		fromKey,
+		toKey,
+		nearestRoadNameFrom,
+		nearestRoadNameTo,
+	])
 
 	return useMemo(() => {
 		if (!descriptor || !instance) return []

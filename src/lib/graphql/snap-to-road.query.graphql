@@ -1,0 +1,6 @@
+query SnapToRoad($lat: Float!, $lng: Float!) {
+	snapToRoad(lat: $lat, lng: $lng) {
+		lat
+		lng
+	}
+}
