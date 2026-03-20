@@ -16,7 +16,11 @@ import {
 	useToast,
 	VStack,
 } from "#/features/ui"
-import { LoginDocument, RegisterDocument } from "#/graphql/generated"
+import {
+	GoogleLoginDocument,
+	LoginDocument,
+	RegisterDocument,
+} from "#/graphql/generated"
 import { useForm } from "#/lib/form"
 import { css } from "#/styles/styled-system/css"
 import { GoogleSignInButton } from "../google-button"
@@ -49,12 +53,44 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	const [showPassword, setShowPassword] = useState(false)
 	const [login] = useMutation(LoginDocument)
 	const [register] = useMutation(RegisterDocument)
+	const [googleLogin] = useMutation(GoogleLoginDocument)
 	const toast = useToast()
 	const navigate = useNavigate()
 	const client = useApolloClient()
 
+	async function handleGoogleCredential(idToken: string) {
+		try {
+			const response = await googleLogin({
+				variables: { input: { idToken } },
+			})
+			match(response.data?.googleLogin)
+				.with(
+					{ __typename: "ConflictError" },
+					{ __typename: "UnauthorizedError" },
+					({ message }) => {
+						toast.error(message)
+					},
+				)
+				.with({ __typename: "User" }, async () => {
+					await client.resetStore()
+					toast.success("Logged in successfully")
+					if (onAuthSuccess) {
+						await onAuthSuccess()
+					} else {
+						navigate({ to: "/dashboard", replace: true })
+					}
+				})
+				.with(undefined, () => {
+					toast.error("An unknown error occurred")
+				})
+				.exhaustive()
+		} catch {
+			toast.error("An unknown error occurred")
+		}
+	}
+
 	const googleText =
-		mode === "login" ? "Continue with Google" : "Sign up with Google"
+		mode === "login" ? "continue_with" : "signup_with"
 
 	const form = useForm({
 		schema: AuthSchema,
@@ -156,7 +192,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 			)}
 			<Box sx={{ py: "6" }}>
 				<VStack gap="6">
-					<GoogleSignInButton label={googleText} />
+					<GoogleSignInButton text={googleText} onCredential={handleGoogleCredential} />
 					<Divider label="or email" lines="both" />
 					<VStack gap="3">
 						<form.Field name="email">

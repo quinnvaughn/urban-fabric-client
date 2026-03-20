@@ -1,10 +1,7 @@
 mutation Register($input: RegisterInput!) {
 	register(input: $input) {
 		... on User {
-			id
-			name
-			email
-			role
+			...Me
 		}
 		... on ValidationError {
 			errors {

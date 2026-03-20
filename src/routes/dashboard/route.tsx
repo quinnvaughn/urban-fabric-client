@@ -29,7 +29,8 @@ function DashboardPendingComponent() {
 		>
 			<aside
 				className={css({
-					w: "16rem",
+					height: "100dvh",
+					width: "var(--uf-sidebar-width)",
 					borderRightWidth: "1px",
 					borderColor: "stone.200",
 					bg: "stone.50",

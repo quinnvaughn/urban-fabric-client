@@ -77,17 +77,30 @@ export function Sidebar() {
 					icon={<LayoutGrid size={16} />}
 					activeOptions={{ exact: true }}
 					to="/dashboard"
+					preload="intent"
 				>
 					Dashboard
 				</SidebarLink>
-				<SidebarLink icon={<Layers size={16} />} to="/dashboard/fabrics">
+				<SidebarLink
+					icon={<Layers size={16} />}
+					to="/dashboard/fabrics"
+					preload="intent"
+				>
 					Fabrics
 				</SidebarLink>
-				<SidebarLink icon={<ScrollText size={16} />} to="/dashboard/proposals">
+				<SidebarLink
+					icon={<ScrollText size={16} />}
+					to="/dashboard/proposals"
+					preload="intent"
+				>
 					Proposals
 				</SidebarLink>
 				<SidebarSectionLabel>Community</SidebarSectionLabel>
-				<SidebarLink icon={<Search size={16} />} to="/dashboard/explore">
+				<SidebarLink
+					icon={<Search size={16} />}
+					to="/dashboard/explore"
+					preload="intent"
+				>
 					Explore
 				</SidebarLink>
 			</Box>

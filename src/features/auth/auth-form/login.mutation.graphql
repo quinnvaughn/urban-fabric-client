@@ -7,10 +7,7 @@ mutation Login($input: LoginInput!) {
 			message
 		}
 		... on User {
-			id
-			name
-			email
-			role
+			...Me
 		}
 	}
 }

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 import { getClientEnv } from "#/lib/env/client"
-import { css } from "#/styles/styled-system/css"
 
 type GoogleCredentialResponse = {
 	credential: string
@@ -15,50 +14,27 @@ declare global {
 						client_id: string
 						callback: (response: GoogleCredentialResponse) => void
 					}) => void
-					renderButton: (
-						element: HTMLElement,
-						options: {
-							theme?: "outline" | "filled_blue" | "filled_black"
-							size?: "large" | "medium" | "small"
-							text?: "signin_with" | "signup_with" | "continue_with" | "signin"
-							width?: number
-						},
-					) => void
+					prompt: () => void
 				}
 			}
 		}
 	}
 }
 
-type Props = {
-	text: "signin_with" | "signup_with" | "continue_with"
-	onCredential: (idToken: string) => void
-}
-
-export function GoogleSignInButton({ text, onCredential }: Props) {
-	const containerRef = useRef<HTMLDivElement>(null)
+export function useGoogleSignIn(onCredential: (idToken: string) => void) {
 	const onCredentialRef = useRef(onCredential)
 	onCredentialRef.current = onCredential
-	const textRef = useRef(text)
-	textRef.current = text
 
 	useEffect(() => {
 		const script = document.createElement("script")
 		script.src = "https://accounts.google.com/gsi/client"
 		script.async = true
 		script.onload = () => {
-			if (!containerRef.current) return
 			window.google?.accounts.id.initialize({
 				client_id: getClientEnv().VITE_GOOGLE_CLIENT_ID,
 				callback: (response) => {
 					onCredentialRef.current(response.credential)
 				},
-			})
-			window.google?.accounts.id.renderButton(containerRef.current, {
-				theme: "outline",
-				size: "large",
-				text: textRef.current,
-				width: containerRef.current.offsetWidth,
 			})
 		}
 		document.head.appendChild(script)
@@ -67,5 +43,7 @@ export function GoogleSignInButton({ text, onCredential }: Props) {
 		}
 	}, [])
 
-	return <div ref={containerRef} className={css({ w: "full" })} />
+	return () => {
+		window.google?.accounts.id.prompt()
+	}
 }
