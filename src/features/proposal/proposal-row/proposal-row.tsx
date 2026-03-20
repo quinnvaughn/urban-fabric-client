@@ -112,6 +112,7 @@ export function ProposalRow({
 			<Box
 				className={css({
 					width: "20",
+					height: "20",
 					alignSelf: "stretch",
 					flexShrink: "0",
 					background: "stone.100",
@@ -192,7 +193,7 @@ export function ProposalRow({
 						<Tooltip.Content>View proposal</Tooltip.Content>
 					</Tooltip>
 				) : (
-					<div />
+					<div className={css({ width: "30px", height: "30px" })} />
 				)}
 				<Menu>
 					<Menu.Trigger>
