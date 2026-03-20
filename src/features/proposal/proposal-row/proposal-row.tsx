@@ -136,10 +136,12 @@ export function ProposalRow({
 					{title}
 				</Typography.Text>
 				<HStack align="center" gap="2.5">
-					<Badge tone={isPublished ? "brand" : "muted"} size="xs">
-						{isPublished && <Check size={12} />}
-						{toCapitalized(isPublished ? "published" : "draft")}
-					</Badge>
+					<Box className={css({ minW: "100px" })}>
+						<Badge tone={isPublished ? "brand" : "muted"} size="xs">
+							{isPublished && <Check size={12} />}
+							{toCapitalized(isPublished ? "published" : "draft")}
+						</Badge>
+					</Box>
 					<Typography.Text size="xs" tone="subtle">
 						{location}
 					</Typography.Text>
