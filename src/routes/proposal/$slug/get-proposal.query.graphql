@@ -5,6 +5,7 @@ query GetProposal($slug: String!) {
 		}
 		... on Proposal {
 			id
+			fabricId
 			isLikedByMe
 			description
 			publishedAt

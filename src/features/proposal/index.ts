@@ -1,5 +1,6 @@
 export * from "./proposal-card"
 export * from "./proposal-elements-layer"
+export * from "./proposal-form-page"
 export * from "./proposal-panel"
 export * from "./proposal-row"
 export * from "./proposal-select-layer"

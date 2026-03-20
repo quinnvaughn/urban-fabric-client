@@ -1,0 +1,18 @@
+mutation UnpublishProposal($input: UnpublishProposalInput!) {
+	unpublishProposal(input: $input) {
+		... on NotFoundError {
+			message
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on Proposal {
+			isPublished
+			id
+			publishedAt
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}
