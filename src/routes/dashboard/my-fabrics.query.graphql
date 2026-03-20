@@ -4,20 +4,31 @@ query MyFabrics($limit: Int, $offset: Int, $search: String) {
 			total
 			hasMore
 			fabrics {
-				id
-				proposal {
-					id
-					isPublished
-				}
-				locationCity
-				locationRegion
-				thumbnail
-				title
-				updatedAt
+				...FabricCard
 			}
 		}
 		... on UnauthorizedError {
 			message
 		}
 	}
+}
+
+fragment FabricCard on Fabric {
+	id
+	center {
+		lat
+		lng
+	}
+	zoom
+	elements
+	proposal {
+		id
+		isPublished
+	}
+	locationCity
+	locationRegion
+	locationRegionAbbr
+	thumbnail
+	title
+	updatedAt
 }

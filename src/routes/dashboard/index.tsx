@@ -113,15 +113,7 @@ function RouteComponent() {
 						/>
 						<Grid gap="3" cols={3}>
 							{recentFabricsData.myFabrics.fabrics.map((fabric) => (
-								<FabricCard
-									lastEdited={fabric.updatedAt}
-									title={fabric.title}
-									key={fabric.id}
-									proposal={fabric.proposal ?? undefined}
-									id={fabric.id}
-									location={`${fabric.locationCity}, ${fabric.locationRegion}`}
-									mapImage={fabric.thumbnail ?? ""}
-								/>
+								<FabricCard fabric={fabric} key={fabric.id} />
 							))}
 						</Grid>
 					</VStack>
@@ -133,6 +125,7 @@ function RouteComponent() {
 						<VStack gap="2.5">
 							{recentProposalsData.myProposals.proposals.map((proposal) => (
 								<ProposalRow
+									id={proposal.id}
 									title={proposal.title}
 									date={proposal.updatedAt}
 									isPublished={proposal.isPublished}

@@ -164,6 +164,7 @@ function RouteComponent() {
 					{proposals.map((proposal) => (
 						<ProposalRow
 							key={proposal.id}
+							id={proposal.id}
 							date={proposal.updatedAt}
 							title={proposal.title}
 							isPublished={proposal.isPublished}

@@ -5,17 +5,7 @@ query RecentFabrics($limit: Int) {
 		}
 		... on MyFabricsPayload {
 			fabrics {
-				updatedAt
-				id
-				locationCity
-				locationCountry
-				locationRegion
-				title
-				thumbnail
-				proposal {
-					id
-					isPublished
-				}
+				...FabricCard
 			}
 			total
 		}

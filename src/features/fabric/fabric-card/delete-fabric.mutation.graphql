@@ -1,0 +1,19 @@
+mutation DeleteFabric($input: DeleteFabricInput!) {
+	deleteFabric(input: $input) {
+		... on ConflictError {
+			message
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on Fabric {
+			id
+		}
+	}
+}

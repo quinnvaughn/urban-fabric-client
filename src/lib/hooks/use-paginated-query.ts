@@ -44,6 +44,20 @@ export function usePaginatedQuery<
 
 	const [fetch, { loading, data }] = useLazyQuery(document)
 
+	// Keep local pagination state in sync with base query cache updates
+	// (for example, deletes/creates that update MyFabrics in-place).
+	// Only apply this in the unfiltered mode; once filters diverge from
+	// initial values, fetched data is the source of truth.
+	useEffect(() => {
+		if (isFetchPending.current) return
+		if (hasFilterChangedFromInitial.current) return
+
+		setItems(initialData.items)
+		setHasMore(initialData.hasMore)
+		setTotal(initialData.total)
+		setOffset(initialData.items.length)
+	}, [initialData.items, initialData.hasMore, initialData.total])
+
 	// Re-fetch and replace when filters change.
 	// Skips when filterVars haven't changed from the initial value so that
 	// React Strict Mode's double-invoke of effects doesn't trigger a spurious

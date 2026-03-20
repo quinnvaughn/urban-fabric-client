@@ -1,6 +1,8 @@
-import { Link } from "@tanstack/react-router"
+import { useMutation } from "@apollo/client/react"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { Check, EllipsisVertical, ExternalLink, Trash } from "lucide-react"
 import { DateTime } from "luxon"
+import { match } from "ts-pattern"
 import {
 	Badge,
 	Box,
@@ -8,11 +10,15 @@ import {
 	Menu,
 	Tooltip,
 	Typography,
+	useToast,
 	VStack,
 } from "#/features/ui"
+import { DeleteProposalDocument } from "#/graphql/generated"
+import { removeProposalFromMyProposalsCache } from "#/lib/apollo"
 import { css, cva, cx } from "#/styles/styled-system/css"
 
 type Props = {
+	id: string
 	mapImage: string
 	isPublished: boolean
 	title: string
@@ -63,6 +69,7 @@ const actionButton = cva({
 })
 
 export function ProposalRow({
+	id,
 	mapImage,
 	isPublished,
 	title,
@@ -72,6 +79,45 @@ export function ProposalRow({
 	likes,
 	slug,
 }: Props) {
+	const navigate = useNavigate()
+	const toast = useToast()
+	const [deleteProposal] = useMutation(DeleteProposalDocument)
+
+	async function handleDelete() {
+		const response = await deleteProposal({
+			variables: { input: { id } },
+			optimisticResponse: {
+				__typename: "Mutation",
+				deleteProposal: {
+					__typename: "Proposal",
+					id,
+				},
+			},
+			update(cache, { data }) {
+				if (data?.deleteProposal.__typename !== "Proposal") return
+				removeProposalFromMyProposalsCache(cache, data.deleteProposal.id)
+			},
+		})
+
+		match(response.data?.deleteProposal)
+			.with({ __typename: "Proposal" }, () => {
+				toast.success("Proposal deleted")
+			})
+			.with({ __typename: "UnauthorizedError" }, () => {
+				navigate({ to: "/login", replace: true })
+			})
+			.with(
+				{ __typename: "ForbiddenError" },
+				{ __typename: "NotFoundError" },
+				({ message }) => {
+					toast.error(message)
+				},
+			)
+			.otherwise(() => {
+				toast.error("Unable to delete proposal")
+			})
+	}
+
 	return (
 		<Box
 			className={cx(
@@ -204,7 +250,11 @@ export function ProposalRow({
 						</button>
 					</Menu.Trigger>
 					<Menu.Content>
-						<Menu.Item intent="danger">
+						<Menu.Item
+							disabled={isPublished}
+							intent="danger"
+							onClick={() => void handleDelete()}
+						>
 							<Trash size={16} /> Delete
 						</Menu.Item>
 					</Menu.Content>

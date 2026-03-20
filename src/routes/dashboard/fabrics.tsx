@@ -79,15 +79,7 @@ function RouteComponent() {
 					</FilterBar>
 					<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
 						{fabrics.map((fabric) => (
-							<FabricCard
-								proposal={fabric.proposal ?? undefined}
-								id={fabric.id}
-								key={fabric.id}
-								lastEdited={fabric.updatedAt}
-								location={`${fabric.locationCity}, ${fabric.locationRegion}`}
-								mapImage={fabric.thumbnail ?? ""}
-								title={fabric.title}
-							/>
+							<FabricCard fabric={fabric} key={fabric.id} />
 						))}
 					</Grid>
 				</VStack>

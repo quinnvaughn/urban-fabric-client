@@ -1,0 +1,16 @@
+mutation DeleteProposal($input: DeleteProposalInput!) {
+	deleteProposal(input: $input) {
+		... on Proposal {
+			id
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}
