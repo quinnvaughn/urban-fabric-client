@@ -10,6 +10,9 @@ query GetFabric($fabricId: ID!) {
 			zoom
 			elements
 			thumbnail
+			locationCity
+			locationRegion
+			locationRegionAbbr
 			proposal {
 				id
 				slug

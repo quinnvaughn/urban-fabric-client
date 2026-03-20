@@ -66,6 +66,11 @@ function Publish({ fabric }: { fabric: Fabric }) {
 				center: { lat: fabric.center.lat, lng: fabric.center.lng },
 				zoom: fabric.zoom,
 				initialThumbnail: fabric.thumbnail ?? "",
+				location: {
+					city: fabric.locationCity,
+					region: fabric.locationRegion,
+					regionAbbr: fabric.locationRegionAbbr,
+				},
 				fabricRef: { id: fabric.id, title: fabric.title },
 				initialValues: { title: "", description: "", categories: [] },
 			}}

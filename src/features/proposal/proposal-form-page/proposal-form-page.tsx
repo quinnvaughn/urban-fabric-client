@@ -13,6 +13,7 @@ import {
 } from "#/features/fabric"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
+import { ProposalPreviewModal } from "#/features/proposal/proposal-preview-modal"
 import { PublishProposalMapHud } from "#/features/proposal/publish-proposal-map-hud/publish-proposal-map-hud"
 import { PublishProposalMapTopbar } from "#/features/proposal/publish-proposal-map-topbar/publish-proposal-map-topbar"
 import {
@@ -41,6 +42,7 @@ import {
 	isSameViewport,
 	type Viewport,
 } from "#/lib/geo"
+import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
@@ -79,6 +81,7 @@ export type ProposalFormData = {
 	center: { lat: number; lng: number }
 	zoom: number
 	initialThumbnail: string
+	location?: { city: string; region: string; regionAbbr?: string | null }
 	/** Link back to the fabric editor shown in the panel header. */
 	fabricRef?: { id: string; title: string }
 	initialValues: {
@@ -124,6 +127,10 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	}, [])
 
 	const isPublished = props.mode === "edit" && props.published
+
+	const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+	const { data: meData } = useCurrentUser()
+	const creatorName = meData?.me?.name ?? ""
 
 	const [saveDraftMutation] = useMutation(SaveDraftProposalDocument)
 	const [publishProposalMutation] = useMutation(PublishProposalDocument)
@@ -331,10 +338,28 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						{data.topbarTitle}
 					</Typography.Text>
 				</Box>
-				<Button size="sm" appearance="outline" intent="neutral">
-					<ExternalLink size={14} />
-					Preview
-				</Button>
+				<form.Subscribe selector={(s) => s.values.title}>
+					{(title) => (
+						<Tooltip>
+							<Tooltip.Trigger>
+								<Button
+									size="sm"
+									appearance="outline"
+									intent="neutral"
+									type="button"
+									disabled={!title.trim()}
+									onClick={() => setIsPreviewOpen(true)}
+								>
+									<ExternalLink size={14} />
+									Preview
+								</Button>
+							</Tooltip.Trigger>
+							{!title.trim() && (
+								<Tooltip.Content>Add a title to preview</Tooltip.Content>
+							)}
+						</Tooltip>
+					)}
+				</form.Subscribe>
 			</Box>
 			<Box
 				id="main-content"
@@ -663,6 +688,24 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					</FabricMap>
 				</Box>
 			</Box>
+			<form.Subscribe selector={(s) => s.values}>
+				{(values) => (
+					<ProposalPreviewModal
+						open={isPreviewOpen}
+						onClose={() => setIsPreviewOpen(false)}
+						data={{
+							title: values.title,
+							description: values.description,
+							categories: values.categories,
+							elements,
+							center: viewport.center,
+							zoom: viewport.zoom,
+							location: data.location,
+							creatorName,
+						}}
+					/>
+				)}
+			</form.Subscribe>
 		</Box>
 	)
 }

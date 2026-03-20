@@ -53,6 +53,11 @@ function EditProposal({ proposal }: { proposal: Proposal }) {
 				},
 				zoom: proposal.snapshotZoom,
 				initialThumbnail: "",
+				location: {
+					city: proposal.snapshotLocationCity,
+					region: proposal.snapshotLocationRegion,
+					regionAbbr: proposal.snapshotLocationRegionAbbr,
+				},
 				initialValues: {
 					title: proposal.title,
 					description: proposal.description ?? "",
