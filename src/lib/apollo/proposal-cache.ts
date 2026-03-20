@@ -10,7 +10,7 @@ import { parseLimitFromStoreFieldName } from "./fabric-cache"
  * This keeps recent lists, paginated lists, and filtered lists in sync.
  */
 export function addProposalToMyProposalsCache(
-	cache: ApolloCache<unknown>,
+	cache: ApolloCache,
 	proposal: ProposalRowFragment,
 ) {
 	const newProposalRef = cache.writeFragment({
@@ -57,7 +57,7 @@ export function addProposalToMyProposalsCache(
  * This keeps recent lists, paginated lists, and filtered lists in sync.
  */
 export function removeProposalFromMyProposalsCache(
-	cache: ApolloCache<unknown>,
+	cache: ApolloCache,
 	deletedProposalId: string,
 ) {
 	cache.modify({
