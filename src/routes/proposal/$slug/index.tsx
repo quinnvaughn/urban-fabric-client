@@ -1,5 +1,5 @@
 import { useMutation, useReadQuery } from "@apollo/client/react"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { EllipsisVertical, MapPin } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
@@ -119,7 +119,9 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 					className={css({ flex: 1, minWidth: 0 })}
 					align="center"
 				>
-					<Logo />
+					<Link to="/">
+						<Logo />
+					</Link>
 					<Box
 						className={css({
 							width: "px",
