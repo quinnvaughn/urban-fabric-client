@@ -5,7 +5,10 @@ query MyFabrics($limit: Int, $offset: Int, $search: String) {
 			hasMore
 			fabrics {
 				id
-				hasProposal
+				proposal {
+					id
+					isPublished
+				}
 				locationCity
 				locationRegion
 				thumbnail

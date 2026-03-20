@@ -80,7 +80,7 @@ function RouteComponent() {
 					<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
 						{fabrics.map((fabric) => (
 							<FabricCard
-								hasProposal={fabric.hasProposal}
+								proposal={fabric.proposal ?? undefined}
 								id={fabric.id}
 								key={fabric.id}
 								lastEdited={fabric.updatedAt}

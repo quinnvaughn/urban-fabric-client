@@ -11,7 +11,10 @@ type Props = {
 	location: string
 	// at the moment this is an svg but eventually it will be a url to an image
 	mapImage: string
-	hasProposal: boolean
+	proposal?: {
+		id: string
+		isPublished: boolean
+	}
 }
 
 export function FabricCard({
@@ -20,7 +23,7 @@ export function FabricCard({
 	location,
 	mapImage,
 	id,
-	hasProposal,
+	proposal,
 }: Props) {
 	return (
 		<Card
@@ -108,9 +111,13 @@ export function FabricCard({
 						<Typography.Text size="xs" color="stone.400">
 							Edited {DateTime.fromISO(lastEdited).toFormat("LLL d")}
 						</Typography.Text>
-						{hasProposal && (
-							<Badge appearance="solid" tone="accent" size="xs">
-								Proposal
+						{proposal?.id && (
+							<Badge
+								appearance="solid"
+								tone={proposal.isPublished ? "accent" : "neutral"}
+								size="xs"
+							>
+								{proposal.isPublished ? "Proposal" : "Draft"}
 							</Badge>
 						)}
 					</HStack>

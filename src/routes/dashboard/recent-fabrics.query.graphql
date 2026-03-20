@@ -12,7 +12,10 @@ query RecentFabrics($limit: Int) {
 				locationRegion
 				title
 				thumbnail
-				hasProposal
+				proposal {
+					id
+					isPublished
+				}
 			}
 			total
 		}

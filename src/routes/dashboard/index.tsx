@@ -117,7 +117,7 @@ function RouteComponent() {
 									lastEdited={fabric.updatedAt}
 									title={fabric.title}
 									key={fabric.id}
-									hasProposal={fabric.hasProposal}
+									proposal={fabric.proposal ?? undefined}
 									id={fabric.id}
 									location={`${fabric.locationCity}, ${fabric.locationRegion}`}
 									mapImage={fabric.thumbnail ?? ""}
