@@ -146,14 +146,21 @@ export const menu = defineSlotRecipe({
 			px: "2",
 			py: "1.5",
 			borderRadius: "full",
-			border: "none",
+			borderWidth: "1", // always present
+			borderStyle: "solid",
+			borderColor: "transparent", // invisible until active
 			background: "transparent",
 			color: "stone.600",
 			cursor: "pointer",
 			fontSize: "xs",
 			fontWeight: "medium",
-			transition: "background 150ms, color 150ms",
+			transition: "background 150ms, color 150ms, border-color 150ms",
 			_hover: { color: "fg.default", bg: "stone.100" },
+			"&[data-active]": {
+				bg: "teal.50",
+				color: "teal.700",
+				borderColor: "teal.200",
+			},
 		},
 	},
 

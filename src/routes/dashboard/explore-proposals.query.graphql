@@ -4,6 +4,9 @@ query ExploreProposals(
 	$offset: Int
 	$search: String
 	$sortBy: ExploreSortBy
+	$nearLat: Float
+	$nearLng: Float
+	$radiusMiles: Float
 ) {
 	exploreProposals(
 		categories: $categories
@@ -11,6 +14,9 @@ query ExploreProposals(
 		offset: $offset
 		search: $search
 		sortBy: $sortBy
+		nearLat: $nearLat
+		nearLng: $nearLng
+		radiusMiles: $radiusMiles
 	) {
 		hasMore
 		total

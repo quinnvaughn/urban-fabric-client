@@ -1,6 +1,6 @@
 import { Search } from "lucide-react"
 import type * as React from "react"
-import { cx } from "@/styles/styled-system/css"
+import { css, cx } from "@/styles/styled-system/css"
 import { filterBar as filterBarRecipe } from "@/styles/styled-system/recipes"
 import { Input } from "../input"
 
@@ -37,7 +37,7 @@ function FilterBarSearch({
 	className,
 }: FilterBarSearchProps) {
 	return (
-		<Input variant="ghost" size="lg">
+		<Input variant="ghost" size="lg" className={css({ paddingInline: "1" })}>
 			<Input.Field
 				value={value}
 				onChange={(e) => onChange(e.target.value)}

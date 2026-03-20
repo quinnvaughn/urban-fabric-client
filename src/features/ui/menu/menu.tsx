@@ -3,8 +3,8 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { css, cx } from "@/styles/styled-system/css"
 import {
-	menu as menuRecipe,
 	type MenuVariantProps,
+	menu as menuRecipe,
 } from "@/styles/styled-system/recipes"
 
 // ---------- Context ----------
@@ -159,8 +159,7 @@ function useMenuPosition(
 
 const styles = menuRecipe()
 
-export interface MenuContentProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+export interface MenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
 	size?: MenuVariantProps["size"]
 }
 
@@ -351,15 +350,21 @@ MenuSeparator.displayName = "Menu.Separator"
 export interface MenuFilterTriggerProps {
 	children: React.ReactNode
 	className?: string
+	active?: boolean
 }
 
-function MenuFilterTrigger({ children, className }: MenuFilterTriggerProps) {
+function MenuFilterTrigger({
+	children,
+	className,
+	active,
+}: MenuFilterTriggerProps) {
 	const { open } = useMenuContext()
 
 	return (
 		<MenuTrigger>
 			<button
 				type="button"
+				data-active={active || undefined}
 				className={cx(styles.filterTrigger, className)}
 			>
 				{children}

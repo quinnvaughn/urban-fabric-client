@@ -1,0 +1,17 @@
+query GeocodeLocation(
+	$query: String!
+	$limit: Int
+	$focusLng: Float
+	$focusLat: Float
+) {
+	geocodeLocation(
+		query: $query
+		limit: $limit
+		focusLng: $focusLng
+		focusLat: $focusLat
+	) {
+		lat
+		lng
+		displayName
+	}
+}

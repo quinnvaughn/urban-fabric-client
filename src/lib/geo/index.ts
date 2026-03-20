@@ -1,3 +1,5 @@
+export * from "./get-location-from-ip"
+
 export type Viewport = {
 	center: { lat: number; lng: number }
 	zoom: number

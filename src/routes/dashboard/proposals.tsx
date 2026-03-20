@@ -4,9 +4,9 @@ import { useState } from "react"
 import { DashboardContainer } from "#/features/dashboard"
 import { ProposalRow } from "#/features/proposal"
 import {
-	Button,
 	FilterBar,
 	HStack,
+	LoadMore,
 	Menu,
 	Segmented,
 	Typography,
@@ -94,7 +94,12 @@ function RouteComponent() {
 		<DashboardContainer>
 			<VStack gap="5">
 				<VStack gap="0.5">
-					<Typography.Text as="h1" lineHeight="none" weight="semibold" size="lg">
+					<Typography.Text
+						as="h1"
+						lineHeight="none"
+						weight="semibold"
+						size="lg"
+					>
 						My proposals
 					</Typography.Text>
 					<Typography.Text color="stone.400" size="sm">
@@ -134,7 +139,13 @@ function RouteComponent() {
 						</Segmented>
 						<FilterBar.Separator />
 						<Menu placement="bottom-end">
-							<Menu.FilterTrigger>Category</Menu.FilterTrigger>
+							<Menu.Trigger>
+								<Menu.FilterTrigger active={selectedCategories.length > 0}>
+									{selectedCategories.length > 0
+										? `Category · ${selectedCategories.length}`
+										: "Category"}
+								</Menu.FilterTrigger>
+							</Menu.Trigger>
 							<Menu.Content>
 								{Object.values(ProposalCategory).map((category) => (
 									<Menu.CheckItem
@@ -149,43 +160,29 @@ function RouteComponent() {
 						</Menu>
 					</FilterBar.Filters>
 				</FilterBar>
-				<VStack gap="10">
-					<VStack gap="2.5">
-						{proposals.map((proposal) => (
-							<ProposalRow
-								key={proposal.id}
-								date={proposal.updatedAt}
-								title={proposal.title}
-								isPublished={proposal.isPublished}
-								views={proposal.viewCount}
-								likes={proposal.likeCount}
-								slug={proposal.slug}
-								location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
-								mapImage={proposal.snapshotThumbnail ?? ""}
-							/>
-						))}
-					</VStack>
-					<VStack id="load-more" align="center" gap="4">
-						<Typography.Text color="stone.400" size="sm">
-							{hasMore
-								? `Showing ${proposals.length} of ${total}`
-								: proposals.length === 0
-									? "No proposals"
-									: `Showing all ${total}`}
-						</Typography.Text>
-						{hasMore && (
-							<Button
-								appearance="outline"
-								intent="neutral"
-								loading={loading}
-								disabled={loading}
-								onClick={() => loadMore()}
-							>
-								Load more
-							</Button>
-						)}
-					</VStack>
+				<VStack gap="2.5">
+					{proposals.map((proposal) => (
+						<ProposalRow
+							key={proposal.id}
+							date={proposal.updatedAt}
+							title={proposal.title}
+							isPublished={proposal.isPublished}
+							views={proposal.viewCount}
+							likes={proposal.likeCount}
+							slug={proposal.slug}
+							location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
+							mapImage={proposal.snapshotThumbnail ?? ""}
+						/>
+					))}
 				</VStack>
+				<LoadMore
+					total={total}
+					showing={proposals.length}
+					hasMore={hasMore}
+					loading={loading}
+					onLoadMore={loadMore}
+					emptyLabel="No proposals"
+				/>
 			</VStack>
 		</DashboardContainer>
 	)

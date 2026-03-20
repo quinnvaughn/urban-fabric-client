@@ -1,7 +1,6 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { createServerFn } from "@tanstack/react-start"
-import { getRequestHeader } from "@tanstack/react-start/server"
+import { getLocationFromIp } from "#/lib/geo"
 import {
 	useEffect,
 	useMemo,
@@ -35,22 +34,6 @@ import {
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { AuthModal } from "#/features/modals/auth-modal"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
-
-const getLocationFromIp = createServerFn({ method: "GET" }).handler(
-	async () => {
-		const ip =
-			getRequestHeader("x-forwarded-for") ?? getRequestHeader("x-real-ip") ?? ""
-		if (!ip) {
-			return { lat: 34.0195, lng: -118.4912 } // default to Santa Monica in dev
-		}
-		const res = await fetch(
-			`https://api.ipwho.org/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
-		)
-		console.log("IP Geolocation response:", await res.clone().text()) // Log the raw response for debugging
-		const { lat, lon } = await res.json()
-		return { lat, lng: lon }
-	},
-)
 
 const GUEST_FABRIC_KEY = "guest-fabric"
 
