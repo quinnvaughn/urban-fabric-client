@@ -63,6 +63,8 @@ export function ProposalPanel({ proposal }: { proposal: Proposal }) {
 		})
 	}
 
+	const hasDescription = proposal.description && proposal.description.length > 0
+
 	return (
 		<Box
 			id="panel"
@@ -214,12 +216,16 @@ export function ProposalPanel({ proposal }: { proposal: Proposal }) {
 						<VStack gap="2.5">
 							<Divider label="Description" />
 							<Typography.Text
-								color="stone.700"
+								color={hasDescription ? "stone.700" : "stone.400"}
 								size="md"
 								lineHeight="relaxed"
+								weight={hasDescription ? "normal" : "medium"}
+								fontStyle={hasDescription ? "normal" : "italic"}
 								className={css({ whiteSpace: "pre-wrap" })}
 							>
-								{proposal.description}
+								{hasDescription
+									? proposal.description
+									: "No description available"}
 							</Typography.Text>
 							<FabricComposition elements={elements} />
 						</VStack>
