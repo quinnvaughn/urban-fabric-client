@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client/react"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, EyeOff, Save, Send } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { match } from "ts-pattern"
 import z from "zod"
 import {
@@ -108,6 +108,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const { toast } = useToast()
 	const [isSaving, setIsSaving] = useState(false)
 	const [thumbnail, setThumbnail] = useState(data.initialThumbnail)
+	const captureThumbnailRef = useRef<(() => Promise<string>) | null>(null)
 
 	const [viewport, setViewport] = useState<Viewport>({
 		zoom: data.zoom,
@@ -128,7 +129,16 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const [publishProposalMutation] = useMutation(PublishProposalDocument)
 	const [unpublishProposalMutation] = useMutation(UnpublishProposalDocument)
 
+	const getThumbnailForSubmit = useCallback(async () => {
+		const capture = captureThumbnailRef.current
+		if (!capture) return thumbnail
+		const freshThumbnail = await capture()
+		setThumbnail(freshThumbnail)
+		return freshThumbnail
+	}, [thumbnail])
+
 	async function saveDraft(values: FormValues) {
+		const currentThumbnail = await getThumbnailForSubmit()
 		const response = await saveDraftMutation({
 			variables: {
 				input: {
@@ -141,7 +151,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					elements: elements,
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
-					thumbnail,
+					thumbnail: currentThumbnail,
 				},
 			},
 		})
@@ -164,6 +174,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	}
 
 	async function publishProposal(values: FormValues) {
+		const currentThumbnail = await getThumbnailForSubmit()
 		const response = await publishProposalMutation({
 			variables: {
 				input: {
@@ -174,7 +185,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					elements: elements,
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
-					thumbnail,
+					thumbnail: currentThumbnail,
 				},
 			},
 		})
@@ -657,7 +668,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						zoom={viewport.zoom}
 					>
 						<StaticElementsLayer elements={elements} />
-						<ThumbnailSync onThumbnail={async (t) => setThumbnail(t)} />
+						<ThumbnailSync
+							onThumbnail={async (t) => setThumbnail(t)}
+							onCaptureReady={(capture) => {
+								captureThumbnailRef.current = capture
+							}}
+						/>
 						<ViewportSync
 							viewport={viewport}
 							onViewportChange={handleViewportChange}

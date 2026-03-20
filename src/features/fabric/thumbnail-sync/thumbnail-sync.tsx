@@ -7,6 +7,7 @@ const VIEWPORT_DEBOUNCE_MS = 600
 
 type Props = {
 	onThumbnail: (thumbnail: string) => Promise<void>
+	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
 }
 
 function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
@@ -20,7 +21,7 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 	})
 }
 
-export function ThumbnailSync({ onThumbnail }: Props) {
+export function ThumbnailSync({ onThumbnail, onCaptureReady }: Props) {
 	const map = useMap()
 	const saveStatus = useFabricStore((s) => s.saveStatus)
 	const selectedInstanceId = useFabricStore((s) => s.selectedInstanceId)
@@ -28,13 +29,27 @@ export function ThumbnailSync({ onThumbnail }: Props) {
 	const pendingCapture = useRef(false)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+	const captureThumbnail = useCallback(
+		() =>
+			new Promise<string>((resolve) => {
+				map.once("render", async () => {
+					const thumbnail = await getCanvasBase64(map.getCanvas())
+					await onThumbnail(thumbnail)
+					resolve(thumbnail)
+				})
+				map.triggerRepaint()
+			}),
+		[map, onThumbnail],
+	)
+
 	const captureAndSync = useCallback(() => {
-		map.once("render", async () => {
-			const thumbnail = await getCanvasBase64(map.getCanvas())
-			await onThumbnail(thumbnail)
-		})
-		map.triggerRepaint()
-	}, [map, onThumbnail])
+		void captureThumbnail()
+	}, [captureThumbnail])
+
+	useEffect(() => {
+		onCaptureReady?.(captureThumbnail)
+		return () => onCaptureReady?.(null)
+	}, [captureThumbnail, onCaptureReady])
 
 	// On element save, capture immediately if nothing selected, otherwise defer
 	useEffect(() => {
