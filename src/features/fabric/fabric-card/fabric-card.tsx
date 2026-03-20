@@ -19,6 +19,7 @@ import {
 } from "#/graphql/generated"
 import {
 	addFabricToMyFabricsCache,
+	adjustMyDashboardFabricCountCache,
 	removeFabricFromMyFabricsCache,
 } from "#/lib/apollo"
 import { css, cx } from "#/styles/styled-system/css"
@@ -79,6 +80,7 @@ export function FabricCard({
 					updatedAt: new Date().toISOString(),
 					proposal: null,
 				})
+				adjustMyDashboardFabricCountCache(cache, 1)
 			},
 		})
 
@@ -108,6 +110,7 @@ export function FabricCard({
 			update(cache, { data }) {
 				if (data?.deleteFabric.__typename !== "Fabric") return
 				removeFabricFromMyFabricsCache(cache, data.deleteFabric.id)
+				adjustMyDashboardFabricCountCache(cache, -1)
 			},
 		})
 

@@ -16,7 +16,9 @@ import {
 	ProposalCardFragmentDoc,
 	ToggleProposalLikeDocument,
 } from "#/graphql/generated"
+import { adjustMyDashboardEngagementCache } from "#/lib/apollo"
 import { useRequireAuth } from "#/lib/graphql"
+import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
@@ -32,12 +34,15 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 		? (data as ProposalCardFragment)
 		: proposalRef
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
+	const { data: meData } = useCurrentUser()
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to like this proposal",
 	)
+	const isOwner = meData?.me?.id === proposal.creator.id
 
 	function handleLike() {
 		requireAuth(() => {
+			const likeDelta = proposal.isLikedByMe ? -1 : 1
 			toggleLike({
 				variables: { input: { proposalId: proposal.id } },
 				optimisticResponse: {
@@ -50,6 +55,11 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 							? proposal.likeCount - 1
 							: proposal.likeCount + 1,
 					},
+				},
+				update(cache, { data }) {
+					if (data?.toggleProposalLike.__typename !== "Proposal") return
+					if (!isOwner) return
+					adjustMyDashboardEngagementCache(cache, { likesDelta: likeDelta })
 				},
 			})
 		})

@@ -17,6 +17,8 @@ import {
 	type GetProposalQuery,
 	RecordProposalViewDocument,
 } from "#/graphql/generated"
+import { adjustMyDashboardEngagementCache } from "#/lib/apollo"
+import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/")({
@@ -67,7 +69,9 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 		useProposalStore()
 
 	const [recordView] = useMutation(RecordProposalViewDocument)
+	const { data: meData } = useCurrentUser()
 	const hasRecordedView = useRef(false)
+	const isOwner = meData?.me?.id === proposal.creator.id
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
@@ -78,10 +82,15 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 						proposalId: proposal.id,
 					},
 				},
+				update(cache, { data }) {
+					if (!data?.recordProposalView) return
+					if (!isOwner) return
+					adjustMyDashboardEngagementCache(cache, { viewsDelta: 1 })
+				},
 			})
 			hasRecordedView.current = true
 		}
-	}, [proposal.id])
+	}, [isOwner, proposal.id])
 
 	return (
 		<Box

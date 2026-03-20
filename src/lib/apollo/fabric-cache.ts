@@ -102,3 +102,32 @@ export function removeFabricFromMyFabricsCache(
 		},
 	})
 }
+
+export function adjustMyDashboardFabricCountCache(
+	cache: ApolloCache,
+	fabricDelta: number,
+) {
+	if (fabricDelta === 0) return
+
+	cache.modify({
+		id: "ROOT_QUERY",
+		fields: {
+			myDashboardStats(
+				existing:
+					| Reference
+					| { __typename?: string; fabricCount?: number }
+					| undefined,
+			) {
+				if (existing && "__ref" in existing) return existing
+				if (!existing || existing.__typename !== "DashboardStats") {
+					return existing
+				}
+
+				return {
+					...existing,
+					fabricCount: Math.max(0, (existing.fabricCount ?? 0) + fabricDelta),
+				}
+			},
+		},
+	})
+}

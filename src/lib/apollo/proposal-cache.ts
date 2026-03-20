@@ -52,6 +52,70 @@ export function addProposalToMyProposalsCache(
 	})
 }
 
+export function adjustMyDashboardStatsCache(
+	cache: ApolloCache,
+	changes: { proposalDelta?: number; unpublishedProposalDelta?: number },
+) {
+	const proposalDelta = changes.proposalDelta ?? 0
+	const unpublishedProposalDelta = changes.unpublishedProposalDelta ?? 0
+	if (proposalDelta === 0 && unpublishedProposalDelta === 0) return
+
+	cache.modify({
+		id: "ROOT_QUERY",
+		fields: {
+			myDashboardStats(existing) {
+				if (!existing || existing.__typename !== "DashboardStats") {
+					return existing
+				}
+
+				return {
+					...existing,
+					proposalCount: Math.max(
+						0,
+						(existing.proposalCount ?? 0) + proposalDelta,
+					),
+					unpublishedProposalCount: Math.max(
+						0,
+						(existing.unpublishedProposalCount ?? 0) + unpublishedProposalDelta,
+					),
+				}
+			},
+		},
+	})
+}
+
+export function adjustMyDashboardEngagementCache(
+	cache: ApolloCache,
+	changes: { likesDelta?: number; viewsDelta?: number },
+) {
+	const likesDelta = changes.likesDelta ?? 0
+	const viewsDelta = changes.viewsDelta ?? 0
+	if (likesDelta === 0 && viewsDelta === 0) return
+
+	cache.modify({
+		id: "ROOT_QUERY",
+		fields: {
+			myDashboardStats(existing) {
+				if (!existing || existing.__typename !== "DashboardStats") {
+					return existing
+				}
+
+				return {
+					...existing,
+					totalProposalLikes: Math.max(
+						0,
+						(existing.totalProposalLikes ?? 0) + likesDelta,
+					),
+					totalProposalViews: Math.max(
+						0,
+						(existing.totalProposalViews ?? 0) + viewsDelta,
+					),
+				}
+			},
+		},
+	})
+}
+
 /**
  * Remove a Proposal from every cached myProposals(...) field variant.
  * This keeps recent lists, paginated lists, and filtered lists in sync.

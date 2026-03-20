@@ -36,7 +36,10 @@ import {
 	SaveDraftProposalDocument,
 	UnpublishProposalDocument,
 } from "#/graphql/generated"
-import { addProposalToMyProposalsCache } from "#/lib/apollo"
+import {
+	addProposalToMyProposalsCache,
+	adjustMyDashboardStatsCache,
+} from "#/lib/apollo"
 import { useForm } from "#/lib/form"
 import {
 	formatLatitude,
@@ -163,6 +166,10 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				const proposal = mutationData.saveDraftProposal
 				if (isCreateMode) {
 					addProposalToMyProposalsCache(cache, proposal)
+					adjustMyDashboardStatsCache(cache, {
+						proposalDelta: 1,
+						unpublishedProposalDelta: 1,
+					})
 					cache.writeQuery({
 						query: ProposalByFabricIdDocument,
 						variables: { fabricId },
@@ -218,6 +225,9 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				const proposal = mutationData.publishProposal
 				if (isCreateMode) {
 					addProposalToMyProposalsCache(cache, proposal)
+					adjustMyDashboardStatsCache(cache, {
+						proposalDelta: 1,
+					})
 					cache.writeQuery({
 						query: ProposalByFabricIdDocument,
 						variables: { fabricId },
@@ -229,6 +239,10 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								slug: proposal.slug,
 							},
 						},
+					})
+				} else if (props.mode === "edit" && !props.published) {
+					adjustMyDashboardStatsCache(cache, {
+						unpublishedProposalDelta: -1,
 					})
 				}
 				cache.evict({ fieldName: "exploreProposals" })
@@ -264,6 +278,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 		if (props.mode !== "edit") return
 		const response = await unpublishProposalMutation({
 			variables: { input: { id: props.proposalId } },
+			update(cache, { data: mutationData }) {
+				if (mutationData?.unpublishProposal.__typename !== "Proposal") return
+				adjustMyDashboardStatsCache(cache, {
+					unpublishedProposalDelta: 1,
+				})
+			},
 		})
 		match(response.data?.unpublishProposal)
 			.with({ __typename: "ForbiddenError" }, ({ message }) => {
