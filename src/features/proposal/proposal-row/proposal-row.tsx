@@ -15,6 +15,7 @@ import {
 } from "#/features/ui"
 import { DeleteProposalDocument } from "#/graphql/generated"
 import {
+	adjustMyDashboardStatsCache,
 	clearFabricProposalFromCache,
 	removeProposalFromMyProposalsCache,
 } from "#/lib/apollo"
@@ -103,6 +104,10 @@ export function ProposalRow({
 				if (data?.deleteProposal.__typename !== "Proposal") return
 				removeProposalFromMyProposalsCache(cache, data.deleteProposal.id)
 				clearFabricProposalFromCache(cache, data.deleteProposal.fabricId)
+				adjustMyDashboardStatsCache(cache, {
+					proposalDelta: -1,
+					unpublishedProposalDelta: isPublished ? 0 : -1,
+				})
 			},
 		})
 
