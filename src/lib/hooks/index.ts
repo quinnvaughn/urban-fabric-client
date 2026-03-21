@@ -1,3 +1,6 @@
 export * from "./use-debounce"
+export * from "./use-is-mobile"
 export * from "./use-keyboard-shortcuts"
 export * from "./use-paginated-query"
+export * from "./use-sticky"
+export * from "./use-transient-text"

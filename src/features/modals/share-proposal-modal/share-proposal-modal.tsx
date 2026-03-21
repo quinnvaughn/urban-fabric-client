@@ -10,7 +10,7 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
-import { useTransientText } from "#/lib/hooks/use-transient-text"
+import { useTransientText } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 
 type ShareDest = {

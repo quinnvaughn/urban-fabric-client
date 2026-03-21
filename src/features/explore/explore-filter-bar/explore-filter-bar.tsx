@@ -1,6 +1,6 @@
 import { Box, Button, FilterBar, HStack, Menu, Segmented } from "#/features/ui"
 import { ExploreSortBy, ProposalCategory } from "#/graphql/generated"
-import { useSticky } from "#/lib/hooks/use-sticky"
+import { useSticky } from "#/lib/hooks"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 import { LocationFilter, type SelectedLocation } from "../location-filter"
