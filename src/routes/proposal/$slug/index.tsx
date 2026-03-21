@@ -55,12 +55,18 @@ export const Route = createFileRoute("/proposal/$slug/")({
 				{ name: "description", content: description },
 				{ property: "og:title", content: title },
 				{ property: "og:description", content: description },
-				{ property: "og:image", content: `${siteUrl}/og-image.png` },
+				{
+					property: "og:image",
+					content: proposal.snapshotThumbnail ?? `${siteUrl}/og-image.png`,
+				},
 				{ property: "og:type", content: "article" },
 				{ name: "twitter:card", content: "summary_large_image" },
 				{ name: "twitter:title", content: title },
 				{ name: "twitter:description", content: description },
-				{ name: "twitter:image", content: `${siteUrl}/og-image.png` },
+				{
+					name: "twitter:image",
+					content: proposal.snapshotThumbnail ?? `${siteUrl}/og-image.png`,
+				},
 			],
 		}
 	},
