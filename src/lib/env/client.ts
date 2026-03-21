@@ -5,6 +5,7 @@ const envSchema = z.object({
 	VITE_GOOGLE_CLIENT_ID: z
 		.string()
 		.min(1, "VITE_GOOGLE_CLIENT_ID must be set"),
+	VITE_SITE_URL: z.string().min(1, "VITE_SITE_URL must be set"),
 })
 
 export function getClientEnv() {

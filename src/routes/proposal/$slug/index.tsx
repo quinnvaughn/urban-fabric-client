@@ -19,19 +19,49 @@ import {
 	RecordProposalViewDocument,
 } from "#/graphql/generated"
 import { adjustMyDashboardEngagementCache } from "#/lib/apollo"
+import { getClientEnv } from "#/lib/env/client"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/")({
 	component: RouteComponent,
-	loader: ({ params, context }) => {
+	loader: async ({ params, context }) => {
 		const getProposalQuery = context.preloadQuery(GetProposalDocument, {
 			variables: {
 				slug: params.slug,
 			},
 		})
+		const { data } = await context.apolloClient.query({
+			query: GetProposalDocument,
+			variables: { slug: params.slug },
+		})
 		return {
 			getProposalQuery,
+			proposalData: data,
+		}
+	},
+	head: ({ loaderData }) => {
+		const { VITE_SITE_URL: siteUrl } = getClientEnv()
+		const proposal = loaderData?.proposalData?.proposalBySlug
+		if (!proposal || proposal.__typename !== "Proposal") {
+			return { meta: [{ title: "Urban Fabric" }] }
+		}
+		const location = `${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`
+		const title = `${proposal.title} | Urban Fabric`
+		const description = `${proposal.title} in ${location} — street redesign proposal on Urban Fabric.`
+		return {
+			meta: [
+				{ title },
+				{ name: "description", content: description },
+				{ property: "og:title", content: title },
+				{ property: "og:description", content: description },
+				{ property: "og:image", content: `${siteUrl}/og-image.png` },
+				{ property: "og:type", content: "article" },
+				{ name: "twitter:card", content: "summary_large_image" },
+				{ name: "twitter:title", content: title },
+				{ name: "twitter:description", content: description },
+				{ name: "twitter:image", content: `${siteUrl}/og-image.png` },
+			],
 		}
 	},
 })
