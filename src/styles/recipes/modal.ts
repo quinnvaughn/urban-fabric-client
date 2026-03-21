@@ -2,7 +2,7 @@ import { defineSlotRecipe } from "@pandacss/dev"
 
 export const modal = defineSlotRecipe({
 	className: "modal",
-	slots: ["backdrop", "content", "header", "closeBtn", "body"],
+	slots: ["backdrop", "content", "header", "closeBtn", "body", "footer"],
 
 	base: {
 		backdrop: {
@@ -67,6 +67,18 @@ export const modal = defineSlotRecipe({
 			pb: "6",
 			scrollbarWidth: "thin",
 			scrollbarColor: "token(colors.stone.300) transparent",
+		},
+		footer: {
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "flex-end",
+			gap: "2",
+			px: "6",
+			py: "4",
+			borderTopWidth: "1",
+			borderTopStyle: "solid",
+			borderTopColor: "border.subtle",
+			flexShrink: "0",
 		},
 	},
 

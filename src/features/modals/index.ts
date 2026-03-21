@@ -1,3 +1,4 @@
+export * from "./delete-account-modal"
 export * from "./registry"
 export * from "./share-proposal-modal"
 export * from "./shortcuts-modal"

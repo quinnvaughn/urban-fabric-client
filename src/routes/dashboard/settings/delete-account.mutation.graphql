@@ -1,0 +1,13 @@
+mutation DeleteAccount {
+	deleteAccount {
+		... on UnauthorizedError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on DeleteAccountResponse {
+			data
+		}
+	}
+}

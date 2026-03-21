@@ -4,7 +4,7 @@ import * as ReactDOM from "react-dom"
 import { cx } from "@/styles/styled-system/css"
 import { modal as modalRecipe } from "@/styles/styled-system/recipes"
 import type { ColorToken } from "@/styles/styled-system/tokens"
-import { Typography, type TextProps } from "../typography"
+import { type TextProps, Typography } from "../typography"
 
 // ---------- Types ----------
 
@@ -173,6 +173,18 @@ function ModalBody({ className, size = "md", ...rest }: ModalBodyProps) {
 }
 ModalBody.displayName = "Modal.Body"
 
+// ---------- Footer ----------
+
+export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+	size?: ModalSize
+}
+
+function ModalFooter({ className, size = "md", ...rest }: ModalFooterProps) {
+	const styles = modalRecipe({ size })
+	return <div className={cx(styles.footer, className)} {...rest} />
+}
+ModalFooter.displayName = "Modal.Footer"
+
 // ---------- Eyebrow ----------
 
 export interface ModalEyebrowProps
@@ -201,5 +213,6 @@ export const Modal = Object.assign(ModalRoot, {
 	Title: ModalTitle,
 	CloseBtn: ModalCloseBtn,
 	Body: ModalBody,
+	Footer: ModalFooter,
 	Eyebrow: ModalEyebrow,
 })

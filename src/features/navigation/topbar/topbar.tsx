@@ -12,7 +12,7 @@ export function Topbar() {
 		"/dashboard/fabrics": "Fabrics",
 		"/dashboard/proposals": "Proposals",
 		"/dashboard/explore": "Explore",
-		"/dashboard/settings": "Settings",
+		"/dashboard/settings/": "Settings",
 	}
 
 	const currentMatch = matches[matches.length - 1]
@@ -39,7 +39,12 @@ export function Topbar() {
 			</Typography.Text>
 			<Link
 				className={cx(
-					button({ intent: "brand", appearance: "solid", size: "sm" }),
+					button({
+						intent: "brand",
+						appearance: "solid",
+						size: "sm",
+						lift: true,
+					}),
 					css({ textDecoration: "none" }),
 				)}
 				to="/fabric/new"

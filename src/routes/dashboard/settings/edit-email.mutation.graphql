@@ -1,0 +1,20 @@
+mutation EditEmail($input: EditEmailInput!) {
+	editEmail(input: $input) {
+		... on UnauthorizedError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on User {
+			email
+			id
+		}
+		... on ValidationError {
+			errors {
+				message
+				field
+			}
+		}
+	}
+}
