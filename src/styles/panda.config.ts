@@ -1786,14 +1786,14 @@ export default defineConfig({
 				base: { value: "0" },
 				raised: { value: "1" },
 				dropdown: { value: "100" },
-				sticky: { value: "1000" },
+				panel: { value: "100" },
+				sticky: { value: "150" },
+				floating: { value: "200" },
 				overlay: { value: "1050" },
 				modal: { value: "1100" },
 				popover: { value: "1200" },
 				toast: { value: "9999" },
 				tooltip: { value: "10000" },
-				panel: { value: "100" },
-				floating: { value: "200" },
 			},
 
 			// ── Motion ────────────────────────────────────────────────────────────

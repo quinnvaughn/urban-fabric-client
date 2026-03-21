@@ -1,17 +1,18 @@
 import { useMutation, useReadQuery } from "@apollo/client/react"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { EllipsisVertical, MapPin } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router"
+import { EllipsisVertical } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import {
 	ProposalElementsLayer,
 	ProposalPanel,
+	ProposalPublicHeader,
 	ProposalSelectLayer,
 	SelectedInstancePanel,
 	useProposalStore,
 } from "#/features/proposal"
-import { Box, HStack, Logo, Tooltip, Typography } from "#/features/ui"
+import { Box, Tooltip } from "#/features/ui"
 import {
 	GetProposalDocument,
 	type GetProposalQuery,
@@ -102,59 +103,13 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 				w: "screen",
 			})}
 		>
-			<Box
-				id="top-bar"
-				as="header"
-				className={css({
-					flexShrink: 0,
-					height: "var(--uf-header-height)",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "space-between",
-					px: "4",
-					gap: "2.5",
-					borderBottom: "1px solid",
-					borderBottomColor: "border.subtle",
-					background: "white",
-					zIndex: "floating",
-					animation: "fadeDown 0.36s (--easings-spring) both",
-					transition:
-						"height 250ms (--easings-spring), opacity 200ms (---easings-in-out), border-bottom-color 200ms",
-					overflow: "hidden",
-				})}
-			>
-				<HStack
-					gap="2.5"
-					className={css({ flex: 1, minWidth: 0 })}
-					align="center"
-				>
-					<Link to="/">
-						<Logo />
-					</Link>
-					<Box
-						className={css({
-							width: "px",
-							height: "18px",
-							background: "stone.200",
-							flexShrink: 0,
-						})}
-					/>
-					<Typography.Text truncate color="stone.700" weight="medium" size="md">
-						{proposal.title}
-					</Typography.Text>
-					<HStack
-						gap="1"
-						align="center"
-						className={css({ flexShrink: 0, color: "stone.500" })}
-					>
-						<MapPin size={10} />
-						<Typography.Text
-							size="xs"
-							className={css({ color: "inherit" })}
-						>{`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`}</Typography.Text>
-					</HStack>
-				</HStack>
-			</Box>
+			<ProposalPublicHeader
+				title={proposal.title}
+				city={proposal.snapshotLocationCity}
+				region={
+					proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion
+				}
+			/>
 			<Box
 				id="shell"
 				className={css({

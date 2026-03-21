@@ -2,10 +2,8 @@ import {
 	ChevronDown,
 	Layers,
 	LayoutGrid,
-	LogOut,
 	ScrollText,
 	Search,
-	Settings,
 } from "lucide-react"
 import { useState } from "react"
 import {
@@ -17,19 +15,15 @@ import {
 	Menu,
 	Typography,
 } from "#/features/ui"
-import { useCurrentUser, useLogout } from "#/lib/graphql"
+import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
+import { UserMenuContent } from "../user-menu-content"
 import { SidebarLink } from "./sidebar-link"
 import { SidebarSectionLabel } from "./sidebar-section-label"
 
 export function Sidebar() {
 	const { data: meData } = useCurrentUser()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
-	const { logout, isLoggingOut } = useLogout()
-
-	async function handleLogout() {
-		await logout({ onBeforeLogout: () => setIsMenuOpen(false) })
-	}
 
 	return (
 		<aside
@@ -154,21 +148,7 @@ export function Sidebar() {
 							/>
 						</Button>
 					</Menu.Trigger>
-					<Menu.Content>
-						<Menu.Link to="/dashboard/settings">
-							<Settings size={12} />
-							<span>Settings</span>
-						</Menu.Link>
-						<Menu.Separator />
-						<Menu.Item
-							intent="danger"
-							disabled={isLoggingOut}
-							onClick={() => void handleLogout()}
-						>
-							<LogOut size={12} />
-							<span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
-						</Menu.Item>
-					</Menu.Content>
+					<UserMenuContent onBeforeLogout={() => setIsMenuOpen(false)} />
 				</Menu>
 			</Box>
 		</aside>
