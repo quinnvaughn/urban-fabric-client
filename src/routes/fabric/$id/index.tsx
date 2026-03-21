@@ -103,6 +103,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 							variables: { input: { id: fabric.id, thumbnail } },
 						})
 					}}
+					captureOnMount={!fabric.thumbnail}
 				/>
 				<EditorHUD />
 			</FabricMap>

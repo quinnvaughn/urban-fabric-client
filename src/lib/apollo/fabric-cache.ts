@@ -1,4 +1,4 @@
-import type { ApolloCache, Reference } from "@apollo/client"
+import { type ApolloCache, gql, type Reference } from "@apollo/client"
 import {
 	type FabricCardFragment,
 	FabricCardFragmentDoc,
@@ -144,6 +144,32 @@ export function clearFabricProposalFromCache(
 		id: cache.identify({ __typename: "Fabric", id: fabricId }),
 		fields: {
 			proposal: () => null,
+		},
+	})
+}
+
+/**
+ * Write the newly created proposal onto the cached Fabric so that
+ * hasProposal-dependent UI (e.g. the Publish button) updates immediately.
+ */
+export function setFabricProposalInCache(
+	cache: ApolloCache,
+	fabricId: string,
+	proposal: { id: string; isPublished: boolean },
+) {
+	const proposalRef = cache.writeFragment({
+		fragment: gql`
+			fragment NewProposal on Proposal {
+				id
+				isPublished
+			}
+		`,
+		data: { __typename: "Proposal", ...proposal },
+	})
+	cache.modify({
+		id: cache.identify({ __typename: "Fabric", id: fabricId }),
+		fields: {
+			proposal: () => proposalRef,
 		},
 	})
 }

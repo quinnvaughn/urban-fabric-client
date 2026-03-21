@@ -39,6 +39,7 @@ import {
 import {
 	addProposalToMyProposalsCache,
 	adjustMyDashboardStatsCache,
+	setFabricProposalInCache,
 } from "#/lib/apollo"
 import { useForm } from "#/lib/form"
 import {
@@ -170,6 +171,10 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						proposalDelta: 1,
 						unpublishedProposalDelta: 1,
 					})
+					setFabricProposalInCache(cache, fabricId, {
+						id: proposal.id,
+						isPublished: proposal.isPublished,
+					})
 					cache.writeQuery({
 						query: ProposalByFabricIdDocument,
 						variables: { fabricId },
@@ -227,6 +232,10 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					addProposalToMyProposalsCache(cache, proposal)
 					adjustMyDashboardStatsCache(cache, {
 						proposalDelta: 1,
+					})
+					setFabricProposalInCache(cache, fabricId, {
+						id: proposal.id,
+						isPublished: proposal.isPublished,
 					})
 					cache.writeQuery({
 						query: ProposalByFabricIdDocument,

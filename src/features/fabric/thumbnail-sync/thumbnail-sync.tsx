@@ -8,6 +8,7 @@ const VIEWPORT_DEBOUNCE_MS = 600
 type Props = {
 	onThumbnail: (thumbnail: string) => Promise<void>
 	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
+	captureOnMount?: boolean
 }
 
 function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
@@ -21,7 +22,11 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 	})
 }
 
-export function ThumbnailSync({ onThumbnail, onCaptureReady }: Props) {
+export function ThumbnailSync({
+	onThumbnail,
+	onCaptureReady,
+	captureOnMount,
+}: Props) {
 	const map = useMap()
 	const { saveStatus, selectedInstanceId } = useFabricStore()
 	const prevSaveStatus = useRef(saveStatus)
@@ -74,6 +79,20 @@ export function ThumbnailSync({ onThumbnail, onCaptureReady }: Props) {
 		const raf = requestAnimationFrame(() => captureAndSync())
 		return () => cancelAnimationFrame(raf)
 	}, [selectedInstanceId, captureAndSync])
+
+	// Capture once on initial mount (e.g. newly created fabric with no thumbnail)
+	useEffect(() => {
+		if (!captureOnMount) return
+		let cancelled = false
+		function onIdle() {
+			if (!cancelled) captureAndSync()
+		}
+		map.once("idle", onIdle)
+		return () => {
+			cancelled = true
+			map.off("idle", onIdle)
+		}
+	}, [captureOnMount, map, captureAndSync])
 
 	// Capture on viewport change
 	useEffect(() => {
