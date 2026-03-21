@@ -165,6 +165,7 @@ function RouteComponent() {
 						<ProposalRow
 							key={proposal.id}
 							id={proposal.id}
+							fabricId={proposal.fabricId}
 							date={proposal.updatedAt}
 							title={proposal.title}
 							isPublished={proposal.isPublished}

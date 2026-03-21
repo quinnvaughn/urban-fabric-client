@@ -26,6 +26,10 @@ import {
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
+import {
+	addFabricToMyFabricsCache,
+	adjustMyDashboardFabricCountCache,
+} from "#/lib/apollo"
 import { getLocationFromIp } from "#/lib/geo"
 import { openModal } from "#/stores"
 
@@ -46,6 +50,11 @@ export const Route = createFileRoute("/fabric/new")({
 					input: {
 						center,
 					},
+				},
+				update(cache, { data }) {
+					if (data?.createFabric.__typename !== "Fabric") return
+					addFabricToMyFabricsCache(cache, data.createFabric)
+					adjustMyDashboardFabricCountCache(cache, 1)
 				},
 			})
 			const result = fabricResponse.data?.createFabric

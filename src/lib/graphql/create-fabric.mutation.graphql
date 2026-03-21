@@ -1,7 +1,7 @@
 mutation CreateFabric($input: CreateFabricInput!) {
 	createFabric(input: $input) {
 		... on Fabric {
-			id
+			...FabricCard
 		}
 		... on UnauthorizedError {
 			message

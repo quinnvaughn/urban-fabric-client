@@ -131,3 +131,19 @@ export function adjustMyDashboardFabricCountCache(
 		},
 	})
 }
+
+/**
+ * Null out the proposal field on a cached Fabric so that the fabric
+ * appears as having no proposal after its proposal is deleted.
+ */
+export function clearFabricProposalFromCache(
+	cache: ApolloCache,
+	fabricId: string,
+) {
+	cache.modify({
+		id: cache.identify({ __typename: "Fabric", id: fabricId }),
+		fields: {
+			proposal: () => null,
+		},
+	})
+}

@@ -14,11 +14,15 @@ import {
 	VStack,
 } from "#/features/ui"
 import { DeleteProposalDocument } from "#/graphql/generated"
-import { removeProposalFromMyProposalsCache } from "#/lib/apollo"
+import {
+	clearFabricProposalFromCache,
+	removeProposalFromMyProposalsCache,
+} from "#/lib/apollo"
 import { css, cva, cx } from "#/styles/styled-system/css"
 
 type Props = {
 	id: string
+	fabricId: string
 	mapImage: string
 	isPublished: boolean
 	title: string
@@ -70,6 +74,7 @@ const actionButton = cva({
 
 export function ProposalRow({
 	id,
+	fabricId,
 	mapImage,
 	isPublished,
 	title,
@@ -91,11 +96,13 @@ export function ProposalRow({
 				deleteProposal: {
 					__typename: "Proposal",
 					id,
+					fabricId,
 				},
 			},
 			update(cache, { data }) {
 				if (data?.deleteProposal.__typename !== "Proposal") return
 				removeProposalFromMyProposalsCache(cache, data.deleteProposal.id)
+				clearFabricProposalFromCache(cache, data.deleteProposal.fabricId)
 			},
 		})
 

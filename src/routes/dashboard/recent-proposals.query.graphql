@@ -4,6 +4,7 @@ query RecentProposals($limit: Int) {
 			total
 			proposals {
 				id
+				fabricId
 				title
 				slug
 				isPublished

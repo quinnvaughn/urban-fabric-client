@@ -2,6 +2,7 @@ mutation DeleteProposal($input: DeleteProposalInput!) {
 	deleteProposal(input: $input) {
 		... on Proposal {
 			id
+			fabricId
 		}
 		... on ForbiddenError {
 			message
