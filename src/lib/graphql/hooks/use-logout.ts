@@ -32,7 +32,7 @@ export function useLogout() {
 					return false
 				}
 
-				await client.clearStore()
+				await client.resetStore()
 				await options?.onLoggedOut?.()
 				await navigate({
 					to: options?.redirectTo ?? "/",

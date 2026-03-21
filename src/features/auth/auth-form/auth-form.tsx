@@ -89,8 +89,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 		}
 	}
 
-	const googleText =
-		mode === "login" ? "continue_with" : "signup_with"
+	const googleText = mode === "login" ? "continue_with" : "signup_with"
 
 	const form = useForm({
 		schema: AuthSchema,
@@ -102,7 +101,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 		},
 		onSubmit: async (values) => {
 			try {
-				match(values)
+				await match(values)
 					.with({ mode: "login" }, async (v) => {
 						const response = await login({
 							variables: {
@@ -176,7 +175,10 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	return (
 		<form onSubmit={form.handleSubmit} noValidate>
 			{onModeChange ? (
-				<Tabs value={mode} onValueChange={(v) => onModeChange(v as "login" | "register")}>
+				<Tabs
+					value={mode}
+					onValueChange={(v) => onModeChange(v as "login" | "register")}
+				>
 					<Tabs.List>
 						<Tabs.Trigger value="login">Sign in</Tabs.Trigger>
 						<Tabs.Trigger value="register">Create account</Tabs.Trigger>
@@ -192,7 +194,10 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 			)}
 			<Box sx={{ py: "6" }}>
 				<VStack gap="6">
-					<GoogleSignInButton text={googleText} onCredential={handleGoogleCredential} />
+					<GoogleSignInButton
+						text={googleText}
+						onCredential={handleGoogleCredential}
+					/>
 					<Divider label="or email" lines="both" />
 					<VStack gap="3">
 						<form.Field name="email">
@@ -268,9 +273,26 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 								) : null
 							}
 						</form.Subscribe>
-						<Button intent="brand" lift type="submit">
-							{mode === "login" ? "Sign in" : "Join Urban Fabric"}
-						</Button>
+						<form.Subscribe
+							selector={(s) => [s.meta.isSubmitting, s.meta.canSubmit]}
+						>
+							{([isSubmitting, canSubmit]) => (
+								<Button
+									type="submit"
+									disabled={!canSubmit}
+									loading={isSubmitting}
+									fullWidth
+								>
+									{mode === "login"
+										? isSubmitting
+											? "Signing in..."
+											: "Sign in"
+										: isSubmitting
+											? "Creating account..."
+											: "Create account"}
+								</Button>
+							)}
+						</form.Subscribe>
 						{match(mode)
 							.with("login", () => (
 								<HStack gap="1" justify="center">
