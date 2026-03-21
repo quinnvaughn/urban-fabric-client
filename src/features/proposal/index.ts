@@ -1,6 +1,7 @@
 export * from "./proposal-card"
 export * from "./proposal-elements-layer"
 export * from "./proposal-form-page"
+export * from "./proposal-page-skeleton"
 export * from "./proposal-panel"
 export * from "./proposal-preview-modal"
 export * from "./proposal-public-header"

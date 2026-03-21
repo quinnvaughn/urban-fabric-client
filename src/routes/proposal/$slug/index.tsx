@@ -6,6 +6,7 @@ import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import {
 	ProposalElementsLayer,
+	ProposalPageSkeleton,
 	ProposalPanel,
 	ProposalPublicHeader,
 	ProposalSelectLayer,
@@ -25,6 +26,7 @@ import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/")({
 	component: RouteComponent,
+	pendingComponent: ProposalPageSkeleton,
 	loader: async ({ params, context }) => {
 		const getProposalQuery = context.preloadQuery(GetProposalDocument, {
 			variables: {
