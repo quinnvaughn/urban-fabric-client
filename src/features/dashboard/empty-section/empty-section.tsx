@@ -58,7 +58,7 @@ export function EmptySection({ type }: Props) {
 			</Box>
 			<Typography.Text size="md" color="stone.700" weight="semibold">
 				{match(type)
-					.with("proposal", () => "No proposals published")
+					.with("proposal", () => "No proposals yet")
 					.with("fabric", () => "No fabrics yet")
 					.exhaustive()}
 			</Typography.Text>

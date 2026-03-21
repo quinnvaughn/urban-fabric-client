@@ -5,6 +5,7 @@ import {
 	EmptySection,
 	ExploreNudge,
 	Greeting,
+	OnboardingCard,
 	SectionHeader,
 	StatRow,
 } from "#/features/dashboard"
@@ -65,15 +66,18 @@ function RouteComponent() {
 	}
 
 	const hasFabrics = recentFabricsData.myFabrics.fabrics.length > 0
+	const hasProposals = recentProposalsData.myProposals.proposals.length > 0
 
 	return (
 		<DashboardContainer>
 			<VStack gap="8">
 				<VStack gap="6">
 					<Greeting
+						hasFabrics={hasFabrics}
 						userName={userData.me.name.split(" ")[0] ?? ""}
 						numLikes={dashboardStatsData.myDashboardStats.proposalLikesDelta}
 					/>
+					{!hasFabrics && <OnboardingCard />}
 					<StatRow
 						stats={[
 							{
@@ -130,7 +134,7 @@ function RouteComponent() {
 							type="proposals"
 							total={recentProposalsData.myProposals.total}
 						/>
-						{hasFabrics ? (
+						{hasProposals ? (
 							<VStack gap="2.5">
 								{recentProposalsData.myProposals.proposals.map((proposal) => (
 									<ProposalRow
@@ -152,7 +156,7 @@ function RouteComponent() {
 							<EmptySection type="proposal" />
 						)}
 					</VStack>
-					{!hasFabrics && <ExploreNudge />}
+					{(!hasFabrics || !hasProposals) && <ExploreNudge />}
 				</VStack>
 			</VStack>
 		</DashboardContainer>

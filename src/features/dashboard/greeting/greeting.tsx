@@ -5,6 +5,7 @@ import { singularOrPlural } from "#/lib/string"
 type Props = {
 	userName: string
 	numLikes: number
+	hasFabrics: boolean
 }
 
 function getTimeOfDay(): string {
@@ -18,11 +19,38 @@ function getTimeOfDay(): string {
 	}
 }
 
-export function Greeting({ userName, numLikes }: Props) {
+export function Greeting({ userName, numLikes, hasFabrics }: Props) {
+	if (!hasFabrics) {
+		return (
+			<VStack gap="1">
+				<Typography.Heading
+					as="h1"
+					font="serif"
+					weight="light"
+					lineHeight="tight"
+					size="lg"
+				>
+					Welcome to Urban Fabric,{" "}
+					<Typography.Inline tone="accent" fontStyle="italic">
+						{userName}.
+					</Typography.Inline>
+				</Typography.Heading>
+				<Typography.Text as="p" font="sans" size="md" color="stone.500">
+					Let's get your first street redesign on the map.
+				</Typography.Text>
+			</VStack>
+		)
+	}
+
 	const timeOfDay = getTimeOfDay()
 	return (
 		<VStack gap="1">
-			<Typography.Heading as="h1" font="serif" weight="light" lineHeight="tight">
+			<Typography.Heading
+				as="h1"
+				font="serif"
+				weight="light"
+				lineHeight="tight"
+			>
 				Good {timeOfDay},{" "}
 				<Typography.Inline tone="accent" fontStyle="italic">
 					{userName}.

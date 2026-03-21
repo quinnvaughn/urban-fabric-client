@@ -1,7 +1,7 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useState } from "react"
-import { DashboardContainer } from "#/features/dashboard"
+import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
 import { FilterBar, Grid, LoadMore, Typography, VStack } from "#/features/ui"
 import { MyFabricsDocument } from "#/graphql/generated"
@@ -26,6 +26,8 @@ function RouteComponent() {
 	if (!data || data.myFabrics.__typename === "UnauthorizedError") {
 		throw redirect({ to: "/login", replace: true })
 	}
+
+	const myFabrics = data.myFabrics
 
 	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search)
@@ -53,6 +55,8 @@ function RouteComponent() {
 		filterVars: { search: debouncedSearch },
 	})
 
+	const hasCreatedFabrics = myFabrics.fabrics.length > 0
+
 	return (
 		<DashboardContainer>
 			<VStack gap="5">
@@ -77,11 +81,15 @@ function RouteComponent() {
 							onChange={setSearch}
 						/>
 					</FilterBar>
-					<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
-						{fabrics.map((fabric) => (
-							<FabricCard fabric={fabric} key={fabric.id} />
-						))}
-					</Grid>
+					{hasCreatedFabrics ? (
+						<Grid gap="3" cols={{ base: "1", md: "2", lg: "3" }}>
+							{fabrics.map((fabric) => (
+								<FabricCard fabric={fabric} key={fabric.id} />
+							))}
+						</Grid>
+					) : (
+						<EmptySection type="fabric" />
+					)}
 				</VStack>
 				<LoadMore
 					total={total}

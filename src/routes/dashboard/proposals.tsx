@@ -1,7 +1,7 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useState } from "react"
-import { DashboardContainer } from "#/features/dashboard"
+import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { ProposalRow } from "#/features/proposal"
 import {
 	FilterBar,
@@ -64,6 +64,8 @@ function RouteComponent() {
 		throw redirect({ to: "/login", replace: true })
 	}
 
+	const myProposals = data.myProposals
+
 	const categories =
 		selectedCategories.length > 0 ? selectedCategories : undefined
 
@@ -89,6 +91,8 @@ function RouteComponent() {
 				: null,
 		filterVars: { status: selectedStatus, categories, search: debouncedSearch },
 	})
+
+	const hasCreatedProposals = myProposals.proposals.length > 0
 
 	return (
 		<DashboardContainer>
@@ -161,21 +165,25 @@ function RouteComponent() {
 					</FilterBar.Filters>
 				</FilterBar>
 				<VStack gap="2.5">
-					{proposals.map((proposal) => (
-						<ProposalRow
-							key={proposal.id}
-							id={proposal.id}
-							fabricId={proposal.fabricId}
-							date={proposal.updatedAt}
-							title={proposal.title}
-							isPublished={proposal.isPublished}
-							views={proposal.viewCount}
-							likes={proposal.likeCount}
-							slug={proposal.slug}
-							location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
-							mapImage={proposal.snapshotThumbnail ?? ""}
-						/>
-					))}
+					{hasCreatedProposals ? (
+						proposals.map((proposal) => (
+							<ProposalRow
+								key={proposal.id}
+								id={proposal.id}
+								fabricId={proposal.fabricId}
+								date={proposal.updatedAt}
+								title={proposal.title}
+								isPublished={proposal.isPublished}
+								views={proposal.viewCount}
+								likes={proposal.likeCount}
+								slug={proposal.slug}
+								location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
+								mapImage={proposal.snapshotThumbnail ?? ""}
+							/>
+						))
+					) : (
+						<EmptySection type="proposal" />
+					)}
 				</VStack>
 				<LoadMore
 					total={total}
