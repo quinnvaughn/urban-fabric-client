@@ -94,7 +94,7 @@ export type ProposalFormPageProps =
 	| {
 			mode: "create"
 			data: ProposalFormData
-			onPublishSuccess: (slug: string) => void
+			onPublishSuccess: (slug: string, title: string) => void
 			onUnauthorized: () => void
 	  }
 	| {
@@ -103,7 +103,7 @@ export type ProposalFormPageProps =
 			published: boolean
 			data: ProposalFormData
 			/** Called after a draft is published via the Publish button. */
-			onPublishSuccess?: (slug: string) => void
+			onPublishSuccess?: (slug: string, title: string) => void
 			onUnauthorized: () => void
 	  }
 
@@ -262,11 +262,11 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			.with({ __typename: "NotFoundError" }, () => {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
-			.with({ __typename: "Proposal" }, ({ slug }) => {
+			.with({ __typename: "Proposal" }, ({ slug, title }) => {
 				if (props.mode === "create") {
-					props.onPublishSuccess(slug)
+					props.onPublishSuccess(slug, title)
 				} else {
-					props.onPublishSuccess?.(slug)
+					props.onPublishSuccess?.(slug, title)
 				}
 			})
 			.otherwise(() => {

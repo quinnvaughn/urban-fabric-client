@@ -7,6 +7,7 @@ import {
 	type GetFabricQuery,
 	ProposalByFabricIdDocument,
 } from "#/graphql/generated"
+import { openModal } from "#/stores"
 
 export const Route = createFileRoute("/fabric/$id/publish")({
 	component: RouteComponent,
@@ -74,9 +75,19 @@ function Publish({ fabric }: { fabric: Fabric }) {
 				fabricRef: { id: fabric.id, title: fabric.title },
 				initialValues: { title: "", description: "", categories: [] },
 			}}
-			onPublishSuccess={(slug) =>
-				navigate({ to: "/proposal/$slug", params: { slug } })
-			}
+			onPublishSuccess={(slug, title) => {
+				navigate({ to: "/proposal/$slug", params: { slug } }).then(() => {
+					setTimeout(() => {
+						openModal("shareProposal", {
+							link: `${window.location.origin}/proposal/${slug}`,
+							title,
+							eyebrow: "Your proposal is live!",
+							description:
+								"Share it with your community to get as many eyes on it as possible.",
+						})
+					}, 600)
+				})
+			}}
 			onUnauthorized={() => navigate({ to: "/login", replace: true })}
 		/>
 	)

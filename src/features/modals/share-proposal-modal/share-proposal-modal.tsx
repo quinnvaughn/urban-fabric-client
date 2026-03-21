@@ -94,11 +94,15 @@ export function ShareProposalModal({
 	onClose,
 	title,
 	link,
+	eyebrow = "Share proposal",
+	description,
 }: {
 	open: boolean
 	onClose: () => void
 	title: string
 	link: string
+	eyebrow?: string
+	description?: string
 }) {
 	const [copyText, activateCopy] = useTransientText("Copy Link", "Copied!")
 
@@ -110,7 +114,7 @@ export function ShareProposalModal({
 		<Modal open={open} onClose={onClose} size="sm">
 			<Modal.Header>
 				<VStack gap="1">
-					<Modal.Eyebrow color="coral.500">Share proposal</Modal.Eyebrow>
+					<Modal.Eyebrow color="coral.500">{eyebrow}</Modal.Eyebrow>
 					<Modal.Title
 						font="serif"
 						color="stone.900"
@@ -125,6 +129,11 @@ export function ShareProposalModal({
 			</Modal.Header>
 			<Modal.Body>
 				<VStack gap="4">
+					{description && (
+						<Typography.Text size="sm" color="stone.600">
+							{description}
+						</Typography.Text>
+					)}
 					<Grid cols={3} gap="2">
 						{shareDest.map((dest) => (
 							<a

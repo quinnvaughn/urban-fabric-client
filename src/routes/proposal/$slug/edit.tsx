@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ProposalFormPage } from "#/features/proposal"
 import { GetProposalDocument, type GetProposalQuery } from "#/graphql/generated"
+import { openModal } from "#/stores"
 
 export const Route = createFileRoute("/proposal/$slug/edit")({
 	component: RouteComponent,
@@ -64,9 +65,19 @@ function EditProposal({ proposal }: { proposal: Proposal }) {
 					categories: proposal.categories,
 				},
 			}}
-			onPublishSuccess={(slug) =>
-				navigate({ to: "/proposal/$slug", params: { slug } })
-			}
+			onPublishSuccess={(slug, title) => {
+				navigate({ to: "/proposal/$slug", params: { slug } }).then(() => {
+					setTimeout(() => {
+						openModal("shareProposal", {
+							link: `${window.location.origin}/proposal/${slug}`,
+							title,
+							eyebrow: "Your proposal is live!",
+							description:
+								"Share it with your community to get as many eyes on it as possible.",
+						})
+					}, 600)
+				})
+			}}
 			onUnauthorized={() => navigate({ to: "/login", replace: true })}
 		/>
 	)
