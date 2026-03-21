@@ -39,20 +39,20 @@ const actions: Action[] = [
 ]
 
 export function ElementPanel() {
-	const activeElement = useFabricStore((state) => state.activeElement)
-	const activeTool = useFabricStore((state) => state.activeTool)
-	const setActiveElement = useFabricStore((state) => state.setActiveElement)
-	const setActiveTool = useFabricStore((state) => state.setActiveTool)
-	const undo = useFabricStore((state) => state.undo)
-	const redo = useFabricStore((state) => state.redo)
-	const canUndo = useFabricStore((state) => state.canUndo)
-	const canRedo = useFabricStore((state) => state.canRedo)
-	const deleteElement = useFabricStore((state) => state.deleteElement)
-	const selectedInstanceId = useFabricStore((state) => state.selectedInstanceId)
-	const setSelectedInstanceId = useFabricStore(
-		(state) => state.setSelectedInstanceId,
-	)
-	const openCommandPalette = useFabricStore((state) => state.openCommandPalette)
+	const {
+		activeElement,
+		activeTool,
+		setActiveElement,
+		setActiveTool,
+		undo,
+		redo,
+		canUndo,
+		canRedo,
+		deleteElement,
+		selectedInstanceId,
+		setSelectedInstanceId,
+		openCommandPalette,
+	} = useFabricStore()
 
 	useFabricKeyboardShortcuts({
 		ids: PANEL_SHORTCUT_IDS,

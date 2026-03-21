@@ -1,12 +1,6 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { getLocationFromIp } from "#/lib/geo"
-import {
-	useEffect,
-	useMemo,
-	useRef,
-	useSyncExternalStore,
-} from "react"
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react"
 import { match } from "ts-pattern"
 import {
 	DrawingLayer,
@@ -32,6 +26,7 @@ import {
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
+import { getLocationFromIp } from "#/lib/geo"
 import { openModal } from "#/stores"
 
 const GUEST_FABRIC_KEY = "guest-fabric"
@@ -94,7 +89,7 @@ function RouteComponent() {
 
 function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
-	const initElements = useFabricStore((state) => state.initElements)
+	const { initElements } = useFabricStore()
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)

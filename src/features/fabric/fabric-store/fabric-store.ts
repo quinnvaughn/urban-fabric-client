@@ -1,117 +1,154 @@
-import { create } from "zustand"
+import { createStore, useStore } from "@tanstack/react-store"
 import type { ElementDescriptor, ElementInstance } from "../element-types/types"
 
 type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error"
 
-type FabricStore = {
+type FabricState = {
 	title: string
-	initTitle: (title: string) => void
-	setTitle: (title: string) => void
 	saveStatus: SaveStatus
-	setSaveStatus: (status: SaveStatus) => void
 	activeTool: "select" | "draw"
 	activeElement: ElementDescriptor | null
-	setActiveElement: (element: ElementDescriptor | null) => void
-	setActiveTool: (tool: "select" | "draw") => void
 	elements: ElementInstance[]
-	initElements: (elements: ElementInstance[]) => void
-	addElement: (element: ElementInstance) => void
-	updateElement: (id: string, updates: Partial<ElementInstance>) => void
-	deleteElement: (id: string) => void
 	selectedInstanceId: string | null
-	setSelectedInstanceId: (id: string | null) => void
-
 	commandPaletteOpen: boolean
-	openCommandPalette: () => void
-	closeCommandPalette: () => void
-
 	past: ElementInstance[][]
 	future: ElementInstance[][]
 	canUndo: boolean
 	canRedo: boolean
-	snapshot: () => void
-	undo: () => void
-	redo: () => void
 }
 
-export const useFabricStore = create<FabricStore>((set) => ({
-	activeElement: null,
-	activeTool: "select",
-	saveStatus: "idle",
-	setSaveStatus: (status) => set({ saveStatus: status }),
+export const fabricStore = createStore<FabricState>({
 	title: "",
-	initTitle: (title) => set({ title }),
+	saveStatus: "idle",
+	activeTool: "select",
+	activeElement: null,
 	elements: [],
 	selectedInstanceId: null,
-	setActiveElement: (element) => set({ activeElement: element }),
-	setActiveTool: (tool) => set({ activeTool: tool }),
-	setTitle: (title) => set({ title, saveStatus: "dirty" }),
-	initElements: (elements) => set({ elements }),
 	commandPaletteOpen: false,
-	openCommandPalette: () => set({ commandPaletteOpen: true }),
-	closeCommandPalette: () => set({ commandPaletteOpen: false }),
-	addElement: (element) =>
-		set((state) => ({
-			elements: [...state.elements, element],
-			past: [...state.past.slice(-49), state.elements],
-			future: [],
-			canUndo: true,
-			canRedo: false,
-			saveStatus: "dirty",
-		})),
-	updateElement: (id, updates) =>
-		set((state) => ({
-			elements: state.elements.map((el) =>
-				el.id === id ? { ...el, ...updates } : el,
-			),
-			saveStatus: "dirty",
-		})),
-	deleteElement: (id) =>
-		set((state) => ({
-			elements: state.elements.filter((el) => el.id !== id),
-			past: [...state.past.slice(-49), state.elements],
-			future: [],
-			canUndo: true,
-			canRedo: false,
-			saveStatus: "dirty",
-		})),
-	setSelectedInstanceId: (id) => set({ selectedInstanceId: id }),
-
 	past: [],
 	future: [],
 	canUndo: false,
 	canRedo: false,
-	snapshot: () =>
-		set((state) => ({
-			past: [...state.past.slice(-49), state.elements],
-			future: [],
+})
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+
+export const initTitle = (title: string) =>
+	fabricStore.setState((s) => ({ ...s, title }))
+
+export const setTitle = (title: string) =>
+	fabricStore.setState((s) => ({ ...s, title, saveStatus: "dirty" as const }))
+
+export const setSaveStatus = (status: SaveStatus) =>
+	fabricStore.setState((s) => ({ ...s, saveStatus: status }))
+
+export const setActiveElement = (element: ElementDescriptor | null) =>
+	fabricStore.setState((s) => ({ ...s, activeElement: element }))
+
+export const setActiveTool = (tool: "select" | "draw") =>
+	fabricStore.setState((s) => ({ ...s, activeTool: tool }))
+
+export const initElements = (elements: ElementInstance[]) =>
+	fabricStore.setState((s) => ({ ...s, elements }))
+
+export const setSelectedInstanceId = (id: string | null) =>
+	fabricStore.setState((s) => ({ ...s, selectedInstanceId: id }))
+
+export const openCommandPalette = () =>
+	fabricStore.setState((s) => ({ ...s, commandPaletteOpen: true }))
+
+export const closeCommandPalette = () =>
+	fabricStore.setState((s) => ({ ...s, commandPaletteOpen: false }))
+
+export const addElement = (element: ElementInstance) =>
+	fabricStore.setState((s) => ({
+		...s,
+		elements: [...s.elements, element],
+		past: [...s.past.slice(-49), s.elements],
+		future: [],
+		canUndo: true,
+		canRedo: false,
+		saveStatus: "dirty" as const,
+	}))
+
+export const updateElement = (id: string, updates: Partial<ElementInstance>) =>
+	fabricStore.setState((s) => ({
+		...s,
+		elements: s.elements.map((el) =>
+			el.id === id ? { ...el, ...updates } : el,
+		),
+		saveStatus: "dirty" as const,
+	}))
+
+export const deleteElement = (id: string) =>
+	fabricStore.setState((s) => ({
+		...s,
+		elements: s.elements.filter((el) => el.id !== id),
+		past: [...s.past.slice(-49), s.elements],
+		future: [],
+		canUndo: true,
+		canRedo: false,
+		saveStatus: "dirty" as const,
+	}))
+
+export const snapshot = () =>
+	fabricStore.setState((s) => ({
+		...s,
+		past: [...s.past.slice(-49), s.elements],
+		future: [],
+		canUndo: true,
+		canRedo: false,
+	}))
+
+export const undo = () =>
+	fabricStore.setState((s) => {
+		if (!s.past.length) return s
+		const previous = s.past[s.past.length - 1]
+		return {
+			...s,
+			elements: previous,
+			past: s.past.slice(0, -1),
+			future: [s.elements, ...s.future],
+			canUndo: s.past.length - 1 > 0,
+			canRedo: true,
+			saveStatus: "dirty" as const,
+		}
+	})
+
+export const redo = () =>
+	fabricStore.setState((s) => {
+		if (!s.future.length) return s
+		return {
+			...s,
+			elements: s.future[0],
+			past: [...s.past, s.elements],
+			future: s.future.slice(1),
 			canUndo: true,
-			canRedo: false,
-		})),
-	undo: () =>
-		set((state) => {
-			if (!state.past.length) return state
-			const previous = state.past[state.past.length - 1]
-			return {
-				elements: previous,
-				past: state.past.slice(0, -1),
-				future: [state.elements, ...state.future],
-				canUndo: state.past.length - 1 > 0,
-				canRedo: true,
-				saveStatus: "dirty",
-			}
-		}),
-	redo: () =>
-		set((state) => {
-			if (!state.future.length) return state
-			const next = state.future[0]
-			return {
-				elements: next,
-				past: [...state.past, state.elements],
-				future: state.future.slice(1),
-				canUndo: true,
-				canRedo: state.future.length - 1 > 0,
-				saveStatus: "dirty",
-			}
-		}),
-}))
+			canRedo: s.future.length - 1 > 0,
+			saveStatus: "dirty" as const,
+		}
+	})
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useFabricStore() {
+	const state = useStore(fabricStore, (s) => s)
+	return {
+		...state,
+		initTitle,
+		setTitle,
+		setSaveStatus,
+		setActiveElement,
+		setActiveTool,
+		initElements,
+		setSelectedInstanceId,
+		openCommandPalette,
+		closeCommandPalette,
+		addElement,
+		updateElement,
+		deleteElement,
+		snapshot,
+		undo,
+		redo,
+	}
+}

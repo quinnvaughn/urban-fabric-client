@@ -22,12 +22,12 @@ function buildPaletteItems(
 }
 
 export function EditorCommandPalette() {
-	const commandPaletteOpen = useFabricStore((state) => state.commandPaletteOpen)
-	const closeCommandPalette = useFabricStore(
-		(state) => state.closeCommandPalette,
-	)
-	const setActiveElement = useFabricStore((state) => state.setActiveElement)
-	const setActiveTool = useFabricStore((state) => state.setActiveTool)
+	const {
+		commandPaletteOpen,
+		closeCommandPalette,
+		setActiveElement,
+		setActiveTool,
+	} = useFabricStore()
 
 	const items = buildPaletteItems(setActiveElement, setActiveTool)
 

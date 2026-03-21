@@ -10,10 +10,12 @@ type Props = {
 }
 
 export function EditorTitleInput({ id, title, onTitleSave }: Props) {
-	const text = useFabricStore((state) => state.title)
-	const initTitle = useFabricStore((state) => state.initTitle)
-	const setText = useFabricStore((state) => state.setTitle)
-	const setSaveStatus = useFabricStore((state) => state.setSaveStatus)
+	const {
+		title: text,
+		initTitle,
+		setTitle: setText,
+		setSaveStatus,
+	} = useFabricStore()
 	const initializedFabricId = useRef<string | null>(null)
 
 	// Initialize local title from server data when opening a fabric.

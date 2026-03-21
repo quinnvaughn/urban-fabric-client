@@ -57,7 +57,7 @@ type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
 function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const client = useApolloClient()
-	const initElements = useFabricStore((state) => state.initElements)
+	const { initElements } = useFabricStore()
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)

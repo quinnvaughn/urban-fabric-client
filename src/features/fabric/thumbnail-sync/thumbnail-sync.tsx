@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react"
 import { useMap } from "../fabric-map"
-import { useFabricStore } from "../fabric-store"
+import { fabricStore, useFabricStore } from "../fabric-store"
 
 const VIEWPORT_EVENTS = ["moveend", "zoomend", "rotateend"] as const
 const VIEWPORT_DEBOUNCE_MS = 600
@@ -23,8 +23,7 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 
 export function ThumbnailSync({ onThumbnail, onCaptureReady }: Props) {
 	const map = useMap()
-	const saveStatus = useFabricStore((s) => s.saveStatus)
-	const selectedInstanceId = useFabricStore((s) => s.selectedInstanceId)
+	const { saveStatus, selectedInstanceId } = useFabricStore()
 	const prevSaveStatus = useRef(saveStatus)
 	const pendingCapture = useRef(false)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -59,7 +58,7 @@ export function ThumbnailSync({ onThumbnail, onCaptureReady }: Props) {
 
 		if (!wasJustSaved) return
 
-		if (useFabricStore.getState().selectedInstanceId === null) {
+		if (fabricStore.state.selectedInstanceId === null) {
 			captureAndSync()
 		} else {
 			pendingCapture.current = true

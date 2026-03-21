@@ -10,7 +10,12 @@ import {
 	removeSourcesIfPresent,
 	useMap,
 } from "../fabric-map"
-import { useFabricStore } from "../fabric-store"
+import {
+	setActiveElement,
+	setActiveTool,
+	setSelectedInstanceId,
+	useFabricStore,
+} from "../fabric-store"
 import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
@@ -35,10 +40,7 @@ function makeLineFeature(
 
 export function DrawingLayer() {
 	const map = useMap()
-	const activeTool = useFabricStore((s) => s.activeTool)
-	const activeElement = useFabricStore((s) => s.activeElement)
-	const elements = useFabricStore((s) => s.elements)
-	const addElement = useFabricStore((s) => s.addElement)
+	const { activeTool, activeElement, elements, addElement } = useFabricStore()
 	const snapToRoad = useSnapToRoad()
 	const routeBetween = useRouteBetween()
 
@@ -146,12 +148,11 @@ export function DrawingLayer() {
 			})
 			reset()
 			// Switch back to select and select the newly created element so the
-			// properties panel opens immediately. Done via getState() to avoid a
-			// React 18/Zustand sync re-render clearing waypoint refs mid-event.
-			const store = useFabricStore.getState()
-			store.setActiveTool("select")
-			store.setActiveElement(null)
-			store.setSelectedInstanceId(newId)
+			// properties panel opens immediately. Done via store actions to avoid a
+			// React 18 sync re-render clearing waypoint refs mid-event.
+			setActiveTool("select")
+			setActiveElement(null)
+			setSelectedInstanceId(newId)
 		}
 
 		async function handleClick(e: maplibregl.MapMouseEvent) {

@@ -10,7 +10,7 @@ import {
 	SELECT_SOURCE_IDS,
 	useMap,
 } from "../fabric-map"
-import { useFabricStore } from "../fabric-store"
+import { fabricStore, useFabricStore } from "../fabric-store"
 import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
 
 const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
@@ -168,13 +168,15 @@ const MID_HANDLE_IMAGE_ID = "select-mid-handle-img"
 
 export function SelectLayer() {
 	const map = useMap()
-	const activeTool = useFabricStore((s) => s.activeTool)
-	const elements = useFabricStore((s) => s.elements)
-	const selectedInstanceId = useFabricStore((s) => s.selectedInstanceId)
-	const setSelectedInstanceId = useFabricStore((s) => s.setSelectedInstanceId)
-	const deleteElement = useFabricStore((s) => s.deleteElement)
-	const updateElement = useFabricStore((s) => s.updateElement)
-	const snapshot = useFabricStore((s) => s.snapshot)
+	const {
+		activeTool,
+		elements,
+		selectedInstanceId,
+		setSelectedInstanceId,
+		deleteElement,
+		updateElement,
+		snapshot,
+	} = useFabricStore()
 	const snapToRoad = useSnapToRoad()
 	const routeBetween = useRouteBetween()
 
@@ -515,8 +517,7 @@ export function SelectLayer() {
 				computedPaint?.["line-color"] ?? s.color,
 				mh.strokeWidth,
 			).then(({ img, pixelRatio }) => {
-				// Discard if selection changed before the image finished building.
-				if (useFabricStore.getState().selectedInstanceId !== expectedId) return
+				if (fabricStore.state.selectedInstanceId !== expectedId) return
 				if (hasImage(map, MID_HANDLE_IMAGE_ID))
 					map.removeImage(MID_HANDLE_IMAGE_ID)
 				map.addImage(MID_HANDLE_IMAGE_ID, img, { pixelRatio })
@@ -620,7 +621,7 @@ export function SelectLayer() {
 		}
 
 		function handleMouseDown(e: maplibregl.MapMouseEvent) {
-			const { selectedInstanceId, elements } = useFabricStore.getState()
+			const { selectedInstanceId, elements } = fabricStore.state
 			if (!selectedInstanceId) return
 			const el = elements.find((el) => el.id === selectedInstanceId)
 			if (!el) return
@@ -724,7 +725,7 @@ export function SelectLayer() {
 		function handleWindowMouseMove(e: MouseEvent) {
 			if (!dragging.current?.ready) return
 
-			const { selectedInstanceId, elements } = useFabricStore.getState()
+			const { selectedInstanceId, elements } = fabricStore.state
 			if (!selectedInstanceId) return
 			const el = elements.find((el) => el.id === selectedInstanceId)
 			if (!el) return
@@ -782,8 +783,7 @@ export function SelectLayer() {
 				// discarded just because the cursor moved during the OSRM round-trip.
 				const callId = ++routeCallId.current
 				// Read fresh element state so we use the latest routed segments
-				const { selectedInstanceId: sid, elements: els } =
-					useFabricStore.getState()
+				const { selectedInstanceId: sid, elements: els } = fabricStore.state
 				if (!sid) return
 				const fresh = els.find((el) => el.id === sid)
 				if (!fresh) return
@@ -862,7 +862,7 @@ export function SelectLayer() {
 			})
 			if (endpointHit.length === 0) return
 
-			const { selectedInstanceId, elements } = useFabricStore.getState()
+			const { selectedInstanceId, elements } = fabricStore.state
 			if (!selectedInstanceId) return
 			const el = elements.find((el) => el.id === selectedInstanceId)
 			if (!el || el.waypoints.length <= 2) return
@@ -920,7 +920,7 @@ export function SelectLayer() {
 				(active instanceof HTMLElement && active.isContentEditable)
 			)
 				return
-			const id = useFabricStore.getState().selectedInstanceId
+			const id = fabricStore.state.selectedInstanceId
 			if (!id) return
 			deleteElement(id)
 			setSelectedInstanceId(null)

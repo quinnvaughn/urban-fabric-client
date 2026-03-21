@@ -4,7 +4,7 @@ import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
 export function SaveIndicator() {
-	const saveStatus = useFabricStore((state) => state.saveStatus)
+	const { saveStatus } = useFabricStore()
 
 	return match(saveStatus)
 		.with("saved", () => (

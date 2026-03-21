@@ -19,16 +19,15 @@ import { useFabricStore } from "../fabric-store"
 import { useCalculatedRows } from "../use-calculated-rows"
 
 export function PropertiesPanel() {
-	const selectedInstance = useFabricStore(
-		(state) =>
-			state.elements.find((e) => e.id === state.selectedInstanceId) ?? null,
-	)
-	const setSelectedInstanceId = useFabricStore(
-		(state) => state.setSelectedInstanceId,
-	)
-	const updateElement = useFabricStore((state) => state.updateElement)
-
-	const deleteElement = useFabricStore((state) => state.deleteElement)
+	const {
+		elements,
+		selectedInstanceId,
+		setSelectedInstanceId,
+		updateElement,
+		deleteElement,
+	} = useFabricStore()
+	const selectedInstance =
+		elements.find((e) => e.id === selectedInstanceId) ?? null
 
 	const descriptor = selectedInstance
 		? ELEMENT_TYPE_MAP[selectedInstance.typeId]

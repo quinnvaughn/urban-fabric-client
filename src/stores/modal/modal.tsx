@@ -1,8 +1,5 @@
-import { create } from "zustand"
-import type {
-	ModalExtraProps,
-	modalRegistry,
-} from "#/features/modals/registry"
+import { createStore, useStore } from "@tanstack/react-store"
+import type { ModalExtraProps, modalRegistry } from "#/features/modals/registry"
 
 export type ModalId = keyof typeof modalRegistry
 
@@ -12,31 +9,31 @@ type ModalEntry = {
 
 // ---------- Store ----------
 
-interface ModalState {
+type ModalState = {
 	current: ModalEntry | null
-	open: <K extends ModalId>(
-		id: K,
-		...args: object extends ModalExtraProps<K>
-			? [props?: ModalExtraProps<K>]
-			: [props: ModalExtraProps<K>]
-	) => void
-	close: () => void
 }
 
-export const useModalStore = create<ModalState>((set) => ({
-	current: null,
-	open: (id, ...args) =>
-		set({ current: { id, props: args[0] ?? {} } as ModalEntry }),
-	close: () => set({ current: null }),
-}))
+export const modalStore = createStore<ModalState>({ current: null })
 
-// Imperative helpers for use outside React (keyboard handlers, etc.)
+// ── Actions ───────────────────────────────────────────────────────────────────
+
 export function openModal<K extends ModalId>(
 	id: K,
 	...args: object extends ModalExtraProps<K>
 		? [props?: ModalExtraProps<K>]
 		: [props: ModalExtraProps<K>]
 ) {
-	useModalStore.getState().open(id, ...(args as [ModalExtraProps<K>]))
+	modalStore.setState(() => ({
+		current: { id, props: args[0] ?? {} } as ModalEntry,
+	}))
 }
-export const closeModal = () => useModalStore.getState().close()
+
+export const closeModal = () =>
+	modalStore.setState((s) => ({ ...s, current: null }))
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useModalStore() {
+	const { current } = useStore(modalStore, (s) => s)
+	return { current, open: openModal, close: closeModal }
+}

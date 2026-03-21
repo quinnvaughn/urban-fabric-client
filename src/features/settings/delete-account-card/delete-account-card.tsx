@@ -3,7 +3,7 @@ import { useModalStore } from "#/stores"
 import { css } from "#/styles/styled-system/css"
 
 export function DeleteAccountCard() {
-	const open = useModalStore((state) => state.open)
+	const { open } = useModalStore()
 
 	return (
 		<Card size="sm" shadow="sm">

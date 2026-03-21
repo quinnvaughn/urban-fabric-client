@@ -35,8 +35,8 @@ export function EditorTopbar({
 	hasProposal,
 	slug,
 }: Props) {
-	const saveStatus = useFabricStore((state) => state.saveStatus)
-	const hasElements = useFabricStore((state) => state.elements.length > 0)
+	const { saveStatus, elements } = useFabricStore()
+	const hasElements = elements.length > 0
 	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
 	const isPublishDisabled = isSaving || !hasElements
 	return (
