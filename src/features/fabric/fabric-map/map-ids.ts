@@ -2,7 +2,6 @@ export const DRAW_LAYER_IDS = ["draw-preview", "draw-active"] as const
 export const DRAW_SOURCE_IDS = ["draw-preview", "draw-active"] as const
 
 export const SELECT_LAYER_IDS = [
-	"select-mid-handle",
 	"select-endpoints-node",
 	"select-endpoints-glow",
 	"select-endpoints-snap-ring",
@@ -15,6 +14,5 @@ export const SELECT_LAYER_IDS = [
 export const SELECT_SOURCE_IDS = [
 	"select-line",
 	"select-endpoints",
-	"select-midpoint",
 	"select-drag-preview",
 ] as const

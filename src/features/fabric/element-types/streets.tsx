@@ -42,13 +42,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
 				},
-				midHandle: {
-					width: 12,
-					height: 10,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
-				},
 				drawPreview: {
 					color: "#78ab3c",
 					width: 3,
@@ -230,13 +223,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
 				},
-				midHandle: {
-					width: 11,
-					height: 9,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
-				},
 				drawPreview: {
 					color: "#78ab3c",
 					width: 2.5,
@@ -290,13 +276,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingOpacity: 0.45,
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
-				},
-				midHandle: {
-					width: 12,
-					height: 10,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
 				},
 				drawPreview: {
 					color: "#d4901e",
@@ -418,13 +397,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
 				},
-				midHandle: {
-					width: 12,
-					height: 10,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
-				},
 				drawPreview: {
 					color: "#b95846",
 					width: 3,
@@ -523,13 +495,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
 				},
-				midHandle: {
-					width: 11,
-					height: 9,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
-				},
 				drawPreview: {
 					color: "#8a857d",
 					width: 2.5,
@@ -618,13 +583,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
 				},
-				midHandle: {
-					width: 12,
-					height: 10,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
-				},
 				drawPreview: {
 					color: "#504c45",
 					width: 3,
@@ -698,13 +656,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingOpacity: 0.45,
 					snapRingDasharray: [3, 2],
 					snapRingWidth: 1.5,
-				},
-				midHandle: {
-					width: 12,
-					height: 10,
-					radius: 2.5,
-					fillColor: "#ffffff",
-					strokeWidth: 1.5,
 				},
 				drawPreview: {
 					color: "#7c6fb0",

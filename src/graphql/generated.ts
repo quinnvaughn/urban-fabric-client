@@ -401,7 +401,7 @@ export type Query = {
   proposal: ProposalResult;
   proposalByFabricId?: Maybe<Proposal>;
   proposalBySlug: ProposalBySlugResult;
-  routeBetween: Array<Coordinate>;
+  routeBetween?: Maybe<Array<Coordinate>>;
   snapToRoad: Coordinate;
   user: UserResult;
 };
@@ -473,6 +473,7 @@ export type QueryProposalBySlugArgs = {
 export type QueryRouteBetweenArgs = {
   a: CoordinateInput;
   b: CoordinateInput;
+  mode?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -704,7 +705,7 @@ export type RouteBetweenQueryVariables = Exact<{
 }>;
 
 
-export type RouteBetweenQuery = { __typename: 'Query', routeBetween: Array<{ __typename: 'Coordinate', lng: number, lat: number }> };
+export type RouteBetweenQuery = { __typename: 'Query', routeBetween?: Array<{ __typename: 'Coordinate', lng: number, lat: number }> | null };
 
 export type SnapToRoadQueryVariables = Exact<{
   lat: Scalars['Float']['input'];

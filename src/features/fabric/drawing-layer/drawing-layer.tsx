@@ -16,7 +16,7 @@ import {
 	setSelectedInstanceId,
 	useFabricStore,
 } from "../fabric-store"
-import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
+import { flattenSegments, useRouteBetween } from "../osrm-utils"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -41,7 +41,6 @@ function makeLineFeature(
 export function DrawingLayer() {
 	const map = useMap()
 	const { activeTool, activeElement, elements, addElement } = useFabricStore()
-	const snapToRoad = useSnapToRoad()
 	const routeBetween = useRouteBetween()
 
 	// Mutable drawing state — lives in refs so map event handlers never go stale
@@ -164,7 +163,7 @@ export function DrawingLayer() {
 			}
 			lastClickTimeRef.current = now
 
-			const snapped = await snapToRoad(e.lngLat.lng, e.lngLat.lat)
+			const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
 			const waypoints = waypointsRef.current
 
 			if (waypoints.length === 0) {
@@ -204,7 +203,7 @@ export function DrawingLayer() {
 			window.removeEventListener("keydown", handleKeyDown)
 			reset()
 		}
-	}, [activeTool, activeElement, map, addElement, snapToRoad, routeBetween])
+	}, [activeTool, activeElement, map, addElement, routeBetween])
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {

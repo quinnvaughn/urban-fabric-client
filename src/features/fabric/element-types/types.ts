@@ -108,16 +108,6 @@ export type LineLayerStyle = {
 		snapRingWidth: number
 	}
 
-	// Small pill handle at the line midpoint, selected state only.
-	// strokeColor is derived from baseMapStyle.color at render time.
-	midHandle?: {
-		width: number
-		height: number
-		radius: number
-		fillColor: string // always white
-		strokeWidth: number
-	}
-
 	// Draw preview — ghost line shown while the user is placing nodes.
 	drawPreview?: {
 		color: string

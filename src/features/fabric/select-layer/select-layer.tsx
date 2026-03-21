@@ -2,8 +2,6 @@ import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
 import {
-	hasImage,
-	removeImageIfPresent,
 	removeLayersIfPresent,
 	removeSourcesIfPresent,
 	SELECT_LAYER_IDS,
@@ -11,7 +9,7 @@ import {
 	useMap,
 } from "../fabric-map"
 import { fabricStore, useFabricStore } from "../fabric-store"
-import { flattenSegments, useRouteBetween, useSnapToRoad } from "../osrm-utils"
+import { flattenSegments, useRouteBetween } from "../osrm-utils"
 
 const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	type: "Feature",
@@ -22,12 +20,6 @@ const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 const EMPTY_MULTIPOINT: GeoJSON.Feature<GeoJSON.MultiPoint> = {
 	type: "Feature",
 	geometry: { type: "MultiPoint", coordinates: [] },
-	properties: {},
-}
-
-const EMPTY_POINT: GeoJSON.Feature<GeoJSON.Point> = {
-	type: "Feature",
-	geometry: { type: "Point", coordinates: [] },
 	properties: {},
 }
 
@@ -51,119 +43,6 @@ function closestWaypointIndex(
 	return minIdx
 }
 
-// Returns the index of the segment that contains the line's midpoint.
-function segmentIndexAtMidpoint(segments: [number, number][][]): number {
-	const lengths = segments.map((seg) => {
-		let len = 0
-		for (let i = 1; i < seg.length; i++) {
-			const dx = seg[i][0] - seg[i - 1][0]
-			const dy = seg[i][1] - seg[i - 1][1]
-			len += Math.sqrt(dx * dx + dy * dy)
-		}
-		return len
-	})
-	const total = lengths.reduce((a, b) => a + b, 0)
-	let cumulative = 0
-	const half = total / 2
-	for (let i = 0; i < lengths.length; i++) {
-		cumulative += lengths[i]
-		if (cumulative >= half) return i
-	}
-	return segments.length - 1
-}
-
-function lineMidpoint(coords: [number, number][]): [number, number] {
-	if (coords.length === 0) return [0, 0]
-	if (coords.length === 1) return coords[0]
-	let total = 0
-	const dists: number[] = [0]
-	for (let i = 1; i < coords.length; i++) {
-		const dx = coords[i][0] - coords[i - 1][0]
-		const dy = coords[i][1] - coords[i - 1][1]
-		total += Math.sqrt(dx * dx + dy * dy)
-		dists.push(total)
-	}
-	const half = total / 2
-	for (let i = 1; i < coords.length; i++) {
-		if (dists[i] >= half) {
-			const seg = dists[i] - dists[i - 1]
-			const t = seg === 0 ? 0 : (half - dists[i - 1]) / seg
-			return [
-				coords[i - 1][0] + t * (coords[i][0] - coords[i - 1][0]),
-				coords[i - 1][1] + t * (coords[i][1] - coords[i - 1][1]),
-			]
-		}
-	}
-	return coords[coords.length - 1]
-}
-
-// Generates a pill SVG and returns it as an HTMLImageElement for map.addImage.
-function makeMidHandleImage(
-	w: number,
-	h: number,
-	r: number,
-	fill: string,
-	stroke: string,
-	strokeWidth: number,
-): Promise<{ img: HTMLImageElement; pixelRatio: number }> {
-	const scale = 2 // render at 2x for retina
-	const pad = (strokeWidth + 2) * scale // enough room for shadow + stroke
-	const svgW = (w + pad * 2) * scale
-	const svgH = (h + pad * 2) * scale
-	const rx = r * scale
-	const sw = strokeWidth * scale
-
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}">
-		<defs>
-			<filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
-				<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(0,0,0,0.18)"/>
-			</filter>
-		</defs>
-		<rect
-			x="${pad * scale}" y="${pad * scale}"
-			width="${w * scale}" height="${h * scale}"
-			rx="${rx}" ry="${rx}"
-			fill="${fill}"
-			stroke="${stroke}"
-			stroke-width="${sw}"
-			filter="url(#sh)"
-		/>
-	</svg>`
-
-	const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-	return new Promise((resolve, reject) => {
-		const img = new Image(svgW, svgH)
-		img.onload = () => resolve({ img, pixelRatio: scale })
-		img.onerror = reject
-		img.src = url
-	})
-}
-
-// Returns clockwise degrees from north, matching MapLibre's icon-rotate convention
-function lineBearingAtMidpoint(coords: [number, number][]): number {
-	if (coords.length < 2) return 0
-	let total = 0
-	const dists: number[] = [0]
-	for (let i = 1; i < coords.length; i++) {
-		const dx = coords[i][0] - coords[i - 1][0]
-		const dy = coords[i][1] - coords[i - 1][1]
-		total += Math.sqrt(dx * dx + dy * dy)
-		dists.push(total)
-	}
-	const half = total / 2
-	for (let i = 1; i < coords.length; i++) {
-		if (dists[i] >= half) {
-			const cosLat = Math.cos((coords[i - 1][1] * Math.PI) / 180)
-			const dx = (coords[i][0] - coords[i - 1][0]) * cosLat
-			const dy = coords[i][1] - coords[i - 1][1]
-			return (Math.atan2(dx, dy) * 180) / Math.PI - 90
-		}
-	}
-	return 0
-}
-
-const MID_HANDLE_IMAGE_ID = "select-mid-handle-img"
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function SelectLayer() {
@@ -177,7 +56,6 @@ export function SelectLayer() {
 		updateElement,
 		snapshot,
 	} = useFabricStore()
-	const snapToRoad = useSnapToRoad()
 	const routeBetween = useRouteBetween()
 
 	const dragging = useRef<{
@@ -196,7 +74,6 @@ export function SelectLayer() {
 			type: "geojson",
 			data: EMPTY_MULTIPOINT,
 		})
-		map.addSource("select-midpoint", { type: "geojson", data: EMPTY_POINT })
 
 		// Line layers first so circles and handle render on top of them
 
@@ -306,24 +183,9 @@ export function SelectLayer() {
 			},
 		})
 
-		// Mid-handle symbol — topmost
-		map.addLayer({
-			id: "select-mid-handle",
-			type: "symbol",
-			source: "select-midpoint",
-			layout: {
-				"icon-image": "",
-				"icon-rotate": ["get", "bearing"],
-				"icon-rotation-alignment": "map",
-				"icon-allow-overlap": true,
-				"icon-ignore-placement": true,
-			},
-		})
-
 		return () => {
 			removeLayersIfPresent(map, SELECT_LAYER_IDS)
 			removeSourcesIfPresent(map, SELECT_SOURCE_IDS)
-			removeImageIfPresent(map, MID_HANDLE_IMAGE_ID)
 		}
 	}, [map])
 
@@ -335,10 +197,7 @@ export function SelectLayer() {
 		const pointSource = map.getSource("select-endpoints") as
 			| maplibregl.GeoJSONSource
 			| undefined
-		const midSource = map.getSource("select-midpoint") as
-			| maplibregl.GeoJSONSource
-			| undefined
-		if (!lineSource || !pointSource || !midSource) return
+		if (!lineSource || !pointSource) return
 
 		const el = elements.find((e) => e.id === selectedInstanceId)
 		const descriptor = el ? ELEMENT_TYPE_MAP[el.typeId] : undefined
@@ -347,12 +206,10 @@ export function SelectLayer() {
 			el && descriptor ? computeBasePaint(descriptor, el) : undefined
 		const sel = s?.selected
 		const ep = s?.endpoints
-		const mh = s?.midHandle
 
 		if (!el || !s || !sel) {
 			lineSource.setData(EMPTY_LINE)
 			pointSource.setData(EMPTY_MULTIPOINT)
-			midSource.setData(EMPTY_POINT)
 			map.setPaintProperty("select-main", "line-opacity", 0)
 			map.setPaintProperty("select-outline-above", "line-opacity", 0)
 			map.setPaintProperty("select-outline-below", "line-opacity", 0)
@@ -364,7 +221,6 @@ export function SelectLayer() {
 				"circle-stroke-opacity",
 				0,
 			)
-			map.setLayoutProperty("select-mid-handle", "icon-image", "")
 			return
 		}
 
@@ -503,34 +359,6 @@ export function SelectLayer() {
 			)
 		}
 
-		// Mid-handle — build SVG image from spec, register with map, show symbol
-		if (mh) {
-			// Hide immediately so the previous line's color doesn't flash at the
-			// new line's midpoint position while the async image build is in flight.
-			map.setLayoutProperty("select-mid-handle", "icon-image", "")
-			const expectedId = selectedInstanceId
-			makeMidHandleImage(
-				mh.width,
-				mh.height,
-				mh.radius,
-				mh.fillColor,
-				computedPaint?.["line-color"] ?? s.color,
-				mh.strokeWidth,
-			).then(({ img, pixelRatio }) => {
-				if (fabricStore.state.selectedInstanceId !== expectedId) return
-				if (hasImage(map, MID_HANDLE_IMAGE_ID))
-					map.removeImage(MID_HANDLE_IMAGE_ID)
-				map.addImage(MID_HANDLE_IMAGE_ID, img, { pixelRatio })
-				map.setLayoutProperty(
-					"select-mid-handle",
-					"icon-image",
-					MID_HANDLE_IMAGE_ID,
-				)
-			})
-		} else {
-			map.setLayoutProperty("select-mid-handle", "icon-image", "")
-		}
-
 		// Geometry — updated last so all paint/style properties are already
 		// applied before MapLibre renders the new geometry.
 		lineSource.setData({
@@ -542,11 +370,6 @@ export function SelectLayer() {
 			type: "Feature",
 			geometry: { type: "MultiPoint", coordinates: el.waypoints },
 			properties: {},
-		})
-		midSource.setData({
-			type: "Feature",
-			geometry: { type: "Point", coordinates: lineMidpoint(el.coordinates) },
-			properties: { bearing: lineBearingAtMidpoint(el.coordinates) },
 		})
 
 		map.setPaintProperty("select-outline-above", "line-opacity", outlineOpacity)
@@ -598,7 +421,7 @@ export function SelectLayer() {
 			}
 			// Don't deselect when clicking on a handle
 			const handleHit = map.queryRenderedFeatures(e.point, {
-				layers: ["select-endpoints-node", "select-mid-handle"],
+				layers: ["select-endpoints-node"],
 			})
 			if (handleHit.length > 0) return
 
@@ -640,58 +463,6 @@ export function SelectLayer() {
 				map.getCanvas().style.cursor = "grabbing"
 				return
 			}
-
-			// ── Mid-handle pull ──────────────────────────────────────────────
-			const midHit = map.queryRenderedFeatures(e.point, {
-				layers: ["select-mid-handle"],
-			})
-			if (midHit.length > 0 && el.waypoints.length >= 2) {
-				map.dragPan.disable()
-				map.getCanvas().style.cursor = "grabbing"
-				// Mark as not-ready while async routing initialises
-				dragging.current = { waypointIndex: -1, elementId: el.id, ready: false }
-
-				const segments = el.segments?.length ? el.segments : [el.coordinates]
-				const segIdx = segmentIndexAtMidpoint(segments)
-				const mid = lineMidpoint(el.coordinates)
-
-				snapToRoad(mid[0], mid[1])
-					.then((snapped) =>
-						Promise.all([
-							routeBetween(el.waypoints[segIdx], snapped),
-							routeBetween(snapped, el.waypoints[segIdx + 1]),
-						]).then(([leftSeg, rightSeg]) => {
-							// User may have released before routing finished
-							if (dragging.current?.elementId !== el.id) return
-							const newWaypoints: [number, number][] = [
-								...el.waypoints.slice(0, segIdx + 1),
-								snapped,
-								...el.waypoints.slice(segIdx + 1),
-							]
-							const newSegments: [number, number][][] = [
-								...segments.slice(0, segIdx),
-								leftSeg,
-								rightSeg,
-								...segments.slice(segIdx + 1),
-							]
-							updateElement(el.id, {
-								waypoints: newWaypoints,
-								segments: newSegments,
-								coordinates: flattenSegments(newSegments),
-							})
-							dragging.current = {
-								waypointIndex: segIdx + 1,
-								elementId: el.id,
-								ready: true,
-							}
-						}),
-					)
-					.catch(() => {
-						dragging.current = null
-						map.dragPan.enable()
-						map.getCanvas().style.cursor = ""
-					})
-			}
 		}
 
 		// Map-level mousemove: cursor hover feedback only (not used during drag)
@@ -700,10 +471,7 @@ export function SelectLayer() {
 			const endpointHit = map.queryRenderedFeatures(e.point, {
 				layers: ["select-endpoints-node"],
 			})
-			const midHit = map.queryRenderedFeatures(e.point, {
-				layers: ["select-mid-handle"],
-			})
-			if (endpointHit.length > 0 || midHit.length > 0) {
+			if (endpointHit.length > 0) {
 				map.getCanvas().style.cursor = "grab"
 				return
 			}
@@ -794,7 +562,7 @@ export function SelectLayer() {
 				] as [number, number][][]
 
 				try {
-					const snapped = await snapToRoad(capturedCursor[0], capturedCursor[1])
+					const snapped = capturedCursor
 					freshWaypoints[capturedWaypointIndex] = snapped
 
 					const reroutes: Promise<void>[] = []
@@ -851,6 +619,23 @@ export function SelectLayer() {
 					| maplibregl.GeoJSONSource
 					| undefined
 			)?.setData(EMPTY_LINE)
+			// Revert endpoint circles to the store's actual waypoints in case
+			// routing failed and the preview circle is stuck at the drag position.
+			const { selectedInstanceId: sid, elements: els } = fabricStore.state
+			const actual = sid ? els.find((e) => e.id === sid) : undefined
+			;(
+				map.getSource("select-endpoints") as
+					| maplibregl.GeoJSONSource
+					| undefined
+			)?.setData(
+				actual
+					? {
+							type: "Feature",
+							geometry: { type: "MultiPoint", coordinates: actual.waypoints },
+							properties: {},
+						}
+					: EMPTY_MULTIPOINT,
+			)
 		}
 
 		// Double-click an endpoint circle to remove that waypoint.
@@ -956,7 +741,6 @@ export function SelectLayer() {
 		setSelectedInstanceId,
 		updateElement,
 		snapshot,
-		snapToRoad,
 		routeBetween,
 	])
 
