@@ -2,6 +2,8 @@ import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import {
 	DashboardContainer,
+	EmptySection,
+	ExploreNudge,
 	Greeting,
 	SectionHeader,
 	StatRow,
@@ -62,6 +64,8 @@ function RouteComponent() {
 		throw redirect({ to: "/login", replace: true })
 	}
 
+	const hasFabrics = recentFabricsData.myFabrics.fabrics.length > 0
+
 	return (
 		<DashboardContainer>
 			<VStack gap="8">
@@ -111,35 +115,44 @@ function RouteComponent() {
 							type="fabrics"
 							total={recentFabricsData.myFabrics.total}
 						/>
-						<Grid gap="3" cols={3}>
-							{recentFabricsData.myFabrics.fabrics.map((fabric) => (
-								<FabricCard fabric={fabric} key={fabric.id} />
-							))}
-						</Grid>
+						{hasFabrics ? (
+							<Grid gap="3" cols={3}>
+								{recentFabricsData.myFabrics.fabrics.map((fabric) => (
+									<FabricCard fabric={fabric} key={fabric.id} />
+								))}
+							</Grid>
+						) : (
+							<EmptySection type="fabric" />
+						)}
 					</VStack>
 					<VStack gap="6">
 						<SectionHeader
 							type="proposals"
 							total={recentProposalsData.myProposals.total}
 						/>
-						<VStack gap="2.5">
-							{recentProposalsData.myProposals.proposals.map((proposal) => (
-								<ProposalRow
-									id={proposal.id}
-									fabricId={proposal.fabricId}
-									title={proposal.title}
-									date={proposal.updatedAt}
-									isPublished={proposal.isPublished}
-									location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
-									views={proposal.viewCount}
-									likes={proposal.likeCount}
-									slug={proposal.slug}
-									mapImage={proposal.snapshotThumbnail}
-									key={proposal.id}
-								/>
-							))}
-						</VStack>
+						{hasFabrics ? (
+							<VStack gap="2.5">
+								{recentProposalsData.myProposals.proposals.map((proposal) => (
+									<ProposalRow
+										id={proposal.id}
+										fabricId={proposal.fabricId}
+										title={proposal.title}
+										date={proposal.updatedAt}
+										isPublished={proposal.isPublished}
+										location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
+										views={proposal.viewCount}
+										likes={proposal.likeCount}
+										slug={proposal.slug}
+										mapImage={proposal.snapshotThumbnail}
+										key={proposal.id}
+									/>
+								))}
+							</VStack>
+						) : (
+							<EmptySection type="proposal" />
+						)}
 					</VStack>
+					{!hasFabrics && <ExploreNudge />}
 				</VStack>
 			</VStack>
 		</DashboardContainer>

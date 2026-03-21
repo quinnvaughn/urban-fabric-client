@@ -7,7 +7,7 @@ export const link = defineRecipe({
 		alignItems: "center",
 		gap: "1",
 		fontFamily: "sans",
-		fontWeight: "medium",
+		fontWeight: "semibold",
 		textDecoration: "none",
 		borderRadius: "sm",
 		transition: "colors 0.12s ease",
