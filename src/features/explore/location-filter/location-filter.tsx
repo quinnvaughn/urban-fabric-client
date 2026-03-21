@@ -1,6 +1,6 @@
 import { useLazyQuery } from "@apollo/client/react"
 import { MapPin, Navigation, Search, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button, HStack, Input, Menu, useToast } from "#/features/ui"
 import { GeocodeLocationDocument } from "#/graphql/generated"
 import { useDebounce } from "#/lib/hooks"
@@ -21,6 +21,7 @@ type Props = {
 
 export function LocationFilter({ focusLat, focusLng, value, onChange }: Props) {
 	const toast = useToast()
+	const inputRef = useRef<HTMLInputElement>(null)
 	const [locationSearch, setLocationSearch] = useState("")
 	const debouncedSearch = useDebounce(locationSearch)
 
@@ -66,6 +67,7 @@ export function LocationFilter({ focusLat, focusLng, value, onChange }: Props) {
 
 	function handleOpenChange(open: boolean) {
 		if (!open) setLocationSearch("")
+		else setTimeout(() => inputRef.current?.focus(), 0)
 	}
 
 	const searching = debouncedSearch.length >= 3
@@ -86,6 +88,7 @@ export function LocationFilter({ focusLat, focusLng, value, onChange }: Props) {
 				<Menu.Content size="lg">
 					<Input size="sm">
 						<Input.Field
+							ref={inputRef}
 							startAdornment={<Search size={12} />}
 							placeholder="Search cities"
 							value={locationSearch}
