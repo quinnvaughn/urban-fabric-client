@@ -343,7 +343,6 @@ export enum ProposalCategory {
   BikeInfrastructure = 'BIKE_INFRASTRUCTURE',
   Parking = 'PARKING',
   Pedestrian = 'PEDESTRIAN',
-  Streetscape = 'STREETSCAPE',
   TrafficSafety = 'TRAFFIC_SAFETY',
   Transit = 'TRANSIT'
 }
