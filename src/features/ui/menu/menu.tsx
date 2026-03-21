@@ -433,6 +433,7 @@ function MenuFilterTrigger({
 			<button
 				type="button"
 				data-active={active || undefined}
+				data-open={open || undefined}
 				className={cx(styles.filterTrigger, className)}
 			>
 				{children}

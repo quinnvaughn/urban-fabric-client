@@ -157,6 +157,7 @@ export const menu = defineSlotRecipe({
 			fontWeight: "medium",
 			transition: "background 150ms, color 150ms, border-color 150ms",
 			_hover: { color: "fg.default", bg: "stone.100" },
+			"&[data-open]": { color: "fg.default", bg: "stone.100" },
 			"&[data-active]": {
 				bg: "teal.50",
 				color: "teal.700",
