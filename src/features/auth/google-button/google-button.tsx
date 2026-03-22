@@ -1,38 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useGoogleLogin } from "@react-oauth/google"
 import { Button } from "#/features/ui"
-import { getClientEnv } from "#/lib/env/client"
-
-type GoogleCredentialResponse = {
-	credential: string
-}
-
-declare global {
-	interface Window {
-		google?: {
-			accounts: {
-				id: {
-					initialize: (config: {
-						client_id: string
-						callback: (response: GoogleCredentialResponse) => void
-					}) => void
-					renderButton: (
-						element: HTMLElement,
-						options: {
-							theme?: "outline" | "filled_blue" | "filled_black"
-							size?: "large" | "medium" | "small"
-							text?: "signin_with" | "signup_with" | "continue_with" | "signin"
-							width?: number
-						},
-					) => void
-				}
-			}
-		}
-	}
-}
 
 type Props = {
 	text: "signin_with" | "signup_with" | "continue_with"
-	onCredential: (idToken: string) => void
+	onCredential: (accessToken: string) => void
 }
 
 function GoogleIcon() {
@@ -65,75 +36,19 @@ const LABEL: Record<Props["text"], string> = {
 }
 
 export function GoogleSignInButton({ text, onCredential }: Props) {
-	const wrapperRef = useRef<HTMLDivElement>(null)
-	const googleContainerRef = useRef<HTMLDivElement>(null)
-	const onCredentialRef = useRef(onCredential)
-	onCredentialRef.current = onCredential
-	const [scriptLoaded, setScriptLoaded] = useState(false)
-
-	useEffect(() => {
-		const script = document.createElement("script")
-		script.src = "https://accounts.google.com/gsi/client"
-		script.async = true
-		script.onload = () => setScriptLoaded(true)
-		document.head.appendChild(script)
-		return () => {
-			document.head.removeChild(script)
-		}
-	}, [])
-
-	useEffect(() => {
-		if (!scriptLoaded || !googleContainerRef.current || !wrapperRef.current)
-			return
-
-		const width = wrapperRef.current.offsetWidth || 300
-
-		window.google?.accounts.id.initialize({
-			client_id: getClientEnv().VITE_GOOGLE_CLIENT_ID,
-			callback: (response) => {
-				onCredentialRef.current(response.credential)
-			},
-		})
-		window.google?.accounts.id.renderButton(googleContainerRef.current, {
-			theme: "outline",
-			size: "large",
-			text,
-			width,
-		})
-
-		// Stretch Google's iframe to fill the overlay so the whole button area is clickable
-		setTimeout(() => {
-			const iframe = googleContainerRef.current?.querySelector("iframe")
-			if (iframe) {
-				iframe.style.setProperty("width", "100%", "important")
-				iframe.style.setProperty("height", "100%", "important")
-			}
-		}, 200)
-	}, [scriptLoaded, text])
+	const login = useGoogleLogin({
+		onSuccess: (response) => onCredential(response.access_token),
+	})
 
 	return (
-		// Wrapper captures hover cursor; our Button is visual-only (pointer-events: none)
-		// Google's iframe sits on top as the real click target
-		<div ref={wrapperRef} style={{ position: "relative", cursor: "pointer" }}>
-			<div style={{ pointerEvents: "none" }}>
-				<Button
-					appearance="outline"
-					intent="neutral"
-					fullWidth
-					startIcon={<GoogleIcon />}
-				>
-					{LABEL[text]}
-				</Button>
-			</div>
-			<div
-				ref={googleContainerRef}
-				aria-hidden="true"
-				style={{
-					position: "absolute",
-					inset: 0,
-					opacity: 0,
-				}}
-			/>
-		</div>
+		<Button
+			appearance="outline"
+			intent="neutral"
+			fullWidth
+			startIcon={<GoogleIcon />}
+			onClick={() => login()}
+		>
+			{LABEL[text]}
+		</Button>
 	)
 }

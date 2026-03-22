@@ -153,7 +153,7 @@ export type GeocodeResult = {
 };
 
 export type GoogleLoginInput = {
-  idToken: Scalars['String']['input'];
+  accessToken: Scalars['String']['input'];
 };
 
 export type GoogleLoginResult = ConflictError | UnauthorizedError | User;

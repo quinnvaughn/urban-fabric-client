@@ -58,10 +58,10 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	const navigate = useNavigate()
 	const client = useApolloClient()
 
-	async function handleGoogleCredential(idToken: string) {
+	async function handleGoogleCredential(accessToken: string) {
 		try {
 			const response = await googleLogin({
-				variables: { input: { idToken } },
+				variables: { input: { accessToken } },
 			})
 			match(response.data?.googleLogin)
 				.with(

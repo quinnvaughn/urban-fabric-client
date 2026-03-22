@@ -1,4 +1,5 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import {
 	createRootRouteWithContext,
 	HeadContent,
@@ -70,10 +71,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<ToastProvider>
-					<ModalRenderer />
-					{children}
-				</ToastProvider>
+				<GoogleOAuthProvider clientId={getClientEnv().VITE_GOOGLE_CLIENT_ID}>
+					<ToastProvider>
+						<ModalRenderer />
+						{children}
+					</ToastProvider>
+				</GoogleOAuthProvider>
 				<Scripts />
 			</body>
 		</html>
