@@ -76,7 +76,10 @@ export function LocationFilter({ focusLat, focusLng, value, onChange }: Props) {
 
 	return (
 		<HStack gap="0" align="center">
-			<Menu placement="bottom-start" onOpenChange={handleOpenChange}>
+			<Menu
+				placement={{ base: "bottom-end", sm: "bottom-start" }}
+				onOpenChange={handleOpenChange}
+			>
 				<Menu.Trigger>
 					<Menu.FilterTrigger active={!!value}>
 						<HStack gap="1" align="center">

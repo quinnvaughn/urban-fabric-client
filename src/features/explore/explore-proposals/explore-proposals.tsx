@@ -21,14 +21,12 @@ type ExploreProposalsProps = {
 	}
 	ipLocation: LatLng
 	usePageScroll?: boolean
-	stickyTopOffset?: number | string
 }
 
 export function ExploreProposals({
 	initialData,
 	ipLocation,
 	usePageScroll = false,
-	stickyTopOffset,
 }: ExploreProposalsProps) {
 	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search)
@@ -102,7 +100,6 @@ export function ExploreProposals({
 				}}
 				focusLat={ipLocation.lat}
 				focusLng={ipLocation.lng}
-				stickyTopOffset={stickyTopOffset}
 			/>
 			<Box className={css({ px: "7", paddingTop: "5", paddingBottom: "12" })}>
 				<VStack gap="4">

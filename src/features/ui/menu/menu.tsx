@@ -15,7 +15,7 @@ interface MenuContextValue {
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>
 	triggerRef: React.RefObject<HTMLElement | null>
 	gap: number
-	placement: MenuPlacement
+	placement: ResponsivePlacement
 }
 
 const MenuContext = React.createContext<MenuContextValue | null>(null)
@@ -48,6 +48,20 @@ export type MenuPlacement =
 	| "bottom-start"
 	| "bottom-end"
 
+type ResponsivePlacement = MenuPlacement | Partial<Record<"base" | "sm" | "md" | "lg" | "xl" | "2xl", MenuPlacement>>
+
+const breakpoints = { sm: "640px", md: "768px", lg: "1024px", xl: "1280px", "2xl": "1536px" } as const
+
+function resolvePlacement(placement: ResponsivePlacement): MenuPlacement {
+	if (typeof placement === "string") return placement
+	for (const bp of ["2xl", "xl", "lg", "md", "sm"] as const) {
+		if (placement[bp] && window.matchMedia(`(min-width: ${breakpoints[bp]})`).matches) {
+			return placement[bp]
+		}
+	}
+	return placement.base ?? "top-end"
+}
+
 export interface MenuRootProps {
 	children: React.ReactNode
 	/** Controlled open state */
@@ -56,7 +70,7 @@ export interface MenuRootProps {
 	/** Gap between the trigger and the menu edge, in px. Default: 6 */
 	gap?: number
 	/** Where the menu opens relative to the trigger. Default: "top-end" */
-	placement?: MenuPlacement
+	placement?: ResponsivePlacement
 }
 
 function MenuRoot({
@@ -125,7 +139,7 @@ function useMenuPosition(
 	triggerRef: React.RefObject<HTMLElement | null>,
 	open: boolean,
 	gap: number,
-	placement: MenuPlacement,
+	placement: ResponsivePlacement,
 ) {
 	const [pos, setPos] = React.useState<React.CSSProperties>({})
 
@@ -135,15 +149,16 @@ function useMenuPosition(
 		function calculate() {
 			if (!triggerRef.current) return
 			const rect = triggerRef.current.getBoundingClientRect()
-			if (placement === "bottom-start") {
+			const resolved = resolvePlacement(placement)
+			if (resolved === "bottom-start") {
 				setPos({ top: rect.bottom + gap, left: rect.left })
-			} else if (placement === "bottom-end") {
+			} else if (resolved === "bottom-end") {
 				setPos({
 					top: rect.bottom + gap,
 					left: rect.right,
 					transform: "translateX(-100%)",
 				})
-			} else if (placement === "top-start") {
+			} else if (resolved === "top-start") {
 				setPos({
 					bottom: window.innerHeight - rect.top + gap,
 					left: rect.left,

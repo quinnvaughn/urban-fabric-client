@@ -38,7 +38,6 @@ function RouteComponent() {
 					}}
 					ipLocation={ipLocation}
 					usePageScroll
-					stickyTopOffset="var(--uf-header-height, 56px)"
 				/>
 			</main>
 		</>

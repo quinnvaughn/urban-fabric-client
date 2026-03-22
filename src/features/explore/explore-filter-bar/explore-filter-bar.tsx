@@ -1,6 +1,5 @@
 import { Box, Button, FilterBar, HStack, Menu, Segmented } from "#/features/ui"
 import { ExploreSortBy, ProposalCategory } from "#/graphql/generated"
-import { useSticky } from "#/lib/hooks"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 import { LocationFilter, type SelectedLocation } from "../location-filter"
@@ -18,7 +17,6 @@ type ExploreFilterBarProps = {
 	onClearFilters: () => void
 	focusLat: number
 	focusLng: number
-	stickyTopOffset?: number | string
 }
 
 export function ExploreFilterBar({
@@ -34,105 +32,110 @@ export function ExploreFilterBar({
 	onClearFilters,
 	focusLat,
 	focusLng,
-	stickyTopOffset = 0,
 }: ExploreFilterBarProps) {
-	const { sentinelRef, isStuck } = useSticky()
-
 	return (
-		<>
-			<div ref={sentinelRef} />
-			<Box
-				style={{ top: stickyTopOffset }}
-				className={css({
-					position: "sticky",
-					zIndex: "raised",
-					py: "4",
-					px: "7",
-					boxShadow: isStuck ? "sm" : undefined,
-					background: "stone.100",
-					flexShrink: 0,
-				})}
-			>
-				<FilterBar>
-					<FilterBar.Search
-						placeholder="Search proposals"
-						value={search}
-						onChange={onSearchChange}
-					/>
-					<FilterBar.Filters>
-						<HStack gap="8" justify="between" className={css({ w: "full" })}>
+		<Box
+			className={css({
+				py: "4",
+				px: "7",
+				background: "stone.100",
+			})}
+		>
+			<FilterBar>
+				<FilterBar.Search
+					placeholder="Search proposals"
+					value={search}
+					onChange={onSearchChange}
+				/>
+				<FilterBar.Filters>
+					<Box
+						className={css({
+							display: "flex",
+							flexDirection: { base: "column", md: "row" },
+							alignItems: { base: "flex-start", md: "center" },
+							justifyContent: { md: "space-between" },
+							gap: { base: "2.5", md: "8" },
+							w: "full",
+						})}
+					>
+						<Box
+							className={css({
+								display: "flex",
+								alignItems: "center",
+								gap: "2",
+								whiteSpace: "nowrap",
+								w: { base: "full", md: "auto" },
+								justifyContent: { base: "space-between", md: "flex-start" },
+							})}
+						>
+							<Menu placement="bottom-start">
+								<Menu.Trigger>
+									<Menu.FilterTrigger active={selectedCategories.length > 0}>
+										{selectedCategories.length > 0
+											? `Category · ${selectedCategories.length}`
+											: "Category"}
+									</Menu.FilterTrigger>
+								</Menu.Trigger>
+								<Menu.Content>
+									{Object.values(ProposalCategory).map((category) => (
+										<Menu.CheckItem
+											key={category}
+											checked={selectedCategories.includes(category)}
+											onCheckedChange={() => onToggleCategory(category)}
+										>
+											{enumValueToReadableLabel(category)}
+										</Menu.CheckItem>
+									))}
+								</Menu.Content>
+							</Menu>
+							<FilterBar.Separator
+								className={css({ display: { base: "none", md: "block" } })}
+							/>
+							<LocationFilter
+								focusLat={focusLat}
+								focusLng={focusLng}
+								value={selectedLocation}
+								onChange={onLocationChange}
+							/>
+							{hasActiveFilters && (
+								<Button
+									type="button"
+									appearance="ghost"
+									intent="neutral"
+									size="sm"
+									onClick={onClearFilters}
+								>
+									Clear filters
+								</Button>
+							)}
+						</Box>
+						<Segmented
+							variant="pill"
+							value={sortBy}
+							onChange={(value) => onSortByChange(value as ExploreSortBy)}
+						>
 							<HStack
 								gap="2"
 								align="center"
 								className={css({ whiteSpace: "nowrap" })}
 							>
-								<Menu placement="bottom-start">
-									<Menu.Trigger>
-										<Menu.FilterTrigger active={selectedCategories.length > 0}>
-											{selectedCategories.length > 0
-												? `Category · ${selectedCategories.length}`
-												: "Category"}
-										</Menu.FilterTrigger>
-									</Menu.Trigger>
-									<Menu.Content>
-										{Object.values(ProposalCategory).map((category) => (
-											<Menu.CheckItem
-												key={category}
-												checked={selectedCategories.includes(category)}
-												onCheckedChange={() => onToggleCategory(category)}
-											>
-												{enumValueToReadableLabel(category)}
-											</Menu.CheckItem>
-										))}
-									</Menu.Content>
-								</Menu>
-								<FilterBar.Separator />
-								<LocationFilter
-									focusLat={focusLat}
-									focusLng={focusLng}
-									value={selectedLocation}
-									onChange={onLocationChange}
-								/>
-								{hasActiveFilters && (
-									<Button
-										type="button"
-										appearance="ghost"
-										intent="neutral"
-										size="sm"
-										onClick={onClearFilters}
-									>
-										Clear filters
-									</Button>
-								)}
+								<Segmented.Legend>Sort By</Segmented.Legend>
+								<Segmented.Group>
+									<Segmented.Option value={ExploreSortBy.MostLiked}>
+										Most liked
+									</Segmented.Option>
+									<Segmented.Option value={ExploreSortBy.MostViewed}>
+										Most viewed
+									</Segmented.Option>
+									<Segmented.Option value={ExploreSortBy.Recent}>
+										Newest
+									</Segmented.Option>
+								</Segmented.Group>
 							</HStack>
-							<Segmented
-								variant="pill"
-								value={sortBy}
-								onChange={(value) => onSortByChange(value as ExploreSortBy)}
-							>
-								<HStack
-									gap="2"
-									align="center"
-									className={css({ whiteSpace: "nowrap" })}
-								>
-									<Segmented.Legend>Sort By</Segmented.Legend>
-									<Segmented.Group>
-										<Segmented.Option value={ExploreSortBy.MostLiked}>
-											Most liked
-										</Segmented.Option>
-										<Segmented.Option value={ExploreSortBy.MostViewed}>
-											Most viewed
-										</Segmented.Option>
-										<Segmented.Option value={ExploreSortBy.Recent}>
-											Newest
-										</Segmented.Option>
-									</Segmented.Group>
-								</HStack>
-							</Segmented>
-						</HStack>
-					</FilterBar.Filters>
-				</FilterBar>
-			</Box>
-		</>
+						</Segmented>
+					</Box>
+				</FilterBar.Filters>
+			</FilterBar>
+		</Box>
 	)
 }
