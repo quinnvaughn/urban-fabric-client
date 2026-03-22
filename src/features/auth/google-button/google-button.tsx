@@ -99,28 +99,35 @@ export function GoogleSignInButton({ text, onCredential }: Props) {
 		})
 	}, [scriptLoaded, text])
 
+	function handleClick() {
+		hiddenRef.current?.querySelector<HTMLElement>("div[role=button]")?.click()
+	}
+
 	return (
-		<div style={{ position: "relative", width: "100%" }}>
+		<>
+			{/* On-screen but invisible — bottom-right corner so Google doesn't detect it as off-screen */}
+			<div
+				ref={hiddenRef}
+				aria-hidden="true"
+				style={{
+					position: "fixed",
+					bottom: 0,
+					right: 0,
+					opacity: 0,
+					pointerEvents: "none",
+					width: 300,
+					zIndex: -1,
+				}}
+			/>
 			<Button
 				appearance="outline"
 				intent="neutral"
 				fullWidth
 				startIcon={<GoogleIcon />}
+				onClick={handleClick}
 			>
 				{LABEL[text]}
 			</Button>
-			{/* Google's iframe button overlaid on top — transparent but clickable */}
-			<div
-				ref={hiddenRef}
-				aria-hidden="true"
-				style={{
-					position: "absolute",
-					inset: 0,
-					opacity: 0,
-					overflow: "hidden",
-					width: "100%",
-				}}
-			/>
-		</div>
+		</>
 	)
 }
