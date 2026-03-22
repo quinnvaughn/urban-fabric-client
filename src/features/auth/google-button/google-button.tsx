@@ -99,34 +99,28 @@ export function GoogleSignInButton({ text, onCredential }: Props) {
 		})
 	}, [scriptLoaded, text])
 
-	function handleClick() {
-		hiddenRef.current?.querySelector<HTMLElement>("div[role=button]")?.click()
-	}
-
 	return (
-		<>
-			{/* Off-screen container for Google's rendered button — needed to trigger the real OAuth popup */}
-			<div
-				ref={hiddenRef}
-				aria-hidden="true"
-				style={{
-					position: "fixed",
-					top: -9999,
-					left: -9999,
-					opacity: 0,
-					pointerEvents: "none",
-					width: 300,
-				}}
-			/>
+		<div style={{ position: "relative", width: "100%" }}>
 			<Button
 				appearance="outline"
 				intent="neutral"
 				fullWidth
 				startIcon={<GoogleIcon />}
-				onClick={handleClick}
 			>
 				{LABEL[text]}
 			</Button>
-		</>
+			{/* Google's iframe button overlaid on top — transparent but clickable */}
+			<div
+				ref={hiddenRef}
+				aria-hidden="true"
+				style={{
+					position: "absolute",
+					inset: 0,
+					opacity: 0,
+					overflow: "hidden",
+					width: "100%",
+				}}
+			/>
+		</div>
 	)
 }
