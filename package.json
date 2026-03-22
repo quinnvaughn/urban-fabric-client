@@ -21,6 +21,7 @@
   "dependencies": {
     "@apollo/client": "^4.1.6",
     "@apollo/client-integration-tanstack-start": "0.14.4-rc.0",
+    "@posthog/react": "^1.8.2",
     "@react-oauth/google": "^0.13.4",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-router": "^1.132.0",
@@ -35,7 +36,6 @@
     "luxon": "^3.7.2",
     "maplibre-gl": "^5.20.0",
     "nitro": "npm:nitro-nightly@latest",
-    "posthog-js": "^1.363.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "ts-pattern": "^5.9.0",

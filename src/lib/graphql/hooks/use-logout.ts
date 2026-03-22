@@ -1,4 +1,5 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
+import { usePostHog } from "@posthog/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { useToast } from "#/features/ui"
@@ -17,6 +18,7 @@ export function useLogout() {
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const { toast } = useToast()
+	const posthog = usePostHog()
 
 	const logout = useCallback(
 		async (options?: LogoutOptions) => {
@@ -32,6 +34,7 @@ export function useLogout() {
 					return false
 				}
 
+				posthog.reset()
 				await client.resetStore()
 				await options?.onLoggedOut?.()
 				await navigate({
@@ -47,7 +50,7 @@ export function useLogout() {
 				setIsLoggingOut(false)
 			}
 		},
-		[client, isLoggingOut, logoutMutation, navigate, toast],
+		[client, isLoggingOut, logoutMutation, navigate, posthog, toast],
 	)
 
 	return {

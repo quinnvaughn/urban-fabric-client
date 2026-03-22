@@ -1,4 +1,5 @@
 import type { ApolloClientIntegration } from "@apollo/client-integration-tanstack-start"
+import { PostHogProvider } from "@posthog/react"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import {
 	createRootRouteWithContext,
@@ -9,14 +10,9 @@ import { ToastProvider } from "#/features/ui"
 import { MeDocument } from "#/graphql/generated"
 import { getClientEnv } from "#/lib/env/client"
 import { ModalRenderer } from "#/providers"
-import { PostHogProvider } from "posthog-js/react"
 import appCss from "../index.css?url"
 
 const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST } = getClientEnv()
-const posthogOptions = {
-	api_host: VITE_PUBLIC_POSTHOG_HOST,
-	defaults: "2026-01-30",
-} as const
 
 export const Route =
 	createRootRouteWithContext<ApolloClientIntegration.RouterContext>()({
@@ -78,7 +74,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<PostHogProvider apiKey={VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
+				<PostHogProvider
+					apiKey={VITE_PUBLIC_POSTHOG_KEY}
+					options={{
+						api_host: VITE_PUBLIC_POSTHOG_HOST,
+						defaults: "2026-01-30",
+						capture_exceptions: true,
+					}}
+				>
 					<GoogleOAuthProvider clientId={getClientEnv().VITE_GOOGLE_CLIENT_ID}>
 						<ToastProvider>
 							<ModalRenderer />
