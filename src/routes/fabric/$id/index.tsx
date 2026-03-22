@@ -22,6 +22,7 @@ import {
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { ViewportTracker } from "#/features/fabric/viewport-tracker"
+import { MobileGate } from "#/features/ui"
 import {
 	GetFabricDocument,
 	type GetFabricQuery,
@@ -69,44 +70,48 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	}, [fabric.id])
 
 	return (
-		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<EditorTopbar
-				id={fabric.id}
-				title={fabric.title}
-				{...(fabric.proposal
-					? { hasProposal: true, slug: fabric.proposal.slug }
-					: { hasProposal: false })}
-				onTitleSave={async (title) => {
-					await updateTitle({ variables: { input: { id: fabric.id, title } } })
-				}}
-			/>
-			<ElementPanel />
-			<PropertiesPanel />
-			<EditorCommandPalette />
-			<FabricMap
-				center={[fabric.center.lng, fabric.center.lat]}
-				zoom={fabric.zoom}
-				bearing={0}
-			>
-				<DrawingLayer />
-				<SelectLayer />
-				<ViewportTracker
-					onViewportChange={async (viewport) => {
-						await syncViewport({
-							variables: { input: { id: fabric.id, ...viewport } },
+		<MobileGate>
+			<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+				<EditorTopbar
+					id={fabric.id}
+					title={fabric.title}
+					{...(fabric.proposal
+						? { hasProposal: true, slug: fabric.proposal.slug }
+						: { hasProposal: false })}
+					onTitleSave={async (title) => {
+						await updateTitle({
+							variables: { input: { id: fabric.id, title } },
 						})
 					}}
 				/>
-				<ThumbnailSync
-					onThumbnail={async (thumbnail) => {
-						await updateThumbnail({
-							variables: { input: { id: fabric.id, thumbnail } },
-						})
-					}}
-					captureOnMount={!fabric.thumbnail}
-				/>
-				<EditorHUD />
-			</FabricMap>
-		</div>
+				<ElementPanel />
+				<PropertiesPanel />
+				<EditorCommandPalette />
+				<FabricMap
+					center={[fabric.center.lng, fabric.center.lat]}
+					zoom={fabric.zoom}
+					bearing={0}
+				>
+					<DrawingLayer />
+					<SelectLayer />
+					<ViewportTracker
+						onViewportChange={async (viewport) => {
+							await syncViewport({
+								variables: { input: { id: fabric.id, ...viewport } },
+							})
+						}}
+					/>
+					<ThumbnailSync
+						onThumbnail={async (thumbnail) => {
+							await updateThumbnail({
+								variables: { input: { id: fabric.id, thumbnail } },
+							})
+						}}
+						captureOnMount={!fabric.thumbnail}
+					/>
+					<EditorHUD />
+				</FabricMap>
+			</div>
+		</MobileGate>
 	)
 }

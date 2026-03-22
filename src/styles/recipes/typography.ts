@@ -29,6 +29,8 @@ export const typography = defineSlotRecipe({
 	variants: {
 		// ── Text size ─────────────────────────────────────────────────────────
 		textSize: {
+			"4xs": { text: { fontSize: "4xs" }, inline: { fontSize: "4xs" } },
+			"3xs": { text: { fontSize: "3xs" }, inline: { fontSize: "3xs" } },
 			xxs: { text: { fontSize: "xxs" }, inline: { fontSize: "xxs" } },
 			xs: { text: { fontSize: "xs" }, inline: { fontSize: "xs" } },
 			sm: { text: { fontSize: "sm" }, inline: { fontSize: "sm" } },
@@ -225,16 +227,31 @@ export const typography = defineSlotRecipe({
 		// ── Text align ────────────────────────────────────────────────────────
 		textAlign: {
 			left: { text: { textAlign: "left" }, heading: { textAlign: "left" } },
-			center: { text: { textAlign: "center" }, heading: { textAlign: "center" } },
+			center: {
+				text: { textAlign: "center" },
+				heading: { textAlign: "center" },
+			},
 			right: { text: { textAlign: "right" }, heading: { textAlign: "right" } },
 		},
 		// ── White space ───────────────────────────────────────────────────────
 		whiteSpace: {
-			normal: { text: { whiteSpace: "normal" }, heading: { whiteSpace: "normal" } },
-			nowrap: { text: { whiteSpace: "nowrap" }, heading: { whiteSpace: "nowrap" } },
+			normal: {
+				text: { whiteSpace: "normal" },
+				heading: { whiteSpace: "normal" },
+			},
+			nowrap: {
+				text: { whiteSpace: "nowrap" },
+				heading: { whiteSpace: "nowrap" },
+			},
 			pre: { text: { whiteSpace: "pre" }, heading: { whiteSpace: "pre" } },
-			"pre-wrap": { text: { whiteSpace: "pre-wrap" }, heading: { whiteSpace: "pre-wrap" } },
-			"pre-line": { text: { whiteSpace: "pre-line" }, heading: { whiteSpace: "pre-line" } },
+			"pre-wrap": {
+				text: { whiteSpace: "pre-wrap" },
+				heading: { whiteSpace: "pre-wrap" },
+			},
+			"pre-line": {
+				text: { whiteSpace: "pre-line" },
+				heading: { whiteSpace: "pre-line" },
+			},
 		},
 		// ── Tone ──────────────────────────────────────────────────────────────
 		tone: {

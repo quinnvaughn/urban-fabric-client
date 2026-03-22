@@ -2,6 +2,7 @@ import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ProposalFormPage } from "#/features/proposal"
+import { MobileGate } from "#/features/ui"
 import {
 	GetFabricDocument,
 	type GetFabricQuery,
@@ -58,37 +59,39 @@ function Publish({ fabric }: { fabric: Fabric }) {
 	const navigate = Route.useNavigate()
 
 	return (
-		<ProposalFormPage
-			mode="create"
-			data={{
-				topbarTitle: fabric.title,
-				fabricId: fabric.id,
-				elements,
-				center: { lat: fabric.center.lat, lng: fabric.center.lng },
-				zoom: fabric.zoom,
-				initialThumbnail: fabric.thumbnail ?? "",
-				location: {
-					city: fabric.locationCity,
-					region: fabric.locationRegion,
-					regionAbbr: fabric.locationRegionAbbr,
-				},
-				fabricRef: { id: fabric.id, title: fabric.title },
-				initialValues: { title: "", description: "", categories: [] },
-			}}
-			onPublishSuccess={(slug, title) => {
-				navigate({ to: "/proposal/$slug", params: { slug } }).then(() => {
-					setTimeout(() => {
-						openModal("shareProposal", {
-							link: `${window.location.origin}/proposal/${slug}`,
-							title,
-							eyebrow: "Your proposal is live!",
-							description:
-								"Share it with your community to get as many eyes on it as possible.",
-						})
-					}, 600)
-				})
-			}}
-			onUnauthorized={() => navigate({ to: "/login", replace: true })}
-		/>
+		<MobileGate size="lg">
+			<ProposalFormPage
+				mode="create"
+				data={{
+					topbarTitle: fabric.title,
+					fabricId: fabric.id,
+					elements,
+					center: { lat: fabric.center.lat, lng: fabric.center.lng },
+					zoom: fabric.zoom,
+					initialThumbnail: fabric.thumbnail ?? "",
+					location: {
+						city: fabric.locationCity,
+						region: fabric.locationRegion,
+						regionAbbr: fabric.locationRegionAbbr,
+					},
+					fabricRef: { id: fabric.id, title: fabric.title },
+					initialValues: { title: "", description: "", categories: [] },
+				}}
+				onPublishSuccess={(slug, title) => {
+					navigate({ to: "/proposal/$slug", params: { slug } }).then(() => {
+						setTimeout(() => {
+							openModal("shareProposal", {
+								link: `${window.location.origin}/proposal/${slug}`,
+								title,
+								eyebrow: "Your proposal is live!",
+								description:
+									"Share it with your community to get as many eyes on it as possible.",
+							})
+						}, 600)
+					})
+				}}
+				onUnauthorized={() => navigate({ to: "/login", replace: true })}
+			/>
+		</MobileGate>
 	)
 }

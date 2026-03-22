@@ -29,6 +29,8 @@ function colorStyle(color?: Color): React.CSSProperties | undefined {
 type TextSize = Extract<NonNullable<TypographyVariantProps["textSize"]>, string>
 
 const TEXT_ELEMENT_MAP: Record<TextSize, React.ElementType> = {
+	"4xs": "span",
+	"3xs": "span",
 	xxs: "span",
 	xs: "span",
 	sm: "span",
