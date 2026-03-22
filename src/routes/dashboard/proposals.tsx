@@ -1,5 +1,5 @@
 import { useReadQuery } from "@apollo/client/react"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { ProposalRow } from "#/features/proposal"
@@ -12,6 +12,7 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
+import type { MyProposalsQuery } from "#/graphql/generated"
 import {
 	MyProposalsDocument,
 	ProposalCategory,
@@ -40,9 +41,21 @@ const order = [
 	ProposalStatusFilter.Draft,
 ]
 
+type MyProposalsPayload = Extract<
+	MyProposalsQuery["myProposals"],
+	{ __typename: "MyProposalsPayload" }
+>
+
 function RouteComponent() {
 	const { myPropsalsQuery } = Route.useLoaderData()
 	const { data } = useReadQuery(myPropsalsQuery)
+	if (!data || data.myProposals.__typename === "UnauthorizedError") {
+		return null
+	}
+	return <ProposalsContent myProposals={data.myProposals} />
+}
+
+function ProposalsContent({ myProposals }: { myProposals: MyProposalsPayload }) {
 	const [selectedCategories, setSelectedCategories] = useState<
 		ProposalCategory[]
 	>([])
@@ -60,12 +73,6 @@ function RouteComponent() {
 		)
 	}
 
-	if (!data || data.myProposals.__typename === "UnauthorizedError") {
-		throw redirect({ to: "/login", replace: true })
-	}
-
-	const myProposals = data.myProposals
-
 	const categories =
 		selectedCategories.length > 0 ? selectedCategories : undefined
 
@@ -77,9 +84,9 @@ function RouteComponent() {
 		loadMore,
 	} = usePaginatedQuery(MyProposalsDocument, {
 		initialData: {
-			items: data.myProposals.proposals,
-			hasMore: data.myProposals.hasMore,
-			total: data.myProposals.total,
+			items: myProposals.proposals,
+			hasMore: myProposals.hasMore,
+			total: myProposals.total,
 		},
 		extractPayload: (d) =>
 			d.myProposals.__typename === "MyProposalsPayload"

@@ -1,9 +1,10 @@
 import { useReadQuery } from "@apollo/client/react"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
 import { FilterBar, Grid, LoadMore, Typography, VStack } from "#/features/ui"
+import type { MyFabricsQuery } from "#/graphql/generated"
 import { MyFabricsDocument } from "#/graphql/generated"
 import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 
@@ -20,15 +21,21 @@ export const Route = createFileRoute("/dashboard/fabrics")({
 	},
 })
 
+type MyFabricsPayload = Extract<
+	MyFabricsQuery["myFabrics"],
+	{ __typename: "MyFabricsPayload" }
+>
+
 function RouteComponent() {
 	const { myFabricsQuery } = Route.useLoaderData()
 	const { data } = useReadQuery(myFabricsQuery)
 	if (!data || data.myFabrics.__typename === "UnauthorizedError") {
-		throw redirect({ to: "/login", replace: true })
+		return null
 	}
+	return <FabricsContent myFabrics={data.myFabrics} />
+}
 
-	const myFabrics = data.myFabrics
-
+function FabricsContent({ myFabrics }: { myFabrics: MyFabricsPayload }) {
 	const [search, setSearch] = useState("")
 	const debouncedSearch = useDebounce(search)
 
@@ -40,9 +47,9 @@ function RouteComponent() {
 		loadMore,
 	} = usePaginatedQuery(MyFabricsDocument, {
 		initialData: {
-			items: data.myFabrics.fabrics,
-			hasMore: data.myFabrics.hasMore,
-			total: data.myFabrics.total,
+			items: myFabrics.fabrics,
+			hasMore: myFabrics.hasMore,
+			total: myFabrics.total,
 		},
 		extractPayload: (d) =>
 			d.myFabrics.__typename === "MyFabricsPayload"

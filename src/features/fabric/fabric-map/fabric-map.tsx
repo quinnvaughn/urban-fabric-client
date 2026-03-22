@@ -1,6 +1,6 @@
+import "maplibre-gl/dist/maplibre-gl.css"
 import maplibregl from "maplibre-gl"
 import { useEffect, useRef, useState } from "react"
-import "maplibre-gl/dist/maplibre-gl.css"
 import { MapProvider } from "./map-context"
 
 type Props = {

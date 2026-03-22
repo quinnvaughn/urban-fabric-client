@@ -1,5 +1,5 @@
 import { useReadQuery } from "@apollo/client/react"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
 	DashboardContainer,
 	EmptySection,
@@ -12,6 +12,12 @@ import {
 import { FabricCard } from "#/features/fabric"
 import { ProposalRow } from "#/features/proposal"
 import { Grid, VStack } from "#/features/ui"
+import type {
+	MeQuery,
+	MyDashboardStatsQuery,
+	RecentFabricsQuery,
+	RecentProposalsQuery,
+} from "#/graphql/generated"
 import {
 	MeDocument,
 	MyDashboardStatsDocument,
@@ -40,6 +46,20 @@ export const Route = createFileRoute("/dashboard/")({
 	},
 })
 
+type Me = NonNullable<MeQuery["me"]>
+type RecentFabricsPayload = Extract<
+	RecentFabricsQuery["myFabrics"],
+	{ __typename: "MyFabricsPayload" }
+>
+type RecentProposalsPayload = Extract<
+	RecentProposalsQuery["myProposals"],
+	{ __typename: "MyProposalsPayload" }
+>
+type DashboardStatsPayload = Extract<
+	MyDashboardStatsQuery["myDashboardStats"],
+	{ __typename: "DashboardStats" }
+>
+
 function deltaText(count: number, text: string): string | undefined {
 	return count > 0 ? text : undefined
 }
@@ -62,11 +82,32 @@ function RouteComponent() {
 		recentProposalsData.myProposals.__typename === "UnauthorizedError" ||
 		dashboardStatsData.myDashboardStats.__typename === "UnauthorizedError"
 	) {
-		throw redirect({ to: "/login", replace: true })
+		return null
 	}
 
-	const hasFabrics = recentFabricsData.myFabrics.fabrics.length > 0
-	const hasProposals = recentProposalsData.myProposals.proposals.length > 0
+	return (
+		<DashboardContent
+			me={userData.me}
+			recentFabrics={recentFabricsData.myFabrics}
+			recentProposals={recentProposalsData.myProposals}
+			dashboardStats={dashboardStatsData.myDashboardStats}
+		/>
+	)
+}
+
+function DashboardContent({
+	me,
+	recentFabrics,
+	recentProposals,
+	dashboardStats,
+}: {
+	me: Me
+	recentFabrics: RecentFabricsPayload
+	recentProposals: RecentProposalsPayload
+	dashboardStats: DashboardStatsPayload
+}) {
+	const hasFabrics = recentFabrics.fabrics.length > 0
+	const hasProposals = recentProposals.proposals.length > 0
 
 	return (
 		<DashboardContainer>
@@ -74,40 +115,40 @@ function RouteComponent() {
 				<VStack gap="6">
 					<Greeting
 						hasFabrics={hasFabrics}
-						userName={userData.me.name.split(" ")[0] ?? ""}
-						numLikes={dashboardStatsData.myDashboardStats.proposalLikesDelta}
+						userName={me.name.split(" ")[0] ?? ""}
+						numLikes={dashboardStats.proposalLikesDelta}
 					/>
 					{!hasFabrics && <OnboardingCard />}
 					<StatRow
 						stats={[
 							{
 								label: "fabrics",
-								value: recentFabricsData.myFabrics.total,
+								value: recentFabrics.total,
 								neutral: true,
 							},
 							{
 								label: "proposals",
-								value: dashboardStatsData.myDashboardStats.proposalCount,
+								value: dashboardStats.proposalCount,
 								delta: deltaText(
-									dashboardStatsData.myDashboardStats.unpublishedProposalCount,
-									`${dashboardStatsData.myDashboardStats.unpublishedProposalCount} unpublished`,
+									dashboardStats.unpublishedProposalCount,
+									`${dashboardStats.unpublishedProposalCount} unpublished`,
 								),
 								neutral: true,
 							},
 							{
 								label: "total views",
-								value: dashboardStatsData.myDashboardStats.totalProposalViews,
+								value: dashboardStats.totalProposalViews,
 								delta: deltaText(
-									dashboardStatsData.myDashboardStats.proposalViewsDelta,
-									`^ +${dashboardStatsData.myDashboardStats.proposalViewsDelta}% this week`,
+									dashboardStats.proposalViewsDelta,
+									`^ +${dashboardStats.proposalViewsDelta}% this week`,
 								),
 							},
 							{
 								label: "likes",
-								value: dashboardStatsData.myDashboardStats.totalProposalLikes,
+								value: dashboardStats.totalProposalLikes,
 								delta: deltaText(
-									dashboardStatsData.myDashboardStats.proposalLikesDelta,
-									`^ ${dashboardStatsData.myDashboardStats.proposalLikesDelta} this week`,
+									dashboardStats.proposalLikesDelta,
+									`^ ${dashboardStats.proposalLikesDelta} this week`,
 								),
 							},
 						]}
@@ -115,13 +156,10 @@ function RouteComponent() {
 				</VStack>
 				<VStack gap="9">
 					<VStack gap="6">
-						<SectionHeader
-							type="fabrics"
-							total={recentFabricsData.myFabrics.total}
-						/>
+						<SectionHeader type="fabrics" total={recentFabrics.total} />
 						{hasFabrics ? (
 							<Grid gap="3" cols={3}>
-								{recentFabricsData.myFabrics.fabrics.map((fabric) => (
+								{recentFabrics.fabrics.map((fabric) => (
 									<FabricCard fabric={fabric} key={fabric.id} />
 								))}
 							</Grid>
@@ -130,13 +168,10 @@ function RouteComponent() {
 						)}
 					</VStack>
 					<VStack gap="6">
-						<SectionHeader
-							type="proposals"
-							total={recentProposalsData.myProposals.total}
-						/>
+						<SectionHeader type="proposals" total={recentProposals.total} />
 						{hasProposals ? (
 							<VStack gap="2.5">
-								{recentProposalsData.myProposals.proposals.map((proposal) => (
+								{recentProposals.proposals.map((proposal) => (
 									<ProposalRow
 										id={proposal.id}
 										fabricId={proposal.fabricId}
