@@ -24,6 +24,7 @@ declare global {
 							width?: number
 						},
 					) => void
+					prompt: (momentListener?: (notification: unknown) => void) => void
 				}
 			}
 		}
@@ -65,7 +66,6 @@ const LABEL: Record<Props["text"], string> = {
 }
 
 export function GoogleSignInButton({ text, onCredential }: Props) {
-	const hiddenRef = useRef<HTMLDivElement>(null)
 	const onCredentialRef = useRef(onCredential)
 	onCredentialRef.current = onCredential
 	const [scriptLoaded, setScriptLoaded] = useState(false)
@@ -82,51 +82,29 @@ export function GoogleSignInButton({ text, onCredential }: Props) {
 		}
 	}, [])
 
-	// Re-render Google's hidden button whenever text changes (or on first load)
 	useEffect(() => {
-		if (!scriptLoaded || !hiddenRef.current) return
+		if (!scriptLoaded) return
 		window.google?.accounts.id.initialize({
 			client_id: getClientEnv().VITE_GOOGLE_CLIENT_ID,
 			callback: (response) => {
 				onCredentialRef.current(response.credential)
 			},
 		})
-		window.google?.accounts.id.renderButton(hiddenRef.current, {
-			theme: "outline",
-			size: "large",
-			text,
-			width: 300,
-		})
-	}, [scriptLoaded, text])
+	}, [scriptLoaded])
 
 	function handleClick() {
-		hiddenRef.current?.querySelector<HTMLElement>("div[role=button]")?.click()
+		window.google?.accounts.id.prompt()
 	}
 
 	return (
-		<>
-			{/* On-screen but invisible — bottom-right corner so Google doesn't detect it as off-screen */}
-			<div
-				ref={hiddenRef}
-				aria-hidden="true"
-				style={{
-					position: "fixed",
-					bottom: 0,
-					right: 0,
-					opacity: 0,
-					width: 300,
-					zIndex: -1,
-				}}
-			/>
-			<Button
-				appearance="outline"
-				intent="neutral"
-				fullWidth
-				startIcon={<GoogleIcon />}
-				onClick={handleClick}
-			>
-				{LABEL[text]}
-			</Button>
-		</>
+		<Button
+			appearance="outline"
+			intent="neutral"
+			fullWidth
+			startIcon={<GoogleIcon />}
+			onClick={handleClick}
+		>
+			{LABEL[text]}
+		</Button>
 	)
 }
