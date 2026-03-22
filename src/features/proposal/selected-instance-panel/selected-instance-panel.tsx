@@ -15,13 +15,12 @@ import {
 import { capitalize } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
-export function SelectedInstancePanel({
-	instance,
-	onClose,
-}: {
+type Props = {
 	instance: ElementInstance
 	onClose: () => void
-}) {
+}
+
+export function SelectedInstancePanel({ instance, onClose }: Props) {
 	const elementType = ELEMENT_TYPE_MAP[instance.typeId]
 	const calculatedRows = useCalculatedRows(instance, elementType ?? null)
 

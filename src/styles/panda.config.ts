@@ -1584,6 +1584,42 @@ export default defineConfig({
 				"0%": { opacity: "0", transform: "translateY(-10px) scale(0.98)" },
 				"100%": { opacity: "1", transform: "translateY(0) scale(1)" },
 			},
+			slideInFromRight: {
+				from: { transform: "translateX(100%)" },
+				to: { transform: "translateX(0)" },
+			},
+			slideOutToRight: {
+				from: { transform: "translateX(0)" },
+				to: { transform: "translateX(100%)" },
+			},
+			slideInFromLeft: {
+				from: { transform: "translateX(-100%)" },
+				to: { transform: "translateX(0)" },
+			},
+			slideOutToLeft: {
+				from: { transform: "translateX(0)" },
+				to: { transform: "translateX(-100%)" },
+			},
+			slideInFromBottom: {
+				from: { transform: "translateY(100%)" },
+				to: { transform: "translateY(0)" },
+			},
+			slideOutToBottom: {
+				from: { transform: "translateY(0)" },
+				to: { transform: "translateY(100%)" },
+			},
+			slideInFromTop: {
+				from: { transform: "translateY(-100%)" },
+				to: { transform: "translateY(0)" },
+			},
+			slideOutToTop: {
+				from: { transform: "translateY(0)" },
+				to: { transform: "translateY(-100%)" },
+			},
+			fadeOut: {
+				from: { opacity: "1" },
+				to: { opacity: "0" },
+			},
 		},
 
 		tokens: {
