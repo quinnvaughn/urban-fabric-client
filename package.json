@@ -8,9 +8,10 @@
   "scripts": {
     "prepare": "panda codegen --config src/styles/panda.config.ts",
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "vite build && node scripts/fix-graphql-output.mjs",
     "preview": "vite preview",
     "test": "vitest run",
+    "start": "node .output/server/index.mjs",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",

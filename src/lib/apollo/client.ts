@@ -2,6 +2,7 @@ import { ApolloLink, HttpLink } from "@apollo/client"
 import { ApolloClient, InMemoryCache } from "@apollo/client-integration-tanstack-start"
 import { createIsomorphicFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
+import { getClientEnv } from "../env/client"
 
 const getIncomingHeaders = createIsomorphicFn()
 	.client(() => ({}))
@@ -33,7 +34,7 @@ export function createApolloClient() {
 		cache: new InMemoryCache(),
 		link: ApolloLink.from([
 			withIncomingHeaders,
-			new HttpLink({ uri: "http://localhost:4000", credentials: "include" }),
+			new HttpLink({ uri: getClientEnv().VITE_GRAPHQL_URL, credentials: "include" }),
 		]),
 	})
 }
