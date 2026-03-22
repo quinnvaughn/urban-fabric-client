@@ -5,15 +5,21 @@ export type LatLng = { lat: number; lng: number }
 
 export const getLocationFromIp = createServerFn({ method: "GET" }).handler(
 	async (): Promise<LatLng> => {
+		const DEFAULT: LatLng = { lat: 34.0195, lng: -118.4912 } // Santa Monica
 		const ip =
 			getRequestHeader("x-forwarded-for") ?? getRequestHeader("x-real-ip") ?? ""
-		if (!ip) {
-			return { lat: 34.0195, lng: -118.4912 } // default to Santa Monica in dev
+		if (!ip) return DEFAULT
+		try {
+			const res = await fetch(
+				`https://api.ipwho.org/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
+			)
+			const json = await res.json()
+			if (typeof json.lat !== "number" || typeof json.lon !== "number") {
+				return DEFAULT
+			}
+			return { lat: json.lat, lng: json.lon }
+		} catch {
+			return DEFAULT
 		}
-		const res = await fetch(
-			`https://api.ipwho.org/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
-		)
-		const { lat, lon } = await res.json()
-		return { lat, lng: lon }
 	},
 )
