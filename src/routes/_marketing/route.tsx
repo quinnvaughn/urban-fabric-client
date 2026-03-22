@@ -25,8 +25,8 @@ function RouteComponent() {
 				className={css({
 					bg: "white",
 					borderTop: "1px solid {colors.border.subtle}",
-					paddingBlock: "8",
-					paddingInline: "20",
+					paddingBlock: { base: "4", md: "8" },
+					paddingInline: { base: "8", md: "20" },
 				})}
 			>
 				<Link to="/">

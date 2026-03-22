@@ -1,3 +1,4 @@
+import { useRouter } from "@tanstack/react-router"
 import { Copy, Mail } from "lucide-react"
 import { useCurrentUser } from "#/lib/graphql"
 import { type MobileGateSize, useIsMobile, useTransientText } from "#/lib/hooks"
@@ -19,6 +20,7 @@ export function MobileGate({ children, size = "sm" }: Props) {
 	const toast = useToast()
 	const [copyText, setCopyText] = useTransientText("Copy link", "Copied!", 2000)
 	const { data: user } = useCurrentUser()
+	const router = useRouter()
 
 	function handleCopyLink() {
 		navigator.clipboard.writeText(window.location.href).then(setCopyText)
@@ -33,7 +35,7 @@ export function MobileGate({ children, size = "sm" }: Props) {
 				className={css({
 					width: "screen",
 					height: "screen",
-					background: "stone.100",
+					background: "stone.50",
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
@@ -112,6 +114,17 @@ export function MobileGate({ children, size = "sm" }: Props) {
 						>
 							{copyText}
 						</Button>
+						<button
+							type="button"
+							onClick={() => router.history.back()}
+							className={css({
+								color: "stone.700",
+								fontSize: "sm",
+								textDecoration: "underline",
+							})}
+						>
+							Go back to safety
+						</button>
 					</VStack>
 				</VStack>
 			</Box>

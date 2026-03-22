@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router"
+import { Hamburger, MenuIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 import { Avatar, HStack, Menu } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
+import { useIsMobile } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { UserMenuContent } from "../user-menu-content"
@@ -57,6 +59,7 @@ const authenticatedActionConfig: Record<
 export function PublicNavActions({
 	authenticatedAction = "dashboard",
 }: PublicNavActionsProps) {
+	const isMobile = useIsMobile()
 	const { data, loading } = useCurrentUser()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	const user = data?.me
@@ -65,6 +68,15 @@ export function PublicNavActions({
 	if (loading) return null
 
 	if (user) {
+		if (isMobile) {
+			return (
+				<Menu placement="bottom-end">
+					<Menu.Trigger>
+						<Hamburger size={20} color="var(--colors-stone-900)" />
+					</Menu.Trigger>
+				</Menu>
+			)
+		}
 		return (
 			<HStack align="center" gap="2.5">
 				{actions.map((action) => (
@@ -93,6 +105,59 @@ export function PublicNavActions({
 					<UserMenuContent onBeforeLogout={() => setIsMenuOpen(false)} />
 				</Menu>
 			</HStack>
+		)
+	}
+
+	if (isMobile) {
+		return (
+			<Menu
+				placement="bottom-end"
+				open={isMenuOpen}
+				onOpenChange={setIsMenuOpen}
+			>
+				<Menu.Trigger>
+					<button
+						type="button"
+						className={css({
+							cursor: "pointer",
+							position: "relative",
+							w: "20px",
+							h: "20px",
+						})}
+					>
+						<MenuIcon
+							size={20}
+							color="var(--colors-stone-900)"
+							style={{
+								position: "absolute",
+								inset: 0,
+								transition: "opacity 150ms ease, transform 150ms ease",
+								opacity: isMenuOpen ? 0 : 1,
+								transform: isMenuOpen
+									? "rotate(45deg) scale(0.8)"
+									: "rotate(0deg) scale(1)",
+							}}
+						/>
+						<XIcon
+							size={20}
+							color="var(--colors-stone-900)"
+							style={{
+								position: "absolute",
+								inset: 0,
+								transition: "opacity 150ms ease, transform 150ms ease",
+								opacity: isMenuOpen ? 1 : 0,
+								transform: isMenuOpen
+									? "rotate(0deg) scale(1)"
+									: "rotate(-45deg) scale(0.8)",
+							}}
+						/>
+					</button>
+				</Menu.Trigger>
+				<Menu.Content>
+					<Menu.Link to="/login">Sign in</Menu.Link>
+					<Menu.Link to="/fabric/new">Start designing</Menu.Link>
+				</Menu.Content>
+			</Menu>
 		)
 	}
 

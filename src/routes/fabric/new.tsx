@@ -25,6 +25,7 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
+import { MobileGate } from "#/features/ui"
 import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
 import {
 	addFabricToMyFabricsCache,
@@ -93,7 +94,11 @@ function RouteComponent() {
 	)
 
 	if (!fabric) return null
-	return <Editor fabric={fabric} />
+	return (
+		<MobileGate>
+			<Editor fabric={fabric} />
+		</MobileGate>
+	)
 }
 
 function Editor({ fabric }: { fabric: GuestFabric }) {
