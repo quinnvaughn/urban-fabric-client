@@ -1682,6 +1682,7 @@ export default defineConfig({
 				12: { value: "48px" },
 				14: { value: "56px" },
 				16: { value: "64px" },
+				18: { value: "72px" },
 				20: { value: "80px" },
 				24: { value: "96px" },
 				25: { value: "100px" },

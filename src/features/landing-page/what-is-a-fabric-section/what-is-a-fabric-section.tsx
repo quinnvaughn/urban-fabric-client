@@ -1,4 +1,4 @@
-import { Badge, Card, Grid, Typography, VStack } from "#/features/ui"
+import { Badge, Box, Card, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { LandingPageSection } from "../section"
 import { WhatIsAFabricMap } from "../what-is-a-fabric-map"
@@ -13,8 +13,15 @@ const fabricItems = [
 export function WhatIsAFabricSection() {
 	return (
 		<LandingPageSection bg="base">
-			<Grid columns="1fr 1fr" gap="20" align="center">
-				<Card>
+			<Box
+				className={css({
+					display: "grid",
+					gridTemplateColumns: { base: "1fr", md: "1fr 1fr" },
+					gap: { base: "10", md: "20" },
+					alignItems: "center",
+				})}
+			>
+				<Card className={css({ display: { base: "none", md: "block" } })}>
 					<Card.Media style={{ position: "relative" }}>
 						<Badge
 							style={{ position: "absolute", top: "12px", left: "12px" }}
@@ -104,7 +111,26 @@ export function WhatIsAFabricSection() {
 						))}
 					</ul>
 				</VStack>
-			</Grid>
+				<Card className={css({ display: { base: "block", md: "none" } })}>
+					<Card.Media style={{ position: "relative" }}>
+						<Badge
+							style={{ position: "absolute", top: "12px", left: "12px" }}
+							tone="neutral"
+							appearance="solid"
+						>
+							Before
+						</Badge>
+						<Badge
+							style={{ position: "absolute", top: "12px", right: "12px" }}
+							tone="brand"
+							appearance="solid"
+						>
+							Proposed
+						</Badge>
+						<WhatIsAFabricMap />
+					</Card.Media>
+				</Card>
+			</Box>
 		</LandingPageSection>
 	)
 }

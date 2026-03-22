@@ -1,11 +1,18 @@
-import { Grid, Typography, VStack } from "#/features/ui"
+import { Box, Typography, VStack } from "#/features/ui"
+import { css } from "#/styles/styled-system/css"
 import { LandingPageSection } from "../section"
 import { WhoCard } from "../who-card"
 
 export function WhoItIsForSection() {
 	return (
 		<LandingPageSection bg="dark">
-			<VStack gap="14">
+			<Box
+				className={css({
+					display: "flex",
+					flexDir: "column",
+					gap: { base: "10", md: "14" },
+				})}
+			>
 				<VStack gap="3">
 					<Typography.Text
 						tone="muted"
@@ -33,7 +40,13 @@ export function WhoItIsForSection() {
 						this is for you.
 					</Typography.Heading>
 				</VStack>
-				<Grid columns="1fr 1fr 1fr" gap="8">
+				<Box
+					className={css({
+						display: "grid",
+						gridTemplateColumns: { base: "1fr", md: "1fr 1fr 1fr" },
+						gap: "8",
+					})}
+				>
 					<WhoCard
 						icon="🎥"
 						iconBgColor="rgba(26,107,90,0.25)"
@@ -55,8 +68,8 @@ export function WhoItIsForSection() {
 						body="Align your members around a shared vision. Share proposals publicly to build momentum, gather feedback, and demonstrate community support."
 						quote="Turn your community's frustration into a concrete ask."
 					/>
-				</Grid>
-			</VStack>
+				</Box>
+			</Box>
 		</LandingPageSection>
 	)
 }

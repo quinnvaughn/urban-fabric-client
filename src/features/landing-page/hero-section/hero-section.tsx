@@ -4,7 +4,6 @@ import {
 	Badge,
 	Box,
 	Card,
-	Grid,
 	HStack,
 	Link,
 	Typography,
@@ -18,7 +17,14 @@ import { LandingPageSection } from "../section"
 export function HeroSection() {
 	return (
 		<LandingPageSection bg="base" minH="screen">
-			<Grid columns="1fr 1fr" gap="8" align="center">
+			<Box
+				className={css({
+					gridTemplateColumns: { base: "1fr", md: "1fr 1fr" },
+					display: "grid",
+					gap: "8",
+					alignItems: "center",
+				})}
+			>
 				<VStack gap="9">
 					<VStack gap="7">
 						<Badge
@@ -64,7 +70,12 @@ export function HeroSection() {
 						</VStack>
 					</VStack>
 					<VStack gap="4">
-						<HStack gap="4" align="center" wrap>
+						<HStack
+							gap="4"
+							justify={{ base: "stretch", md: "flex-start" }}
+							align="center"
+							wrap
+						>
 							<Link
 								to="/fabric/new"
 								className={cx(
@@ -74,7 +85,7 @@ export function HeroSection() {
 										lift: true,
 										size: "lg",
 									}),
-									css({ textDecoration: "none" }),
+									css({ textDecoration: "none", flex: 1 }),
 								)}
 							>
 								<PencilLine size={14} />
@@ -88,7 +99,7 @@ export function HeroSection() {
 										intent: "neutral",
 										appearance: "outline",
 									}),
-									css({ textDecoration: "none" }),
+									css({ textDecoration: "none", flex: 1 }),
 								)}
 							>
 								Explore proposals <ArrowRight size={14} />
@@ -166,7 +177,7 @@ export function HeroSection() {
 						</VStack>
 					</Card.Body>
 				</Card>
-			</Grid>
+			</Box>
 		</LandingPageSection>
 	)
 }

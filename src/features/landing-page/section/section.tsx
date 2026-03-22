@@ -4,7 +4,11 @@ const section = sva({
 	slots: ["root", "inner"],
 	base: {
 		root: { position: "relative", width: "full", overflow: "hidden" },
-		inner: { maxWidth: "1160px", marginInline: "auto", paddingInline: "20" },
+		inner: {
+			maxWidth: "1160px",
+			marginInline: "auto",
+			paddingInline: { base: "7", md: "20" },
+		},
 	},
 	variants: {
 		bg: {
@@ -16,7 +20,7 @@ const section = sva({
 		},
 		py: {
 			sm: { root: { paddingBlock: "16" } },
-			md: { root: { paddingBlock: "25" } },
+			md: { root: { paddingBlock: { base: "12", md: "25" } } },
 			lg: { root: { paddingBlock: "32" } },
 		},
 		minH: {

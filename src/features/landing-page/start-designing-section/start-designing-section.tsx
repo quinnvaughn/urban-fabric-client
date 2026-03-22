@@ -8,12 +8,12 @@ export function StartDesigningSection() {
 	return (
 		<LandingPageSection bg="base">
 			<Box
-				sx={{
-					maxWidth: "lg",
+				className={css({
+					maxWidth: { base: "100%", md: "lg" },
 					marginInline: "auto",
-					paddingInline: "10",
+					paddingInline: { base: "0", md: "10" },
 					textAlign: "center",
-				}}
+				})}
 			>
 				<VStack gap="4">
 					<Typography.Heading
@@ -33,7 +33,12 @@ export function StartDesigningSection() {
 						No account required. No expertise needed. Just open a map and start
 						designing.
 					</Typography.Text>
-					<HStack gap="4" align="center" wrap>
+					<HStack
+						gap="4"
+						justify={{ base: "stretch", md: "flex-start" }}
+						align="center"
+						wrap
+					>
 						<Link
 							to="/fabric/new"
 							className={cx(
@@ -43,7 +48,7 @@ export function StartDesigningSection() {
 									lift: true,
 									size: "lg",
 								}),
-								css({ textDecoration: "none" }),
+								css({ textDecoration: "none", flex: 1 }),
 							)}
 						>
 							<PencilLine size={14} />
@@ -57,7 +62,7 @@ export function StartDesigningSection() {
 									intent: "neutral",
 									appearance: "outline",
 								}),
-								css({ textDecoration: "none" }),
+								css({ textDecoration: "none", flex: 1 }),
 							)}
 						>
 							Browse proposals

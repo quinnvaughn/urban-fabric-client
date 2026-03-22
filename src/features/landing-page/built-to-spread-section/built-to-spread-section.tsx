@@ -1,5 +1,6 @@
 import { LinkIcon, Mail, MessageSquare } from "lucide-react"
-import { Grid, HStack, Typography, VStack } from "#/features/ui"
+import { Box, HStack, Typography, VStack } from "#/features/ui"
+import { css } from "#/styles/styled-system/css"
 import { PlatformChip } from "../platform-chip"
 import { LandingPageSection } from "../section"
 import { SocialPost } from "../social-post"
@@ -40,7 +41,14 @@ const platforms: { icon: React.ReactNode; label: string }[] = [
 export function BuiltToSpreadSection() {
 	return (
 		<LandingPageSection bg="surface">
-			<Grid columns="1fr 1fr" gap="20" align="center">
+			<Box
+				className={css({
+					display: "grid",
+					gridTemplateColumns: { base: "1fr", md: "1fr 1fr" },
+					gap: { base: "10", md: "20" },
+					alignItems: "center",
+				})}
+			>
 				<VStack gap="8">
 					<VStack gap="5">
 						<VStack gap="3">
@@ -105,7 +113,7 @@ export function BuiltToSpreadSection() {
 						retweets={209}
 					/>
 				</VStack>
-			</Grid>
+			</Box>
 		</LandingPageSection>
 	)
 }

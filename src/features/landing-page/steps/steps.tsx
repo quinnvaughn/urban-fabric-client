@@ -1,4 +1,4 @@
-import { Typography, VStack } from "#/features/ui"
+import { Box, Divider, Typography } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 
 const steps = [
@@ -33,7 +33,7 @@ export function Steps() {
 		<div
 			className={css({
 				display: "grid",
-				gridTemplateColumns: "repeat(3, 1fr)",
+				gridTemplateColumns: { base: "1fr", md: "repeat(3, 1fr)" },
 				position: "relative",
 			})}
 		>
@@ -46,55 +46,80 @@ export function Steps() {
 					h: "px",
 					background: "border.subtle",
 					zIndex: "base",
+					display: { base: "none", md: "block" },
 				})}
 			/>
 			{steps.map((step, i) => (
-				<div
-					key={step.number}
-					className={css({
-						px: "10",
-						pt: "0",
-						pb: "10",
-						zIndex: "raised",
-						borderLeft: i > 0 ? "1px solid {colors.border.subtle}" : undefined,
-					})}
-				>
-					{/* Number badge + line */}
+				<div key={step.number}>
 					<div
-						className={css({ display: "flex", alignItems: "center", mb: "8" })}
+						className={css({
+							px: { base: "0", md: "10" },
+							pt: "0",
+							pb: { base: "8", md: "10" },
+							zIndex: "raised",
+							borderLeft: {
+								base: "none",
+								md: i > 0 ? "1px solid {colors.border.subtle}" : "none",
+							},
+						})}
 					>
+						{/* Number badge */}
 						<div
 							className={css({
-								w: "14",
-								h: "14",
-								borderRadius: "lg",
-								flexShrink: 0,
 								display: "flex",
 								alignItems: "center",
-								justifyContent: "center",
-								background: step.bg,
+								pb: { base: "6", md: "8" },
 							})}
 						>
-							<span
+							<div
 								className={css({
-									fontFamily: "serif",
-									fontStyle: "italic",
-									fontSize: "2xl",
-									color: step.color,
+									w: "14",
+									h: "14",
+									borderRadius: "lg",
+									flexShrink: 0,
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									background: step.bg,
 								})}
 							>
-								{step.number}
-							</span>
+								<span
+									className={css({
+										fontFamily: "serif",
+										fontStyle: "italic",
+										fontSize: "2xl",
+										color: step.color,
+									})}
+								>
+									{step.number}
+								</span>
+							</div>
 						</div>
+						<Box
+							className={css({
+								display: "flex",
+								flexDirection: "column",
+								gap: { base: "2.5", md: "3" },
+							})}
+						>
+							<Typography.Heading as="h3" size="sm" font="serif" weight="light">
+								{step.label}
+							</Typography.Heading>
+							<Typography.Text size="sm" tone="muted" lineHeight="relaxed">
+								{step.description}
+							</Typography.Text>
+						</Box>
 					</div>
-					<VStack gap="3">
-						<Typography.Heading as="h3" size="sm" font="serif" weight="light">
-							{step.label}
-						</Typography.Heading>
-						<Typography.Text size="sm" tone="muted" lineHeight="relaxed">
-							{step.description}
-						</Typography.Text>
-					</VStack>
+					{i < steps.length - 1 && (
+						<div
+							className={css({
+								display: { base: "block", md: "none" },
+								paddingBottom: "10",
+							})}
+						>
+							<Divider />
+						</div>
+					)}
 				</div>
 			))}
 		</div>
