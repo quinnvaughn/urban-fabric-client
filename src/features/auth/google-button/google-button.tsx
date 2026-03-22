@@ -114,7 +114,6 @@ export function GoogleSignInButton({ text, onCredential }: Props) {
 					bottom: 0,
 					right: 0,
 					opacity: 0,
-					pointerEvents: "none",
 					width: 300,
 					zIndex: -1,
 				}}
