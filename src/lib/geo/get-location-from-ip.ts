@@ -7,17 +7,17 @@ export const getLocationFromIp = createServerFn({ method: "GET" }).handler(
 	async (): Promise<LatLng> => {
 		const DEFAULT: LatLng = { lat: 34.0195, lng: -118.4912 } // Santa Monica
 		const ip = (
-			getRequestHeader("x-forwarded-for") ?? getRequestHeader("x-real-ip") ?? ""
+			getRequestHeader("x-forwarded-for") ??
+			getRequestHeader("x-real-ip") ??
+			""
 		)
 			.split(",")[0]
 			.trim()
-		console.log("Client IP address", ip)
 		if (!ip) return DEFAULT
 		try {
 			const res = await fetch(
 				`https://api.ipwho.org/ip/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
 			)
-			console.log("IP Geolocation response", res)
 			const json = await res.json()
 			const lat = json?.data?.geoLocation?.latitude
 			const lng = json?.data?.geoLocation?.longitude
