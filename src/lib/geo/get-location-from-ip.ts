@@ -15,14 +15,16 @@ export const getLocationFromIp = createServerFn({ method: "GET" }).handler(
 		if (!ip) return DEFAULT
 		try {
 			const res = await fetch(
-				`https://api.ipwho.org/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
+				`https://api.ipwho.org/ip/${ip}?apiKey=${process.env.IP_WHO_KEY}`,
 			)
 			console.log("IP Geolocation response", res)
 			const json = await res.json()
-			if (typeof json.lat !== "number" || typeof json.lon !== "number") {
+			const lat = json?.data?.geoLocation?.latitude
+			const lng = json?.data?.geoLocation?.longitude
+			if (typeof lat !== "number" || typeof lng !== "number") {
 				return DEFAULT
 			}
-			return { lat: json.lat, lng: json.lon }
+			return { lat, lng }
 		} catch {
 			return DEFAULT
 		}
