@@ -30,6 +30,7 @@ import {
 	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -62,7 +63,12 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)
+	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
+
+	useEffect(() => {
+		capture("page_viewed", { page: "editor" })
+	}, [capture])
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	useEffect(() => {

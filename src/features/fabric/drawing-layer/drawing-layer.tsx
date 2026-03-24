@@ -1,5 +1,6 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import { syncElementsToMap } from "../elements-layer/map-elements-utils"
 import {
@@ -42,6 +43,9 @@ export function DrawingLayer() {
 	const map = useMap()
 	const { activeTool, activeElement, elements, addElement } = useFabricStore()
 	const routeBetween = useRouteBetween()
+	const { capture } = useAnalytics()
+	const captureRef = useRef(capture)
+	captureRef.current = capture
 
 	// Mutable drawing state — lives in refs so map event handlers never go stale
 	const waypointsRef = useRef<[number, number][]>([])
@@ -134,6 +138,7 @@ export function DrawingLayer() {
 
 			const descriptor = ELEMENT_TYPE_MAP[element.id]
 			const newId = crypto.randomUUID()
+			captureRef.current("editor_element_added", { element_type: element.id })
 			addElement({
 				id: newId,
 				typeId: element.id,

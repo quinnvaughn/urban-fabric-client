@@ -1,5 +1,6 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { usePostHog } from "@posthog/react"
+import { useAnalytics } from "#/lib/analytics"
 import { useNavigate } from "@tanstack/react-router"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
@@ -59,6 +60,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 	const navigate = useNavigate()
 	const client = useApolloClient()
 	const posthog = usePostHog()
+	const { capture } = useAnalytics()
 
 	async function handleGoogleCredential(accessToken: string) {
 		try {
@@ -75,6 +77,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 				)
 				.with({ __typename: "User" }, async (user) => {
 					posthog.identify(user.id, { email: user.email, name: user.name })
+					capture("login_completed")
 					await client.resetStore()
 					toast.success("Logged in successfully")
 					if (onAuthSuccess) {
@@ -127,6 +130,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 									email: user.email,
 									name: user.name,
 								})
+								capture("login_completed")
 								await client.resetStore()
 								toast.success("Logged in successfully")
 								if (onAuthSuccess) {
@@ -164,6 +168,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 									email: user.email,
 									name: user.name,
 								})
+								capture("signup_completed")
 								await client.resetStore()
 								toast.success("Account created successfully")
 								if (onAuthSuccess) {

@@ -1,8 +1,10 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { ExploreProposals } from "#/features/explore"
 import { Navbar } from "#/features/navigation"
 import { ExploreProposalsDocument } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { getLocationFromIp } from "#/lib/geo"
 import { css } from "#/styles/styled-system/css"
 
@@ -18,6 +20,11 @@ export const Route = createFileRoute("/explore")({
 function RouteComponent() {
 	const { exploreProposalsQuery, ipLocation } = Route.useLoaderData()
 	const { data } = useReadQuery(exploreProposalsQuery)
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		capture("page_viewed", { page: "explore" })
+	}, [capture])
 
 	return (
 		<>

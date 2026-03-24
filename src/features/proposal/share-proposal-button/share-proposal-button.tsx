@@ -20,12 +20,13 @@ export function ShareProposalButton({ proposal, isMobile }: Props) {
 			size={isMobile ? "sm" : "md"}
 			intent="neutral"
 			appearance="outline"
-			onClick={() =>
+			onClick={() => {
 				openModal("shareProposal", {
 					link: window.location.href,
 					title: proposal.title,
+					source: "share_button",
 				})
-			}
+			}}
 		>
 			<Share size={16} />
 		</Button>

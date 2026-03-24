@@ -1,6 +1,7 @@
 import { useMutation, useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import {
 	ProposalDesktopView,
 	ProposalMobileView,
@@ -100,10 +101,15 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 	const { data: meData } = useCurrentUser()
 	const hasRecordedView = useRef(false)
 	const isOwner = meData?.me?.id === proposal.creator.id
+	const { capture } = useAnalytics()
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
 		if (!hasRecordedView.current) {
+			capture("proposal_viewed", {
+				proposal_id: proposal.id,
+				category: proposal.categories[0] ?? "none",
+			})
 			recordView({
 				variables: { input: { proposalId: proposal.id } },
 				update(cache, { data }) {

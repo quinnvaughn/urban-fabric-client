@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ExploreFilterBar } from "#/features/explore/explore-filter-bar"
+import { useAnalytics } from "#/lib/analytics"
 import { ProposalCard } from "#/features/proposal"
 import { Box, Grid, LoadMore, Typography, VStack } from "#/features/ui"
 import {
@@ -39,6 +40,20 @@ export function ExploreProposals({
 		lng: number
 		label: string
 	} | null>(null)
+	const { capture } = useAnalytics()
+	const searchFiredRef = useRef(false)
+
+	useEffect(() => {
+		if (!searchFiredRef.current && debouncedSearch.length === 0) return
+		searchFiredRef.current = true
+		if (debouncedSearch.length > 0) {
+			capture("explore_searched", {
+				has_location: !!selectedLocation,
+				query_length: debouncedSearch.length,
+				category_count: selectedCategories.length,
+			})
+		}
+	}, [debouncedSearch, capture, selectedLocation, selectedCategories.length])
 
 	const toggleCategory = (category: ProposalCategory) => {
 		setSelectedCategories((prev) =>
@@ -92,7 +107,10 @@ export function ExploreProposals({
 				selectedLocation={selectedLocation}
 				onLocationChange={setSelectedLocation}
 				sortBy={sortBy}
-				onSortByChange={setSortBy}
+				onSortByChange={(value) => {
+					capture("explore_sorted", { sort_by: value })
+					setSortBy(value)
+				}}
 				hasActiveFilters={selectedCategories.length > 0 || !!selectedLocation}
 				onClearFilters={() => {
 					setSelectedCategories([])

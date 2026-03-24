@@ -1,5 +1,7 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { useEffect } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import {
 	DashboardContainer,
 	EmptySection,
@@ -72,6 +74,10 @@ function RouteComponent() {
 		dashboardStatsQuery,
 	} = Route.useLoaderData()
 	const { data: userData } = useReadQuery(userQuery)
+	const { capture } = useAnalytics()
+	useEffect(() => {
+		capture("page_viewed", { page: "dashboard" })
+	}, [capture])
 	const { data: recentFabricsData } = useReadQuery(recentFabricsQuery)
 	const { data: recentProposalsData } = useReadQuery(recentProposalsQuery)
 	const { data: dashboardStatsData } = useReadQuery(dashboardStatsQuery)

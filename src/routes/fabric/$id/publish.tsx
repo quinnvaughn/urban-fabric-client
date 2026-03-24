@@ -1,5 +1,6 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
+import { useEffect } from "react"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ProposalFormPage } from "#/features/proposal"
 import { MobileGate } from "#/features/ui"
@@ -8,6 +9,7 @@ import {
 	type GetFabricQuery,
 	ProposalByFabricIdDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { openModal } from "#/stores"
 
 export const Route = createFileRoute("/fabric/$id/publish")({
@@ -57,6 +59,10 @@ function Publish({ fabric }: { fabric: Fabric }) {
 		? (fabric.elements as ElementInstance[])
 		: []
 	const navigate = Route.useNavigate()
+	const { capture } = useAnalytics()
+	useEffect(() => {
+		capture("page_viewed", { page: "publish" })
+	}, [capture])
 
 	return (
 		<MobileGate size="lg">
@@ -86,6 +92,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								eyebrow: "Your proposal is live!",
 								description:
 									"Share it with your community to get as many eyes on it as possible.",
+								source: "post_create",
 							})
 						}, 600)
 					})

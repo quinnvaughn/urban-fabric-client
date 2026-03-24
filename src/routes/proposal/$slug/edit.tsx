@@ -76,6 +76,7 @@ function EditProposal({ proposal }: { proposal: Proposal }) {
 								eyebrow: "Your proposal is live!",
 								description:
 									"Share it with your community to get as many eyes on it as possible.",
+								source: "post_update",
 							})
 						}, 600)
 					})

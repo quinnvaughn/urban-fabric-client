@@ -1,4 +1,5 @@
 import { useMutation } from "@apollo/client/react"
+import { useAnalytics } from "#/lib/analytics"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, EyeOff, Save, Send } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
@@ -134,6 +135,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const [saveDraftMutation] = useMutation(SaveDraftProposalDocument)
 	const [publishProposalMutation] = useMutation(PublishProposalDocument)
 	const [unpublishProposalMutation] = useMutation(UnpublishProposalDocument)
+	const { capture } = useAnalytics()
 
 	const getThumbnailForSubmit = useCallback(async () => {
 		const capture = captureThumbnailRef.current
@@ -201,6 +203,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
 			.with({ __typename: "Proposal" }, () => {
+				capture("draft_saved")
 				toast({ title: "Draft saved", intent: "success" })
 			})
 			.otherwise(() => {
@@ -272,6 +275,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
 			.with({ __typename: "Proposal" }, ({ slug, title }) => {
+				capture("proposal_published")
 				if (props.mode === "create") {
 					props.onPublishSuccess(slug, title)
 				} else {

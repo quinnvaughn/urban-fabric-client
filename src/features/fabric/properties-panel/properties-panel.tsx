@@ -1,5 +1,6 @@
 import { Info, Trash, X } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
+import { useAnalytics } from "#/lib/analytics"
 import { match, P } from "ts-pattern"
 import {
 	Box,
@@ -26,6 +27,7 @@ export function PropertiesPanel() {
 		updateElement,
 		deleteElement,
 	} = useFabricStore()
+	const { capture } = useAnalytics()
 	const selectedInstance =
 		elements.find((e) => e.id === selectedInstanceId) ?? null
 
@@ -42,6 +44,10 @@ export function PropertiesPanel() {
 
 		function handleChange(value: string) {
 			if (!selectedInstance) return
+			capture("editor_element_edited", {
+				element_type: selectedInstance.typeId,
+				property: prop.key,
+			})
 			updateElement(selectedInstance.id, {
 				properties: { ...selectedInstance.properties, [prop.key]: value },
 			})

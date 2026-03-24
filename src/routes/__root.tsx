@@ -80,6 +80,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						api_host: VITE_PUBLIC_POSTHOG_HOST,
 						defaults: "2026-01-30",
 						capture_exceptions: true,
+						autocapture: false,
+						capture_pageview: false,
 					}}
 				>
 					<GoogleOAuthProvider clientId={getClientEnv().VITE_GOOGLE_CLIENT_ID}>

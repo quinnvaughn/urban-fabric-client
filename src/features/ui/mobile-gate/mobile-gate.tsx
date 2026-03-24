@@ -1,5 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { Copy, Mail } from "lucide-react"
+import { useEffect } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import { useCurrentUser } from "#/lib/graphql"
 import { type MobileGateSize, useIsMobile, useTransientText } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
@@ -21,9 +23,15 @@ export function MobileGate({ children, size = "sm" }: Props) {
 	const [copyText, setCopyText] = useTransientText("Copy link", "Copied!", 2000)
 	const { data: user } = useCurrentUser()
 	const router = useRouter()
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		if (isMobile) capture("editor_mobile_wall_viewed")
+	}, [isMobile, capture])
 
 	function handleCopyLink() {
 		navigator.clipboard.writeText(window.location.href).then(setCopyText)
+		capture("editor_mobile_link_copied")
 		toast.success("Link copied to clipboard!", {
 			description: "You can now paste it anywhere you like.",
 		})
@@ -102,6 +110,7 @@ export function MobileGate({ children, size = "sm" }: Props) {
 								size: "md",
 							})}
 							href={`mailto:${user?.me?.email ?? ""}?subject=${encodeURIComponent("Urban Fabric")}&body=${encodeURIComponent(window.location.href)}`}
+						onClick={() => capture("editor_mobile_email_sent")}
 						>
 							<Mail size={12} />
 							Email me this link
@@ -116,7 +125,7 @@ export function MobileGate({ children, size = "sm" }: Props) {
 						</Button>
 						<button
 							type="button"
-							onClick={() => router.history.back()}
+							onClick={() => { capture("editor_mobile_go_back"); router.history.back() }}
 							className={css({
 								color: "stone.700",
 								fontSize: "sm",

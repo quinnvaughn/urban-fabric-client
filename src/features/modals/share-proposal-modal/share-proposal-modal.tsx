@@ -1,5 +1,7 @@
 import { Check, Copy, Link } from "lucide-react"
 import type * as React from "react"
+import { useEffect } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import {
 	Box,
 	Button,
@@ -96,6 +98,7 @@ export function ShareProposalModal({
 	link,
 	eyebrow = "Share proposal",
 	description,
+	source,
 }: {
 	open: boolean
 	onClose: () => void
@@ -103,15 +106,22 @@ export function ShareProposalModal({
 	link: string
 	eyebrow?: string
 	description?: string
+	source: string
 }) {
 	const [copyText, activateCopy] = useTransientText("Copy Link", "Copied!")
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		if (open) capture("proposal_share_modal_opened", { source })
+	}, [open, source, capture])
 
 	function handleCopy() {
 		navigator.clipboard.writeText(link).then(activateCopy)
+		capture("proposal_shared", { method: "copy_link", source })
 	}
 
 	return (
-		<Modal open={open} onClose={onClose} size="sm">
+		<Modal open={open} onClose={() => { capture("proposal_share_modal_dismissed", { source }); onClose() }} size="sm">
 			<Modal.Header>
 				<VStack gap="1">
 					<Modal.Eyebrow color="coral.500">{eyebrow}</Modal.Eyebrow>
@@ -143,6 +153,7 @@ export function ShareProposalModal({
 									.replace("{title}", encodeURIComponent(title))}
 								target="_blank"
 								rel="noopener noreferrer"
+								onClick={() => capture("proposal_shared", { method: dest.name.toLowerCase().replace(/[\s/]+/g, "_"), source })}
 								className={css({
 									display: "flex",
 									flexDir: "column",

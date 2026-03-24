@@ -1,6 +1,7 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useRef, useSyncExternalStore } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import { match } from "ts-pattern"
 import {
 	DrawingLayer,
@@ -107,6 +108,11 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		capture("fabric_created")
+	}, [capture])
 
 	useEffect(() => {
 		let cancelled = false
@@ -146,6 +152,9 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	}
 
 	function openAuthModal(intent: "save" | "publish") {
+		capture("signup_started", {
+			source: intent === "publish" ? "publish" : "save_draft",
+		})
 		openModal("auth", {
 			title:
 				intent === "publish"

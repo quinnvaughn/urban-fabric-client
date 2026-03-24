@@ -1,11 +1,12 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { FabricCard } from "#/features/fabric"
 import { FilterBar, Grid, LoadMore, Typography, VStack } from "#/features/ui"
 import type { MyFabricsQuery } from "#/graphql/generated"
 import { MyFabricsDocument } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 
 export const Route = createFileRoute("/dashboard/fabrics")({
@@ -29,6 +30,12 @@ type MyFabricsPayload = Extract<
 function RouteComponent() {
 	const { myFabricsQuery } = Route.useLoaderData()
 	const { data } = useReadQuery(myFabricsQuery)
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		capture("page_viewed", { page: "my_fabrics" })
+	}, [capture])
+
 	if (!data || data.myFabrics.__typename === "UnauthorizedError") {
 		return null
 	}

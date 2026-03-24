@@ -1,13 +1,18 @@
 import { useCallback } from "react"
+import { useAnalytics } from "#/lib/analytics"
 import { closeModal, openModal } from "#/stores"
 import { useCurrentUser } from "./use-current-user"
 
-export function useRequireAuth(title?: string) {
+export function useRequireAuth(title?: string, analyticsSource?: "like") {
 	const { data: userData } = useCurrentUser()
+	const { capture } = useAnalytics()
 
 	return useCallback(
 		(action: () => void) => {
 			if (!userData?.me) {
+				if (analyticsSource) {
+					capture("signup_started", { source: analyticsSource })
+				}
 				openModal("auth", {
 					title,
 					onAuthSuccess: () => {
@@ -19,6 +24,6 @@ export function useRequireAuth(title?: string) {
 			}
 			action()
 		},
-		[userData?.me, title],
+		[userData?.me, title, analyticsSource, capture],
 	)
 }

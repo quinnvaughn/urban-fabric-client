@@ -1,6 +1,6 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DashboardContainer, EmptySection } from "#/features/dashboard"
 import { ProposalRow } from "#/features/proposal"
 import {
@@ -18,6 +18,7 @@ import {
 	ProposalCategory,
 	ProposalStatusFilter,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 import { enumValueToReadableLabel } from "#/lib/string"
 
@@ -49,6 +50,12 @@ type MyProposalsPayload = Extract<
 function RouteComponent() {
 	const { myPropsalsQuery } = Route.useLoaderData()
 	const { data } = useReadQuery(myPropsalsQuery)
+	const { capture } = useAnalytics()
+
+	useEffect(() => {
+		capture("page_viewed", { page: "my_proposals" })
+	}, [capture])
+
 	if (!data || data.myProposals.__typename === "UnauthorizedError") {
 		return null
 	}
