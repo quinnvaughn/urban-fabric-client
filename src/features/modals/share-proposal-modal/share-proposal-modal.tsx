@@ -1,7 +1,6 @@
 import { Check, Copy, Link } from "lucide-react"
 import type * as React from "react"
 import { useEffect } from "react"
-import { useAnalytics } from "#/lib/analytics"
 import {
 	Box,
 	Button,
@@ -12,6 +11,7 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
+import { useAnalytics } from "#/lib/analytics"
 import { useTransientText } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 
@@ -91,6 +91,15 @@ const shareDest: ShareDest[] = [
 	},
 ]
 
+function buildShareUrl(link: string, utmSource: string, source: string) {
+	const url = new URL(link)
+	url.searchParams.set("utm_source", utmSource)
+	url.searchParams.set("utm_medium", "social")
+	url.searchParams.set("utm_campaign", "share_proposal")
+	url.searchParams.set("utm_content", source)
+	return url.toString()
+}
+
 export function ShareProposalModal({
 	open,
 	onClose,
@@ -116,12 +125,21 @@ export function ShareProposalModal({
 	}, [open, source, capture])
 
 	function handleCopy() {
-		navigator.clipboard.writeText(link).then(activateCopy)
+		navigator.clipboard
+			.writeText(buildShareUrl(link, "copy_link", source))
+			.then(activateCopy)
 		capture("proposal_shared", { method: "copy_link", source })
 	}
 
 	return (
-		<Modal open={open} onClose={() => { capture("proposal_share_modal_dismissed", { source }); onClose() }} size="sm">
+		<Modal
+			open={open}
+			onClose={() => {
+				capture("proposal_share_modal_dismissed", { source })
+				onClose()
+			}}
+			size="sm"
+		>
 			<Modal.Header>
 				<VStack gap="1">
 					<Modal.Eyebrow color="coral.500">{eyebrow}</Modal.Eyebrow>
@@ -145,52 +163,58 @@ export function ShareProposalModal({
 						</Typography.Text>
 					)}
 					<Grid cols={3} gap="2">
-						{shareDest.map((dest) => (
-							<a
-								key={dest.name}
-								href={dest.link
-									.replace("{url}", encodeURIComponent(link))
-									.replace("{title}", encodeURIComponent(title))}
-								target="_blank"
-								rel="noopener noreferrer"
-								onClick={() => capture("proposal_shared", { method: dest.name.toLowerCase().replace(/[\s/]+/g, "_"), source })}
-								className={css({
-									display: "flex",
-									flexDir: "column",
-									alignItems: "center",
-									gap: "2",
-									py: "2",
-									paddingTop: "3",
-									paddingBottom: "2.5",
-									borderRadius: "md",
-									background: { base: "stone.50", _hover: "stone.100" },
-									border: "1px solid",
-									borderColor: { base: "stone.200", _hover: "stone.300" },
-									textDecoration: "none",
-									cursor: "pointer",
-									transition:
-										"background 150ms var(--easings-in-out), border-color 150ms",
-								})}
-							>
-								<Box
-									style={{ background: dest.color }}
+						{shareDest.map((dest) => {
+							const utmSource = dest.name.toLowerCase().replace(/[\s/]+/g, "_")
+							const taggedLink = buildShareUrl(link, utmSource, source)
+							return (
+								<a
+									key={dest.name}
+									href={dest.link
+										.replace("{url}", encodeURIComponent(taggedLink))
+										.replace("{title}", encodeURIComponent(title))}
+									target="_blank"
+									rel="noopener noreferrer"
+									onClick={() =>
+										capture("proposal_shared", { method: utmSource, source })
+									}
 									className={css({
-										width: "9",
-										height: "9",
-										borderRadius: "md",
 										display: "flex",
+										flexDir: "column",
 										alignItems: "center",
-										justifyContent: "center",
-										flexShrink: 0,
+										gap: "2",
+										py: "2",
+										paddingTop: "3",
+										paddingBottom: "2.5",
+										borderRadius: "md",
+										background: { base: "stone.50", _hover: "stone.100" },
+										border: "1px solid",
+										borderColor: { base: "stone.200", _hover: "stone.300" },
+										textDecoration: "none",
+										cursor: "pointer",
+										transition:
+											"background 150ms var(--easings-in-out), border-color 150ms",
 									})}
 								>
-									{dest.icon}
-								</Box>
-								<Typography.Text size="xs" weight="medium" color="stone.700">
-									{dest.name}
-								</Typography.Text>
-							</a>
-						))}
+									<Box
+										style={{ background: dest.color }}
+										className={css({
+											width: "9",
+											height: "9",
+											borderRadius: "md",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											flexShrink: 0,
+										})}
+									>
+										{dest.icon}
+									</Box>
+									<Typography.Text size="xs" weight="medium" color="stone.700">
+										{dest.name}
+									</Typography.Text>
+								</a>
+							)
+						})}
 					</Grid>
 					<Divider />
 					<HStack gap="2" align="center">
