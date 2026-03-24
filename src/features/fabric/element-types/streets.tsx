@@ -705,5 +705,101 @@ export const STREETS_CATEGORY: ElementCategory = {
 				{ key: "to", label: "To" },
 			],
 		},
+		{
+			id: "new-sidewalk",
+			title: "New Sidewalk",
+			geometry: "line",
+			draw: "click-to-place-points",
+			excludes: [],
+			baseMapStyle: {
+				color: "#a070b8",
+				width: 4,
+				lineCap: "square",
+				lineJoin: "round",
+
+				casingWidth: 10,
+				casingOpacity: 0.15,
+
+				selected: {
+					width: 5.5,
+					lineCap: "round",
+					outlineOpacity: 0.85,
+					outlineDasharray: [5, 3],
+					outlineOffset: 9,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: {
+					radius: 5.5,
+					fillColor: "#ffffff",
+					strokeWidth: 2,
+					glowRadius: 9,
+					glowOpacity: 0.12,
+					snapRingRadius: 13,
+					snapRingOpacity: 0.45,
+					snapRingDasharray: [3, 2],
+					snapRingWidth: 1.5,
+				},
+				drawPreview: {
+					color: "#a070b8",
+					width: 3,
+					opacity: 0.5,
+					dasharray: [8, 6],
+					lineCap: "round",
+				},
+			} satisfies LineLayerStyle,
+
+			properties: [
+				{
+					key: "width",
+					label: "Width",
+					default: 8,
+					input: {
+						kind: "stepper",
+						min: 3,
+						max: 30,
+						step: 0.5,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "side",
+					label: "Side of Street",
+					description: "Which side of the street the new sidewalk is on",
+					default: "both",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "Both", value: "both" },
+							{ label: "Left", value: "left" },
+							{ label: "Right", value: "right" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "surface",
+					label: "Surface Material",
+					default: "concrete",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Concrete", value: "concrete" },
+							{ label: "Asphalt", value: "asphalt" },
+							{ label: "Pavers", value: "pavers" },
+							{ label: "Gravel", value: "gravel" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [
+				{ key: "length", label: "Length", unit: "ft" },
+				{ key: "from", label: "From" },
+				{ key: "to", label: "To" },
+			],
+		},
 	],
 }
