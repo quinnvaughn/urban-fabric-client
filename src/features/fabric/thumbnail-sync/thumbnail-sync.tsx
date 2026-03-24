@@ -18,7 +18,7 @@ function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
 			const reader = new FileReader()
 			reader.onloadend = () => resolve(reader.result as string)
 			reader.readAsDataURL(blob)
-		}, "image/png")
+		}, "image/webp")
 	})
 }
 
