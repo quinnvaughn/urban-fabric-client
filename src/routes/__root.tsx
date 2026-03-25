@@ -82,6 +82,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						capture_exceptions: true,
 						autocapture: false,
 						capture_pageview: false,
+						opt_out_capturing_by_default: import.meta.env.DEV,
 					}}
 				>
 					<GoogleOAuthProvider clientId={getClientEnv().VITE_GOOGLE_CLIENT_ID}>
