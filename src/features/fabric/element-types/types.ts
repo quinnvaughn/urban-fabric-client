@@ -251,6 +251,7 @@ type CalculatedField = {
 export type ElementDescriptor = {
 	id: string
 	title: string
+	description?: string
 	geometry: "line"
 	excludes?: string[]
 	draw: "click-to-place-points"

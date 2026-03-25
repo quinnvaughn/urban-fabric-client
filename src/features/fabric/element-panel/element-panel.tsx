@@ -247,65 +247,69 @@ export function ElementPanel() {
 						</HStack>
 						<VStack gap="px" className={css({ px: "1.5" })}>
 							{category.elements.map((element) => (
-								<button
-									key={element.id}
-									type="button"
-									data-active={isActiveElement(element)}
-									onClick={() => handleElementClick(element)}
-									className={css({
-										display: "flex",
-										alignItems: "center",
-										gap: "2",
-										padding: "2",
-										borderRadius: "md",
-										cursor: "pointer",
-										textAlign: "left",
-										width: "100%",
-										transition: "background 150ms var(--easings-in-out)",
-										position: "relative",
-										fontWeight: "500",
-										color: "stone.800",
-										background: "transparent",
-										_hover: { background: "stone.200" },
-										"&[data-active='true']": {
-											background: { base: "teal.100", _hover: "teal.100" },
-											color: "teal.700",
-											fontWeight: "600",
-										},
-									})}
-								>
-									{isActiveElement(element) && (
-										<Box
-											as="span"
+								<Tooltip key={element.id} side="right">
+									<Tooltip.Trigger>
+										<button
+											type="button"
+											data-active={isActiveElement(element)}
+											onClick={() => handleElementClick(element)}
 											className={css({
-												left: 0,
-												position: "absolute",
-												top: "5px",
-												bottom: "5px",
-												width: "2.5px",
-												borderRadius: "full",
-												background: "teal.600",
+												display: "flex",
+												alignItems: "center",
+												gap: "2",
+												padding: "2",
+												borderRadius: "md",
+												cursor: "pointer",
+												textAlign: "left",
+												width: "100%",
+												transition: "background 150ms var(--easings-in-out)",
+												position: "relative",
+												fontWeight: "500",
+												color: "stone.800",
+												background: "transparent",
+												_hover: { background: "stone.200" },
+												"&[data-active='true']": {
+													background: { base: "teal.100", _hover: "teal.100" },
+													color: "teal.700",
+													fontWeight: "600",
+												},
 											})}
-										/>
-									)}
-									<Box
-										className={css({
-											width: "2.5",
-											height: "2.5",
-											borderRadius: "2px",
-											flexShrink: 0,
-										})}
-										style={{ backgroundColor: element.baseMapStyle.color }}
-									/>
-									<Typography.Text
-										size="sm"
-										font="sans"
-										lineHeight="tight"
-										className={css({ flex: 1 })}
-									>
-										{element.title}
-									</Typography.Text>
-								</button>
+										>
+											{isActiveElement(element) && (
+												<Box
+													as="span"
+													className={css({
+														left: 0,
+														position: "absolute",
+														top: "5px",
+														bottom: "5px",
+														width: "2.5px",
+														borderRadius: "full",
+														background: "teal.600",
+													})}
+												/>
+											)}
+											<Box
+												className={css({
+													width: "2.5",
+													height: "2.5",
+													borderRadius: "2px",
+													flexShrink: 0,
+												})}
+												style={{ backgroundColor: element.baseMapStyle.color }}
+											/>
+											<Typography.Text
+												size="sm"
+												font="sans"
+												lineHeight="tight"
+												className={css({ flex: 1 })}
+											>
+												{element.title}
+											</Typography.Text>
+										</button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>{element.description}</Tooltip.Content>
+								</Tooltip>
 							))}
 						</VStack>
 					</VStack>

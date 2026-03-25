@@ -16,18 +16,20 @@ export function FabricComposition({
 	elements: ElementInstance[]
 }) {
 	const stats = useMemo(() => {
-		const grouped = summarizeElementsByType(elements)
+		const knownElements = elements.filter((e) => ELEMENT_TYPE_MAP[e.typeId])
+
+		const grouped = summarizeElementsByType(knownElements)
 			.map((entry) => ({
 				...entry,
-				title: ELEMENT_TYPE_MAP[entry.typeId]?.title ?? "Unknown element",
-				color: ELEMENT_TYPE_MAP[entry.typeId]?.baseMapStyle.color ?? "#a8a29e",
+				title: ELEMENT_TYPE_MAP[entry.typeId].title,
+				color: ELEMENT_TYPE_MAP[entry.typeId].baseMapStyle.color,
 			}))
 			.sort((a, b) => b.totalLengthMiles - a.totalLengthMiles)
 
 		return {
 			grouped,
-			totalCount: elements.length,
-			totalMiles: totalElementLengthMiles(elements),
+			totalCount: knownElements.length,
+			totalMiles: totalElementLengthMiles(knownElements),
 		}
 	}, [elements])
 

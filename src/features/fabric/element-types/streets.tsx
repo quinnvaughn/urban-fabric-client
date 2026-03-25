@@ -10,6 +10,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "bike-lane",
 			title: "Bike Lane",
+			description: "A dedicated lane on the road for cyclists, separated from vehicle traffic by markings or barriers.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: ["sharrow"],
@@ -190,6 +191,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "sharrow",
 			title: "Sharrow/Shared Lane",
+			description: "A marked lane where cyclists and cars share the same road space, indicated by painted arrow symbols.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: ["bike-lane"],
@@ -245,6 +247,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "bus-lane",
 			title: "Dedicated Bus Lane",
+			description: "A lane reserved for buses so they can move faster without getting stuck in car traffic.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
@@ -365,6 +368,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "pedestrian-street",
 			title: "Pedestrian / Shared Street",
+			description: "A street redesigned to prioritize people walking, with limited or no car access.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
@@ -460,8 +464,9 @@ export const STREETS_CATEGORY: ElementCategory = {
 		},
 
 		{
-			id: "parking-removal",
-			title: "Parking Removal",
+			id: "street-parking-removal",
+			title: "Street Parking Removal",
+			description: "Removing on-street parking spaces along a curb to free up space for other uses like bike lanes, wider sidewalks, or seating.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
@@ -551,6 +556,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "lane-reduction",
 			title: "Lane Reduction / Road Diet",
+			description: "Reducing the number of car lanes on a street to slow traffic and free up space for people walking, biking, or transit.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
@@ -625,6 +631,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "sidewalk-widening",
 			title: "Sidewalk Widening",
+			description: "Expanding an existing sidewalk to give people more room to walk, especially in busy areas.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
@@ -708,6 +715,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 		{
 			id: "new-sidewalk",
 			title: "New Sidewalk",
+			description: "Adding a brand new sidewalk on a street that currently has none, so people have a safe place to walk.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
