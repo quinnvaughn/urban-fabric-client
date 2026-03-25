@@ -1,20 +1,43 @@
 import "maplibre-gl/dist/maplibre-gl.css"
 import maplibregl from "maplibre-gl"
-import { useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
+import { MapStyle } from "#/graphql/generated"
+import { getClientEnv } from "#/lib/env/client"
 import { MapProvider } from "./map-context"
+
+const STYLE_NAMES: Record<MapStyle, string> = {
+	[MapStyle.Default]: "osm_bright",
+	[MapStyle.Dark]: "alidade_smooth_dark",
+	[MapStyle.Light]: "alidade_smooth",
+	[MapStyle.Satellite]: "alidade_satellite",
+}
+
+function styleUrl(style: MapStyle) {
+	const { VITE_STADIA_API_KEY } = getClientEnv()
+	return `https://tiles.stadiamaps.com/styles/${STYLE_NAMES[style]}.json?api_key=${VITE_STADIA_API_KEY}`
+}
 
 type Props = {
 	center: [number, number] // [lng, lat]
 	zoom?: number
 	bearing?: number
+	mapStyle?: MapStyle
 	children?: React.ReactNode
 }
 
-export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
+export function FabricMap({
+	center,
+	zoom = 15,
+	bearing = 0,
+	mapStyle = MapStyle.Default,
+	children,
+}: Props) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const mapRef = useRef<maplibregl.Map | null>(null)
 	const [map, setMap] = useState<maplibregl.Map | null>(null)
 	const [styleLoaded, setStyleLoaded] = useState(false)
+	const [styleVersion, setStyleVersion] = useState(0)
+	const isMounted = useRef(false)
 
 	// Initialize once — intentionally empty deps
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
@@ -23,7 +46,7 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 
 		mapRef.current = new maplibregl.Map({
 			container: containerRef.current,
-			style: `https://tiles.stadiamaps.com/styles/osm_bright.json?api_key=${import.meta.env.VITE_STADIA_API_KEY}`,
+			style: styleUrl(mapStyle),
 			center,
 			zoom,
 			pitch: 0,
@@ -32,10 +55,15 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 			attributionControl: false,
 		})
 
-		mapRef.current.once("load", () => setStyleLoaded(true))
+		mapRef.current.once("load", () => {
+			setStyleLoaded(true)
+			setStyleVersion((v) => v + 1)
+			isMounted.current = true
+		})
 		setMap(mapRef.current)
 
 		return () => {
+			isMounted.current = false
 			const mapToRemove = mapRef.current
 			mapRef.current = null
 			setMap(null)
@@ -46,26 +74,23 @@ export function FabricMap({ center, zoom = 15, bearing = 0, children }: Props) {
 		}
 	}, [])
 
-	// Fly to center if it changes after mount rather than remounting.
-	// Skip if the map is already at (approximately) the requested position —
-	// this prevents Apollo cache round-trips from kicking off a flyTo mid-interaction.
-	// useEffect(() => {
-	// 	if (!mapRef.current) return
-	// 	const c = mapRef.current.getCenter()
-	// 	if (
-	// 		Math.abs(center[0] - c.lng) < 1e-5 &&
-	// 		Math.abs(center[1] - c.lat) < 1e-5 &&
-	// 		Math.abs(zoom - mapRef.current.getZoom()) < 0.001 &&
-	// 		Math.abs(bearing - mapRef.current.getBearing()) < 0.001
-	// 	)
-	// 		return
-	// 	mapRef.current.flyTo({ center, zoom, bearing, duration: 600 })
-	// }, [center, zoom, bearing])
+	// Switch style when mapStyle prop changes after initial mount
+	useEffect(() => {
+		if (!isMounted.current || !mapRef.current) return
+		setStyleLoaded(false)
+		mapRef.current.setStyle(styleUrl(mapStyle))
+		mapRef.current.once("style.load", () => {
+			setStyleLoaded(true)
+			setStyleVersion((v) => v + 1)
+		})
+	}, [mapStyle])
 
 	return (
 		<MapProvider value={map}>
 			<div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-			{map && styleLoaded && children}
+			{map && styleLoaded && (
+				<Fragment key={styleVersion}>{children}</Fragment>
+			)}
 		</MapProvider>
 	)
 }

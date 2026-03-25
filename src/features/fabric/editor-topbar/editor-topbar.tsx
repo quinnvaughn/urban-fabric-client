@@ -1,12 +1,27 @@
 import { Link } from "@tanstack/react-router"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, MapIcon } from "lucide-react"
 import { useFabricStore } from "#/features/fabric/fabric-store"
-import { Box, Button } from "#/features/ui"
+import { Box, Button, Menu } from "#/features/ui"
+import { MapStyle } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { BackButton } from "../back-button"
 import { EditorTitleInput } from "./editor-title-input"
 import { SaveIndicator } from "./save-indicator"
+
+const MAP_STYLE_LABELS: Record<MapStyle, string> = {
+	[MapStyle.Default]: "Default",
+	[MapStyle.Dark]: "Dark",
+	[MapStyle.Light]: "Light",
+	[MapStyle.Satellite]: "Satellite",
+}
+
+const MAP_STYLE_ORDER: MapStyle[] = [
+	MapStyle.Default,
+	MapStyle.Dark,
+	MapStyle.Light,
+	MapStyle.Satellite,
+]
 
 type BaseProps = {
 	title: string
@@ -14,6 +29,8 @@ type BaseProps = {
 	onTitleSave: (title: string) => Promise<void>
 	onPublish?: () => Promise<void> | void
 	onSave?: () => void
+	mapStyle: MapStyle
+	onMapStyleChange: (style: MapStyle) => void
 }
 
 type Props =
@@ -34,6 +51,8 @@ export function EditorTopbar({
 	onSave,
 	hasProposal,
 	slug,
+	mapStyle,
+	onMapStyleChange,
 }: Props) {
 	const { saveStatus, elements } = useFabricStore()
 	const hasElements = elements.length > 0
@@ -80,6 +99,25 @@ export function EditorTopbar({
 			</Box>
 			<SaveIndicator />
 			<Box className={css({ flexShrink: 0, display: "flex", gap: "2" })}>
+				<Menu placement="bottom-end">
+					<Menu.Trigger>
+						<Button type="button" intent="neutral" size="sm" appearance="outline">
+							<MapIcon size={14} />
+							Map style
+						</Button>
+					</Menu.Trigger>
+					<Menu.Content>
+						{MAP_STYLE_ORDER.map((style) => (
+							<Menu.CheckItem
+								key={style}
+								checked={mapStyle === style}
+								onCheckedChange={() => onMapStyleChange(style)}
+							>
+								{MAP_STYLE_LABELS[style]}
+							</Menu.CheckItem>
+						))}
+					</Menu.Content>
+				</Menu>
 				{onPublish ? (
 					<>
 						{onSave && (

@@ -31,6 +31,7 @@ import {
 	VStack,
 } from "#/features/ui"
 import {
+	type MapStyle,
 	ProposalByFabricIdDocument,
 	ProposalCategory,
 	PublishProposalDocument,
@@ -81,6 +82,7 @@ export type ProposalFormData = {
 	elements: ElementInstance[]
 	center: { lat: number; lng: number }
 	zoom: number
+	mapStyle: MapStyle
 	initialThumbnail: string
 	location?: { city: string; region: string; regionAbbr?: string | null }
 	/** Link back to the fabric editor shown in the panel header. */
@@ -161,6 +163,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					elements: elements,
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
+					mapStyle: data.mapStyle,
 					thumbnail: currentThumbnail,
 				},
 			},
@@ -225,6 +228,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					elements: elements,
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
+					mapStyle: data.mapStyle,
 					thumbnail: currentThumbnail,
 				},
 			},
@@ -745,6 +749,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					<FabricMap
 						center={[viewport.center.lng, viewport.center.lat]}
 						zoom={viewport.zoom}
+						mapStyle={data.mapStyle}
 					>
 						<StaticElementsLayer elements={elements} />
 						<ThumbnailSync

@@ -1,0 +1,17 @@
+mutation UpdateFabricMapStyle($input: UpdateFabricMapStyleInput!) {
+  updateFabricMapStyle(input: $input) {
+    ... on Fabric {
+      id
+      mapStyle
+    }
+    ... on ForbiddenError {
+      message
+    }
+    ... on NotFoundError {
+      message
+    }
+    ... on UnauthorizedError {
+      message
+    }
+  }
+}

@@ -1,0 +1,15 @@
+query GetProposalForEdit($slug: String!) {
+	proposalBySlug(slug: $slug) {
+		... on NotFoundError {
+			message
+		}
+		... on Proposal {
+			id
+			fabricId
+			isPublished
+			title
+			description
+			categories
+		}
+	}
+}

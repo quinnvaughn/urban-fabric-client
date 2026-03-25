@@ -74,6 +74,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 					elements,
 					center: { lat: fabric.center.lat, lng: fabric.center.lng },
 					zoom: fabric.zoom,
+					mapStyle: fabric.mapStyle,
 					initialThumbnail: fabric.thumbnail ?? "",
 					location: {
 						city: fabric.locationCity,

@@ -93,6 +93,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 				<FabricMap
 					center={[proposal.snapshotCenter.lng, proposal.snapshotCenter.lat]}
 					zoom={proposal.snapshotZoom}
+					mapStyle={proposal.snapshotMapStyle}
 				>
 					<ProposalSelectLayer />
 					{/*

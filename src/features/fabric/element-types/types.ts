@@ -1,7 +1,7 @@
 // ── Property panel inputs ────────────────────────────────────────────────────
 
 import type { ApolloClient } from "@apollo/client"
-import { UpdateFabricElementsDocument } from "#/graphql/generated"
+import { type MapStyle, UpdateFabricElementsDocument } from "#/graphql/generated"
 
 type StepperInput = {
 	kind: "stepper"
@@ -144,6 +144,7 @@ export type GuestFabric = {
 	zoom: number
 	elements: ElementInstance[]
 	thumbnail?: string
+	mapStyle?: MapStyle
 }
 
 export function readGuestFabric(guestStorageKey = "guest-fabric") {

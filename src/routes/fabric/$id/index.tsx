@@ -4,7 +4,7 @@ import {
 	useReadQuery,
 } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import {
 	DrawingLayer,
 	EditorCommandPalette,
@@ -27,6 +27,7 @@ import {
 	GetFabricDocument,
 	type GetFabricQuery,
 	SyncViewportDocument,
+	UpdateFabricMapStyleDocument,
 	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
@@ -63,6 +64,8 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)
+	const [updateMapStyle] = useMutation(UpdateFabricMapStyleDocument)
+	const [mapStyle, setMapStyle] = useState(fabric.mapStyle)
 	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
 
@@ -89,6 +92,13 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 							variables: { input: { id: fabric.id, title } },
 						})
 					}}
+					mapStyle={mapStyle}
+					onMapStyleChange={(style) => {
+						setMapStyle(style)
+						updateMapStyle({
+							variables: { input: { id: fabric.id, mapStyle: style } },
+						})
+					}}
 				/>
 				<ElementPanel />
 				<PropertiesPanel />
@@ -97,6 +107,7 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 					center={[fabric.center.lng, fabric.center.lat]}
 					zoom={fabric.zoom}
 					bearing={0}
+					mapStyle={mapStyle}
 				>
 					<DrawingLayer />
 					<SelectLayer />

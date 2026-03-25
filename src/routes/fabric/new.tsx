@@ -27,7 +27,7 @@ import {
 } from "#/features/fabric/fabric-store"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { MobileGate } from "#/features/ui"
-import { CreateFabricDocument, MeDocument } from "#/graphql/generated"
+import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
 import {
 	addFabricToMyFabricsCache,
 	adjustMyDashboardFabricCountCache,
@@ -187,6 +187,13 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				}}
 				onPublish={() => openAuthModal("publish")}
 				onSave={() => openAuthModal("save")}
+				mapStyle={fabric.mapStyle ?? MapStyle.Default}
+				onMapStyleChange={(mapStyle) => {
+					updateGuestFabric(
+						(existing) => ({ ...existing, mapStyle }),
+						GUEST_FABRIC_KEY,
+					)
+				}}
 			/>
 			<ElementPanel />
 			<PropertiesPanel />
@@ -195,6 +202,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}
 				bearing={0}
+				mapStyle={fabric.mapStyle ?? MapStyle.Default}
 			>
 				<DrawingLayer />
 				<SelectLayer />
