@@ -1,6 +1,6 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo, useRef, useSyncExternalStore } from "react"
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
 import { useAnalytics } from "#/lib/analytics"
 import { match } from "ts-pattern"
 import {
@@ -111,6 +111,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)
 	const { capture } = useAnalytics()
+	const [mapStyle, setMapStyle] = useState(fabric.mapStyle ?? MapStyle.Default)
 
 	useEffect(() => {
 		capture("fabric_created")
@@ -189,10 +190,11 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				}}
 				onPublish={() => openAuthModal("publish")}
 				onSave={() => openAuthModal("save")}
-				mapStyle={fabric.mapStyle ?? MapStyle.Default}
-				onMapStyleChange={(mapStyle) => {
+				mapStyle={mapStyle}
+				onMapStyleChange={(style) => {
+					setMapStyle(style)
 					updateGuestFabric(
-						(existing) => ({ ...existing, mapStyle }),
+						(existing) => ({ ...existing, mapStyle: style }),
 						GUEST_FABRIC_KEY,
 					)
 				}}
@@ -204,7 +206,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}
 				bearing={0}
-				mapStyle={fabric.mapStyle ?? MapStyle.Default}
+				mapStyle={mapStyle}
 			>
 				<DrawingLayer />
 				<SelectLayer />
