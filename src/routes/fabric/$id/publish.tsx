@@ -1,4 +1,3 @@
-import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useEffect } from "react"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
@@ -15,40 +14,46 @@ import { openModal } from "#/stores"
 export const Route = createFileRoute("/fabric/$id/publish")({
 	component: RouteComponent,
 	beforeLoad: async ({ context, params }) => {
-		// if draft proposal exists, redirect to it instead of creating a new one
-		const { data } = await context.apolloClient.query({
-			query: ProposalByFabricIdDocument,
-			variables: {
-				fabricId: params.id,
-			},
-		})
+		const [{ data: proposalData }, { data: fabricData }] = await Promise.all([
+			context.apolloClient.query({
+				query: ProposalByFabricIdDocument,
+				variables: { fabricId: params.id },
+			}),
+			context.apolloClient.query({
+				query: GetFabricDocument,
+				variables: { fabricId: params.id },
+			}),
+		])
 
-		if (data?.proposalByFabricId?.__typename === "Proposal") {
+		// if draft proposal exists, redirect to it instead of creating a new one
+		if (proposalData?.proposalByFabricId?.__typename === "Proposal") {
 			throw redirect({
 				to: "/proposal/$slug",
-				params: { slug: data.proposalByFabricId.slug },
+				params: { slug: proposalData.proposalByFabricId.slug },
 			})
+		}
+
+		if (fabricData?.fabric.__typename === "UnauthorizedError") {
+			throw redirect({ to: "/login", replace: true })
+		}
+		if (fabricData?.fabric.__typename === "ForbiddenError") {
+			throw redirect({ to: "/dashboard", replace: true })
+		}
+		if (fabricData?.fabric.__typename === "NotFoundError") {
+			throw redirect({ to: "/dashboard", replace: true })
 		}
 	},
 	loader: ({ context, params }) => {
-		const fabricQuery = context.preloadQuery(GetFabricDocument, {
-			variables: {
-				fabricId: params.id,
-			},
+		const data = context.apolloClient.readQuery({
+			query: GetFabricDocument,
+			variables: { fabricId: params.id },
 		})
-		return { fabricQuery }
+		return { fabric: data?.fabric as Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }> }
 	},
 })
 
 function RouteComponent() {
-	const { fabricQuery } = Route.useLoaderData()
-	const { data } = useReadQuery(fabricQuery)
-
-	if (data.fabric.__typename === "NotFoundError") {
-		return <div>Fabric not found</div>
-	}
-	const fabric = data.fabric
-
+	const { fabric } = Route.useLoaderData()
 	return <Publish fabric={fabric} />
 }
 

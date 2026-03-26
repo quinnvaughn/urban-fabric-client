@@ -22,5 +22,11 @@ query GetFabric($fabricId: ID!) {
 		... on NotFoundError {
 			message
 		}
+		... on UnauthorizedError {
+			message
+		}
+		... on ForbiddenError {
+			message
+		}
 	}
 }
