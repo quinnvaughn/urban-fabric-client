@@ -10,6 +10,7 @@ type LoadMoreProps = {
 	loading: boolean
 	onLoadMore: () => void
 	emptyLabel?: string
+	hideEmpty?: boolean
 }
 
 export function LoadMore({
@@ -19,7 +20,10 @@ export function LoadMore({
 	loading,
 	onLoadMore,
 	emptyLabel = "No results",
+	hideEmpty = false,
 }: LoadMoreProps) {
+	if (hideEmpty && total === 0) return null
+
 	const label = hasMore
 		? `Showing ${showing} of ${total}`
 		: total === 0

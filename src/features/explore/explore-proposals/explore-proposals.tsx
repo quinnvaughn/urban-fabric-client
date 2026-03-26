@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
+import { match } from "ts-pattern"
 import { ExploreFilterBar } from "#/features/explore/explore-filter-bar"
-import { useAnalytics } from "#/lib/analytics"
-import { ProposalCard } from "#/features/proposal"
+import { ProposalCard, ProposalSearchEmptyState } from "#/features/proposal"
 import { Box, Grid, LoadMore, Typography, VStack } from "#/features/ui"
 import {
 	ExploreProposalsDocument,
@@ -9,6 +9,7 @@ import {
 	ExploreSortBy,
 	type ProposalCategory,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import type { LatLng } from "#/lib/geo"
 import { useDebounce, usePaginatedQuery } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
@@ -124,11 +125,18 @@ export function ExploreProposals({
 					<Typography.Text size="sm" color="stone.400">
 						{total} proposals
 					</Typography.Text>
-					<Grid cols={{ base: 1, md: 2, lg: 3, xl: 4 }} gap="4">
-						{proposals.map((proposal) => (
-							<ProposalCard key={proposal.id} proposal={proposal} />
+					{match(proposals)
+						.when(
+							(p) => p.length === 0,
+							() => <ProposalSearchEmptyState />,
+						)
+						.otherwise((p) => (
+							<Grid cols={{ base: 1, md: 2, lg: 3, xl: 4 }} gap="4">
+								{p.map((proposal) => (
+									<ProposalCard key={proposal.id} proposal={proposal} />
+								))}
+							</Grid>
 						))}
-					</Grid>
 				</VStack>
 				<LoadMore
 					total={total}
@@ -136,6 +144,7 @@ export function ExploreProposals({
 					hasMore={hasMore}
 					loading={loading}
 					onLoadMore={loadMore}
+					hideEmpty
 				/>
 			</Box>
 		</Box>
