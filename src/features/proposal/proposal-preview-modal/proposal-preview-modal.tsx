@@ -162,7 +162,7 @@ export function ProposalPreviewModal({ open, onClose, data }: Props) {
 						>
 							Preview
 						</Badge>
-						<Tooltip side="bottom">
+						<Tooltip placement="bottom">
 							<Tooltip.Trigger>
 								<Button
 									appearance="outline"

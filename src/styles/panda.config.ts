@@ -15,7 +15,6 @@ import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
 import { tabs } from "./recipes/tabs"
 import { toast } from "./recipes/toast"
-import { tooltip } from "./recipes/tooltip"
 import { typography } from "./recipes/typography"
 
 export default defineConfig({
@@ -53,7 +52,6 @@ export default defineConfig({
 			select: ["*"],
 			menu: ["*"],
 			modal: ["*"],
-			tooltip: ["*"],
 			commandPalette: ["*"],
 			chipGroup: ["*"],
 			grid: ["*"],
@@ -1856,7 +1854,6 @@ export default defineConfig({
 			select,
 			menu,
 			modal,
-			tooltip,
 			commandPalette,
 			input,
 			chipGroup,

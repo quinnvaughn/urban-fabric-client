@@ -1,6 +1,5 @@
 import { Info, Trash, X } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
-import { useAnalytics } from "#/lib/analytics"
 import { match, P } from "ts-pattern"
 import {
 	Box,
@@ -13,6 +12,7 @@ import {
 	Tooltip,
 	Typography,
 } from "#/features/ui"
+import { useAnalytics } from "#/lib/analytics"
 import { css } from "#/styles/styled-system/css"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import type { PropertyDescriptor } from "../element-types/types"
@@ -62,7 +62,7 @@ export function PropertiesPanel() {
 				})}
 			>
 				{prop.label}
-				<Tooltip>
+				<Tooltip placement="top-end">
 					<Tooltip.Trigger>
 						<span
 							className={css({
@@ -74,7 +74,7 @@ export function PropertiesPanel() {
 							<Info size={12} />
 						</span>
 					</Tooltip.Trigger>
-					<Tooltip.Content side="top">{prop.description}</Tooltip.Content>
+					<Tooltip.Content>{prop.description}</Tooltip.Content>
 				</Tooltip>
 			</span>
 		) : (
@@ -91,16 +91,31 @@ export function PropertiesPanel() {
 				>
 					<Segmented.Legend>{label}</Segmented.Legend>
 					<Segmented.Group>
-						{c.options.map((o) => (
-							<Segmented.Option
-								key={o.value}
-								value={o.value}
-								icon={o.icon}
-								title={o.description}
-							>
-								{o.label}
-							</Segmented.Option>
-						))}
+						{c.options.map((o) =>
+							o.description ? (
+								<Tooltip key={o.value} placement="top-end" delayMs={500}>
+									<Tooltip.Trigger>
+										<Segmented.Option
+											value={o.value}
+											icon={o.icon}
+											aria-label={`${o.label}: ${o.description}`}
+										>
+											{o.label}
+										</Segmented.Option>
+									</Tooltip.Trigger>
+									<Tooltip.Content>{o.description}</Tooltip.Content>
+								</Tooltip>
+							) : (
+								<Segmented.Option
+									key={o.value}
+									value={o.value}
+									icon={o.icon}
+									aria-label={o.label}
+								>
+									{o.label}
+								</Segmented.Option>
+							),
+						)}
 					</Segmented.Group>
 				</Segmented>
 			))
@@ -203,7 +218,7 @@ export function PropertiesPanel() {
 						>
 							{descriptor.title}
 						</Typography.Text>
-						<Tooltip>
+						<Tooltip placement="bottom-end">
 							<Tooltip.Trigger>
 								<button
 									type="button"
@@ -225,7 +240,7 @@ export function PropertiesPanel() {
 									<X size={12} />
 								</button>
 							</Tooltip.Trigger>
-							<Tooltip.Content side="bottom">Close Esc</Tooltip.Content>
+							<Tooltip.Content>Close Esc</Tooltip.Content>
 						</Tooltip>
 					</Box>
 					<Box

@@ -46,7 +46,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					overflow: "hidden",
 				})}
 			>
-				<Tooltip side="right">
+				<Tooltip placement="right">
 					<Tooltip.Trigger>
 						<button
 							aria-label="Open panel"

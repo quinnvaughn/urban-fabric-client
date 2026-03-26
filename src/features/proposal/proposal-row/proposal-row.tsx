@@ -239,7 +239,7 @@ export function ProposalRow({
 				})}
 			>
 				{isPublished ? (
-					<Tooltip>
+					<Tooltip placement="top-end">
 						<Tooltip.Trigger>
 							<Link
 								to="/proposal/$slug"

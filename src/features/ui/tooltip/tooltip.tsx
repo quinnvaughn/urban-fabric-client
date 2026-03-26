@@ -1,14 +1,20 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-import { cx } from "@/styles/styled-system/css"
-import { tooltip as tooltipRecipe } from "@/styles/styled-system/recipes"
+import { css, cx } from "@/styles/styled-system/css"
 
 // ---------- Types ----------
 
-export type TooltipSide = "top" | "bottom" | "left" | "right"
+export type TooltipPlacement =
+	| "top"
+	| "top-start"
+	| "top-end"
+	| "bottom"
+	| "bottom-start"
+	| "bottom-end"
+	| "left"
+	| "right"
 
 const GAP = 6 // px between trigger and tooltip
-const ARROW = 5 // px arrow size
 
 // ---------- Context ----------
 
@@ -16,7 +22,7 @@ interface TooltipContextValue {
 	open: boolean
 	setOpen: (open: boolean) => void
 	triggerRef: React.RefObject<HTMLElement | null>
-	side: TooltipSide
+	placement: TooltipPlacement
 }
 
 const TooltipContext = React.createContext<TooltipContextValue | null>(null)
@@ -47,14 +53,14 @@ function useTooltipContext() {
 
 export interface TooltipRootProps {
 	children: React.ReactNode
-	side?: TooltipSide
+	placement?: TooltipPlacement
 	/** Delay before showing, in ms. Default: 400 */
 	delayMs?: number
 }
 
 function TooltipRoot({
 	children,
-	side = "top",
+	placement = "top",
 	delayMs = 400,
 }: TooltipRootProps) {
 	const [open, setOpenState] = React.useState(false)
@@ -81,7 +87,7 @@ function TooltipRoot({
 	)
 
 	return (
-		<TooltipContext.Provider value={{ open, setOpen, triggerRef, side }}>
+		<TooltipContext.Provider value={{ open, setOpen, triggerRef, placement }}>
 			{children}
 		</TooltipContext.Provider>
 	)
@@ -137,126 +143,75 @@ TooltipTrigger.displayName = "Tooltip.Trigger"
 
 // ---------- Positioning ----------
 
-interface Position {
-	content: React.CSSProperties
-	arrow: React.CSSProperties
-}
-
 function getPosition(
 	triggerRect: DOMRect,
 	contentRect: DOMRect,
-	side: TooltipSide,
-): Position {
+	placement: TooltipPlacement,
+): React.CSSProperties {
 	const { top, bottom, left, right, width, height } = triggerRect
 	const cw = contentRect.width
 	const ch = contentRect.height
 
-	const positions: Record<
-		TooltipSide,
-		{ content: React.CSSProperties; arrow: React.CSSProperties }
-	> = {
-		top: {
-			content: {
-				top: top - ch - GAP - ARROW,
-				left: left + width / 2 - cw / 2,
-			},
-			arrow: {
-				top: top - GAP - ARROW * 2,
-				left: left + width / 2 - ARROW,
-				borderLeft: `${ARROW}px solid transparent`,
-				borderRight: `${ARROW}px solid transparent`,
-				borderTop: `${ARROW}px solid var(--colors-stone-900, #2c2a27)`,
-			},
-		},
-		bottom: {
-			content: {
-				top: bottom + GAP + ARROW,
-				left: left + width / 2 - cw / 2,
-			},
-			arrow: {
-				top: bottom + GAP,
-				left: left + width / 2 - ARROW,
-				borderLeft: `${ARROW}px solid transparent`,
-				borderRight: `${ARROW}px solid transparent`,
-				borderBottom: `${ARROW}px solid var(--colors-stone-900, #2c2a27)`,
-			},
-		},
-		left: {
-			content: {
-				top: top + height / 2 - ch / 2,
-				left: left - cw - GAP - ARROW,
-			},
-			arrow: {
-				top: top + height / 2 - ARROW,
-				left: left - GAP - ARROW * 2,
-				borderTop: `${ARROW}px solid transparent`,
-				borderBottom: `${ARROW}px solid transparent`,
-				borderLeft: `${ARROW}px solid var(--colors-stone-900, #2c2a27)`,
-			},
-		},
-		right: {
-			content: {
-				top: top + height / 2 - ch / 2,
-				left: right + GAP + ARROW,
-			},
-			arrow: {
-				top: top + height / 2 - ARROW,
-				left: right + GAP,
-				borderTop: `${ARROW}px solid transparent`,
-				borderBottom: `${ARROW}px solid transparent`,
-				borderRight: `${ARROW}px solid var(--colors-stone-900, #2c2a27)`,
-			},
-		},
+	const positions: Record<TooltipPlacement, React.CSSProperties> = {
+		top: { top: top - ch - GAP, left: left + width / 2 - cw / 2 },
+		"top-start": { top: top - ch - GAP, left },
+		"top-end": { top: top - ch - GAP, left: right - cw },
+		bottom: { top: bottom + GAP, left: left + width / 2 - cw / 2 },
+		"bottom-start": { top: bottom + GAP, left },
+		"bottom-end": { top: bottom + GAP, left: right - cw },
+		left: { top: top + height / 2 - ch / 2, left: left - cw - GAP },
+		right: { top: top + height / 2 - ch / 2, left: right + GAP },
 	}
 
-	return positions[side]
+	return positions[placement]
 }
 
 // ---------- Content ----------
 
-const styles = tooltipRecipe()
+const tooltipContentClass = css({
+	position: "fixed",
+	zIndex: "tooltip",
+	px: "2",
+	py: "1",
+	borderRadius: "sm",
+	bg: "stone.900",
+	color: "white",
+	fontSize: "sm",
+	fontWeight: "medium",
+	lineHeight: "snug",
+	whiteSpace: "nowrap",
+	pointerEvents: "none",
+	"&[data-state=open]": {
+		animation: "tooltipFadeIn 0.12s {easings.out} both",
+	},
+})
 
-export interface TooltipContentProps
-	extends React.HTMLAttributes<HTMLDivElement> {
-	/** Override the side set on the root */
-	side?: TooltipSide
-	arrow?: boolean
-}
+export type TooltipContentProps = React.HTMLAttributes<HTMLDivElement>
 
-function TooltipContent({
-	className,
-	children,
-	side: sideProp,
-	arrow = true,
-	...rest
-}: TooltipContentProps) {
-	const { open, triggerRef, side: sideCtx } = useTooltipContext()
-	const side = sideProp ?? sideCtx
+function TooltipContent({ className, children, ...rest }: TooltipContentProps) {
+	const { open, triggerRef, placement } = useTooltipContext()
 	const contentRef = React.useRef<HTMLDivElement>(null)
-	const [pos, setPos] = React.useState<Position | null>(null)
+	const [pos, setPos] = React.useState<React.CSSProperties | null>(null)
 
 	React.useLayoutEffect(() => {
 		if (!open || !triggerRef.current || !contentRef.current) return
 		const triggerRect = triggerRef.current.getBoundingClientRect()
 		const contentRect = contentRef.current.getBoundingClientRect()
-		setPos(getPosition(triggerRect, contentRect, side))
-	}, [open, side, triggerRef])
+		setPos(getPosition(triggerRect, contentRect, placement))
+	}, [open, placement, triggerRef])
 
 	if (!open) return null
 
 	return ReactDOM.createPortal(
-		<>
-			<div
-				ref={contentRef}
-				data-state="open"
-				className={cx(styles.content, className)}
-				style={pos ? { ...pos.content } : { visibility: "hidden" }}
-				{...rest}
-			>
-				{children}
-			</div>
-			{arrow && pos && <div className={styles.arrow} style={pos.arrow} />}
-		</>,
+		<div
+			ref={contentRef}
+			data-state="open"
+			className={cx(tooltipContentClass, className)}
+			style={pos ? { ...pos } : { visibility: "hidden" }}
+			{...rest}
+		>
+			{children}
+		</div>,
 		document.body,
 	)
 }

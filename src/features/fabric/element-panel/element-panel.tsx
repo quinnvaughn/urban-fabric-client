@@ -133,7 +133,7 @@ export function ElementPanel() {
 				})}
 			>
 				{tools.map((tool) => (
-					<Tooltip key={tool.title}>
+					<Tooltip key={tool.title} placement="bottom">
 						<Tooltip.Trigger>
 							<button
 								type="button"
@@ -166,7 +166,7 @@ export function ElementPanel() {
 								{tool.icon}
 							</button>
 						</Tooltip.Trigger>
-						<Tooltip.Content side="bottom">{tool.tooltip}</Tooltip.Content>
+						<Tooltip.Content>{tool.tooltip}</Tooltip.Content>
 					</Tooltip>
 				))}
 				<Box
@@ -179,7 +179,7 @@ export function ElementPanel() {
 					})}
 				/>
 				{actions.map((action) => (
-					<Tooltip key={action.title}>
+					<Tooltip key={action.title} placement="bottom">
 						<Tooltip.Trigger>
 							<button
 								type="button"
@@ -219,7 +219,7 @@ export function ElementPanel() {
 								{action.icon}
 							</button>
 						</Tooltip.Trigger>
-						<Tooltip.Content side="bottom">{action.tooltip}</Tooltip.Content>
+						<Tooltip.Content>{action.tooltip}</Tooltip.Content>
 					</Tooltip>
 				))}
 			</Grid>
@@ -247,7 +247,7 @@ export function ElementPanel() {
 						</HStack>
 						<VStack gap="px" className={css({ px: "1.5" })}>
 							{category.elements.map((element) => (
-								<Tooltip key={element.id} side="right">
+								<Tooltip key={element.id} placement="top-start">
 									<Tooltip.Trigger>
 										<button
 											type="button"

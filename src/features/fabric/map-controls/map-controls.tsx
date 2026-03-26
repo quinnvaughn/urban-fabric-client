@@ -1,4 +1,4 @@
-import { LocateFixed, Minus, Plus } from "lucide-react"
+import { InfoIcon, KeyboardIcon, LocateFixed, Minus, Plus } from "lucide-react"
 import {
 	getFabricShortcutHint,
 	MAP_CONTROL_SHORTCUT_IDS,
@@ -10,8 +10,8 @@ import { css, cx } from "#/styles/styled-system/css"
 import { useMap } from "../fabric-map"
 
 const controlButton = css({
-	width: "34px",
-	height: "34px",
+	width: "40px",
+	height: "40px",
 	display: "flex",
 	alignItems: "center",
 	justifyContent: "center",
@@ -88,17 +88,17 @@ export function MapControls({ showHelp = true }: Props) {
 				background: "white",
 			})}
 		>
-			<Tooltip>
+			<Tooltip placement="top-end">
 				<Tooltip.Trigger>
 					<button
 						type="button"
 						className={controlButton}
 						onClick={handleGetLocation}
 					>
-						<LocateFixed size={14} />
+						<LocateFixed size={20} />
 					</button>
 				</Tooltip.Trigger>
-				<Tooltip.Content side="left">Get current location</Tooltip.Content>
+				<Tooltip.Content>Get current location</Tooltip.Content>
 			</Tooltip>
 			<div
 				className={css({
@@ -108,17 +108,17 @@ export function MapControls({ showHelp = true }: Props) {
 					flexShrink: 0,
 				})}
 			/>
-			<Tooltip>
+			<Tooltip placement="top-end">
 				<Tooltip.Trigger>
 					<button
 						type="button"
 						className={controlButton}
 						onClick={() => map.zoomOut()}
 					>
-						<Minus size={14} />
+						<Minus size={20} />
 					</button>
 				</Tooltip.Trigger>
-				<Tooltip.Content side="left">Zoom out</Tooltip.Content>
+				<Tooltip.Content>Zoom out</Tooltip.Content>
 			</Tooltip>
 			<div
 				className={css({
@@ -128,17 +128,17 @@ export function MapControls({ showHelp = true }: Props) {
 					flexShrink: 0,
 				})}
 			/>
-			<Tooltip>
+			<Tooltip placement="top-end">
 				<Tooltip.Trigger>
 					<button
 						type="button"
 						className={controlButton}
 						onClick={() => map.zoomIn()}
 					>
-						<Plus size={14} />
+						<Plus size={20} />
 					</button>
 				</Tooltip.Trigger>
-				<Tooltip.Content side="left">Zoom in</Tooltip.Content>
+				<Tooltip.Content>Zoom in</Tooltip.Content>
 			</Tooltip>
 			<div
 				className={css({
@@ -150,33 +150,34 @@ export function MapControls({ showHelp = true }: Props) {
 			/>
 			{showHelp && (
 				<Menu>
-					<Tooltip>
-						<Tooltip.Trigger>
-							<Menu.Trigger>
+					<Menu.Trigger>
+						<Tooltip placement="top-end">
+							<Tooltip.Trigger>
 								<button
 									type="button"
 									className={cx(
 										controlButton,
-										css({ fontSize: "14px", fontWeight: "bold" }),
+										css({ fontSize: "20px", fontWeight: "semibold" }),
 									)}
 								>
 									?
 								</button>
-							</Menu.Trigger>
-						</Tooltip.Trigger>
-						<Tooltip.Content side="left">Help & documentation</Tooltip.Content>
-					</Tooltip>
+							</Tooltip.Trigger>
+							<Tooltip.Content>Help & documentation</Tooltip.Content>
+						</Tooltip>
+					</Menu.Trigger>
 					<Menu.Content>
 						<Menu.Item
+							icon={<KeyboardIcon size={14} />}
 							kbd={getFabricShortcutHint("openShortcuts")}
 							onClick={() => open("shortcuts")}
 						>
 							Keyboard shortcuts
 						</Menu.Item>
-						<Menu.Item onClick={() => open("gettingStarted")}>
-							Getting Started
-						</Menu.Item>
-						<Menu.Item onClick={() => open("toolRef")}>
+						<Menu.Item
+							icon={<InfoIcon size={14} />}
+							onClick={() => open("toolRef")}
+						>
 							Tool reference
 						</Menu.Item>
 					</Menu.Content>

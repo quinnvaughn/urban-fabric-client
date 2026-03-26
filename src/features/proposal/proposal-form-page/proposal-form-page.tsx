@@ -1,5 +1,4 @@
 import { useMutation } from "@apollo/client/react"
-import { useAnalytics } from "#/lib/analytics"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, EyeOff, Save, Send } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
@@ -38,6 +37,7 @@ import {
 	SaveDraftProposalDocument,
 	UnpublishProposalDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import {
 	addProposalToMyProposalsCache,
 	adjustMyDashboardStatsCache,
@@ -422,19 +422,25 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				</Box>
 				<form.Subscribe selector={(s) => s.values.title}>
 					{(title) => (
-						<Tooltip>
+						<Tooltip placement="bottom-end">
 							<Tooltip.Trigger>
-								<Button
-									size="sm"
-									appearance="outline"
-									intent="neutral"
-									type="button"
-									disabled={!title.trim()}
-									onClick={() => setIsPreviewOpen(true)}
+								<span
+									className={css({
+										cursor: !title.trim() ? "not-allowed" : "pointer",
+									})}
 								>
-									<ExternalLink size={14} />
-									Preview
-								</Button>
+									<Button
+										size="sm"
+										appearance="outline"
+										intent="neutral"
+										type="button"
+										disabled={!title.trim()}
+										onClick={() => setIsPreviewOpen(true)}
+									>
+										<ExternalLink size={14} />
+										Preview
+									</Button>
+								</span>
 							</Tooltip.Trigger>
 							{!title.trim() && (
 								<Tooltip.Content>Add a title to preview</Tooltip.Content>
