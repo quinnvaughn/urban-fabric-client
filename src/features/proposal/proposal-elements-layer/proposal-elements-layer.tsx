@@ -32,7 +32,13 @@ export function ProposalElementsLayer() {
 			const layerIds = [...elementLayerIds.current].map((id) =>
 				elementsLayerIds.mainLayerId(id),
 			)
-			const features = map.queryRenderedFeatures(e.point, { layers: layerIds })
+			const isTouch = e.originalEvent instanceof TouchEvent
+			const r = isTouch ? 20 : 4
+			const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+				[e.point.x - r, e.point.y - r],
+				[e.point.x + r, e.point.y + r],
+			]
+			const features = map.queryRenderedFeatures(bbox, { layers: layerIds })
 			if (features.length === 0) return
 
 			const elementId = features[0].layer.id.replace(/^el-/, "")
