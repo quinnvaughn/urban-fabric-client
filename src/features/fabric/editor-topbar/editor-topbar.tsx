@@ -135,7 +135,9 @@ export function EditorTopbar({
 							Command Palette
 						</Menu.Item>
 						<Menu.Separator />
-						<Menu.Item>Getting Started</Menu.Item>
+						<Menu.Item onClick={() => open("gettingStarted")}>
+							Getting Started
+						</Menu.Item>
 						<Menu.Separator />
 						<Menu.Item
 							kbd={getFabricShortcutHint("openShortcuts")}

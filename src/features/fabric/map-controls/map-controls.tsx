@@ -1,4 +1,4 @@
-import { InfoIcon, KeyboardIcon, LocateFixed, Minus, Plus } from "lucide-react"
+import { LocateFixed, Minus, Plus } from "lucide-react"
 import {
 	getFabricShortcutHint,
 	MAP_CONTROL_SHORTCUT_IDS,
@@ -168,17 +168,15 @@ export function MapControls({ showHelp = true }: Props) {
 					</Tooltip>
 					<Menu.Content>
 						<Menu.Item
-							icon={<KeyboardIcon size={14} />}
 							kbd={getFabricShortcutHint("openShortcuts")}
 							onClick={() => open("shortcuts")}
 						>
 							Keyboard shortcuts
 						</Menu.Item>
-
-						<Menu.Item
-							icon={<InfoIcon size={14} />}
-							onClick={() => open("toolRef")}
-						>
+						<Menu.Item onClick={() => open("gettingStarted")}>
+							Getting Started
+						</Menu.Item>
+						<Menu.Item onClick={() => open("toolRef")}>
 							Tool reference
 						</Menu.Item>
 					</Menu.Content>

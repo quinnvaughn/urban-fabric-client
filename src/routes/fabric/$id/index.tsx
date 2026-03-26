@@ -32,6 +32,7 @@ import {
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
+import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -61,6 +62,7 @@ type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const client = useApolloClient()
 	const { initElements } = useFabricStore()
+	useGettingStartedModal()
 	const [updateTitle] = useMutation(UpdateFabricTitleDocument)
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)

@@ -25,6 +25,7 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
+import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
 import { MobileGate } from "#/features/ui"
 import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
@@ -105,6 +106,7 @@ function RouteComponent() {
 function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
 	const { initElements } = useFabricStore()
+	useGettingStartedModal()
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)

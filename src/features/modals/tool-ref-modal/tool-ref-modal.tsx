@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
-import { HStack, Modal, Typography, VStack } from "#/features/ui"
-import { css } from "#/styles/styled-system/css"
+import { HStack, Kbd, Modal, Typography, VStack } from "#/features/ui"
 
 type Tool = {
 	title: "select" | "draw" | "command palette"
@@ -8,34 +7,14 @@ type Tool = {
 	description: ReactNode
 }
 
-const kbd = css({
-	display: "inline-flex",
-	alignItems: "center",
-	justifyContent: "center",
-	minWidth: "6",
-	height: "6",
-	px: "1",
-	background: "stone.100",
-	borderRadius: "sm",
-	border: "1px solid",
-	borderColor: "stone.300",
-	fontSize: "xs",
-	fontWeight: "medium",
-	color: "stone.700",
-	whiteSpace: "nowrap",
-	fontFamily: "sans",
-	lineHeight: "none",
-	boxShadow: "sm",
-})
-
 const tools: Tool[] = [
 	{
 		title: "select",
 		keyboardShortcut: "V",
 		description: (
 			<>
-				Click to select a segment. Drag to move. <kbd className={kbd}>Del</kbd>{" "}
-				to delete. Double-click a waypoint to remove it from the segment.
+				Click to select a segment. Drag to move. <Kbd>Del</Kbd> to delete.
+				Double-click a waypoint to remove it from the segment.
 			</>
 		),
 	},
@@ -44,9 +23,8 @@ const tools: Tool[] = [
 		keyboardShortcut: "D",
 		description: (
 			<>
-				Click to place waypoints along a road. Press{" "}
-				<kbd className={kbd}>↵</kbd> to finish or <kbd className={kbd}>Esc</kbd>{" "}
-				to cancel. Snaps to the road network automatically.
+				Click to place waypoints along a road. Press <Kbd>↵</Kbd> to finish or{" "}
+				<Kbd>Esc</Kbd> to cancel. Snaps to the road network automatically.
 			</>
 		),
 	},
@@ -55,9 +33,9 @@ const tools: Tool[] = [
 		keyboardShortcut: "⌘ K",
 		description: (
 			<>
-				Press <kbd className={kbd}>⌘</kbd> + <kbd className={kbd}>K</kbd> to
-				open the command palette. Search for any element type by name and press{" "}
-				<kbd className={kbd}>↵</kbd> to immediately start drawing it.
+				Press <Kbd>⌘</Kbd> + <Kbd>K</Kbd> to open the command palette. Search
+				for any element type by name and press <Kbd>↵</Kbd> to immediately start
+				drawing it.
 			</>
 		),
 	},
