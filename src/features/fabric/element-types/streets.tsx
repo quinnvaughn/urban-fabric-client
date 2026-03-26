@@ -106,23 +106,11 @@ export const STREETS_CATEGORY: ElementCategory = {
 					description: "Which direction cyclists travel in this lane",
 					default: "with",
 					input: {
-						kind: "segmented",
+						kind: "select",
 						options: [
-							{
-								label: "With traffic",
-								value: "with",
-								icon: <ArrowRight size={14} />,
-							},
-							{
-								label: "Against traffic",
-								value: "against",
-								icon: <ArrowLeft size={14} />,
-							},
-							{
-								label: "Both directions",
-								value: "both",
-								icon: <ArrowLeftRight size={14} />,
-							},
+							{ label: "With traffic", value: "with" },
+							{ label: "Against traffic", value: "against" },
+							{ label: "Both directions", value: "both" },
 						],
 					},
 					toMapStyle: () => ({}),
