@@ -118,6 +118,11 @@ export const STREETS_CATEGORY: ElementCategory = {
 								value: "against",
 								icon: <ArrowLeft size={14} />,
 							},
+							{
+								label: "Both directions",
+								value: "both",
+								icon: <ArrowLeftRight size={14} />,
+							},
 						],
 					},
 					toMapStyle: () => ({}),
