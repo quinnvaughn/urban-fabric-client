@@ -314,35 +314,48 @@ export interface MenuLinkAnchorProps
 	icon?: React.ReactNode
 	kbd?: React.ReactNode
 	intent?: "neutral" | "danger"
+	disabled?: boolean
+	ref?: React.Ref<HTMLAnchorElement>
 }
 
-const MenuLinkAnchor = React.forwardRef<HTMLAnchorElement, MenuLinkAnchorProps>(
-	function MenuLinkAnchor(
-		{ icon, kbd, intent, className, children, href, onClick, ...rest },
-		ref,
-	) {
-		const { setOpen } = useMenuContext()
-		const itemStyles = menuRecipe({ intent })
+function MenuLinkAnchor({
+	icon,
+	kbd,
+	intent,
+	className,
+	children,
+	href,
+	onClick,
+	disabled,
+	ref,
+	...rest
+}: MenuLinkAnchorProps) {
+	const { setOpen } = useMenuContext()
+	const itemStyles = menuRecipe({ intent })
 
-		return (
-			<a
-				ref={ref}
-				role="menuitem"
-				href={href}
-				className={cx(itemStyles.item, className)}
-				{...rest}
-				onClick={(e) => {
-					onClick?.(e)
-					setOpen(false)
-				}}
-			>
-				{icon && <span data-slot="icon">{icon}</span>}
-				{children}
-				{kbd && <span data-slot="kbd">{kbd}</span>}
-			</a>
-		)
-	},
-)
+	return (
+		<a
+			ref={ref}
+			role="menuitem"
+			href={href}
+			aria-disabled={disabled}
+			className={cx(itemStyles.item, className)}
+			{...rest}
+			onClick={(e) => {
+				if (disabled) {
+					e.preventDefault()
+					return
+				}
+				onClick?.(e)
+				setOpen(false)
+			}}
+		>
+			{icon && <span data-slot="icon">{icon}</span>}
+			{children}
+			{kbd && <span data-slot="kbd">{kbd}</span>}
+		</a>
+	)
+}
 MenuLinkAnchor.displayName = "MenuLinkAnchor"
 
 const CreatedMenuLink = createLink(MenuLinkAnchor)

@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client/react"
 import { Link, useNavigate } from "@tanstack/react-router"
-import { Copy, EllipsisVertical, MapPin, Trash } from "lucide-react"
+import { Copy, EllipsisVertical, MapPin, Send, Trash } from "lucide-react"
 import { DateTime } from "luxon"
 import { match } from "ts-pattern"
 import {
@@ -190,6 +190,14 @@ export function FabricCard({
 					</button>
 				</Menu.Trigger>
 				<Menu.Content>
+					<Menu.Link
+						to="/fabric/$id/publish"
+						params={{ id }}
+						disabled={elements.length === 0}
+					>
+						<Send size={12} />
+						Publish
+					</Menu.Link>
 					<Menu.Item onClick={() => void handleDuplicate()}>
 						<Copy size={12} />
 						Duplicate
