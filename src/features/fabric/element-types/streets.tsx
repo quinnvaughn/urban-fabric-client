@@ -89,7 +89,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 				},
 				{
 					key: "lanes",
-					label: "Number of Lanes",
+					label: "Lanes Per Side",
 					default: "1",
 					input: {
 						kind: "segmented",
@@ -101,16 +101,14 @@ export const STREETS_CATEGORY: ElementCategory = {
 					toMapStyle: () => ({}),
 				},
 				{
-					key: "direction",
-					label: "Direction",
-					description: "Which direction cyclists travel in this lane",
-					default: "with",
+					key: "sides",
+					label: "Sides of Street",
+					default: "one",
 					input: {
-						kind: "select",
+						kind: "segmented",
 						options: [
-							{ label: "With traffic", value: "with" },
-							{ label: "Against traffic", value: "against" },
-							{ label: "Both directions", value: "both" },
+							{ label: "1 side", value: "one" },
+							{ label: "2 sides", value: "both" },
 						],
 					},
 					toMapStyle: () => ({}),
