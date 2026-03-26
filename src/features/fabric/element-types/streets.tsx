@@ -471,7 +471,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 			draw: "click-to-place-points",
 			excludes: [],
 			baseMapStyle: {
-				color: "#8a857d",
+				color: "#e0436a",
 				width: 4,
 				lineCap: "square",
 				lineJoin: "round",
@@ -501,7 +501,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingWidth: 1.5,
 				},
 				drawPreview: {
-					color: "#8a857d",
+					color: "#e0436a",
 					width: 2.5,
 					opacity: 0.45,
 					dasharray: [6, 5],
@@ -561,7 +561,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 			draw: "click-to-place-points",
 			excludes: [],
 			baseMapStyle: {
-				color: "#504c45",
+				color: "#0ea5b0",
 				width: 5,
 				lineCap: "square",
 				lineJoin: "round",
@@ -590,7 +590,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					snapRingWidth: 1.5,
 				},
 				drawPreview: {
-					color: "#504c45",
+					color: "#0ea5b0",
 					width: 3,
 					opacity: 0.5,
 					dasharray: [8, 6],
