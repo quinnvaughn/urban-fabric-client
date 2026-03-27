@@ -118,7 +118,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Width",
 					default: 5,
 					input: {
-						kind: "stepper",
+						kind: "slider",
 						min: 3,
 						max: 20,
 						step: 0.5,
@@ -350,7 +350,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Width",
 					default: 11,
 					input: {
-						kind: "stepper",
+						kind: "slider",
 						min: 10,
 						max: 16,
 						step: 0.5,
@@ -608,7 +608,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					key: "lanes-before",
 					label: "Lanes Before",
 					default: 4,
-					input: { kind: "stepper", min: 2, max: 8, step: 1, unit: "lanes" },
+					input: { kind: "slider", min: 2, max: 8, step: 1, unit: "lanes" },
 					constraints: [
 						{ kind: "min-sibling", sibling: "lanes-after", offset: 1 },
 					],
@@ -618,7 +618,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					key: "lanes-after",
 					label: "Lanes After",
 					default: 2,
-					input: { kind: "stepper", min: 1, max: 7, step: 1, unit: "lanes" },
+					input: { kind: "slider", min: 1, max: 7, step: 1, unit: "lanes" },
 					constraints: [
 						{ kind: "max-sibling", sibling: "lanes-before", offset: 1 },
 					],
@@ -685,7 +685,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Current Width",
 					default: 6,
 					input: {
-						kind: "stepper",
+						kind: "slider",
 						min: 2,
 						max: 30,
 						step: 0.5,
@@ -698,7 +698,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Proposed Width",
 					default: 12,
 					input: {
-						kind: "stepper",
+						kind: "slider",
 						min: 2,
 						max: 30,
 						step: 0.5,
@@ -770,7 +770,7 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Width",
 					default: 8,
 					input: {
-						kind: "stepper",
+						kind: "slider",
 						min: 3,
 						max: 30,
 						step: 0.5,

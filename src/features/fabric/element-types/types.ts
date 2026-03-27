@@ -3,8 +3,8 @@
 import type { ApolloClient } from "@apollo/client"
 import { type MapStyle, UpdateFabricElementsDocument } from "#/graphql/generated"
 
-type StepperInput = {
-	kind: "stepper"
+type SliderInput = {
+	kind: "slider"
 	min: number
 	max: number
 	step: number
@@ -30,7 +30,7 @@ type SegmentedInput = {
 }
 type ToggleInput = { kind: "toggle" }
 
-type PropertyInput = StepperInput | SelectInput | SegmentedInput | ToggleInput
+type PropertyInput = SliderInput | SelectInput | SegmentedInput | ToggleInput
 
 type PropertyConstraint =
 	| { kind: "max-sibling"; sibling: string; offset: number } // value must be < sibling - offset

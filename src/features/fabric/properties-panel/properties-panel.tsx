@@ -7,7 +7,7 @@ import {
 	Input,
 	Segmented,
 	Select,
-	Stepper,
+	Slider,
 	Textarea,
 	Tooltip,
 	Typography,
@@ -132,7 +132,7 @@ export function PropertiesPanel() {
 					</Select.Options>
 				</Select>
 			))
-			.with({ kind: "stepper" }, (step) => {
+			.with({ kind: "slider" }, (step) => {
 				let min = step.min
 				let max = step.max
 
@@ -149,19 +149,24 @@ export function PropertiesPanel() {
 				}
 
 				return (
-					<Stepper
+					<Slider
 						key={prop.key}
-						size="md"
 						value={Number(currentValue)}
-						onChange={(val) => handleChange(String(val))}
+						onValueChange={(val) => handleChange(String(val))}
 						min={min}
 						max={max}
 						step={step.step}
-						format={(val) => (step.unit ? `${val} ${step.unit}` : String(val))}
+						formatValue={(val) =>
+							step.unit ? `${val} ${step.unit}` : String(val)
+						}
 					>
-						<Stepper.Label>{label}</Stepper.Label>
-						<Stepper.Control />
-					</Stepper>
+						<Slider.Header>
+							<Slider.Label>{label}</Slider.Label>
+							<Slider.Value />
+						</Slider.Header>
+						<Slider.Track />
+						<Slider.Bounds />
+					</Slider>
 				)
 			})
 			.with({ kind: "toggle" }, () => <div key={prop.key}>toggle</div>)
@@ -251,8 +256,6 @@ export function PropertiesPanel() {
 							display: "flex",
 							flexDirection: "column",
 							gap: "3.5",
-							scrollbarWidth: "thin",
-							scrollbarColor: "stone.300 transparent",
 						})}
 					>
 						<Input>

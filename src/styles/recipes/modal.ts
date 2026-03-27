@@ -65,8 +65,6 @@ export const modal = defineSlotRecipe({
 			px: "6",
 			pt: "5",
 			pb: "6",
-			scrollbarWidth: "thin",
-			scrollbarColor: "token(colors.stone.300) transparent",
 		},
 		footer: {
 			display: "flex",
