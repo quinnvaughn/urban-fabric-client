@@ -1,6 +1,5 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { usePostHog } from "@posthog/react"
-import { useAnalytics } from "#/lib/analytics"
 import { useNavigate } from "@tanstack/react-router"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
@@ -23,6 +22,7 @@ import {
 	LoginDocument,
 	RegisterDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { useForm } from "#/lib/form"
 import { css } from "#/styles/styled-system/css"
 import { GoogleSignInButton } from "../google-button"
@@ -75,9 +75,10 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 						toast.error(message)
 					},
 				)
-				.with({ __typename: "User" }, async (user) => {
+				.with({ __typename: "GoogleLoginResponse" }, async (response) => {
+					const { user, isNewUser } = response
 					posthog.identify(user.id, { email: user.email, name: user.name })
-					capture("login_completed")
+					capture(isNewUser ? "signup_completed" : "login_completed")
 					await client.resetStore()
 					toast.success("Logged in successfully")
 					if (onAuthSuccess) {

@@ -6,8 +6,11 @@ mutation GoogleLogin($input: GoogleLoginInput!) {
 		... on UnauthorizedError {
 			message
 		}
-		... on User {
-			...Me
+		... on GoogleLoginResponse {
+			user {
+				...Me
+			}
+			isNewUser
 		}
 	}
 }
