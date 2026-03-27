@@ -11,7 +11,6 @@ import {
 	ViewportTracker,
 } from "#/features/fabric"
 import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
-import { MobileGate } from "#/features/ui"
 import type { MapStyle } from "#/graphql/generated"
 
 type Props = {
@@ -54,35 +53,33 @@ export function FabricEditor({
 	const [mapStyle, setMapStyle] = useState(initialMapStyle)
 
 	return (
-		<MobileGate>
-			<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-				<EditorTopbar
-					id={id}
-					title={title}
-					{...(hasProposal ? { hasProposal: true, slug } : { hasProposal: false })}
-					onTitleSave={onTitleSave}
-					onPublish={onPublish}
-					onSave={onSave}
-					mapStyle={mapStyle}
-					onMapStyleChange={(style) => {
-						setMapStyle(style)
-						onMapStyleChange(style)
-					}}
+		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+			<EditorTopbar
+				id={id}
+				title={title}
+				{...(hasProposal ? { hasProposal: true, slug } : { hasProposal: false })}
+				onTitleSave={onTitleSave}
+				onPublish={onPublish}
+				onSave={onSave}
+				mapStyle={mapStyle}
+				onMapStyleChange={(style) => {
+					setMapStyle(style)
+					onMapStyleChange(style)
+				}}
+			/>
+			<ElementPanel />
+			<PropertiesPanel />
+			<EditorCommandPalette />
+			<FabricMap center={center} zoom={zoom} bearing={0} mapStyle={mapStyle}>
+				<DrawingLayer />
+				<SelectLayer />
+				<ViewportTracker onViewportChange={onViewportChange} />
+				<ThumbnailSync
+					onThumbnail={onThumbnail}
+					captureOnMount={captureOnMount}
 				/>
-				<ElementPanel />
-				<PropertiesPanel />
-				<EditorCommandPalette />
-				<FabricMap center={center} zoom={zoom} bearing={0} mapStyle={mapStyle}>
-					<DrawingLayer />
-					<SelectLayer />
-					<ViewportTracker onViewportChange={onViewportChange} />
-					<ThumbnailSync
-						onThumbnail={onThumbnail}
-						captureOnMount={captureOnMount}
-					/>
-					<EditorHUD />
-				</FabricMap>
-			</div>
-		</MobileGate>
+				<EditorHUD />
+			</FabricMap>
+		</div>
 	)
 }

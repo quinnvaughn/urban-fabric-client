@@ -22,6 +22,7 @@ import {
 	adjustMyDashboardFabricCountCache,
 } from "#/lib/apollo"
 import { getLocationFromIp } from "#/lib/geo"
+import { MobileGate } from "#/features/ui"
 import { openModal } from "#/stores"
 
 const GUEST_FABRIC_KEY = "guest-fabric"
@@ -85,7 +86,11 @@ function RouteComponent() {
 	)
 
 	if (!fabric) return null
-	return <Editor fabric={fabric} />
+	return (
+		<MobileGate>
+			<Editor fabric={fabric} />
+		</MobileGate>
+	)
 }
 
 function Editor({ fabric }: { fabric: GuestFabric }) {

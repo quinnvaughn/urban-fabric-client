@@ -16,6 +16,7 @@ import {
 	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
+import { MobileGate } from "#/features/ui"
 import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/fabric/$id/")({
@@ -55,7 +56,11 @@ type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
 function RouteComponent() {
 	const { fabric } = Route.useLoaderData()
-	return <FabricEditorRoute fabric={fabric} />
+	return (
+		<MobileGate>
+			<FabricEditorRoute fabric={fabric} />
+		</MobileGate>
+	)
 }
 
 function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
