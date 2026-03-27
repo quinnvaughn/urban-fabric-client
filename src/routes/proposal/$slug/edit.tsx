@@ -47,7 +47,7 @@ function EditProposal({ proposal }: { proposal: Proposal }) {
 	})
 
 	if (!fabricData) return null
-	if (fabricData.fabric.__typename === "NotFoundError") {
+	if (fabricData.fabric.__typename !== "Fabric") {
 		return <div>Fabric not found</div>
 	}
 
