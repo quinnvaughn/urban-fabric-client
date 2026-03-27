@@ -1,19 +1,8 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
-import { useAnalytics } from "#/lib/analytics"
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react"
 import { match } from "ts-pattern"
-import {
-	DrawingLayer,
-	EditorCommandPalette,
-	EditorHUD,
-	EditorTopbar,
-	ElementPanel,
-	FabricMap,
-	PropertiesPanel,
-	SelectLayer,
-	ViewportTracker,
-} from "#/features/fabric"
+import { FabricEditor, FabricEditorSkeleton } from "#/features/fabric"
 import {
 	type GuestFabric,
 	getOrCreateGuestFabric,
@@ -26,9 +15,8 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
-import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
-import { MobileGate } from "#/features/ui"
 import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import {
 	addFabricToMyFabricsCache,
 	adjustMyDashboardFabricCountCache,
@@ -40,6 +28,7 @@ const GUEST_FABRIC_KEY = "guest-fabric"
 
 export const Route = createFileRoute("/fabric/new")({
 	component: RouteComponent,
+	pendingComponent: FabricEditorSkeleton,
 	loader: async ({ context }) => {
 		const response = context.apolloClient.readQuery({
 			query: MeDocument,
@@ -96,11 +85,7 @@ function RouteComponent() {
 	)
 
 	if (!fabric) return null
-	return (
-		<MobileGate>
-			<Editor fabric={fabric} />
-		</MobileGate>
-	)
+	return <Editor fabric={fabric} />
 }
 
 function Editor({ fabric }: { fabric: GuestFabric }) {
@@ -111,7 +96,6 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)
 	const { capture } = useAnalytics()
-	const [mapStyle, setMapStyle] = useState(fabric.mapStyle ?? MapStyle.Default)
 
 	useEffect(() => {
 		capture("fabric_created")
@@ -177,57 +161,39 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 
 	useFabricPersistence(handler)
 	return (
-		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<EditorTopbar
-				id={fabric.id}
-				title={fabric.title}
-				hasProposal={false}
-				onTitleSave={async (t) => {
-					updateGuestFabric(
-						(existing) => ({ ...existing, title: t }),
-						GUEST_FABRIC_KEY,
-					)
-				}}
-				onPublish={() => openAuthModal("publish")}
-				onSave={() => openAuthModal("save")}
-				mapStyle={mapStyle}
-				onMapStyleChange={(style) => {
-					setMapStyle(style)
-					updateGuestFabric(
-						(existing) => ({ ...existing, mapStyle: style }),
-						GUEST_FABRIC_KEY,
-					)
-				}}
-			/>
-			<ElementPanel />
-			<PropertiesPanel />
-			<EditorCommandPalette />
-			<FabricMap
-				center={[fabric.center.lng, fabric.center.lat]}
-				zoom={fabric.zoom}
-				bearing={0}
-				mapStyle={mapStyle}
-			>
-				<DrawingLayer />
-				<SelectLayer />
-				<ViewportTracker
-					onViewportChange={async ({ center, zoom }) => {
-						updateGuestFabric(
-							(existing) => ({ ...existing, center, zoom }),
-							GUEST_FABRIC_KEY,
-						)
-					}}
-				/>
-				<ThumbnailSync
-					onThumbnail={async (thumbnail) => {
-						updateGuestFabric(
-							(existing) => ({ ...existing, thumbnail }),
-							GUEST_FABRIC_KEY,
-						)
-					}}
-				/>
-				<EditorHUD />
-			</FabricMap>
-		</div>
+		<FabricEditor
+			id={fabric.id}
+			title={fabric.title}
+			center={[fabric.center.lng, fabric.center.lat]}
+			zoom={fabric.zoom}
+			initialMapStyle={fabric.mapStyle ?? MapStyle.Default}
+			hasProposal={false}
+			onTitleSave={async (t) => {
+				updateGuestFabric(
+					(existing) => ({ ...existing, title: t }),
+					GUEST_FABRIC_KEY,
+				)
+			}}
+			onMapStyleChange={(style) => {
+				updateGuestFabric(
+					(existing) => ({ ...existing, mapStyle: style }),
+					GUEST_FABRIC_KEY,
+				)
+			}}
+			onViewportChange={async ({ center, zoom }) => {
+				updateGuestFabric(
+					(existing) => ({ ...existing, center, zoom }),
+					GUEST_FABRIC_KEY,
+				)
+			}}
+			onThumbnail={async (thumbnail) => {
+				updateGuestFabric(
+					(existing) => ({ ...existing, thumbnail }),
+					GUEST_FABRIC_KEY,
+				)
+			}}
+			onPublish={() => openAuthModal("publish")}
+			onSave={() => openAuthModal("save")}
+		/>
 	)
 }

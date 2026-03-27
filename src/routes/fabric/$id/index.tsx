@@ -1,25 +1,13 @@
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { useEffect, useState } from "react"
-import {
-	DrawingLayer,
-	EditorCommandPalette,
-	EditorHUD,
-	EditorTopbar,
-	ElementPanel,
-	FabricMap,
-	PropertiesPanel,
-	SelectLayer,
-} from "#/features/fabric"
+import { useEffect } from "react"
+import { FabricEditor, FabricEditorSkeleton } from "#/features/fabric"
 import { apiHandler } from "#/features/fabric/element-types/types"
 import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
-import { ThumbnailSync } from "#/features/fabric/thumbnail-sync"
-import { ViewportTracker } from "#/features/fabric/viewport-tracker"
 import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
-import { MobileGate } from "#/features/ui"
 import {
 	GetFabricDocument,
 	type GetFabricQuery,
@@ -32,6 +20,7 @@ import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
+	pendingComponent: FabricEditorSkeleton,
 	beforeLoad: async ({ context, params }) => {
 		const { data } = await context.apolloClient.query({
 			query: GetFabricDocument,
@@ -53,18 +42,23 @@ export const Route = createFileRoute("/fabric/$id/")({
 			query: GetFabricDocument,
 			variables: { fabricId: params.id },
 		})
-		return { fabric: data?.fabric as Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }> }
+		return {
+			fabric: data?.fabric as Extract<
+				GetFabricQuery["fabric"],
+				{ __typename: "Fabric" }
+			>,
+		}
 	},
 })
 
-function RouteComponent() {
-	const { fabric } = Route.useLoaderData()
-	return <FabricEditor fabric={fabric} />
-}
-
 type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
-function FabricEditor({ fabric }: { fabric: Fabric }) {
+function RouteComponent() {
+	const { fabric } = Route.useLoaderData()
+	return <FabricEditorRoute fabric={fabric} />
+}
+
+function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 	const client = useApolloClient()
 	const { initElements } = useFabricStore()
 	useGettingStartedModal()
@@ -72,7 +66,6 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)
 	const [updateMapStyle] = useMutation(UpdateFabricMapStyleDocument)
-	const [mapStyle, setMapStyle] = useState(fabric.mapStyle)
 	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
 
@@ -86,56 +79,36 @@ function FabricEditor({ fabric }: { fabric: Fabric }) {
 	}, [fabric.id])
 
 	return (
-		<MobileGate>
-			<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-				<EditorTopbar
-					id={fabric.id}
-					title={fabric.title}
-					{...(fabric.proposal
-						? { hasProposal: true, slug: fabric.proposal.slug }
-						: { hasProposal: false })}
-					onTitleSave={async (title) => {
-						await updateTitle({
-							variables: { input: { id: fabric.id, title } },
-						})
-					}}
-					mapStyle={mapStyle}
-					onMapStyleChange={(style) => {
-						setMapStyle(style)
-						updateMapStyle({
-							variables: { input: { id: fabric.id, mapStyle: style } },
-						})
-					}}
-				/>
-				<ElementPanel />
-				<PropertiesPanel />
-				<EditorCommandPalette />
-				<FabricMap
-					center={[fabric.center.lng, fabric.center.lat]}
-					zoom={fabric.zoom}
-					bearing={0}
-					mapStyle={mapStyle}
-				>
-					<DrawingLayer />
-					<SelectLayer />
-					<ViewportTracker
-						onViewportChange={async (viewport) => {
-							await syncViewport({
-								variables: { input: { id: fabric.id, ...viewport } },
-							})
-						}}
-					/>
-					<ThumbnailSync
-						onThumbnail={async (thumbnail) => {
-							await updateThumbnail({
-								variables: { input: { id: fabric.id, thumbnail } },
-							})
-						}}
-						captureOnMount={!fabric.thumbnail}
-					/>
-					<EditorHUD />
-				</FabricMap>
-			</div>
-		</MobileGate>
+		<FabricEditor
+			id={fabric.id}
+			title={fabric.title}
+			center={[fabric.center.lng, fabric.center.lat]}
+			zoom={fabric.zoom}
+			initialMapStyle={fabric.mapStyle}
+			{...(fabric.proposal
+				? { hasProposal: true, slug: fabric.proposal.slug }
+				: { hasProposal: false })}
+			captureOnMount={!fabric.thumbnail}
+			onTitleSave={async (title) => {
+				await updateTitle({
+					variables: { input: { id: fabric.id, title } },
+				})
+			}}
+			onMapStyleChange={(style) => {
+				updateMapStyle({
+					variables: { input: { id: fabric.id, mapStyle: style } },
+				})
+			}}
+			onViewportChange={async (viewport) => {
+				await syncViewport({
+					variables: { input: { id: fabric.id, ...viewport } },
+				})
+			}}
+			onThumbnail={async (thumbnail) => {
+				await updateThumbnail({
+					variables: { input: { id: fabric.id, thumbnail } },
+				})
+			}}
+		/>
 	)
 }

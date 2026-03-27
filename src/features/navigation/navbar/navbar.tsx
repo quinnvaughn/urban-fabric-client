@@ -11,14 +11,14 @@ export function Navbar() {
 				top: 0,
 				zIndex: "sticky",
 				w: "full",
-				bg: "bg.base",
+				bg: "white",
 				borderBottomWidth: "1px",
 				borderBottomColor: "border.subtle",
 			})}
 		>
 			<nav
 				className={css({
-					px: "7",
+					px: "4",
 					h: "var(--uf-header-height)",
 					display: "flex",
 					alignItems: "center",
