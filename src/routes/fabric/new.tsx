@@ -144,14 +144,14 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	}
 
 	function openAuthModal(intent: "save" | "publish") {
-		capture("signup_started", {
-			source: intent === "publish" ? "publish" : "save_draft",
-		})
+		const source = intent === "publish" ? "publish" : "save_draft"
+		capture("signup_started", { source })
 		openModal("auth", {
 			title:
 				intent === "publish"
 					? "Create an account to publish"
 					: "Save your fabric to your account",
+			source,
 			onAuthSuccess: async () => {
 				const id = await migrateGuestFabric()
 				if (!id) return

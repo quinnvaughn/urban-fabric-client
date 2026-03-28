@@ -8,6 +8,7 @@ type Props = {
 	initialMode?: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	title?: string
+	source?: "like" | "sign_in" | "save_draft" | "publish"
 }
 
 export function AuthModal({
@@ -16,6 +17,7 @@ export function AuthModal({
 	initialMode = "register",
 	onAuthSuccess,
 	title,
+	source,
 }: Props) {
 	const [mode, setMode] = useState<"login" | "register">(initialMode)
 
@@ -31,6 +33,7 @@ export function AuthModal({
 					mode={mode}
 					onModeChange={setMode}
 					onAuthSuccess={onAuthSuccess}
+					source={source}
 				/>
 			</Modal.Body>
 		</Modal>

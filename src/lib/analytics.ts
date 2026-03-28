@@ -1,15 +1,25 @@
 import { usePostHog } from "@posthog/react"
 import { useCallback } from "react"
 
-
-
 // ── Event map ─────────────────────────────────────────────────────────────────
 
 type EventMap = {
 	// Acquisition / Auth
-	page_viewed: { page: "home" | "explore" | "proposal" | "editor" | "publish" | "dashboard" | "my_proposals" | "my_fabrics" }
+	page_viewed: {
+		page:
+			| "home"
+			| "explore"
+			| "proposal"
+			| "editor"
+			| "publish"
+			| "dashboard"
+			| "my_proposals"
+			| "my_fabrics"
+	}
 	signup_started: { source: "like" | "sign_in" | "save_draft" | "publish" }
-	signup_completed: undefined
+	signup_completed: {
+		source: "like" | "sign_in" | "save_draft" | "publish" | "google"
+	}
 	login_completed: undefined
 
 	// Core funnel
@@ -18,7 +28,11 @@ type EventMap = {
 	proposal_published: undefined
 
 	// Explore
-	explore_searched: { has_location: boolean; query_length: number; category_count: number }
+	explore_searched: {
+		has_location: boolean
+		query_length: number
+		category_count: number
+	}
 	explore_sorted: { sort_by: string }
 
 	// Proposal

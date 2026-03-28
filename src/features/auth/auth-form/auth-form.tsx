@@ -31,6 +31,7 @@ type Props = {
 	mode: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	onModeChange?: (mode: "login" | "register") => void
+	source?: "like" | "sign_in" | "save_draft" | "publish" | "google"
 }
 
 const LoginSchema = z.object({
@@ -51,7 +52,7 @@ const RegisterSchema = z.object({
 
 const AuthSchema = z.discriminatedUnion("mode", [LoginSchema, RegisterSchema])
 
-export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
+export function AuthForm({ mode, onAuthSuccess, onModeChange, source }: Props) {
 	const [showPassword, setShowPassword] = useState(false)
 	const [login] = useMutation(LoginDocument)
 	const [register] = useMutation(RegisterDocument)
@@ -78,7 +79,10 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 				.with({ __typename: "GoogleLoginResponse" }, async (response) => {
 					const { user, isNewUser } = response
 					posthog.identify(user.id, { email: user.email, name: user.name })
-					capture(isNewUser ? "signup_completed" : "login_completed")
+					capture(
+						isNewUser ? "signup_completed" : "login_completed",
+						isNewUser ? { source: "google" } : undefined,
+					)
 					await client.resetStore()
 					toast.success("Logged in successfully")
 					if (onAuthSuccess) {
@@ -169,7 +173,7 @@ export function AuthForm({ mode, onAuthSuccess, onModeChange }: Props) {
 									email: user.email,
 									name: user.name,
 								})
-								capture("signup_completed")
+								capture("signup_completed", { source: source ?? "sign_in" })
 								await client.resetStore()
 								toast.success("Account created successfully")
 								if (onAuthSuccess) {

@@ -15,6 +15,7 @@ export function useRequireAuth(title?: string, analyticsSource?: "like") {
 				}
 				openModal("auth", {
 					title,
+					source: analyticsSource,
 					onAuthSuccess: () => {
 						closeModal()
 						action()
