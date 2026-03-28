@@ -176,8 +176,7 @@ export type LoginResult = ConflictError | UnauthorizedError | User;
 export enum MapStyle {
   Dark = 'DARK',
   Default = 'DEFAULT',
-  Light = 'LIGHT',
-  Satellite = 'SATELLITE'
+  Light = 'LIGHT'
 }
 
 export type Mutation = {

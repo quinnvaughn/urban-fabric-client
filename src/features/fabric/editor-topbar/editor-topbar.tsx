@@ -16,14 +16,12 @@ const MAP_STYLE_LABELS: Record<MapStyle, string> = {
 	[MapStyle.Default]: "Default",
 	[MapStyle.Dark]: "Dark",
 	[MapStyle.Light]: "Light",
-	[MapStyle.Satellite]: "Satellite",
 }
 
 const MAP_STYLE_ORDER: MapStyle[] = [
 	MapStyle.Default,
 	MapStyle.Dark,
 	MapStyle.Light,
-	MapStyle.Satellite,
 ]
 
 type BaseProps = {
