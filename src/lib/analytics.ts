@@ -38,9 +38,9 @@ type EventMap = {
 	// Proposal
 	proposal_viewed: { proposal_id: string; category: string }
 	proposal_liked: undefined
-	proposal_share_modal_opened: { source: string; is_owner: boolean }
-	proposal_shared: { method: string; source: string; is_owner: boolean }
-	proposal_share_modal_dismissed: { source: string; is_owner: boolean }
+	proposal_share_modal_opened: { source: string }
+	proposal_shared: { method: string; source: string }
+	proposal_share_modal_dismissed: { source: string }
 
 	// Editor
 	editor_element_added: { element_type: string }

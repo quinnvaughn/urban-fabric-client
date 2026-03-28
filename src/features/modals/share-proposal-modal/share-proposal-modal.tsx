@@ -108,7 +108,6 @@ export function ShareProposalModal({
 	eyebrow = "Share proposal",
 	description,
 	source,
-	isOwner,
 }: {
 	open: boolean
 	onClose: () => void
@@ -117,32 +116,26 @@ export function ShareProposalModal({
 	eyebrow?: string
 	description?: string
 	source: string
-	isOwner: boolean
 }) {
 	const [copyText, activateCopy] = useTransientText("Copy Link", "Copied!")
 	const { capture } = useAnalytics()
 
 	useEffect(() => {
-		if (open)
-			capture("proposal_share_modal_opened", { source, is_owner: isOwner })
-	}, [open, source, capture, isOwner])
+		if (open) capture("proposal_share_modal_opened", { source })
+	}, [open, source, capture])
 
 	function handleCopy() {
 		navigator.clipboard
 			.writeText(buildShareUrl(link, "copy_link", source))
 			.then(activateCopy)
-		capture("proposal_shared", {
-			method: "copy_link",
-			source,
-			is_owner: isOwner,
-		})
+		capture("proposal_shared", { method: "copy_link", source })
 	}
 
 	return (
 		<Modal
 			open={open}
 			onClose={() => {
-				capture("proposal_share_modal_dismissed", { source, is_owner: isOwner })
+				capture("proposal_share_modal_dismissed", { source })
 				onClose()
 			}}
 			size="sm"
@@ -185,7 +178,6 @@ export function ShareProposalModal({
 										capture("proposal_shared", {
 											method: utmSource,
 											source,
-											is_owner: isOwner,
 										})
 									}
 									className={css({
