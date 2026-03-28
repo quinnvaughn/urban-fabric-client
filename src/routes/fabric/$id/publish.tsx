@@ -99,6 +99,7 @@ function Publish({ fabric }: { fabric: Fabric }) {
 								description:
 									"Share it with your community to get as many eyes on it as possible.",
 								source: "post_create",
+								isOwner: true,
 							})
 						}, 600)
 					})

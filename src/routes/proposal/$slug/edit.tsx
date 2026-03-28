@@ -94,6 +94,7 @@ function EditProposalForm({
 								description:
 									"Share it with your community to get as many eyes on it as possible.",
 								source: "post_update",
+								isOwner: true,
 							})
 						}, 600)
 					})

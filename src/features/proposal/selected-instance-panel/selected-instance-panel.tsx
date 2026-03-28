@@ -29,7 +29,7 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 			.map((p) => {
 				const raw = instance.properties?.[p.key]
 				if (raw == null) return null
-				const unit = p.input.kind === "stepper" ? p.input.unit : undefined
+				const unit = p.input.kind === "slider" ? p.input.unit : undefined
 				const value = unit ? `${raw} ${unit}` : capitalize(String(raw))
 				return { key: p.key, label: p.label, value }
 			})

@@ -9,7 +9,6 @@ const STYLE_NAMES: Record<MapStyle, string> = {
 	[MapStyle.Default]: "osm_bright",
 	[MapStyle.Dark]: "alidade_smooth_dark",
 	[MapStyle.Light]: "alidade_smooth",
-	[MapStyle.Satellite]: "alidade_satellite",
 }
 
 function styleUrl(style: MapStyle) {
@@ -88,9 +87,7 @@ export function FabricMap({
 	return (
 		<MapProvider value={map}>
 			<div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-			{map && styleLoaded && (
-				<Fragment key={styleVersion}>{children}</Fragment>
-			)}
+			{map && styleLoaded && <Fragment key={styleVersion}>{children}</Fragment>}
 		</MapProvider>
 	)
 }
