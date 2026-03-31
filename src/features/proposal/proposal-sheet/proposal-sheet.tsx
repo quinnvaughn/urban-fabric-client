@@ -33,6 +33,7 @@ const proposalSheet = sva({
 		body: {
 			flex: "1",
 			overflowY: "auto",
+			position: "relative",
 		},
 		handle: {
 			display: "flex",

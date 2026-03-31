@@ -103,6 +103,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 						transition:
 							"transform 280ms var(--easings-spring), opacity 200ms var(--easings-in-out)",
 						zIndex: "floating",
+						overflowY: "auto",
 					})}
 				>
 					{selectedInstance && (

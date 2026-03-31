@@ -48,6 +48,9 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 					gap: "2.5",
 					borderBottom: "1px solid",
 					borderBottomColor: "stone.200",
+					position: "sticky",
+					top: 0,
+					background: "white",
 				})}
 			>
 				<VStack gap="1" className={css({ flex: 1 })}>
@@ -74,7 +77,6 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 			<Box
 				className={css({
 					flex: 1,
-					overflowY: "auto",
 					p: "4",
 				})}
 			>
@@ -82,6 +84,27 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 					{instance.title && (
 						<Typography.Text size="lg" color="stone.900" weight="semibold">
 							{instance.title}
+						</Typography.Text>
+					)}
+					{instance.note ? (
+						<VStack gap="2">
+							<Divider label="Note" />
+							<Typography.Text
+								size="sm"
+								color="stone.700"
+								whiteSpace="pre-wrap"
+							>
+								{instance.note}
+							</Typography.Text>
+						</VStack>
+					) : (
+						<Typography.Text
+							size="sm"
+							color="stone.400"
+							fontStyle="italic"
+							lineHeight="relaxed"
+						>
+							No note for this element.
 						</Typography.Text>
 					)}
 					<VStack gap="2">
@@ -118,27 +141,6 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 							))}
 						</div>
 					</VStack>
-					{instance.note ? (
-						<VStack gap="2">
-							<Divider label="Note" />
-							<Typography.Text
-								size="sm"
-								color="stone.700"
-								whiteSpace="pre-wrap"
-							>
-								{instance.note}
-							</Typography.Text>
-						</VStack>
-					) : (
-						<Typography.Text
-							size="sm"
-							color="stone.400"
-							fontStyle="italic"
-							lineHeight="relaxed"
-						>
-							No note for this element.
-						</Typography.Text>
-					)}
 				</VStack>
 			</Box>
 		</Fragment>
