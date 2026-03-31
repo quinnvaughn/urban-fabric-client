@@ -13,7 +13,7 @@ import {
 import * as ReactDOM from "react-dom"
 import { css, cx } from "@/styles/styled-system/css"
 import { select as selectRecipe } from "@/styles/styled-system/recipes"
-import type { SystemStyleObject } from "@/styles/styled-system/types"
+import { FieldDescription, FieldLabel } from "../field"
 
 // ---------- Context ----------
 
@@ -232,20 +232,20 @@ function SelectRoot({
 // ---------- Label ----------
 
 export interface SelectLabelProps
-	extends React.HTMLAttributes<HTMLSpanElement> {}
+	extends Omit<React.HTMLAttributes<HTMLSpanElement>, "color"> {}
 
 function SelectLabel({ className, children, ...rest }: SelectLabelProps) {
-	const { slots, labelId, required } = useSelectContext()
+	const { labelId, required } = useSelectContext()
 
 	return (
-		<span id={labelId} className={cx(slots.label, className)} {...rest}>
+		<FieldLabel id={labelId} className={className} {...rest}>
 			{children}
 			{required && (
 				<span className={css({ marginLeft: "0.5", color: "danger.default" })}>
 					*
 				</span>
 			)}
-		</span>
+		</FieldLabel>
 	)
 }
 SelectLabel.displayName = "Select.Label"
@@ -253,28 +253,15 @@ SelectLabel.displayName = "Select.Label"
 // ---------- Description ----------
 
 export interface SelectDescriptionProps
-	extends React.HTMLAttributes<HTMLParagraphElement> {
-	sx?: SystemStyleObject
-}
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
 
-function SelectDescription({
-	className,
-	id,
-	sx,
-	...rest
-}: SelectDescriptionProps) {
+function SelectDescription({ id, ...rest }: SelectDescriptionProps) {
 	const { fieldId, registerDescribedBy } = useSelectContext()
 	const descId = id ?? `${fieldId}-desc`
 
 	useEffect(() => registerDescribedBy(descId), [registerDescribedBy, descId])
 
-	return (
-		<p
-			id={descId}
-			className={cx(css({ fontSize: "xs", color: "fg.subtle" }, sx), className)}
-			{...rest}
-		/>
-	)
+	return <FieldDescription id={descId} {...rest} />
 }
 SelectDescription.displayName = "Select.Description"
 

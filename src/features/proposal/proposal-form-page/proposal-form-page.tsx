@@ -29,6 +29,7 @@ import {
 	useToast,
 	VStack,
 } from "#/features/ui"
+import { FieldLabel } from "#/features/ui/field"
 import {
 	type MapStyle,
 	ProposalByFabricIdDocument,
@@ -627,15 +628,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						</form.Field>
 						<Divider label="Map view" />
 						<VStack gap="1" justify="center">
-							<Typography.Text
-								id="view-center-label"
-								size="xs"
-								color="stone.700"
-								lineHeight="normal"
-								weight="semibold"
-							>
-								Default view center
-							</Typography.Text>
+							<FieldLabel>Default view center</FieldLabel>
 							<HStack id="coord-readout" align="center" gap="2.5">
 								<Box
 									id="coord-readout-value"

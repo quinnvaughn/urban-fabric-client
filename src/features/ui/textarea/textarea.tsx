@@ -1,7 +1,7 @@
 import * as React from "react"
 import { css, cx } from "@/styles/styled-system/css"
 import { input as inputRecipe } from "@/styles/styled-system/recipes"
-import type { SystemStyleObject } from "@/styles/styled-system/types"
+import { FieldDescription, FieldLabel } from "../field"
 
 // ---------- Context ----------
 
@@ -115,14 +115,14 @@ function TextareaLabel({
 			htmlFor={htmlFor ?? id}
 			{...rest}
 		>
-			<span className={classes.labelText}>
+			<FieldLabel>
 				{otherChildren}
 				{required && (
 					<span className={css({ marginLeft: "0.5", color: "danger.default" })}>
 						*
 					</span>
 				)}
-			</span>
+			</FieldLabel>
 			{counters}
 		</label>
 	)
@@ -262,17 +262,10 @@ TextareaField.displayName = "Textarea.Field"
 // ---------- Description ----------
 
 export interface TextareaDescriptionProps
-	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {
-	sx?: SystemStyleObject
-}
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
 
-function TextareaDescription({
-	className,
-	id,
-	sx,
-	...rest
-}: TextareaDescriptionProps) {
-	const { id: baseId, registerDescribedBy, classes } = useTextareaContext()
+function TextareaDescription({ id, ...rest }: TextareaDescriptionProps) {
+	const { id: baseId, registerDescribedBy } = useTextareaContext()
 	const descId = id ?? `${baseId}-desc`
 
 	React.useEffect(
@@ -280,13 +273,7 @@ function TextareaDescription({
 		[registerDescribedBy, descId],
 	)
 
-	return (
-		<p
-			className={cx(classes.description, sx ? css(sx) : undefined, className)}
-			id={descId}
-			{...rest}
-		/>
-	)
+	return <FieldDescription id={descId} {...rest} />
 }
 TextareaDescription.displayName = "Textarea.Description"
 

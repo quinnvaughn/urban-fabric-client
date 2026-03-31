@@ -2,7 +2,7 @@ import { defineSlotRecipe } from "@pandacss/dev"
 
 export const stepper = defineSlotRecipe({
 	className: "stepper",
-	slots: ["group", "label", "root", "btn", "value"],
+	slots: ["group", "root", "btn", "value"],
 	base: {
 		group: {
 			display: "flex",
@@ -12,12 +12,6 @@ export const stepper = defineSlotRecipe({
 			p: "0",
 			m: "0",
 			minInlineSize: "0",
-		},
-		label: {
-			fontSize: "xs",
-			fontWeight: "medium",
-			color: "stone.600",
-			letterSpacing: "snug",
 		},
 		root: {
 			display: "flex",

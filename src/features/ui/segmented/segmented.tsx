@@ -2,6 +2,7 @@ import * as React from "react"
 import { cx } from "@/styles/styled-system/css"
 import type { SegmentedVariantProps } from "@/styles/styled-system/recipes"
 import { segmented as segmentedRecipe } from "@/styles/styled-system/recipes"
+import { FieldDescription, FieldLabel } from "../field"
 
 // ---------- Context ----------
 
@@ -93,18 +94,27 @@ SegmentedRoot.displayName = "Segmented"
 // ---------- Legend ----------
 
 function SegmentedLegend({
-	className,
 	children,
 	...rest
-}: React.HTMLAttributes<HTMLDivElement>) {
-	const { slots, labelId } = useSegmentedContext()
+}: Omit<React.HTMLAttributes<HTMLDivElement>, "color">) {
+	const { labelId } = useSegmentedContext()
 	return (
-		<div id={labelId} className={cx(slots.legend, className)} {...rest}>
+		<FieldLabel as="div" id={labelId} {...rest}>
 			{children}
-		</div>
+		</FieldLabel>
 	)
 }
 SegmentedLegend.displayName = "Segmented.Legend"
+
+// ---------- Description ----------
+
+export interface SegmentedDescriptionProps
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
+
+function SegmentedDescription({ ...rest }: SegmentedDescriptionProps) {
+	return <FieldDescription {...rest} />
+}
+SegmentedDescription.displayName = "Segmented.Description"
 
 // ---------- Group ----------
 
@@ -183,6 +193,7 @@ SegmentedOption.displayName = "Segmented.Option"
 
 export const Segmented = Object.assign(SegmentedRoot, {
 	Legend: SegmentedLegend,
+	Description: SegmentedDescription,
 	Group: SegmentedGroup,
 	Option: SegmentedOption,
 })

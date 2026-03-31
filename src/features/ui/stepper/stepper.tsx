@@ -2,6 +2,7 @@ import { Minus, Plus } from "lucide-react"
 import * as React from "react"
 import { cx } from "@/styles/styled-system/css"
 import { stepper as stepperRecipe } from "@/styles/styled-system/recipes"
+import { FieldDescription, FieldLabel } from "../field"
 
 interface StepperContextValue {
 	value: number
@@ -105,19 +106,25 @@ function StepperRoot({
 }
 
 function StepperLabel({
-	className,
 	children,
 	...rest
-}: React.HTMLAttributes<HTMLDivElement>) {
-	const { slots, labelId } = useStepperContext()
-
+}: Omit<React.HTMLAttributes<HTMLDivElement>, "color">) {
+	const { labelId } = useStepperContext()
 	return (
-		<div id={labelId} className={cx(slots.label, className)} {...rest}>
+		<FieldLabel as="div" id={labelId} {...rest}>
 			{children}
-		</div>
+		</FieldLabel>
 	)
 }
 StepperLabel.displayName = "Stepper.Label"
+
+export interface StepperDescriptionProps
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
+
+function StepperDescription({ ...rest }: StepperDescriptionProps) {
+	return <FieldDescription {...rest} />
+}
+StepperDescription.displayName = "Stepper.Description"
 
 function StepperControl({
 	className,
@@ -162,5 +169,6 @@ StepperControl.displayName = "Stepper.Control"
 
 export const Stepper = Object.assign(StepperRoot, {
 	Label: StepperLabel,
+	Description: StepperDescription,
 	Control: StepperControl,
 })

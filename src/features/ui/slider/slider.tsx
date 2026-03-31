@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cx, sva } from "@/styles/styled-system/css"
+import { FieldDescription, FieldLabel } from "../field"
 
 // ─── Recipe ─────────────────────────────────────────────────────────────────
 
@@ -7,7 +8,6 @@ const sliderRecipe = sva({
 	className: "slider",
 	slots: [
 		"root",
-		"label",
 		"header",
 		"value",
 		"track",
@@ -15,7 +15,6 @@ const sliderRecipe = sva({
 		"bounds",
 		"boundMin",
 		"boundMax",
-		"description",
 	],
 	base: {
 		root: {
@@ -23,12 +22,6 @@ const sliderRecipe = sva({
 			flexDirection: "column",
 			gap: "1.5",
 			w: "full",
-		},
-		label: {
-			fontSize: "xs",
-			fontWeight: "semibold",
-			color: "stone.700",
-			letterSpacing: "normal",
 		},
 		header: {
 			display: "flex",
@@ -102,10 +95,6 @@ const sliderRecipe = sva({
 			fontSize: "3xs",
 			fontWeight: "medium",
 			color: "stone.400",
-		},
-		description: {
-			fontSize: "xxs",
-			color: "fg.subtle",
 		},
 	},
 })
@@ -204,15 +193,10 @@ function SliderRoot({
 // ─── Label ───────────────────────────────────────────────────────────────────
 
 export interface SliderLabelProps
-	extends React.HTMLAttributes<HTMLSpanElement> {}
+	extends Omit<React.HTMLAttributes<HTMLSpanElement>, "color"> {}
 
-function SliderLabel({ className, children, ...rest }: SliderLabelProps) {
-	const { classes } = useSliderContext()
-	return (
-		<span className={cx(classes.label, className)} {...rest}>
-			{children}
-		</span>
-	)
+function SliderLabel({ children, ...rest }: SliderLabelProps) {
+	return <FieldLabel {...rest}>{children}</FieldLabel>
 }
 SliderLabel.displayName = "Slider.Label"
 
@@ -308,11 +292,10 @@ SliderBounds.displayName = "Slider.Bounds"
 // ─── Description ─────────────────────────────────────────────────────────────
 
 export interface SliderDescriptionProps
-	extends React.HTMLAttributes<HTMLParagraphElement> {}
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
 
-function SliderDescription({ className, ...rest }: SliderDescriptionProps) {
-	const { classes } = useSliderContext()
-	return <p className={cx(classes.description, className)} {...rest} />
+function SliderDescription({ ...rest }: SliderDescriptionProps) {
+	return <FieldDescription {...rest} />
 }
 SliderDescription.displayName = "Slider.Description"
 

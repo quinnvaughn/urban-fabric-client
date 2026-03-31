@@ -2,7 +2,7 @@ import { defineSlotRecipe } from "@pandacss/dev"
 
 export const segmented = defineSlotRecipe({
 	className: "segmented",
-	slots: ["root", "legend", "group", "option", "optionIcon", "optionLabel"],
+	slots: ["root", "group", "option", "optionIcon", "optionLabel"],
 	base: {
 		root: {
 			display: "flex",
@@ -12,12 +12,6 @@ export const segmented = defineSlotRecipe({
 		group: {
 			display: "flex",
 			gap: "1",
-		},
-		legend: {
-			fontSize: "xs",
-			fontWeight: "medium",
-			color: "stone.600",
-			letterSpacing: "snug",
 		},
 		option: {
 			display: "flex",

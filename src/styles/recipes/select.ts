@@ -5,8 +5,6 @@ export const select = defineSlotRecipe({
 	slots: [
 		// Field wrapper
 		"root",
-		"label",
-		"description",
 		"error",
 		// Trigger
 		"trigger",
@@ -26,16 +24,6 @@ export const select = defineSlotRecipe({
 			display: "flex",
 			flexDirection: "column",
 			gap: "1",
-		},
-		label: {
-			fontSize: "xs",
-			fontWeight: "medium",
-			color: "stone.600",
-			letterSpacing: "snug",
-		},
-		description: {
-			fontSize: "xs",
-			color: "fg.subtle",
 		},
 		error: {
 			fontSize: "xs",

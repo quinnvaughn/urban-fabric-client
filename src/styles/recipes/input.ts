@@ -5,12 +5,10 @@ export const input = defineSlotRecipe({
 	slots: [
 		"root",
 		"label",
-		"labelText",
 		"counter",
 		"field",
 		"input",
 		"adornment",
-		"description",
 		"error",
 	],
 	base: {
@@ -22,12 +20,6 @@ export const input = defineSlotRecipe({
 		label: {
 			display: "flex",
 			alignItems: "center",
-		},
-		labelText: {
-			fontSize: "xs",
-			fontWeight: "semibold",
-			color: "stone.700",
-			letterSpacing: "normal",
 		},
 		counter: {
 			marginLeft: "auto",
@@ -115,10 +107,6 @@ export const input = defineSlotRecipe({
 			justifyContent: "center",
 			color: "fg.subtle",
 			flex: "0 0 auto",
-		},
-		description: {
-			fontSize: "xxs",
-			color: "fg.subtle",
 		},
 		error: {
 			fontSize: "xxs",

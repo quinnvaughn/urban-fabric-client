@@ -1,7 +1,7 @@
 import * as React from "react"
 import { css, cx } from "@/styles/styled-system/css"
 import { input as inputRecipe } from "@/styles/styled-system/recipes"
-import type { SystemStyleObject } from "@/styles/styled-system/types"
+import { FieldDescription, FieldLabel } from "../field"
 
 // ---------- Context ----------
 
@@ -116,14 +116,14 @@ function InputLabel({
 			htmlFor={htmlFor ?? id}
 			{...rest}
 		>
-			<span className={classes.labelText}>
+			<FieldLabel>
 				{otherChildren}
 				{required && (
 					<span className={css({ marginLeft: "0.5", color: "danger.default" })}>
 						*
 					</span>
 				)}
-			</span>
+			</FieldLabel>
 			{counters}
 		</label>
 	)
@@ -255,17 +255,10 @@ InputField.displayName = "Input.Field"
 // ---------- Description ----------
 
 export interface InputDescriptionProps
-	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {
-	sx?: SystemStyleObject
-}
+	extends Omit<React.HTMLAttributes<HTMLParagraphElement>, "color"> {}
 
-function InputDescription({
-	className,
-	id,
-	sx,
-	...rest
-}: InputDescriptionProps) {
-	const { id: baseId, registerDescribedBy, classes } = useInputContext()
+function InputDescription({ id, ...rest }: InputDescriptionProps) {
+	const { id: baseId, registerDescribedBy } = useInputContext()
 	const descId = id ?? `${baseId}-desc`
 
 	React.useEffect(
@@ -273,13 +266,7 @@ function InputDescription({
 		[registerDescribedBy, descId],
 	)
 
-	return (
-		<p
-			className={cx(classes.description, sx ? css(sx) : undefined, className)}
-			id={descId}
-			{...rest}
-		/>
-	)
+	return <FieldDescription id={descId} {...rest} />
 }
 InputDescription.displayName = "Input.Description"
 
