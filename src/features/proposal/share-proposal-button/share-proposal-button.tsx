@@ -10,14 +10,13 @@ type Proposal = Extract<
 
 type Props = {
 	proposal: Proposal
-	isMobile?: boolean
 }
 
-export function ShareProposalButton({ proposal, isMobile }: Props) {
+export function ShareProposalButton({ proposal }: Props) {
 	return (
 		<Button
 			type="button"
-			size={isMobile ? "sm" : "md"}
+			size={"md"}
 			intent="neutral"
 			appearance="outline"
 			onClick={() => {

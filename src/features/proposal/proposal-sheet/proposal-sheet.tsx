@@ -27,7 +27,7 @@ const proposalSheet = sva({
 				transform: "translateY(0)",
 			},
 			"&[data-open=false]": {
-				transform: "translateY(calc(100% - 60px))",
+				transform: "translateY(calc(100% - 80px))",
 			},
 		},
 		body: {
@@ -39,8 +39,8 @@ const proposalSheet = sva({
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",
-			paddingTop: "2.5",
-			paddingBottom: "1.5",
+			paddingTop: "3.5",
+			paddingBottom: "2.5",
 			cursor: "pointer",
 		},
 		handlePill: {

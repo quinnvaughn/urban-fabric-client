@@ -98,12 +98,12 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 					<ProposalSelectLayer />
 					{/*
 					 * Controls sit above the peek height.
-					 * peekHeight="sm" = 60px, plus 20px breathing room = 80px.
+					 * peekHeight = 80px, plus 20px breathing room = 100px.
 					 */}
 					<Box
 						className={css({
 							position: "absolute",
-							bottom: "80px",
+							bottom: "100px",
 							left: "20px",
 							right: "20px",
 							zIndex: "panel",
@@ -137,7 +137,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 							</Typography.Text>
 							<HStack align="center" gap="1">
 								<LikeProposalButton proposal={proposal} isMobile />
-								<ShareProposalButton proposal={proposal} isMobile />
+								<ShareProposalButton proposal={proposal} />
 							</HStack>
 						</>
 					)

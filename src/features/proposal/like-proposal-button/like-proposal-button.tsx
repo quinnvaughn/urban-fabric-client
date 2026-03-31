@@ -56,7 +56,7 @@ export function LikeProposalButton({ isMobile, proposal }: Props) {
 	}
 	return (
 		<Button
-			size={isMobile ? "xs" : "sm"}
+			size={"md"}
 			intent="brand"
 			appearance={proposal.isLikedByMe ? "solid" : "subtle"}
 			startIcon={<Heart size={16} />}
