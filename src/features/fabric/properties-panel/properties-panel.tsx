@@ -48,9 +48,32 @@ export function PropertiesPanel() {
 				element_type: selectedInstance.typeId,
 				property: prop.key,
 			})
-			updateElement(selectedInstance.id, {
-				properties: { ...selectedInstance.properties, [prop.key]: value },
-			})
+
+			const newNumVal = Number(value)
+			const updatedProperties: Record<string, unknown> = {
+				...selectedInstance.properties,
+				[prop.key]: value,
+			}
+
+			// Clamp sibling values that now violate their max-sibling constraint
+			for (const otherProp of descriptor?.properties ?? []) {
+				if (otherProp.key === prop.key) continue
+				for (const constraint of otherProp.constraints ?? []) {
+					if (constraint.sibling !== prop.key) continue
+					const siblingCurrentVal = Number(
+						updatedProperties[otherProp.key] ?? otherProp.default,
+					)
+					if (!Number.isFinite(siblingCurrentVal)) continue
+					if (constraint.kind === "max-sibling") {
+						const newMax = newNumVal - constraint.offset
+						if (siblingCurrentVal > newMax) {
+							updatedProperties[otherProp.key] = String(newMax)
+						}
+					}
+				}
+			}
+
+			updateElement(selectedInstance.id, { properties: updatedProperties })
 		}
 
 		const label = prop.description ? (
@@ -133,28 +156,44 @@ export function PropertiesPanel() {
 				</Select>
 			))
 			.with({ kind: "slider" }, (step) => {
-				let min = step.min
-				let max = step.max
+				let softMax: number | undefined
+				let softMin: number | undefined
 
 				for (const constraint of prop.constraints ?? []) {
 					const siblingVal = Number(
-						selectedInstance?.properties[constraint.sibling],
+						selectedInstance?.properties[constraint.sibling] ??
+							descriptor?.properties.find(
+								(p) => p.key === constraint.sibling,
+							)?.default,
 					)
-					if (Number.isFinite(siblingVal)) {
-						if (constraint.kind === "max-sibling")
-							max = Math.min(max, siblingVal - constraint.offset)
-						if (constraint.kind === "min-sibling")
-							min = Math.max(min, siblingVal + constraint.offset)
+					if (!Number.isFinite(siblingVal)) continue
+					if (constraint.kind === "max-sibling") {
+						const limit = siblingVal - constraint.offset
+						softMax = softMax === undefined ? limit : Math.min(softMax, limit)
 					}
+					if (constraint.kind === "min-sibling") {
+						const limit = siblingVal + constraint.offset
+						softMin = softMin === undefined ? limit : Math.max(softMin, limit)
+					}
+				}
+
+				function handleSliderChange(val: number) {
+					let clamped = val
+					if (softMax !== undefined) clamped = Math.min(clamped, softMax)
+					if (softMin !== undefined) clamped = Math.max(clamped, softMin)
+					if (clamped === Number(currentValue)) return
+					handleChange(String(clamped))
 				}
 
 				return (
 					<Slider
 						key={prop.key}
 						value={Number(currentValue)}
-						onValueChange={(val) => handleChange(String(val))}
-						min={min}
-						max={max}
+						onValueChange={handleSliderChange}
+						min={step.min}
+						max={step.max}
+						softMax={softMax}
+						softMin={softMin}
 						step={step.step}
 						formatValue={(val) =>
 							step.unit ? `${val} ${step.unit}` : String(val)
@@ -166,6 +205,21 @@ export function PropertiesPanel() {
 						</Slider.Header>
 						<Slider.Track />
 						<Slider.Bounds />
+						{prop.constraints?.map((constraint) => {
+							const siblingLabel = descriptor?.properties.find(
+								(p) => p.key === constraint.sibling,
+							)?.label
+							if (!siblingLabel) return null
+							const hint =
+								constraint.kind === "max-sibling"
+									? `Must be less than ${siblingLabel}`
+									: `Must be greater than ${siblingLabel}`
+							return (
+								<Slider.Description key={constraint.sibling}>
+									{hint}
+								</Slider.Description>
+							)
+						})}
 					</Slider>
 				)
 			})

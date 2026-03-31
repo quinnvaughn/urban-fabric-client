@@ -15,6 +15,7 @@ const sliderRecipe = sva({
 		"bounds",
 		"boundMin",
 		"boundMax",
+		"description",
 	],
 	base: {
 		root: {
@@ -102,6 +103,10 @@ const sliderRecipe = sva({
 			fontWeight: "medium",
 			color: "stone.400",
 		},
+		description: {
+			fontSize: "xxs",
+			color: "fg.subtle",
+		},
 	},
 })
 
@@ -112,6 +117,8 @@ interface SliderContextValue {
 	min: number
 	max: number
 	step: number
+	softMax?: number
+	softMin?: number
 	disabled?: boolean
 	formatValue: (v: number) => string
 	onChange: (v: number) => void
@@ -134,6 +141,8 @@ export interface SliderRootProps extends React.HTMLAttributes<HTMLDivElement> {
 	min?: number
 	max?: number
 	step?: number
+	softMax?: number
+	softMin?: number
 	disabled?: boolean
 	formatValue?: (v: number) => string
 	onValueChange?: (v: number) => void
@@ -145,6 +154,8 @@ function SliderRoot({
 	min = 0,
 	max = 100,
 	step = 1,
+	softMax,
+	softMin,
 	disabled,
 	formatValue = (v) => String(v),
 	onValueChange,
@@ -175,6 +186,8 @@ function SliderRoot({
 				min,
 				max,
 				step,
+				softMax,
+				softMin,
 				disabled,
 				formatValue,
 				onChange: handleChange,
@@ -243,9 +256,20 @@ export interface SliderTrackProps
 	> {}
 
 function SliderTrack({ className, style, ...rest }: SliderTrackProps) {
-	const { value, min, max, step, disabled, onChange, classes } =
+	const { value, min, max, step, softMax, softMin, disabled, onChange, classes } =
 		useSliderContext()
 	const pct = ((value - min) / (max - min)) * 100
+
+	let background: string
+	if (softMax !== undefined && softMax < max) {
+		const softPct = ((softMax - min) / (max - min)) * 100
+		background = `linear-gradient(to right, var(--colors-teal-500) ${pct}%, var(--colors-stone-300) ${pct}% ${softPct}%, var(--colors-amber-300) ${softPct}% 100%)`
+	} else if (softMin !== undefined && softMin > min) {
+		const softPct = ((softMin - min) / (max - min)) * 100
+		background = `linear-gradient(to right, var(--colors-amber-300) 0% ${softPct}%, var(--colors-stone-300) ${softPct}% ${pct}%, var(--colors-teal-500) ${pct}% 100%)`
+	} else {
+		background = `linear-gradient(to right, var(--colors-teal-500) ${pct}%, var(--colors-stone-300) ${pct}%)`
+	}
 
 	return (
 		<input
@@ -257,10 +281,7 @@ function SliderTrack({ className, style, ...rest }: SliderTrackProps) {
 			disabled={disabled}
 			data-disabled={disabled ? "" : undefined}
 			className={cx(classes.track, className)}
-			style={{
-				background: `linear-gradient(to right, var(--colors-teal-500) ${pct}%, var(--colors-stone-300) ${pct}%)`,
-				...style,
-			}}
+			style={{ background, ...style }}
 			onChange={(e) => onChange(parseFloat(e.target.value))}
 			{...rest}
 		/>
@@ -284,6 +305,17 @@ function SliderBounds({ className, ...rest }: SliderBoundsProps) {
 }
 SliderBounds.displayName = "Slider.Bounds"
 
+// ─── Description ─────────────────────────────────────────────────────────────
+
+export interface SliderDescriptionProps
+	extends React.HTMLAttributes<HTMLParagraphElement> {}
+
+function SliderDescription({ className, ...rest }: SliderDescriptionProps) {
+	const { classes } = useSliderContext()
+	return <p className={cx(classes.description, className)} {...rest} />
+}
+SliderDescription.displayName = "Slider.Description"
+
 // ─── Dot-notation export ──────────────────────────────────────────────────────
 
 export const Slider = Object.assign(SliderRoot, {
@@ -292,4 +324,5 @@ export const Slider = Object.assign(SliderRoot, {
 	Value: SliderValue,
 	Track: SliderTrack,
 	Bounds: SliderBounds,
+	Description: SliderDescription,
 })

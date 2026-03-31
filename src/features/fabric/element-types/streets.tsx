@@ -609,9 +609,6 @@ export const STREETS_CATEGORY: ElementCategory = {
 					label: "Lanes Before",
 					default: 4,
 					input: { kind: "slider", min: 2, max: 8, step: 1, unit: "lanes" },
-					constraints: [
-						{ kind: "min-sibling", sibling: "lanes-after", offset: 1 },
-					],
 					toMapStyle: () => ({}),
 				},
 				{
