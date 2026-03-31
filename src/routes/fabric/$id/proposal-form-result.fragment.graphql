@@ -6,4 +6,15 @@ fragment ProposalFormResult on Proposal {
 	title
 	description
 	categories
+	snapshotElements
+	snapshotCenter {
+		lat
+		lng
+	}
+	snapshotZoom
+	snapshotMapStyle
+	snapshotThumbnail
+	snapshotLocationCity
+	snapshotLocationRegion
+	snapshotLocationRegionAbbr
 }
