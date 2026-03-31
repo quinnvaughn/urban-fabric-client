@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
-import { AuthForm } from "#/features/auth"
+import { AuthForm, AuthFormSkeleton } from "#/features/auth"
 import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/_marketing/_auth/register")({
 	component: RouteComponent,
+	pendingComponent: AuthFormSkeleton,
 })
 
 function RouteComponent() {
