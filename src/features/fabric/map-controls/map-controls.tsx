@@ -26,9 +26,13 @@ const controlButton = css({
 
 type Props = {
 	showHelp?: boolean
+	showGetCurrentLocation?: boolean
 }
 
-export function MapControls({ showHelp = true }: Props) {
+export function MapControls({
+	showHelp = true,
+	showGetCurrentLocation = true,
+}: Props) {
 	const map = useMap()
 	const { open } = useModalStore()
 	const toast = useToast()
@@ -88,26 +92,30 @@ export function MapControls({ showHelp = true }: Props) {
 				background: "white",
 			})}
 		>
-			<Tooltip placement="top-end">
-				<Tooltip.Trigger>
-					<button
-						type="button"
-						className={controlButton}
-						onClick={handleGetLocation}
-					>
-						<LocateFixed size={20} />
-					</button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Get current location</Tooltip.Content>
-			</Tooltip>
-			<div
-				className={css({
-					width: "px",
-					height: "4",
-					background: "stone.200",
-					flexShrink: 0,
-				})}
-			/>
+			{showGetCurrentLocation && (
+				<Tooltip placement="top-end">
+					<Tooltip.Trigger>
+						<button
+							type="button"
+							className={controlButton}
+							onClick={handleGetLocation}
+						>
+							<LocateFixed size={20} />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Get current location</Tooltip.Content>
+				</Tooltip>
+			)}
+			{showGetCurrentLocation && (
+				<div
+					className={css({
+						width: "px",
+						height: "4",
+						background: "stone.200",
+						flexShrink: 0,
+					})}
+				/>
+			)}
 			<Tooltip placement="top-end">
 				<Tooltip.Trigger>
 					<button

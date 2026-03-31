@@ -113,7 +113,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 						})}
 					>
 						<Attribution />
-						<MapControls showHelp={false} />
+						<MapControls showHelp={false} showGetCurrentLocation={false} />
 					</Box>
 					<ProposalElementsLayer />
 				</FabricMap>
