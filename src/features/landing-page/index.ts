@@ -1,6 +1,7 @@
 export * from "./built-to-spread-section"
 export * from "./hero-proposal-map"
 export * from "./hero-section"
+export * from "./home-page-skeleton"
 export * from "./how-it-works-section"
 export * from "./platform-chip"
 export * from "./section"

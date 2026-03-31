@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import {
 	BuiltToSpreadSection,
 	HeroSection,
+	HomePageSkeleton,
 	HowItWorksSection,
 	StartDesigningSection,
 	WhatIsAFabricSection,
@@ -10,7 +11,10 @@ import {
 } from "#/features/landing-page"
 import { useAnalytics } from "#/lib/analytics"
 
-export const Route = createFileRoute("/_marketing/")({ component: App })
+export const Route = createFileRoute("/_marketing/")({
+	component: App,
+	pendingComponent: HomePageSkeleton,
+})
 
 function App() {
 	const { capture } = useAnalytics()
