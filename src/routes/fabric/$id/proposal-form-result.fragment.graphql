@@ -1,0 +1,9 @@
+fragment ProposalFormResult on Proposal {
+	id
+	fabricId
+	slug
+	isPublished
+	title
+	description
+	categories
+}

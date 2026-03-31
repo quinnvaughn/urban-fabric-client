@@ -1,7 +1,7 @@
 import type { ApolloCache, Reference } from "@apollo/client"
 import {
-	type ProposalRowFragment,
-	ProposalRowFragmentDoc,
+	type ProposalFormResultFragment,
+	ProposalFormResultFragmentDoc,
 } from "#/graphql/generated"
 import { parseLimitFromStoreFieldName } from "./fabric-cache"
 
@@ -11,10 +11,10 @@ import { parseLimitFromStoreFieldName } from "./fabric-cache"
  */
 export function addProposalToMyProposalsCache(
 	cache: ApolloCache,
-	proposal: ProposalRowFragment,
+	proposal: ProposalFormResultFragment,
 ) {
 	const newProposalRef = cache.writeFragment({
-		fragment: ProposalRowFragmentDoc,
+		fragment: ProposalFormResultFragmentDoc,
 		data: proposal,
 	})
 

@@ -7,7 +7,7 @@ mutation PublishProposal($input: PublishProposalInput!) {
 			message
 		}
 		... on Proposal {
-			...ProposalRow
+			...ProposalFormResult
 		}
 		... on UnauthorizedError {
 			message

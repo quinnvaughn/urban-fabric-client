@@ -7,7 +7,7 @@ mutation SaveDraftProposal($input: SaveDraftProposalInput!) {
 			message
 		}
 		... on Proposal {
-			...ProposalRow
+			...ProposalFormResult
 		}
 		... on UnauthorizedError {
 			message
