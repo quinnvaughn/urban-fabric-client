@@ -6,7 +6,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { match } from "ts-pattern"
-import { ForbiddenView } from "#/features/errors"
+import { ForbiddenView, NotFoundView } from "#/features/errors"
 import { FabricEditor, FabricEditorSkeleton } from "#/features/fabric"
 import { apiHandler } from "#/features/fabric/element-types/types"
 import {
@@ -52,7 +52,7 @@ function RouteComponent() {
 		})
 		.with({ __typename: "ForbiddenError" }, () => <ForbiddenView />)
 		.with({ __typename: "NotFoundError" }, () => {
-			return <div>404 fabric not found</div>
+			return <NotFoundView />
 		})
 		.with({ __typename: "Fabric" }, (fabric) => (
 			<MobileGate>

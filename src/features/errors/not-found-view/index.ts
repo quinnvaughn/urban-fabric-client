@@ -1,2 +1,1 @@
-export * from "./forbidden-view"
 export * from "./not-found-view"

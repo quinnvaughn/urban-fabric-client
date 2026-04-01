@@ -1,5 +1,6 @@
 import { useQuery, useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { NotFoundView } from "#/features/errors"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ProposalFormPage } from "#/features/proposal"
 import { MobileGate } from "#/features/ui"
@@ -35,7 +36,7 @@ function RouteComponent() {
 		!data?.proposalBySlug ||
 		data.proposalBySlug.__typename === "NotFoundError"
 	) {
-		return <div>Proposal not found</div>
+		return <NotFoundView />
 	}
 
 	return <EditProposal proposal={data.proposalBySlug} />
@@ -57,7 +58,10 @@ function EditProposal({ proposal }: { proposal: Proposal }) {
 function EditProposalForm({
 	proposal,
 	fabric,
-}: { proposal: Proposal; fabric: Fabric }) {
+}: {
+	proposal: Proposal
+	fabric: Fabric
+}) {
 	const elements = fabric.elements as ElementInstance[]
 	const navigate = Route.useNavigate()
 

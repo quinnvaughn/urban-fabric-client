@@ -2,7 +2,7 @@ import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { match } from "ts-pattern"
-import { ForbiddenView } from "#/features/errors"
+import { ForbiddenView, NotFoundView } from "#/features/errors"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { ProposalFormPage } from "#/features/proposal"
 import { MobileGate } from "#/features/ui"
@@ -50,7 +50,7 @@ function RouteComponent() {
 		})
 		.with({ __typename: "ForbiddenError" }, () => <ForbiddenView />)
 		.with({ __typename: "NotFoundError" }, () => {
-			return <div>404 fabric not found</div>
+			return <NotFoundView />
 		})
 		.with({ __typename: "Fabric" }, (fabric) => (
 			<MobileGate size="lg">

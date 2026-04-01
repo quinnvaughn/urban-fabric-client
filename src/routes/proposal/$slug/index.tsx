@@ -1,7 +1,7 @@
 import { useMutation, useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
-import { useAnalytics } from "#/lib/analytics"
+import { NotFoundView } from "#/features/errors"
 import {
 	ProposalDesktopView,
 	ProposalMobileView,
@@ -13,6 +13,7 @@ import {
 	type GetProposalQuery,
 	RecordProposalViewDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { adjustMyDashboardEngagementCache } from "#/lib/apollo"
 import { getClientEnv } from "#/lib/env/client"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
@@ -84,8 +85,7 @@ function RouteComponent() {
 		!data.proposalBySlug ||
 		data.proposalBySlug.__typename === "NotFoundError"
 	) {
-		// TODO: better 404 page
-		return <div>Proposal not found</div>
+		return <NotFoundView />
 	}
 
 	return <ProposalView proposal={data.proposalBySlug} />

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { Fragment } from "react/jsx-runtime"
 import {
+	Badge,
 	Box,
 	Card,
 	Divider,
@@ -14,7 +15,7 @@ import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { BackgroundGrid } from "../background-grid"
 
-export function ForbiddenView() {
+export function NotFoundView() {
 	const { data: currentUser } = useCurrentUser()
 	return (
 		<Fragment>
@@ -47,52 +48,52 @@ export function ForbiddenView() {
 								className={css({
 									display: "flex",
 									justify: "center",
-									animation: "wobble 0.7s var(--easings-spring) 0.3s both",
+									animation: "rise 0.5s var(--easings-spring) 0.1s both",
 								})}
 							>
 								<Box
 									className={css({
-										position: "relative",
-										width: "100px",
-										height: "100px",
+										animation: "wobble 0.7s var(--easings-spring) 0.3s both",
 									})}
 								>
-									<Box
-										className={css({
-											width: "100px",
-											height: "100px",
-											background: "coral.500",
-											clipPath:
-												"polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											flexDir: "column",
-											gap: "px",
-										})}
+									<svg
+										width="48"
+										height="60"
+										viewBox="0 0 48 60"
+										fill="none"
+										xmlns="http://www.w3.org/2000/svg"
 									>
-										<Typography.Text
-											size="4xs"
-											weight="bold"
-											letterSpacing="wider"
-											transform="uppercase"
-											color="white"
+										<title>Not Found</title>
+										<path
+											d="M24 0C10.745 0 0 10.745 0 24c0 16.5 24 36 24 36s24-19.5 24-36C48 10.745 37.255 0 24 0z"
+											fill="#d9f0ea"
+										></path>
+										<path
+											d="M24 2C11.85 2 2 11.85 2 24c0 15.4 22 34 22 34s22-18.6 22-34C46 11.85 36.15 2 24 2z"
+											stroke="#1a6b5a"
+											stroke-width="1.5"
+											fill="#d9f0ea"
+										></path>
+										<text
+											x="24"
+											y="30"
+											text-anchor="middle"
+											font-size="18"
+											font-weight="600"
+											fill="#1a6b5a"
+											font-family="sans-serif"
 										>
-											Error
-										</Typography.Text>
-										<Typography.Heading
-											as="p"
-											size="xl"
-											weight="bold"
-											color="white"
-											lineHeight="none"
-										>
-											403
-										</Typography.Heading>
-									</Box>
+											?
+										</text>
+									</svg>
 								</Box>
 							</Box>
 							<VStack gap="3" align="center">
+								<HStack>
+									<Badge appearance="solid" size="xs" tone="muted">
+										404
+									</Badge>
+								</HStack>
 								<Typography.Text
 									size="xs"
 									weight="semibold"
@@ -103,7 +104,7 @@ export function ForbiddenView() {
 										animation: "rise 0.5s var(--easings-spring) 0.15s both",
 									})}
 								>
-									Access Denied
+									Page Not Found
 								</Typography.Text>
 								<VStack gap="4" align="center">
 									<Typography.Heading
@@ -116,10 +117,11 @@ export function ForbiddenView() {
 											animation: "rise 0.5s var(--easings-spring) 0.2s both",
 										})}
 									>
-										Road closed.
+										This block
 										<br />
+										is{" "}
 										<Typography.Inline color="coral.500" fontStyle="italic">
-											No detour available.
+											missing from the map.
 										</Typography.Inline>
 									</Typography.Heading>
 									<VStack gap="9" align="center">
@@ -131,10 +133,9 @@ export function ForbiddenView() {
 												animation: "rise 0.5s var(--easings-spring) 0.25s both",
 											})}
 										>
-											This area is off-limits — kind of like that parking lot
-											the city turned into a "park" but locked every gate. You
-											don't have permission to be here, and unlike most zoning
-											hearings, this decision isn't up for public comment.
+											Whatever you were looking for doesn't exist here. Could've
+											been demolished, rezoned, or maybe it was never built.
+											Either way, the lot is empty and the permit has expired.
 										</Typography.Text>
 										<HStack
 											gap="3"
@@ -172,10 +173,11 @@ export function ForbiddenView() {
 												animation: "rise 0.5s var(--easings-spring) 0.45s both",
 											})}
 										>
-											Think this is a mistake?{" "}
+											Broken link?{" "}
 											<ExternalLink href="mailto:quinn@urbanfabric.app">
-												Let us know.
-											</ExternalLink>
+												Let us know
+											</ExternalLink>{" "}
+											and we'll fix the zoning.
 										</Typography.Text>
 									</VStack>
 								</VStack>
