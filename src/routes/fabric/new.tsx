@@ -138,6 +138,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 					title: guest.title,
 					elements: guest.elements,
 					thumbnail: guest.thumbnail,
+					mapStyle: guest.mapStyle,
 				},
 			},
 		})
