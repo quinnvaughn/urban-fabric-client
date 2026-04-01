@@ -24,6 +24,7 @@ import {
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
+import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -72,6 +73,8 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 	const [updateMapStyle] = useMutation(UpdateFabricMapStyleDocument)
 	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
+	const { data: meData } = useCurrentUser()
+	const isOwner = meData?.me?.id === fabric.creator.id
 
 	useEffect(() => {
 		capture("page_viewed", { page: "editor" })
@@ -93,26 +96,26 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 				? { hasProposal: true, slug: fabric.proposal.slug }
 				: { hasProposal: false })}
 			captureOnMount={!fabric.thumbnail}
-			onTitleSave={async (title) => {
+			onTitleSave={isOwner ? async (title) => {
 				await updateTitle({
 					variables: { input: { id: fabric.id, title } },
 				})
-			}}
-			onMapStyleChange={(style) => {
+			} : undefined}
+			onMapStyleChange={isOwner ? (style) => {
 				updateMapStyle({
 					variables: { input: { id: fabric.id, mapStyle: style } },
 				})
-			}}
-			onViewportChange={async (viewport) => {
+			} : undefined}
+			onViewportChange={isOwner ? async (viewport) => {
 				await syncViewport({
 					variables: { input: { id: fabric.id, ...viewport } },
 				})
-			}}
-			onThumbnail={async (thumbnail) => {
+			} : undefined}
+			onThumbnail={isOwner ? async (thumbnail) => {
 				await updateThumbnail({
 					variables: { input: { id: fabric.id, thumbnail } },
 				})
-			}}
+			} : undefined}
 		/>
 	)
 }

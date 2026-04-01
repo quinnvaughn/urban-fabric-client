@@ -6,7 +6,7 @@ import { useFabricStore } from "../fabric-store"
 type Props = {
 	id: string
 	title: string
-	onTitleSave: (title: string) => Promise<void>
+	onTitleSave?: (title: string) => Promise<void>
 }
 
 export function EditorTitleInput({ id, title, onTitleSave }: Props) {
@@ -64,7 +64,7 @@ export function EditorTitleInput({ id, title, onTitleSave }: Props) {
 					}
 					setSaveStatus("saving")
 					try {
-						await onTitleSave(text.trim())
+						await onTitleSave?.(text.trim())
 						setSaveStatus("saved")
 						setTimeout(() => setSaveStatus("idle"), 2000)
 					} catch {

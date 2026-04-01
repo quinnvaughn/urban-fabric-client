@@ -27,11 +27,11 @@ const MAP_STYLE_ORDER: MapStyle[] = [
 type BaseProps = {
 	title: string
 	id: string
-	onTitleSave: (title: string) => Promise<void>
+	onTitleSave?: (title: string) => Promise<void>
 	onPublish?: () => Promise<void> | void
 	onSave?: () => void
 	mapStyle: MapStyle
-	onMapStyleChange: (style: MapStyle) => void
+	onMapStyleChange?: (style: MapStyle) => void
 }
 
 type Props =
@@ -169,7 +169,7 @@ export function EditorTopbar({
 							<Menu.CheckItem
 								key={style}
 								checked={mapStyle === style}
-								onCheckedChange={() => onMapStyleChange(style)}
+								onCheckedChange={() => onMapStyleChange?.(style)}
 							>
 								{MAP_STYLE_LABELS[style]}
 							</Menu.CheckItem>

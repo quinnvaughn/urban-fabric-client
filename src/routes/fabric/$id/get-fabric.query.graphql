@@ -3,6 +3,9 @@ query GetFabric($fabricId: ID!) {
 		... on Fabric {
 			id
 			title
+			creator {
+				id
+			}
 			center {
 				lng
 				lat

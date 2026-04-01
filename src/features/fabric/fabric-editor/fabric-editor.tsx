@@ -20,13 +20,13 @@ type Props = {
 	zoom: number
 	initialMapStyle: MapStyle
 	captureOnMount?: boolean
-	onTitleSave: (title: string) => Promise<void>
-	onMapStyleChange: (style: MapStyle) => void
-	onViewportChange: (viewport: {
+	onTitleSave?: (title: string) => Promise<void>
+	onMapStyleChange?: (style: MapStyle) => void
+	onViewportChange?: (viewport: {
 		center: { lng: number; lat: number }
 		zoom: number
 	}) => Promise<void>
-	onThumbnail: (thumbnail: string) => Promise<void>
+	onThumbnail?: (thumbnail: string) => Promise<void>
 	onPublish?: () => void
 	onSave?: () => void
 } & (
@@ -64,7 +64,7 @@ export function FabricEditor({
 				mapStyle={mapStyle}
 				onMapStyleChange={(style) => {
 					setMapStyle(style)
-					onMapStyleChange(style)
+					onMapStyleChange?.(style)
 				}}
 			/>
 			<ElementPanel />
@@ -73,11 +73,11 @@ export function FabricEditor({
 			<FabricMap center={center} zoom={zoom} bearing={0} mapStyle={mapStyle}>
 				<DrawingLayer />
 				<SelectLayer />
-				<ViewportTracker onViewportChange={onViewportChange} />
-				<ThumbnailSync
+				{onViewportChange && <ViewportTracker onViewportChange={onViewportChange} />}
+				{onThumbnail && <ThumbnailSync
 					onThumbnail={onThumbnail}
 					captureOnMount={captureOnMount}
-				/>
+				/>}
 				<EditorHUD />
 			</FabricMap>
 		</div>
