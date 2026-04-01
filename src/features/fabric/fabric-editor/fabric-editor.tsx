@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { type ReactNode, useState } from "react"
 import {
 	DrawingLayer,
 	EditorCommandPalette,
@@ -29,10 +29,8 @@ type Props = {
 	onThumbnail?: (thumbnail: string) => Promise<void>
 	onPublish?: () => void
 	onSave?: () => void
-} & (
-	| { hasProposal: true; slug: string }
-	| { hasProposal: false; slug?: never }
-)
+	nudge?: ReactNode
+} & ({ hasProposal: true; slug: string } | { hasProposal: false; slug?: never })
 
 export function FabricEditor({
 	id,
@@ -47,6 +45,7 @@ export function FabricEditor({
 	onThumbnail,
 	onPublish,
 	onSave,
+	nudge,
 	hasProposal,
 	slug,
 }: Props) {
@@ -57,7 +56,9 @@ export function FabricEditor({
 			<EditorTopbar
 				id={id}
 				title={title}
-				{...(hasProposal ? { hasProposal: true, slug } : { hasProposal: false })}
+				{...(hasProposal
+					? { hasProposal: true, slug }
+					: { hasProposal: false })}
 				onTitleSave={onTitleSave}
 				onPublish={onPublish}
 				onSave={onSave}
@@ -70,14 +71,19 @@ export function FabricEditor({
 			<ElementPanel />
 			<PropertiesPanel />
 			<EditorCommandPalette />
+			{nudge}
 			<FabricMap center={center} zoom={zoom} bearing={0} mapStyle={mapStyle}>
 				<DrawingLayer />
 				<SelectLayer />
-				{onViewportChange && <ViewportTracker onViewportChange={onViewportChange} />}
-				{onThumbnail && <ThumbnailSync
-					onThumbnail={onThumbnail}
-					captureOnMount={captureOnMount}
-				/>}
+				{onViewportChange && (
+					<ViewportTracker onViewportChange={onViewportChange} />
+				)}
+				{onThumbnail && (
+					<ThumbnailSync
+						onThumbnail={onThumbnail}
+						captureOnMount={captureOnMount}
+					/>
+				)}
 				<EditorHUD />
 			</FabricMap>
 		</div>

@@ -22,7 +22,7 @@ export function AuthModal({
 	const [mode, setMode] = useState<"login" | "register">(initialMode)
 
 	return (
-		<Modal open={open} onClose={onClose} size="lg">
+		<Modal open={open} onClose={onClose} size="md">
 			<Modal.Header>
 				{title ? <Modal.Title>{title}</Modal.Title> : <div />}
 				<Modal.CloseBtn />

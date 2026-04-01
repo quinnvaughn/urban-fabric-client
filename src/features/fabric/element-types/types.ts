@@ -145,6 +145,7 @@ export type GuestFabric = {
 	elements: ElementInstance[]
 	thumbnail?: string
 	mapStyle?: MapStyle
+	nudgeDismissed?: boolean
 }
 
 export function readGuestFabric(guestStorageKey = "guest-fabric") {

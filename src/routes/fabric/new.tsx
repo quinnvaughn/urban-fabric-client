@@ -15,6 +15,7 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
+import { MobileGate, NudgeCard } from "#/features/ui"
 import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
 import {
@@ -22,7 +23,6 @@ import {
 	adjustMyDashboardFabricCountCache,
 } from "#/lib/apollo"
 import { getLocationFromIp } from "#/lib/geo"
-import { MobileGate } from "#/features/ui"
 import { openModal } from "#/stores"
 
 const GUEST_FABRIC_KEY = "guest-fabric"
@@ -95,7 +95,9 @@ function RouteComponent() {
 
 function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
-	const { initElements } = useFabricStore()
+	const { initElements, elements } = useFabricStore()
+	const showNudge = elements.length >= 3 && !fabric.nudgeDismissed
+	console.log("showNudge", showNudge)
 	useGettingStartedModal()
 	const client = useApolloClient()
 	const navigate = useNavigate()
@@ -199,6 +201,33 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 			}}
 			onPublish={() => openAuthModal("publish")}
 			onSave={() => openAuthModal("save")}
+			nudge={
+				showNudge ? (
+					<NudgeCard
+						title="Want others to see this?"
+						description="Save your progress and share your ideas with your community."
+						primaryAction={{
+							label: "Create a free account",
+							onClick: () => openAuthModal("save"),
+						}}
+						secondaryAction={{
+							label: "Keep editing",
+							onClick: () => {
+								updateGuestFabric(
+									(existing) => ({ ...existing, nudgeDismissed: true }),
+									GUEST_FABRIC_KEY,
+								)
+							},
+						}}
+						onDismiss={() => {
+							updateGuestFabric(
+								(existing) => ({ ...existing, nudgeDismissed: true }),
+								GUEST_FABRIC_KEY,
+							)
+						}}
+					/>
+				) : null
+			}
 		/>
 	)
 }

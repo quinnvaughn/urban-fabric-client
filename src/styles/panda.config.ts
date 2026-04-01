@@ -1627,6 +1627,22 @@ export default defineConfig({
 				"60%": { rotate: "4deg", scale: "1.04" },
 				"100%": { rotate: "0deg", scale: "1" },
 			},
+			nudgeIn: {
+				from: { opacity: "0", transform: "translateY(10px)" },
+				to: { opacity: "1", transform: "translateY(0)" },
+			},
+			nudgeOut: {
+				from: { opacity: "1", transform: "translateY(0)" },
+				to: { opacity: "0", transform: "translateY(6px)" },
+			},
+			nudgeInCenter: {
+				from: { opacity: "0", transform: "translateX(-50%) translateY(10px)" },
+				to: { opacity: "1", transform: "translateX(-50%) translateY(0)" },
+			},
+			nudgeOutCenter: {
+				from: { opacity: "1", transform: "translateX(-50%) translateY(0)" },
+				to: { opacity: "0", transform: "translateX(-50%) translateY(6px)" },
+			},
 		},
 
 		tokens: {
