@@ -23,7 +23,7 @@ import {
 	adjustMyDashboardFabricCountCache,
 } from "#/lib/apollo"
 import { getLocationFromIp } from "#/lib/geo"
-import { openModal } from "#/stores"
+import { closeModal, openModal } from "#/stores"
 
 const GUEST_FABRIC_KEY = "guest-fabric"
 
@@ -163,6 +163,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 			onAuthSuccess: async () => {
 				const id = await migrateGuestFabric()
 				if (!id) return
+				closeModal()
 				if (intent === "publish") {
 					navigate({ to: "/fabric/$id/publish", params: { id }, replace: true })
 				} else {
