@@ -621,6 +621,22 @@ export const STREETS_CATEGORY: ElementCategory = {
 					],
 					toMapStyle: () => ({}),
 				},
+				{
+					key: "reclaimed-as",
+					label: "Reclaimed As",
+					description: "What the removed lane space becomes",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Wider Sidewalk", value: "sidewalk" },
+							{ label: "Bike Lane", value: "bike-lane" },
+							{ label: "Bus Lane", value: "bus-lane" },
+							{ label: "Median / Planting Strip", value: "median" },
+							{ label: "Parking Lane", value: "parking-lane" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
 			],
 
 			calculated: [
@@ -704,6 +720,21 @@ export const STREETS_CATEGORY: ElementCategory = {
 					constraints: [
 						{ kind: "min-sibling", sibling: "width-before", offset: 0 },
 					],
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "at-expense-of",
+					label: "At the Expense Of",
+					description: "What is giving up space to make room for the wider sidewalk",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Parking Lane", value: "parking-lane" },
+							{ label: "Travel Lane", value: "travel-lane" },
+							{ label: "Planting Strip / Buffer", value: "planting-strip" },
+							{ label: "Median / Center Turn Lane", value: "median" },
+						],
+					},
 					toMapStyle: () => ({}),
 				},
 			],

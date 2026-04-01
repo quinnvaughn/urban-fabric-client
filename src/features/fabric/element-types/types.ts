@@ -40,7 +40,7 @@ export type PropertyDescriptor<T = unknown> = {
 	key: string
 	label: string
 	description?: string
-	default: T
+	default?: T
 	input: PropertyInput
 	toMapStyle: (value: T) => Partial<LinePaint>
 	constraints?: PropertyConstraint[]

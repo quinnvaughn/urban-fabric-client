@@ -40,7 +40,7 @@ export function PropertiesPanel() {
 	function renderComponent(prop: PropertyDescriptor) {
 		const currentValue =
 			(selectedInstance?.properties[prop.key] as string | undefined) ??
-			String(prop.default)
+			(prop.default != null ? String(prop.default) : "")
 
 		function handleChange(value: string) {
 			if (!selectedInstance) return
