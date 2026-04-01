@@ -31,7 +31,7 @@ type Props = {
 	mode: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	onModeChange?: (mode: "login" | "register") => void
-	source?: "like" | "sign_in" | "save_draft" | "publish" | "google"
+	source?: "like" | "sign_in" | "save_draft" | "publish" | "google" | "nudge"
 }
 
 const LoginSchema = z.object({

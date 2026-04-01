@@ -8,7 +8,7 @@ type Props = {
 	initialMode?: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	title?: string
-	source?: "like" | "sign_in" | "save_draft" | "publish"
+	source?: "like" | "sign_in" | "save_draft" | "publish" | "nudge"
 }
 
 export function AuthModal({

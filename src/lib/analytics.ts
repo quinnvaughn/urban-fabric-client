@@ -16,9 +16,9 @@ type EventMap = {
 			| "my_proposals"
 			| "my_fabrics"
 	}
-	signup_started: { source: "like" | "sign_in" | "save_draft" | "publish" }
+	signup_started: { source: "like" | "sign_in" | "save_draft" | "publish" | "nudge" }
 	signup_completed: {
-		source: "like" | "sign_in" | "save_draft" | "publish" | "google"
+		source: "like" | "sign_in" | "save_draft" | "publish" | "google" | "nudge"
 	}
 	login_completed: undefined
 
@@ -45,6 +45,8 @@ type EventMap = {
 	// Editor
 	editor_element_added: { element_type: string }
 	editor_element_edited: { element_type: string; property: string }
+	nudge_shown: undefined
+	nudge_dismissed: { via: "keep_editing" | "dismiss_button" }
 
 	// Mobile unsupported screen
 	editor_mobile_wall_viewed: undefined

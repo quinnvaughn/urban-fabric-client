@@ -97,7 +97,6 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
 	const { initElements, elements } = useFabricStore()
 	const showNudge = elements.length >= 3 && !fabric.nudgeDismissed
-	console.log("showNudge", showNudge)
 	useGettingStartedModal()
 	const client = useApolloClient()
 	const navigate = useNavigate()
@@ -107,6 +106,12 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	useEffect(() => {
 		capture("fabric_created")
 	}, [capture])
+
+	useEffect(() => {
+		if (showNudge) {
+			capture("nudge_shown")
+		}
+	}, [showNudge, capture])
 
 	useEffect(() => {
 		let cancelled = false
@@ -145,8 +150,8 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 		return created.id
 	}
 
-	function openAuthModal(intent: "save" | "publish") {
-		const source = intent === "publish" ? "publish" : "save_draft"
+	function openAuthModal(intent: "save" | "publish" | "nudge") {
+		const source = intent === "publish" ? "publish" : intent === "nudge" ? "nudge" : "save_draft"
 		capture("signup_started", { source })
 		openModal("auth", {
 			title:
