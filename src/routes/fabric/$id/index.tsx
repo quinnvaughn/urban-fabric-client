@@ -1,6 +1,12 @@
-import { useApolloClient, useMutation } from "@apollo/client/react"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import {
+	useApolloClient,
+	useMutation,
+	useReadQuery,
+} from "@apollo/client/react"
+import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
+import { match } from "ts-pattern"
+import { ForbiddenView } from "#/features/errors"
 import { FabricEditor, FabricEditorSkeleton } from "#/features/fabric"
 import { apiHandler } from "#/features/fabric/element-types/types"
 import {
@@ -8,6 +14,7 @@ import {
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
 import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
+import { MobileGate } from "#/features/ui"
 import {
 	GetFabricDocument,
 	type GetFabricQuery,
@@ -16,38 +23,17 @@ import {
 	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
-import { MobileGate } from "#/features/ui"
 import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
 	pendingComponent: FabricEditorSkeleton,
-	beforeLoad: async ({ context, params }) => {
-		const { data } = await context.apolloClient.query({
-			query: GetFabricDocument,
-			variables: { fabricId: params.id },
-		})
-
-		if (data?.fabric.__typename === "UnauthorizedError") {
-			throw redirect({ to: "/login", replace: true })
-		}
-		if (data?.fabric.__typename === "ForbiddenError") {
-			throw redirect({ to: "/dashboard", replace: true })
-		}
-		if (data?.fabric.__typename === "NotFoundError") {
-			throw redirect({ to: "/dashboard", replace: true })
-		}
-	},
-	loader: ({ context, params }) => {
-		const data = context.apolloClient.readQuery({
-			query: GetFabricDocument,
+	loader: ({ context: { preloadQuery }, params }) => {
+		const getFabricQuery = preloadQuery(GetFabricDocument, {
 			variables: { fabricId: params.id },
 		})
 		return {
-			fabric: data?.fabric as Extract<
-				GetFabricQuery["fabric"],
-				{ __typename: "Fabric" }
-			>,
+			getFabricQuery,
 		}
 	},
 })
@@ -55,12 +41,25 @@ export const Route = createFileRoute("/fabric/$id/")({
 type Fabric = Extract<GetFabricQuery["fabric"], { __typename: "Fabric" }>
 
 function RouteComponent() {
-	const { fabric } = Route.useLoaderData()
-	return (
-		<MobileGate>
-			<FabricEditorRoute fabric={fabric} />
-		</MobileGate>
-	)
+	const { getFabricQuery } = Route.useLoaderData()
+	const { data } = useReadQuery(getFabricQuery)
+	const navigate = Route.useNavigate()
+
+	return match(data?.fabric)
+		.with({ __typename: "UnauthorizedError" }, () => {
+			navigate({ to: "/login", replace: true })
+			return null
+		})
+		.with({ __typename: "ForbiddenError" }, () => <ForbiddenView />)
+		.with({ __typename: "NotFoundError" }, () => {
+			return <div>404 fabric not found</div>
+		})
+		.with({ __typename: "Fabric" }, (fabric) => (
+			<MobileGate>
+				<FabricEditorRoute fabric={fabric} />
+			</MobileGate>
+		))
+		.otherwise(() => <ForbiddenView />)
 }
 
 function FabricEditorRoute({ fabric }: { fabric: Fabric }) {

@@ -1618,6 +1618,15 @@ export default defineConfig({
 				from: { opacity: "1" },
 				to: { opacity: "0" },
 			},
+			rise: {
+				"0%": { opacity: "0", transform: "translateY(20px)" },
+				"100%": { opacity: "1", transform: "translateY(0)" },
+			},
+			wobble: {
+				"0%": { rotate: "-8deg", scale: "0.85" },
+				"60%": { rotate: "4deg", scale: "1.04" },
+				"100%": { rotate: "0deg", scale: "1" },
+			},
 		},
 
 		tokens: {

@@ -10,6 +10,7 @@ const dividerStyles = sva({
 		},
 		line: {
 			flex: "1 1 auto",
+			width: "full",
 			border: "none",
 			borderTopWidth: "1",
 			borderTopStyle: "solid",

@@ -58,8 +58,9 @@ export const typography = defineSlotRecipe({
 			serif: {
 				heading: { fontFamily: "serif" },
 				text: { fontFamily: "serif" },
+				inline: { fontFamily: "serif" },
 			},
-			mono: { heading: { fontFamily: "mono" }, text: { fontFamily: "mono" } },
+			mono: { heading: { fontFamily: "mono" }, text: { fontFamily: "mono" }, inline: { fontFamily: "mono" } },
 		},
 		// ── Weight ────────────────────────────────────────────────────────────
 		weight: {

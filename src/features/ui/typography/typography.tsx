@@ -187,6 +187,7 @@ export interface InlineProps
 	fontStyle?: FontStyle
 	weight?: Weight
 	tone?: Tone
+	font?: Font
 	color?: Color
 	letterSpacing?: LetterSpacing
 	transform?: Transform
@@ -198,6 +199,7 @@ function TypographyInline({
 	fontStyle,
 	weight,
 	tone,
+	font,
 	color,
 	letterSpacing,
 	transform,
@@ -209,6 +211,7 @@ function TypographyInline({
 	const styles = typography({
 		weight,
 		tone,
+		font,
 		letterSpacing,
 		transform,
 		fontStyle,
