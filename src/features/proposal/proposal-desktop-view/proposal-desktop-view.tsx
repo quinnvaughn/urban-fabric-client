@@ -1,7 +1,8 @@
 import { EllipsisVertical } from "lucide-react"
+import { useState } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
-import { Box, Tooltip } from "#/features/ui"
+import { Box, NudgeWizard, Tooltip } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 import { ProposalElementsLayer } from "../proposal-elements-layer"
@@ -16,9 +17,23 @@ type Proposal = Extract<
 	{ __typename: "Proposal" }
 >
 
+const WIZARD_SEEN_KEY = "proposal_wizard_seen"
+
 export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
 		useProposalStore()
+	const [showWizard, setShowWizard] = useState(
+		() =>
+			typeof localStorage !== "undefined" &&
+			!localStorage.getItem(WIZARD_SEEN_KEY),
+	)
+
+	function dismissWizard() {
+		if (typeof localStorage !== "undefined") {
+			localStorage.setItem(WIZARD_SEEN_KEY, "1")
+		}
+		setShowWizard(false)
+	}
 
 	return (
 		<Box
@@ -86,6 +101,29 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					<Tooltip.Content>Open panel</Tooltip.Content>
 				</Tooltip>
 				<ProposalPanel proposal={proposal} />
+				{showWizard && (
+					<NudgeWizard
+						steps={[
+							{
+								description:
+									"The colored lines are interactive — click one to see its properties and note	.",
+								title: "Tap any element on the map",
+							},
+							{
+								title: "That's the element detail panel",
+								description:
+									"See its properties and any notes the creator left. Hit the X to close it.",
+							},
+							{
+								title: "The proposal panel can be hidden too",
+								description:
+									"Click the chevron to collapse it — and the handle on the left edge to bring it back",
+							},
+						]}
+						onDismiss={dismissWizard}
+						onComplete={dismissWizard}
+					/>
+				)}
 				<Box
 					className={css({
 						position: "absolute",
