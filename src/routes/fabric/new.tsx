@@ -14,7 +14,7 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
-import { useGettingStartedModal } from "#/features/modals/getting-started-modal"
+import { GettingStartedNudge, useGettingStartedNudge } from "#/features/modals/getting-started-modal"
 import { MobileGate, NudgeCard } from "#/features/ui"
 import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
@@ -96,8 +96,8 @@ function RouteComponent() {
 function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
 	const { initElements, elements } = useFabricStore()
-	const showNudge = elements.length >= 3 && !fabric.nudgeDismissed
-	useGettingStartedModal()
+	const { showNudge: showGettingStartedNudge, dismissNudge: dismissGettingStartedNudge } = useGettingStartedNudge()
+	const showNudge = elements.length >= 3 && !fabric.nudgeDismissed && !showGettingStartedNudge
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)
@@ -175,6 +175,8 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 
 	useFabricPersistence(handler)
 	return (
+		<>
+		<GettingStartedNudge show={showGettingStartedNudge} onDismiss={dismissGettingStartedNudge} />
 		<FabricEditor
 			id={fabric.id}
 			title={fabric.title}
@@ -236,5 +238,6 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				) : null
 			}
 		/>
+		</>
 	)
 }
