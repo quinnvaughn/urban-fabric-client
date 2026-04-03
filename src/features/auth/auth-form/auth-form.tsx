@@ -22,7 +22,7 @@ import {
 	LoginDocument,
 	RegisterDocument,
 } from "#/graphql/generated"
-import { useAnalytics } from "#/lib/analytics"
+import { type AuthSource, useAnalytics } from "#/lib/analytics"
 import { useForm } from "#/lib/form"
 import { css } from "#/styles/styled-system/css"
 import { GoogleSignInButton } from "../google-button"
@@ -31,7 +31,7 @@ type Props = {
 	mode: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	onModeChange?: (mode: "login" | "register") => void
-	source?: "like" | "sign_in" | "save_draft" | "publish" | "google" | "nudge"
+	source?: AuthSource
 }
 
 const LoginSchema = z.object({

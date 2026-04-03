@@ -3,13 +3,16 @@ import { useAnalytics } from "#/lib/analytics"
 import { closeModal, openModal } from "#/stores"
 import { useCurrentUser } from "./use-current-user"
 
-export function useRequireAuth(title?: string, analyticsSource?: "like") {
-	const { data: userData } = useCurrentUser()
+export function useRequireAuth(
+	title?: string,
+	analyticsSource?: "like" | "comment",
+) {
+	const { user } = useCurrentUser()
 	const { capture } = useAnalytics()
 
 	return useCallback(
 		(action: () => void) => {
-			if (!userData?.me) {
+			if (!user) {
 				if (analyticsSource) {
 					capture("signup_started", { source: analyticsSource })
 				}
@@ -25,6 +28,6 @@ export function useRequireAuth(title?: string, analyticsSource?: "like") {
 			}
 			action()
 		},
-		[userData?.me, title, analyticsSource, capture],
+		[user, title, analyticsSource, capture],
 	)
 }

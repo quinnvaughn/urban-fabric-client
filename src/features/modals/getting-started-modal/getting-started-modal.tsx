@@ -121,7 +121,7 @@ function Callout({
 }
 
 function LastStep() {
-	const { data: currentUser } = useCurrentUser()
+	const { user } = useCurrentUser()
 	return (
 		<StepContent
 			key="command-palette"
@@ -166,7 +166,7 @@ function LastStep() {
 				title, description, and categories, then your proposal goes live with a
 				shareable link.
 			</Typography.Text>
-			{!currentUser?.me && (
+			{!user && (
 				<Callout>
 					<Typography.Text size="sm" color="stone.800">
 						You don't need an account to explore the editor. Sign up when you're

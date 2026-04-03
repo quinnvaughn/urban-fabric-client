@@ -98,9 +98,9 @@ type Proposal = Extract<
 
 function ProposalView({ proposal }: { proposal: Proposal }) {
 	const [recordView] = useMutation(RecordProposalViewDocument)
-	const { data: meData } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const hasRecordedView = useRef(false)
-	const isOwner = meData?.me?.id === proposal.creator.id
+	const isOwner = user?.id === proposal.creator.id
 	const { capture } = useAnalytics()
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable

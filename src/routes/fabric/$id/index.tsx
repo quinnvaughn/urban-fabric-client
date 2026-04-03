@@ -13,7 +13,10 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
-import { GettingStartedNudge, useGettingStartedNudge } from "#/features/modals/getting-started-modal"
+import {
+	GettingStartedNudge,
+	useGettingStartedNudge,
+} from "#/features/modals/getting-started-modal"
 import { MobileGate } from "#/features/ui"
 import {
 	GetFabricDocument,
@@ -72,9 +75,12 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 	const [updateMapStyle] = useMutation(UpdateFabricMapStyleDocument)
 	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
-	const { data: meData } = useCurrentUser()
-	const isOwner = meData?.me?.id === fabric.creator.id
-	const { showNudge: showGettingStartedNudge, dismissNudge: dismissGettingStartedNudge } = useGettingStartedNudge()
+	const { user } = useCurrentUser()
+	const isOwner = user?.id === fabric.creator.id
+	const {
+		showNudge: showGettingStartedNudge,
+		dismissNudge: dismissGettingStartedNudge,
+	} = useGettingStartedNudge()
 
 	useEffect(() => {
 		capture("page_viewed", { page: "editor" })
@@ -87,7 +93,10 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 
 	return (
 		<>
-			<GettingStartedNudge show={showGettingStartedNudge} onDismiss={dismissGettingStartedNudge} />
+			<GettingStartedNudge
+				show={showGettingStartedNudge}
+				onDismiss={dismissGettingStartedNudge}
+			/>
 			<FabricEditor
 				id={fabric.id}
 				title={fabric.title}
@@ -98,26 +107,42 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 					? { hasProposal: true, slug: fabric.proposal.slug }
 					: { hasProposal: false })}
 				captureOnMount={!fabric.thumbnail}
-				onTitleSave={isOwner ? async (title) => {
-					await updateTitle({
-						variables: { input: { id: fabric.id, title } },
-					})
-				} : undefined}
-				onMapStyleChange={isOwner ? (style) => {
-					updateMapStyle({
-						variables: { input: { id: fabric.id, mapStyle: style } },
-					})
-				} : undefined}
-				onViewportChange={isOwner ? async (viewport) => {
-					await syncViewport({
-						variables: { input: { id: fabric.id, ...viewport } },
-					})
-				} : undefined}
-				onThumbnail={isOwner ? async (thumbnail) => {
-					await updateThumbnail({
-						variables: { input: { id: fabric.id, thumbnail } },
-					})
-				} : undefined}
+				onTitleSave={
+					isOwner
+						? async (title) => {
+								await updateTitle({
+									variables: { input: { id: fabric.id, title } },
+								})
+							}
+						: undefined
+				}
+				onMapStyleChange={
+					isOwner
+						? (style) => {
+								updateMapStyle({
+									variables: { input: { id: fabric.id, mapStyle: style } },
+								})
+							}
+						: undefined
+				}
+				onViewportChange={
+					isOwner
+						? async (viewport) => {
+								await syncViewport({
+									variables: { input: { id: fabric.id, ...viewport } },
+								})
+							}
+						: undefined
+				}
+				onThumbnail={
+					isOwner
+						? async (thumbnail) => {
+								await updateThumbnail({
+									variables: { input: { id: fabric.id, thumbnail } },
+								})
+							}
+						: undefined
+				}
 			/>
 		</>
 	)

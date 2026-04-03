@@ -13,6 +13,9 @@ const proposalSheet = sva({
 			right: 0,
 			height: "100%",
 			maxHeight: "60dvh",
+			"&[data-fullscreen=true]": {
+				maxHeight: "100dvh",
+			},
 			display: "flex",
 			flexDirection: "column",
 			bg: "white",
@@ -72,6 +75,7 @@ interface ProposalSheetProps {
 	onOpenChange?: (open: boolean) => void
 	peek: React.ReactNode
 	children: React.ReactNode
+	fullscreen?: boolean
 }
 
 export function ProposalSheet({
@@ -79,6 +83,7 @@ export function ProposalSheet({
 	onOpenChange,
 	peek,
 	children,
+	fullscreen,
 }: ProposalSheetProps) {
 	const [openState, setOpenState] = React.useState(false)
 	const open = openProp ?? openState
@@ -108,6 +113,7 @@ export function ProposalSheet({
 			role="dialog"
 			aria-modal="true"
 			data-open={open ? "true" : "false"}
+			data-fullscreen={fullscreen ? "true" : "false"}
 			className={styles.container}
 		>
 			<button

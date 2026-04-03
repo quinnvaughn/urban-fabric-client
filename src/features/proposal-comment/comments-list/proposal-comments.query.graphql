@@ -1,0 +1,35 @@
+query ProposalComments(
+	$sortBy: CommentSortBy
+	$offset: Int
+	$limit: Int
+	$proposalSlug: String!
+) {
+	proposalComments(
+		sortBy: $sortBy
+		offset: $offset
+		limit: $limit
+		proposalSlug: $proposalSlug
+	) {
+		total
+		hasMore
+		comments {
+			...CommentCard
+		}
+	}
+}
+
+fragment CommentCard on ProposalComment {
+	id
+	editedAt
+	deletedAt
+	isLikedByMe
+	likeCount
+	locationName
+	replyCount
+	createdAt
+	body
+	user {
+		id
+		name
+	}
+}

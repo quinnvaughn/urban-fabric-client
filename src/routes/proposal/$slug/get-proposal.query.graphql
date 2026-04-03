@@ -9,6 +9,8 @@ query GetProposal($slug: String!) {
 			isLikedByMe
 			description
 			publishedAt
+			slug
+			commentCount
 			creator {
 				id
 				name

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { AuthForm } from "#/features/auth"
 import { Modal } from "#/features/ui"
+import type { AuthSource } from "#/lib/analytics"
 
 type Props = {
 	open: boolean
@@ -8,7 +9,7 @@ type Props = {
 	initialMode?: "login" | "register"
 	onAuthSuccess?: () => Promise<void> | void
 	title?: string
-	source?: "like" | "sign_in" | "save_draft" | "publish" | "nudge"
+	source?: Exclude<AuthSource, "google">
 }
 
 export function AuthModal({

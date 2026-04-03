@@ -59,7 +59,7 @@ export function EditorTopbar({
 		useFabricStore()
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const { open, current: currentModal } = useModalStore()
-	const { data: userData } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const hasElements = elements.length > 0
 	const isSaving = saveStatus === "saving" || saveStatus === "dirty"
 	const isPublishDisabled = isSaving || !hasElements
@@ -125,7 +125,7 @@ export function EditorTopbar({
 						</Button>
 					</Menu.Trigger>
 					<Menu.Content>
-						<Menu.Link to={userData?.me ? "/dashboard" : "/"}>Home</Menu.Link>
+						<Menu.Link to={user ? "/dashboard" : "/"}>Home</Menu.Link>
 						<Menu.Item
 							kbd={getFabricShortcutHint("openCommandPalette")}
 							onClick={openCommandPalette}

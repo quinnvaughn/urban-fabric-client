@@ -132,8 +132,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const isPublished = props.mode === "edit" && props.published
 
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-	const { data: meData } = useCurrentUser()
-	const creatorName = meData?.me?.name ?? ""
+	const { user } = useCurrentUser()
+	const creatorName = user?.name ?? ""
 
 	const [saveDraftMutation] = useMutation(SaveDraftProposalDocument)
 	const [publishProposalMutation] = useMutation(PublishProposalDocument)

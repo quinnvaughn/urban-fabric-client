@@ -123,6 +123,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 			<ProposalSheet
 				open={sheetOpen}
 				onOpenChange={handleSheetOpenChange}
+				fullscreen={!selectedInstance}
 				peek={
 					!selectedInstance && (
 						<>

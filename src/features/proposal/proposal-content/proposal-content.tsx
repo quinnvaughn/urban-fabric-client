@@ -18,9 +18,9 @@ import {
 import type { GetProposalQuery } from "#/graphql/generated"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
-import { LikeProposalButton } from "../like-proposal-button"
+import { CommentsPanel } from "../../proposal-comment"
 import { useProposalStore } from "../proposal-store"
-import { ShareProposalButton } from "../share-proposal-button"
+import { ProposalActionsFooter } from "./proposal-actions-footer"
 
 type Proposal = Extract<
 	GetProposalQuery["proposalBySlug"],
@@ -37,13 +37,12 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 		useProposalStore()
 
 	const hasDescription = proposal.description && proposal.description.length > 0
-
 	return (
 		<Fragment>
 			<Box
 				className={css({
 					px: "5",
-					py: "4",
+					paddingTop: "4",
 					flexShrink: 0,
 				})}
 			>
@@ -153,64 +152,72 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 					<Tabs
 						stretch
 						value={activeTab}
-						onValueChange={(value) => setActiveTab(value as "about" | "legend")}
+						onValueChange={(value) =>
+							setActiveTab(value as "about" | "legend" | "comments")
+						}
 					>
 						<Tabs.List>
 							<Tabs.Trigger value="about">About</Tabs.Trigger>
 							<Tabs.Trigger value="legend">Legend</Tabs.Trigger>
+							<Tabs.Trigger value="comments">
+								<HStack gap="1" align="center">
+									<span>Comments</span>{" "}
+									<Badge
+										size="xxs"
+										tone={activeTab === "comments" ? "brand" : "neutral"}
+									>
+										{proposal.commentCount}
+									</Badge>
+								</HStack>
+							</Tabs.Trigger>
 						</Tabs.List>
 					</Tabs>
 				</VStack>
 			</Box>
-			<Box className={css({ flex: 1, overflowY: "auto", px: "5", py: "4" })}>
-				<VStack gap="0">
-					{activeTab === "about" ? (
-						<VStack gap="2.5">
-							<Divider label="Description" />
-							<Typography.Text
-								color={hasDescription ? "stone.700" : "stone.400"}
-								size="md"
-								lineHeight="relaxed"
-								weight={hasDescription ? "normal" : "medium"}
-								fontStyle={hasDescription ? "normal" : "italic"}
-								className={css({ whiteSpace: "pre-wrap" })}
-							>
-								{hasDescription
-									? proposal.description
-									: "No description available"}
-							</Typography.Text>
-							<FabricComposition elements={elements} />
-						</VStack>
-					) : (
-						<VStack>
-							<Divider label="Element Types" />
-							{activeElementTypes.map((type) => (
-								<HStack key={type.id} gap="3">
-									<Swatch size="3.5" color={type.baseMapStyle.color} />
-									<Typography.Text size="sm" color="stone.800">
-										{type.title}
-									</Typography.Text>
-								</HStack>
-							))}
-						</VStack>
-					)}
-				</VStack>
-			</Box>
-			<Box
-				className={css({
-					flexShrink: 0,
-					borderTop: "1px solid",
-					borderTopColor: "border.subtle",
-					px: "5",
-					py: "3.5",
-					display: { base: "none", md: "flex" },
-					gap: "2",
-					alignItems: "center",
-				})}
-			>
-				<LikeProposalButton proposal={proposal} isMobile={isMobile} />
-				<ShareProposalButton proposal={proposal} />
-			</Box>
+			{activeTab === "about" ? (
+				<Fragment>
+					<VStack
+						gap="2.5"
+						className={css({ py: "4", overflowY: "auto", flex: 1, px: "5" })}
+					>
+						<Divider label="Description" />
+						<Typography.Text
+							color={hasDescription ? "stone.700" : "stone.400"}
+							size="md"
+							lineHeight="relaxed"
+							weight={hasDescription ? "normal" : "medium"}
+							fontStyle={hasDescription ? "normal" : "italic"}
+							className={css({ whiteSpace: "pre-wrap" })}
+						>
+							{hasDescription
+								? proposal.description
+								: "No description available"}
+						</Typography.Text>
+						<FabricComposition elements={elements} />
+					</VStack>
+					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
+				</Fragment>
+			) : activeTab === "legend" ? (
+				<Fragment>
+					<VStack
+						gap="2.5"
+						className={css({ py: "4", overflowY: "auto", flex: 1, px: "5" })}
+					>
+						<Divider label="Element Types" />
+						{activeElementTypes.map((type) => (
+							<HStack key={type.id} gap="3">
+								<Swatch size="3.5" color={type.baseMapStyle.color} />
+								<Typography.Text size="sm" color="stone.800">
+									{type.title}
+								</Typography.Text>
+							</HStack>
+						))}
+					</VStack>
+					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
+				</Fragment>
+			) : (
+				<CommentsPanel slug={proposal.slug} />
+			)}
 		</Fragment>
 	)
 }

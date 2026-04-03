@@ -60,9 +60,8 @@ export function PublicNavActions({
 	authenticatedAction = "dashboard",
 }: PublicNavActionsProps) {
 	const isMobile = useIsMobile()
-	const { data, loading } = useCurrentUser()
+	const { user, loading } = useCurrentUser()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
-	const user = data?.me
 	const actions = authenticatedActionConfig[authenticatedAction]
 
 	if (loading) return null

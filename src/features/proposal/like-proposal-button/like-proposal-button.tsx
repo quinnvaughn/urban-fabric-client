@@ -22,13 +22,13 @@ type Props = {
 
 export function LikeProposalButton({ isMobile, proposal }: Props) {
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
-	const { data: meData } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const { capture } = useAnalytics()
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to like this proposal",
 		"like",
 	)
-	const isOwner = meData?.me?.id === proposal.creator.id
+	const isOwner = user?.id === proposal.creator.id
 	function handleLike() {
 		requireAuth(() => {
 			if (!proposal.isLikedByMe) capture("proposal_liked")

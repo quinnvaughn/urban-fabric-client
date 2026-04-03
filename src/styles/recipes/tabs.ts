@@ -35,7 +35,7 @@ export const tabs = defineSlotRecipe({
 				color: "fg.default",
 			},
 			"&[data-state=active]": {
-				color: "fg.default",
+				color: "teal.700",
 				borderBottomColor: "brand.default",
 			},
 		},

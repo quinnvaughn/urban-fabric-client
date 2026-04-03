@@ -15,7 +15,7 @@ import { button } from "#/styles/styled-system/recipes"
 import { BackgroundGrid } from "../background-grid"
 
 export function ForbiddenView() {
-	const { data: currentUser } = useCurrentUser()
+	const { user } = useCurrentUser()
 	return (
 		<Fragment>
 			<BackgroundGrid />
@@ -144,7 +144,7 @@ export function ForbiddenView() {
 											})}
 										>
 											<Link
-												to={currentUser ? "/dashboard" : "/"}
+												to={user ? "/dashboard" : "/"}
 												className={button({
 													size: "md",
 													appearance: "solid",
@@ -159,7 +159,7 @@ export function ForbiddenView() {
 													appearance: "outline",
 													intent: "neutral",
 												})}
-												to={currentUser ? "/dashboard/explore" : "/explore"}
+												to={user ? "/dashboard/explore" : "/explore"}
 											>
 												Explore proposals
 											</Link>

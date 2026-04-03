@@ -16,7 +16,7 @@ import { SidebarLink } from "./sidebar-link"
 import { SidebarSectionLabel } from "./sidebar-section-label"
 
 export function Sidebar() {
-	const { data: meData } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 
 	return (
@@ -143,9 +143,9 @@ export function Sidebar() {
 							})}
 						>
 							<HStack gap="2.5" align="center">
-								<Avatar size="sm" name={meData?.me?.name ?? "User"} />
+								<Avatar size="sm" name={user?.name ?? "User"} />
 								<Typography.Text size="sm">
-									{meData?.me?.name ?? "User"}
+									{user?.name ?? "User"}
 								</Typography.Text>
 							</HStack>
 							<ChevronDown

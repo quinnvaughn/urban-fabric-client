@@ -12,10 +12,9 @@ export const Route = createFileRoute("/dashboard/settings/")({
 })
 
 function RouteComponent() {
-	const { data, refetch } = useCurrentUser()
-	const me = data?.me
+	const { user, refetch } = useCurrentUser()
 
-	if (!me) return null
+	if (!user) return null
 
 	async function handleUpdated() {
 		await refetch()
@@ -43,9 +42,9 @@ function RouteComponent() {
 					gap: "6",
 				})}
 			>
-				<NameSettingsForm me={me} onUpdated={handleUpdated} />
-				<EmailSettingsForm me={me} onUpdated={handleUpdated} />
-				<PasswordSettingsForm me={me} onUpdated={handleUpdated} />
+				<NameSettingsForm me={user} onUpdated={handleUpdated} />
+				<EmailSettingsForm me={user} onUpdated={handleUpdated} />
+				<PasswordSettingsForm me={user} onUpdated={handleUpdated} />
 				<DeleteAccountCard />
 			</Box>
 		</Box>

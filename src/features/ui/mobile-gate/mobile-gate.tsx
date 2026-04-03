@@ -21,7 +21,7 @@ export function MobileGate({ children, size = "sm" }: Props) {
 	const isMobile = useIsMobile(size)
 	const toast = useToast()
 	const [copyText, setCopyText] = useTransientText("Copy link", "Copied!", 2000)
-	const { data: user } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const router = useRouter()
 	const { capture } = useAnalytics()
 
@@ -109,8 +109,8 @@ export function MobileGate({ children, size = "sm" }: Props) {
 								intent: "brand",
 								size: "md",
 							})}
-							href={`mailto:${user?.me?.email ?? ""}?subject=${encodeURIComponent("Urban Fabric")}&body=${encodeURIComponent(window.location.href)}`}
-						onClick={() => capture("editor_mobile_email_sent")}
+							href={`mailto:${user?.email ?? ""}?subject=${encodeURIComponent("Urban Fabric")}&body=${encodeURIComponent(window.location.href)}`}
+							onClick={() => capture("editor_mobile_email_sent")}
 						>
 							<Mail size={12} />
 							Email me this link
@@ -125,7 +125,10 @@ export function MobileGate({ children, size = "sm" }: Props) {
 						</Button>
 						<button
 							type="button"
-							onClick={() => { capture("editor_mobile_go_back"); router.history.back() }}
+							onClick={() => {
+								capture("editor_mobile_go_back")
+								router.history.back()
+							}}
 							className={css({
 								color: "stone.700",
 								fontSize: "sm",

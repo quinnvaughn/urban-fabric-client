@@ -34,12 +34,12 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 		? (data as ProposalCardFragment)
 		: proposalRef
 	const [toggleLike] = useMutation(ToggleProposalLikeDocument)
-	const { data: meData } = useCurrentUser()
+	const { user } = useCurrentUser()
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to like this proposal",
 		"like",
 	)
-	const isOwner = meData?.me?.id === proposal.creator.id
+	const isOwner = user?.id === proposal.creator.id
 
 	function handleLike() {
 		requireAuth(() => {

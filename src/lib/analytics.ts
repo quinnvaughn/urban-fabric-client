@@ -1,6 +1,15 @@
 import { usePostHog } from "@posthog/react"
 import { useCallback } from "react"
 
+export type AuthSource =
+	| "comment"
+	| "like"
+	| "sign_in"
+	| "save_draft"
+	| "publish"
+	| "google"
+	| "nudge"
+
 // ── Event map ─────────────────────────────────────────────────────────────────
 
 type EventMap = {
@@ -16,10 +25,8 @@ type EventMap = {
 			| "my_proposals"
 			| "my_fabrics"
 	}
-	signup_started: { source: "like" | "sign_in" | "save_draft" | "publish" | "nudge" }
-	signup_completed: {
-		source: "like" | "sign_in" | "save_draft" | "publish" | "google" | "nudge"
-	}
+	signup_started: { source: Exclude<AuthSource, "google"> }
+	signup_completed: { source: AuthSource }
 	login_completed: undefined
 
 	// Core funnel
