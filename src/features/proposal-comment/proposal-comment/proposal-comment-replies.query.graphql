@@ -1,0 +1,5 @@
+query ProposalCommentReplies($parentId: ID!) {
+	proposalCommentReplies(parentId: $parentId) {
+		...CommentCard
+	}
+}

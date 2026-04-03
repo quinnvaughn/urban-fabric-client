@@ -5,11 +5,13 @@ import {
 	syncElementsToMap,
 } from "#/features/fabric/elements-layer/map-elements-utils"
 import { useMap } from "#/features/fabric/fabric-map"
+import { useCommentComposerStore } from "#/features/proposal-comment"
 import { useProposalStore } from "../proposal-store"
 
 export function ProposalElementsLayer() {
 	const map = useMap()
 	const { elements, setSelectedInstanceId } = useProposalStore()
+	const { isPickingLocation } = useCommentComposerStore()
 	const elementLayerIds = useRef<Set<string>>(new Set())
 
 	useEffect(() => {
@@ -29,6 +31,8 @@ export function ProposalElementsLayer() {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
 		const handleClick = (e: maplibregl.MapMouseEvent) => {
+			if (isPickingLocation) return
+
 			const layerIds = [...elementLayerIds.current].map((id) =>
 				elementsLayerIds.mainLayerId(id),
 			)
@@ -46,6 +50,11 @@ export function ProposalElementsLayer() {
 		}
 
 		const handleMouseMove = (e: maplibregl.MapMouseEvent) => {
+			if (isPickingLocation) {
+				map.getCanvas().style.cursor = "crosshair"
+				return
+			}
+
 			const layerIds = [...elementLayerIds.current].map((id) =>
 				elementsLayerIds.mainLayerId(id),
 			)
@@ -60,7 +69,7 @@ export function ProposalElementsLayer() {
 			map.off("mousemove", handleMouseMove)
 			map.getCanvas().style.cursor = ""
 		}
-	}, [map])
+	}, [isPickingLocation, map])
 
 	return null
 }

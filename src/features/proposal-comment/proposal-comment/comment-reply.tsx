@@ -1,26 +1,20 @@
-import { ChevronRight, ChevronUp, Heart } from "lucide-react"
+import { Heart } from "lucide-react"
 import { DateTime } from "luxon"
-import { Suspense, useState } from "react"
-import { match } from "ts-pattern"
 import { Avatar, Box, Button, HStack, Typography, VStack } from "#/features/ui"
 import type { CommentCardFragment } from "#/graphql/generated"
-import { singularOrPlural } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 import { useCommentComposerStore } from "../comment-composer-store"
-import { ProposalCommentReplies } from "./proposal-comment-replies"
 
 type Props = {
-	comment: CommentCardFragment
+	reply: CommentCardFragment
 }
 
-export function ProposalComment({ comment }: Props) {
-	const [showReplies, setShowReplies] = useState(false)
+export function CommentReply({ reply }: Props) {
 	const { setReplyTarget } = useCommentComposerStore()
 	return (
 		<Box
 			className={css({
-				px: "5",
-				py: "3.5",
+				py: "2.5",
 				borderBottom: "1px solid",
 				borderBottomColor: {
 					base: "border.subtle",
@@ -31,7 +25,7 @@ export function ProposalComment({ comment }: Props) {
 		>
 			<VStack gap="2">
 				<HStack gap="2" align="start">
-					<Avatar name={comment.user.name} size="xs" />
+					<Avatar name={reply.user.name} size="xs" />
 					<Box
 						className={css({
 							flex: 1,
@@ -42,10 +36,10 @@ export function ProposalComment({ comment }: Props) {
 						})}
 					>
 						<Typography.Text size="sm" weight="semibold" color="stone.800">
-							{comment.user.name}
+							{reply.user.name}
 						</Typography.Text>
 						<Typography.Text size="xs" color="stone.400">
-							{DateTime.fromISO(comment.createdAt).toRelative()}
+							{DateTime.fromISO(reply.createdAt).toRelative()}
 						</Typography.Text>
 					</Box>
 				</HStack>
@@ -56,13 +50,13 @@ export function ProposalComment({ comment }: Props) {
 						lineHeight="relaxed"
 						whiteSpace="pre-wrap"
 					>
-						{comment.body}
+						{reply.body}
 					</Typography.Text>
 				</Box>
 				<HStack gap="3" align="center" className={css({ paddingLeft: "8" })}>
 					<Button size="xs" appearance="ghost">
 						<Heart size={12} />
-						<span>{comment.likeCount}</span>
+						<span>{reply.likeCount}</span>
 					</Button>
 					<Button
 						size="xs"
@@ -70,45 +64,14 @@ export function ProposalComment({ comment }: Props) {
 						intent="neutral"
 						onClick={() =>
 							setReplyTarget({
-								commentId: comment.id,
-								displayName: comment.user.name,
+								commentId: reply.id,
+								displayName: reply.user.name,
 							})
 						}
 					>
 						Reply
 					</Button>
-					{comment.replyCount > 0 && (
-						<Button
-							size="xs"
-							type="button"
-							appearance="ghost"
-							onClick={() => setShowReplies((prev) => !prev)}
-						>
-							{showReplies ? (
-								<ChevronUp size={12} />
-							) : (
-								<ChevronRight size={12} />
-							)}
-							{match(showReplies)
-								.with(
-									true,
-									() =>
-										`Hide ${singularOrPlural("reply", "replies", comment.replyCount)}`,
-								)
-								.with(
-									false,
-									() =>
-										`${comment.replyCount} ${singularOrPlural("reply", "replies", comment.replyCount)}`,
-								)
-								.exhaustive()}
-						</Button>
-					)}
 				</HStack>
-				{showReplies && (
-					<Suspense fallback={<div>Loading replies...</div>}>
-						<ProposalCommentReplies commentId={comment.id} />
-					</Suspense>
-				)}
 			</VStack>
 		</Box>
 	)

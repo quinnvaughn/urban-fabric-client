@@ -46,6 +46,12 @@ const setPendingLocation = (pendingLocation: PendingLocation | null) =>
 		isPickingLocation: false,
 	}))
 
+const clearPendingLocation = () =>
+	commentComposerStore.setState((state) => ({
+		...state,
+		pendingLocation: null,
+	}))
+
 const cancelPickingLocation = () =>
 	commentComposerStore.setState((state) => ({
 		...state,
@@ -64,6 +70,7 @@ export function useCommentComposerStore() {
 		setDraftBody,
 		startPickingLocation,
 		setPendingLocation,
+		clearPendingLocation,
 		cancelPickingLocation,
 		clearCommentComposer,
 	}

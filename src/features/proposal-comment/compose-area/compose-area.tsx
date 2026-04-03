@@ -1,27 +1,74 @@
-import { Avatar, Box, HStack, Typography, VStack } from "#/features/ui"
+import { CornerUpLeft, X } from "lucide-react"
+import { Avatar, Box, Button, HStack, Typography, VStack } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
-import { css } from "#/styles/styled-system/css"
+import { sva } from "#/styles/styled-system/css"
+import { useCommentComposerStore } from "../comment-composer-store"
 import { CommentComposer } from "./composer"
 
-type Props = {}
+const composer = sva({
+	slots: ["replyContext", "container", "replyText"],
+	base: {
+		container: {
+			flexShrink: 0,
+			paddingTop: "3",
+			px: "4",
+			paddingBottom: "3.5",
+			borderTop: "1px solid",
+			borderTopColor: "border.subtle",
+			background: "stone.50",
+		},
+		replyContext: {
+			display: "flex",
+			alignItems: "center",
+			gap: "1.5",
+			px: "2.5",
+			py: "1.5",
+			bg: "teal.50",
+			border: "1px solid",
+			borderColor: "teal.200",
+			borderRadius: "md",
+			fontSize: "xs",
+			color: "teal.700",
+		},
+		replyText: {
+			fontWeight: "semibold",
+			flex: 1,
+		},
+	},
+})
 
-export function ComposeArea(_: Props) {
+export function ComposeArea() {
 	const { user } = useCurrentUser()
+	const { replyTarget, setReplyTarget } = useCommentComposerStore()
+	const slots = composer()
+
+	function onCancelReply() {
+		setReplyTarget(null)
+	}
+
 	return (
-		<Box
-			className={css({
-				flexShrink: 0,
-				paddingTop: "3",
-				px: "4",
-				paddingBottom: "3.5",
-				borderTop: "1px solid",
-				borderTopColor: "border.subtle",
-				background: "stone.50",
-			})}
-			aria-label="Compose area"
-			role="region"
-		>
+		<Box className={slots.container} aria-label="Compose area" role="region">
 			<VStack gap="2">
+				{replyTarget && (
+					<div className={slots.replyContext}>
+						<CornerUpLeft
+							size={11}
+							strokeWidth={"2.5px"}
+							strokeLinecap="round"
+						/>
+						<span className={slots.replyText}>
+							Replying to {replyTarget.displayName}
+						</span>
+						<Button
+							size="xs"
+							onClick={onCancelReply}
+							appearance="ghost"
+							aria-label="Cancel reply"
+						>
+							<X size={12} />
+						</Button>
+					</div>
+				)}
 				<HStack gap="2" align="center">
 					<Avatar
 						name={user?.name || ""}

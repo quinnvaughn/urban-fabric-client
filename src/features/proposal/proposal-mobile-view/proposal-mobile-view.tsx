@@ -3,6 +3,10 @@ import { useEffect, useRef, useState } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import { PublicNavActions } from "#/features/navigation"
+import {
+	ProposalCommentLocationPicker,
+	useCommentComposerStore,
+} from "#/features/proposal-comment"
 import { Box, HStack, Logo, Typography } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
@@ -22,8 +26,10 @@ type Proposal = Extract<
 
 export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 	const { selectedInstance, setSelectedInstanceId } = useProposalStore()
+	const { isPickingLocation } = useCommentComposerStore()
 	const [sheetOpen, setSheetOpen] = useState(false)
 	const sheetOpenBeforeSelection = useRef(false)
+	const wasPickingLocation = useRef(false)
 
 	// When an element is selected, save sheet state and open it.
 	// When deselected, restore to whatever it was before.
@@ -36,6 +42,21 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 			setSheetOpen(sheetOpenBeforeSelection.current)
 		}
 	}, [selectedInstance?.id])
+
+	useEffect(() => {
+		if (selectedInstance) return
+
+		if (isPickingLocation) {
+			wasPickingLocation.current = true
+			setSheetOpen(false)
+			return
+		}
+
+		if (wasPickingLocation.current) {
+			wasPickingLocation.current = false
+			setSheetOpen(true)
+		}
+	}, [isPickingLocation, selectedInstance])
 
 	// When user manually closes the sheet, clear selection and mark
 	// pre-selection state as closed so it doesn't reopen on deselect.
@@ -95,6 +116,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
 				>
+					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
 					{/*
 					 * Controls sit above the peek height.
@@ -121,9 +143,9 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 
 			{/* Sheet — overlays map, shows proposal details and selected element details */}
 			<ProposalSheet
-				open={sheetOpen}
+				open={isPickingLocation ? false : sheetOpen}
 				onOpenChange={handleSheetOpenChange}
-				fullscreen={!selectedInstance}
+				fullscreen={!selectedInstance && !isPickingLocation}
 				peek={
 					!selectedInstance && (
 						<>

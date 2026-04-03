@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Hamburger, MenuIcon, XIcon } from "lucide-react"
+import { MenuIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 import { Avatar, HStack, Menu } from "#/features/ui"
 import { useCurrentUser } from "#/lib/graphql"
@@ -71,7 +71,7 @@ export function PublicNavActions({
 			return (
 				<Menu placement="bottom-end">
 					<Menu.Trigger>
-						<Hamburger size={20} color="var(--colors-stone-900)" />
+						<MenuIcon size={20} color="var(--colors-stone-900)" />
 					</Menu.Trigger>
 				</Menu>
 			)
