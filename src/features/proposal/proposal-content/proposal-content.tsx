@@ -9,7 +9,6 @@ import {
 	Button,
 	Divider,
 	HStack,
-	Swatch,
 	Tabs,
 	Tooltip,
 	Typography,
@@ -33,8 +32,7 @@ type Props = {
 }
 
 export function ProposalContent({ proposal, isMobile }: Props) {
-	const { togglePanel, setActiveTab, activeTab, activeElementTypes, elements } =
-		useProposalStore()
+	const { togglePanel, setActiveTab, activeTab, elements } = useProposalStore()
 
 	const hasDescription = proposal.description && proposal.description.length > 0
 	return (
@@ -153,12 +151,11 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 						stretch
 						value={activeTab}
 						onValueChange={(value) =>
-							setActiveTab(value as "about" | "legend" | "comments")
+							setActiveTab(value as "about" | "comments")
 						}
 					>
 						<Tabs.List>
 							<Tabs.Trigger value="about">About</Tabs.Trigger>
-							<Tabs.Trigger value="legend">Legend</Tabs.Trigger>
 							<Tabs.Trigger value="comments">
 								<HStack gap="1" align="center">
 									<span>Comments</span>{" "}
@@ -194,24 +191,6 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 								: "No description available"}
 						</Typography.Text>
 						<FabricComposition elements={elements} />
-					</VStack>
-					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
-				</Fragment>
-			) : activeTab === "legend" ? (
-				<Fragment>
-					<VStack
-						gap="2.5"
-						className={css({ py: "4", overflowY: "auto", flex: 1, px: "5" })}
-					>
-						<Divider label="Element Types" />
-						{activeElementTypes.map((type) => (
-							<HStack key={type.id} gap="3">
-								<Swatch size="3.5" color={type.baseMapStyle.color} />
-								<Typography.Text size="sm" color="stone.800">
-									{type.title}
-								</Typography.Text>
-							</HStack>
-						))}
 					</VStack>
 					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
 				</Fragment>

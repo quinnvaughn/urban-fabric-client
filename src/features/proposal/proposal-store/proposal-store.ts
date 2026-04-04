@@ -7,7 +7,7 @@ import type {
 
 const panelStore = createStore({
 	isPanelOpen: true,
-	activeTab: "about" as "about" | "legend" | "comments",
+	activeTab: "about" as "about" | "comments",
 })
 
 const elementsStore = createStore<ElementInstance[]>([])
@@ -55,7 +55,7 @@ const openPanel = () =>
 		isPanelOpen: true,
 	}))
 
-const setActiveTab = (tab: "about" | "legend" | "comments") =>
+const setActiveTab = (tab: "about" | "comments") =>
 	panelStore.setState((s) => ({ ...s, activeTab: tab }))
 
 const initElements = (elements: ElementInstance[]) =>
