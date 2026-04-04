@@ -46,6 +46,11 @@ type EventMap = {
 	// Proposal
 	proposal_viewed: { proposal_id: string; category: string }
 	proposal_liked: undefined
+	comment_created: {
+		proposal_slug: string
+		type: "comment" | "reply"
+		has_location: boolean
+	}
 	proposal_share_modal_opened: { source: string }
 	proposal_shared: { method: string; source: string }
 	proposal_share_modal_dismissed: { source: string }

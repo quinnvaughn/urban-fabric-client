@@ -13,6 +13,7 @@ import {
 	ProposalCommentRepliesDocument,
 	ProposalCommentsDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { useCurrentUser, useRequireAuth } from "#/lib/graphql"
 import { sva } from "@/styles/styled-system/css"
 import { useCommentComposerStore } from "../comment-composer-store"
@@ -102,6 +103,7 @@ type Props = {
 
 export function CommentComposer({ slug }: Props) {
 	const { user } = useCurrentUser()
+	const { capture } = useAnalytics()
 	const {
 		replyTarget,
 		draftBody,
@@ -241,6 +243,11 @@ export function CommentComposer({ slug }: Props) {
 		})
 		const createdComment = data?.createProposalComment
 		if (createdComment?.__typename === "ProposalComment") {
+			capture("comment_created", {
+				proposal_slug: slug,
+				type: createdComment.parent ? "reply" : "comment",
+				has_location: Boolean(createdComment.location),
+			})
 			setPendingScrollTarget({
 				commentId: createdComment.id,
 				parentId: createdComment.parent?.id,
