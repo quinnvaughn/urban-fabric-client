@@ -35,7 +35,7 @@ export function ExploreProposals({
 	const [selectedCategories, setSelectedCategories] = useState<
 		ProposalCategory[]
 	>([])
-	const [sortBy, setSortBy] = useState(ExploreSortBy.MostLiked)
+	const [sortBy, setSortBy] = useState(ExploreSortBy.Hottest)
 	const [selectedLocation, setSelectedLocation] = useState<{
 		lat: number
 		lng: number

@@ -1,4 +1,4 @@
-import { Box, Button, FilterBar, HStack, Menu, Segmented } from "#/features/ui"
+import { Box, Button, FilterBar, Menu } from "#/features/ui"
 import { ExploreSortBy, ProposalCategory } from "#/graphql/generated"
 import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
@@ -33,6 +33,15 @@ export function ExploreFilterBar({
 	focusLat,
 	focusLng,
 }: ExploreFilterBarProps) {
+	const sortLabel =
+		sortBy === ExploreSortBy.Hottest
+			? "Hottest"
+			: sortBy === ExploreSortBy.MostLiked
+				? "Most liked"
+				: sortBy === ExploreSortBy.MostViewed
+					? "Most viewed"
+					: "Newest"
+
 	return (
 		<Box
 			className={css({
@@ -109,30 +118,41 @@ export function ExploreFilterBar({
 								</Button>
 							)}
 						</Box>
-						<Segmented
-							variant="pill"
-							value={sortBy}
-							onChange={(value) => onSortByChange(value as ExploreSortBy)}
-						>
-							<HStack
-								gap="2"
-								align="center"
-								className={css({ whiteSpace: "nowrap" })}
-							>
-								<Segmented.Legend>Sort By</Segmented.Legend>
-								<Segmented.Group>
-									<Segmented.Option value={ExploreSortBy.MostLiked}>
-										Most liked
-									</Segmented.Option>
-									<Segmented.Option value={ExploreSortBy.MostViewed}>
-										Most viewed
-									</Segmented.Option>
-									<Segmented.Option value={ExploreSortBy.Recent}>
-										Newest
-									</Segmented.Option>
-								</Segmented.Group>
-							</HStack>
-						</Segmented>
+						<Menu placement="bottom-end">
+							<Menu.Trigger>
+								<Menu.FilterTrigger>Sort · {sortLabel}</Menu.FilterTrigger>
+							</Menu.Trigger>
+							<Menu.Content size="sm">
+								<Menu.CheckItem
+									checked={sortBy === ExploreSortBy.Hottest}
+									onCheckedChange={() => onSortByChange(ExploreSortBy.Hottest)}
+								>
+									Hottest
+								</Menu.CheckItem>
+								<Menu.CheckItem
+									checked={sortBy === ExploreSortBy.MostLiked}
+									onCheckedChange={() =>
+										onSortByChange(ExploreSortBy.MostLiked)
+									}
+								>
+									Most liked
+								</Menu.CheckItem>
+								<Menu.CheckItem
+									checked={sortBy === ExploreSortBy.MostViewed}
+									onCheckedChange={() =>
+										onSortByChange(ExploreSortBy.MostViewed)
+									}
+								>
+									Most viewed
+								</Menu.CheckItem>
+								<Menu.CheckItem
+									checked={sortBy === ExploreSortBy.Recent}
+									onCheckedChange={() => onSortByChange(ExploreSortBy.Recent)}
+								>
+									Newest
+								</Menu.CheckItem>
+							</Menu.Content>
+						</Menu>
 					</Box>
 				</FilterBar.Filters>
 			</FilterBar>

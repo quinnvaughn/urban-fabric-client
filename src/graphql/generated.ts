@@ -84,8 +84,8 @@ export type CreateProposalCommentResult = NotFoundError | ProposalComment | Unau
 export type DashboardStats = {
   __typename: 'DashboardStats';
   fabricCount: Scalars['Int']['output'];
-  proposalCount: Scalars['Int']['output'];
   proposalCommentsDelta: Scalars['Int']['output'];
+  proposalCount: Scalars['Int']['output'];
   proposalLikesDelta: Scalars['Int']['output'];
   proposalViewsDelta: Scalars['Int']['output'];
   totalProposalComments: Scalars['Int']['output'];
@@ -145,6 +145,7 @@ export type ExploreProposalsPayload = {
 };
 
 export enum ExploreSortBy {
+  Hottest = 'HOTTEST',
   MostLiked = 'MOST_LIKED',
   MostViewed = 'MOST_VIEWED',
   Recent = 'RECENT'

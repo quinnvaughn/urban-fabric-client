@@ -12,7 +12,7 @@ export const Route = createFileRoute("/dashboard/explore")({
 		const exploreProposalsQuery = context.preloadQuery(
 			ExploreProposalsDocument,
 			{
-				variables: { sortBy: ExploreSortBy.MostLiked, limit: 12, offset: 0 },
+				variables: { sortBy: ExploreSortBy.Hottest, limit: 12, offset: 0 },
 			},
 		)
 		const ipLocation = await getLocationFromIp()

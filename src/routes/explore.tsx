@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { ExploreProposals } from "#/features/explore"
 import { Navbar } from "#/features/navigation"
-import { ExploreProposalsDocument } from "#/graphql/generated"
+import { ExploreProposalsDocument, ExploreSortBy } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
 import { getLocationFromIp } from "#/lib/geo"
 import { css } from "#/styles/styled-system/css"
@@ -11,7 +11,12 @@ import { css } from "#/styles/styled-system/css"
 export const Route = createFileRoute("/explore")({
 	component: RouteComponent,
 	loader: async ({ context }) => {
-		const exploreProposalsQuery = context.preloadQuery(ExploreProposalsDocument)
+		const exploreProposalsQuery = context.preloadQuery(
+			ExploreProposalsDocument,
+			{
+				variables: { sortBy: ExploreSortBy.Hottest, limit: 12, offset: 0 },
+			},
+		)
 		const ipLocation = await getLocationFromIp()
 		return { exploreProposalsQuery, ipLocation }
 	},
