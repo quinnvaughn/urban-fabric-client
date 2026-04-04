@@ -1,6 +1,6 @@
 import { useFragment, useMutation } from "@apollo/client/react"
 import { Link } from "@tanstack/react-router"
-import { Eye, Heart, MapPin } from "lucide-react"
+import { Eye, Heart, MapPin, MessageSquare } from "lucide-react"
 import { DateTime } from "luxon"
 import {
 	Avatar,
@@ -142,17 +142,23 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 			</Card.Body>
 			<Card.Footer>
 				<HStack gap="4" justify="space-between" className={css({ w: "full" })}>
-					<HStack
-						gap="1"
-						align="center"
-						className={css({ color: "stone.400" })}
-					>
-						<Eye size={12} />
-						<Typography.Text size="sm" color="stone.400">
-							{new Intl.NumberFormat("en-US", { notation: "compact" }).format(
-								proposal.viewCount,
-							)}
-						</Typography.Text>
+					<HStack gap="4" align="center" className={css({ color: "stone.400" })}>
+						<HStack gap="1" align="center">
+							<Eye size={12} />
+							<Typography.Text size="sm" color="stone.400">
+								{new Intl.NumberFormat("en-US", {
+									notation: "compact",
+								}).format(proposal.viewCount)}
+							</Typography.Text>
+						</HStack>
+						<HStack gap="1" align="center">
+							<MessageSquare size={12} />
+							<Typography.Text size="sm" color="stone.400">
+								{new Intl.NumberFormat("en-US", {
+									notation: "compact",
+								}).format(proposal.commentCount)}
+							</Typography.Text>
+						</HStack>
 					</HStack>
 					<Button
 						type="button"

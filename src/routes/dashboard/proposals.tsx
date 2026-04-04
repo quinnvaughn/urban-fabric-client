@@ -189,6 +189,7 @@ function ProposalsContent({ myProposals }: { myProposals: MyProposalsPayload }) 
 								title={proposal.title}
 								isPublished={proposal.isPublished}
 								views={proposal.viewCount}
+								comments={proposal.commentCount}
 								likes={proposal.likeCount}
 								slug={proposal.slug}
 								location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}

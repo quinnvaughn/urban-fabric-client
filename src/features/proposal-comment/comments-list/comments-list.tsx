@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@apollo/client/react"
+import { useTransition } from "react"
 import { match } from "ts-pattern"
-import { VStack } from "#/features/ui"
+import { LoadMore, VStack } from "#/features/ui"
 import {
 	type CommentSortBy,
 	ProposalCommentsDocument,
@@ -14,25 +15,54 @@ type Props = {
 	sort: CommentSortBy
 }
 
+const COMMENTS_PAGE_SIZE = 20
+
 export function CommentsList({ slug, sort }: Props) {
-	const { data } = useSuspenseQuery(ProposalCommentsDocument, {
+	const [isPending, startTransition] = useTransition()
+	const { data, fetchMore } = useSuspenseQuery(ProposalCommentsDocument, {
 		variables: {
 			proposalSlug: slug,
 			sortBy: sort,
-			limit: 100,
+			offset: 0,
+			limit: COMMENTS_PAGE_SIZE,
 		},
 	})
 
-	return match(data.proposalComments.comments)
+	const { comments, total, hasMore } = data.proposalComments
+
+	function handleLoadMore() {
+		if (isPending || !hasMore) return
+
+		startTransition(() => {
+			void fetchMore({
+				variables: {
+					proposalSlug: slug,
+					sortBy: sort,
+					offset: comments.length,
+					limit: COMMENTS_PAGE_SIZE,
+				},
+			})
+		})
+	}
+
+	return match(comments)
 		.when(
-			(comments) => comments.length === 0,
+			(items) => items.length === 0,
 			() => <CommentsEmptyState />,
 		)
-		.otherwise((comments) => (
-			<VStack gap="0" className={css({ overflowY: "auto", flex: 1 })}>
-				{comments.map((comment) => (
+		.otherwise((items) => (
+			<VStack gap="0" className={css({ overflowY: "auto", flex: 1, minH: 0 })}>
+				{items.map((comment) => (
 					<ProposalComment key={comment.id} comment={comment} slug={slug} />
 				))}
+				<LoadMore
+					total={total}
+					showing={items.length}
+					hasMore={hasMore}
+					loading={isPending}
+					onLoadMore={handleLoadMore}
+					className={css({ paddingTop: "4", paddingBottom: "6" })}
+				/>
 			</VStack>
 		))
 }

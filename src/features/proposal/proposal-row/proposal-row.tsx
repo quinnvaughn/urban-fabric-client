@@ -30,6 +30,7 @@ type Props = {
 	location: string
 	date: string
 	views?: number
+	comments?: number
 	likes: number
 	slug: string
 }
@@ -82,6 +83,7 @@ export function ProposalRow({
 	location,
 	date,
 	views,
+	comments,
 	likes,
 	slug,
 }: Props) {
@@ -223,6 +225,7 @@ export function ProposalRow({
 				})}
 			>
 				<Stat label="Views" value={views} isPublished={isPublished} />
+				<Stat label="Comments" value={comments} isPublished={isPublished} />
 				<Stat label="Likes" value={likes} isPublished={isPublished} />
 			</Box>
 			<Box

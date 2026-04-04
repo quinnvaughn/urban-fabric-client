@@ -34,6 +34,7 @@ export function ProposalComment({ comment, slug }: Props) {
 	const { pendingScrollTarget, setReplyTarget, clearPendingScrollTarget } =
 		useCommentComposerStore()
 	const isDeleted = Boolean(comment.deletedAt)
+	const isEdited = Boolean(comment.editedAt)
 
 	useEffect(() => {
 		if (pendingScrollTarget?.parentId === comment.id) {
@@ -82,10 +83,7 @@ export function ProposalComment({ comment, slug }: Props) {
 				px: "5",
 				py: "3.5",
 				borderBottom: "1px solid",
-				borderBottomColor: {
-					base: "border.subtle",
-					_last: "transparent",
-				},
+				borderBottomColor: "border.subtle",
 				backgroundColor: isFreshlyAdded ? "teal.50" : "transparent",
 				transition: "background-color 1.8s ease",
 			})}
@@ -106,13 +104,16 @@ export function ProposalComment({ comment, slug }: Props) {
 							<Typography.Text size="sm" weight="semibold" color="stone.800">
 								{comment.user.name}
 							</Typography.Text>
-							<Typography.Text
-								size="xs"
-								color="stone.400"
-								className={css({ flex: 1 })}
-							>
-								{DateTime.fromISO(comment.createdAt).toRelative()}
-							</Typography.Text>
+							<HStack gap="1.5" className={css({ flex: 1 })}>
+								<Typography.Text size="xs" color="stone.400">
+									{DateTime.fromISO(comment.createdAt).toRelative()}
+								</Typography.Text>
+								{!isDeleted && isEdited && (
+									<Typography.Text size="xs" color="stone.400">
+										(edited)
+									</Typography.Text>
+								)}
+							</HStack>
 							{!isDeleted && comment.user.id === user?.id && (
 								<CommentActions
 									onEdit={() =>

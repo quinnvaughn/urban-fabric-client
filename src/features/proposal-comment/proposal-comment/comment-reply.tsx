@@ -28,6 +28,7 @@ export function CommentReply({ reply }: Props) {
 	const deleteProposalComment = useDeleteProposalComment()
 	const { user } = useCurrentUser()
 	const isDeleted = Boolean(reply.deletedAt)
+	const isEdited = Boolean(reply.editedAt)
 
 	useEffect(() => {
 		if (pendingScrollTarget?.commentId !== reply.id) return
@@ -93,13 +94,16 @@ export function CommentReply({ reply }: Props) {
 							<Typography.Text size="sm" weight="semibold" color="stone.800">
 								{reply.user.name}
 							</Typography.Text>
-							<Typography.Text
-								size="xs"
-								color="stone.400"
-								className={css({ flex: 1 })}
-							>
-								{DateTime.fromISO(reply.createdAt).toRelative()}
-							</Typography.Text>
+							<HStack gap="1.5" className={css({ flex: 1 })}>
+								<Typography.Text size="xs" color="stone.400">
+									{DateTime.fromISO(reply.createdAt).toRelative()}
+								</Typography.Text>
+								{!isDeleted && isEdited && (
+									<Typography.Text size="xs" color="stone.400">
+										(edited)
+									</Typography.Text>
+								)}
+							</HStack>
 							{!isDeleted && reply.user.id === user?.id && (
 								<CommentActions
 									onEdit={() =>

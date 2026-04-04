@@ -5,8 +5,10 @@ query MyDashboardStats {
 			proposalCount
 			proposalLikesDelta
 			proposalViewsDelta
+			proposalCommentsDelta
 			totalProposalLikes
 			totalProposalViews
+			totalProposalComments
 			unpublishedProposalCount
 		}
 		... on UnauthorizedError {

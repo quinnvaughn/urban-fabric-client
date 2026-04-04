@@ -30,6 +30,7 @@ fragment ProposalCard on Proposal {
 	id
 	title
 	viewCount
+	commentCount
 	slug
 	likeCount
 	isLikedByMe

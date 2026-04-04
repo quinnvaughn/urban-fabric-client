@@ -1,7 +1,7 @@
 import { Button } from "#/features/ui/button"
 import { VStack } from "#/features/ui/layout"
 import { Typography } from "#/features/ui/typography"
-import { css } from "#/styles/styled-system/css"
+import { css, cx } from "#/styles/styled-system/css"
 
 type LoadMoreProps = {
 	total: number
@@ -11,6 +11,7 @@ type LoadMoreProps = {
 	onLoadMore: () => void
 	emptyLabel?: string
 	hideEmpty?: boolean
+	className?: string
 }
 
 export function LoadMore({
@@ -21,6 +22,7 @@ export function LoadMore({
 	onLoadMore,
 	emptyLabel = "No results",
 	hideEmpty = false,
+	className,
 }: LoadMoreProps) {
 	if (hideEmpty && total === 0) return null
 
@@ -35,7 +37,7 @@ export function LoadMore({
 			id="load-more"
 			align="center"
 			gap="4"
-			className={css({ paddingTop: "8" })}
+			className={cx(css({ paddingTop: "8" }), className)}
 		>
 			<Typography.Text color="stone.400" size="sm">
 				{label}

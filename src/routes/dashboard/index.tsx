@@ -150,6 +150,14 @@ function DashboardContent({
 								),
 							},
 							{
+								label: "comments",
+								value: dashboardStats.totalProposalComments,
+								delta: deltaText(
+									dashboardStats.proposalCommentsDelta,
+									`^ ${dashboardStats.proposalCommentsDelta} this week`,
+								),
+							},
+							{
 								label: "likes",
 								value: dashboardStats.totalProposalLikes,
 								delta: deltaText(
@@ -186,6 +194,7 @@ function DashboardContent({
 										isPublished={proposal.isPublished}
 										location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
 										views={proposal.viewCount}
+										comments={proposal.commentCount}
 										likes={proposal.likeCount}
 										slug={proposal.slug}
 										mapImage={proposal.snapshotThumbnail}

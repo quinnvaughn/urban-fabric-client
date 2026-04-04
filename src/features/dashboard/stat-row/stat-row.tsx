@@ -7,7 +7,7 @@ type Props = {
 
 export function StatRow({ stats }: Props) {
 	return (
-		<Grid gap="3" cols={4}>
+		<Grid gap="3" cols={{ base: 2, md: 3, xl: 5 }}>
 			{stats.map((stat) => (
 				<StatCard key={stat.label} {...stat} />
 			))}
