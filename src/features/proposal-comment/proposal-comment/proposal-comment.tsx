@@ -9,6 +9,7 @@ import { singularOrPlural } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 import { useCommentComposerStore } from "../comment-composer-store"
 import { useCommentEditStore } from "../comment-edit-store"
+import { CommentsLoadingState } from "../comments-panel/comments-loading-state"
 import { CommentActions } from "./comment-actions"
 import { EditableCommentBody } from "./editable-comment-body"
 import { LikeCommentButton } from "./like-comment-button"
@@ -201,7 +202,7 @@ export function ProposalComment({ comment, slug }: Props) {
 					)}
 				</HStack>
 				{showReplies && (
-					<Suspense fallback={<div>Loading replies...</div>}>
+					<Suspense fallback={<CommentsLoadingState count={2} isReplies />}>
 						<ProposalCommentReplies commentId={comment.id} />
 					</Suspense>
 				)}

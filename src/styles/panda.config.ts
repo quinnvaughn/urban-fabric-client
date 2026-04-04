@@ -1524,6 +1524,14 @@ export default defineConfig({
 			"2xl": "1536px",
 		},
 		keyframes: {
+			shimmer: {
+				"0%": {
+					backgroundPosition: "-600px 0",
+				},
+				"100%": {
+					backgroundPosition: "600px 0",
+				},
+			},
 			fadeInLeft: {
 				"0%": {
 					opacity: "0",

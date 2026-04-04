@@ -4,6 +4,7 @@ import { CommentSortBy } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 import { CommentsList } from "../comments-list"
 import { ComposeArea } from "../compose-area"
+import { CommentsLoadingState } from "./comments-loading-state"
 
 type Props = {
 	slug: string
@@ -41,9 +42,7 @@ export function CommentsPanel({ slug }: Props) {
 					</Menu.Content>
 				</Menu>
 			</HStack>
-			<Suspense
-				fallback={<div className={css({ flex: 1 })}>Loading comments...</div>}
-			>
+			<Suspense fallback={<CommentsLoadingState />}>
 				<CommentsList slug={slug} sort={sort} />
 			</Suspense>
 			<ComposeArea slug={slug} />
