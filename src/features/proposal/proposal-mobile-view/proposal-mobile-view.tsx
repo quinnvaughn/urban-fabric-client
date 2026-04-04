@@ -4,8 +4,8 @@ import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import { PublicNavActions } from "#/features/navigation"
 import {
-	ProposalCommentLocationPicker,
 	ProposalCommentLocationHighlight,
+	ProposalCommentLocationPicker,
 	useCommentComposerStore,
 } from "#/features/proposal-comment"
 import { Box, HStack, Logo, Typography } from "#/features/ui"
@@ -25,7 +25,13 @@ type Proposal = Extract<
 	{ __typename: "Proposal" }
 >
 
-export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
+export function ProposalMobileView({
+	proposal,
+	forceCommentsOpen = false,
+}: {
+	proposal: Proposal
+	forceCommentsOpen?: boolean
+}) {
 	const { selectedInstance, setSelectedInstanceId } = useProposalStore()
 	const { isPickingLocation } = useCommentComposerStore()
 	const [sheetOpen, setSheetOpen] = useState(false)
@@ -58,6 +64,13 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 			setSheetOpen(true)
 		}
 	}, [isPickingLocation, selectedInstance])
+
+	useEffect(() => {
+		if (!forceCommentsOpen) return
+		if (selectedInstance || isPickingLocation) return
+
+		setSheetOpen(true)
+	}, [forceCommentsOpen, isPickingLocation, selectedInstance])
 
 	// When user manually closes the sheet, clear selection and mark
 	// pre-selection state as closed so it doesn't reopen on deselect.

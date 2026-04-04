@@ -27,7 +27,7 @@ export function BackgroundGrid() {
 					x2="1200"
 					y2="140"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<line
 					x1="0"
@@ -35,7 +35,7 @@ export function BackgroundGrid() {
 					x2="1200"
 					y2="280"
 					stroke="#2c2a27"
-					stroke-width="1.5"
+					strokeWidth="1.5"
 				></line>
 				<line
 					x1="0"
@@ -43,7 +43,7 @@ export function BackgroundGrid() {
 					x2="1200"
 					y2="380"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<line
 					x1="0"
@@ -51,7 +51,7 @@ export function BackgroundGrid() {
 					x2="1200"
 					y2="520"
 					stroke="#2c2a27"
-					stroke-width="1.5"
+					strokeWidth="1.5"
 				></line>
 				<line
 					x1="0"
@@ -59,7 +59,7 @@ export function BackgroundGrid() {
 					x2="1200"
 					y2="650"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<line
 					x1="160"
@@ -67,7 +67,7 @@ export function BackgroundGrid() {
 					x2="160"
 					y2="800"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<line
 					x1="340"
@@ -75,7 +75,7 @@ export function BackgroundGrid() {
 					x2="340"
 					y2="800"
 					stroke="#2c2a27"
-					stroke-width="1.5"
+					strokeWidth="1.5"
 				></line>
 				<line
 					x1="580"
@@ -83,7 +83,7 @@ export function BackgroundGrid() {
 					x2="580"
 					y2="800"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<line
 					x1="760"
@@ -91,7 +91,7 @@ export function BackgroundGrid() {
 					x2="760"
 					y2="800"
 					stroke="#2c2a27"
-					stroke-width="1.5"
+					strokeWidth="1.5"
 				></line>
 				<line
 					x1="980"
@@ -99,7 +99,7 @@ export function BackgroundGrid() {
 					x2="980"
 					y2="800"
 					stroke="#2c2a27"
-					stroke-width="2.5"
+					strokeWidth="2.5"
 				></line>
 				<rect
 					x="165"

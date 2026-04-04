@@ -9,6 +9,10 @@ import {
 	useProposalStore,
 } from "#/features/proposal"
 import {
+	type PendingScrollTarget,
+	useCommentComposerStore,
+} from "#/features/proposal-comment"
+import {
 	GetProposalDocument,
 	type GetProposalQuery,
 	RecordProposalViewDocument,
@@ -21,6 +25,17 @@ import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 export const Route = createFileRoute("/proposal/$slug/")({
 	component: RouteComponent,
 	pendingComponent: ProposalPageSkeleton,
+	validateSearch: (search) => ({
+		tab: search.tab === "comments" ? "comments" : undefined,
+		comment:
+			typeof search.comment === "string" && search.comment.length > 0
+				? search.comment
+				: undefined,
+		parent:
+			typeof search.parent === "string" && search.parent.length > 0
+				? search.parent
+				: undefined,
+	}),
 	loader: async ({ params, context }) => {
 		const getProposalQuery = context.preloadQuery(GetProposalDocument, {
 			variables: {
@@ -70,8 +85,11 @@ export const Route = createFileRoute("/proposal/$slug/")({
 
 function RouteComponent() {
 	const { getProposalQuery } = Route.useLoaderData()
+	const search = Route.useSearch()
 	const { data } = useReadQuery(getProposalQuery)
-	const { initElements } = useProposalStore()
+	const { initElements, openPanel, setActiveTab } = useProposalStore()
+	const { setPendingScrollTarget } = useCommentComposerStore()
+	const hydratedCommentLinkKey = useRef<string | null>(null)
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
@@ -79,6 +97,28 @@ function RouteComponent() {
 			initElements(data.proposalBySlug.snapshotElements as any)
 		}
 	}, [data])
+
+	useEffect(() => {
+		if (search.tab !== "comments") return
+
+		openPanel()
+		setActiveTab("comments")
+	}, [openPanel, search.tab, setActiveTab])
+
+	useEffect(() => {
+		if (search.tab !== "comments" || !search.comment) return
+
+		const commentLinkKey = `${search.comment}:${search.parent ?? ""}`
+		if (hydratedCommentLinkKey.current === commentLinkKey) return
+
+		const pendingScrollTarget: PendingScrollTarget = {
+			commentId: search.comment,
+			parentId: search.parent,
+		}
+
+		setPendingScrollTarget(pendingScrollTarget)
+		hydratedCommentLinkKey.current = commentLinkKey
+	}, [search.comment, search.parent, search.tab, setPendingScrollTarget])
 
 	if (
 		!data ||
@@ -88,7 +128,12 @@ function RouteComponent() {
 		return <NotFoundView />
 	}
 
-	return <ProposalView proposal={data.proposalBySlug} />
+	return (
+		<ProposalView
+			proposal={data.proposalBySlug}
+			forceCommentsOpen={search.tab === "comments"}
+		/>
+	)
 }
 
 type Proposal = Extract<
@@ -96,7 +141,13 @@ type Proposal = Extract<
 	{ __typename: "Proposal" }
 >
 
-function ProposalView({ proposal }: { proposal: Proposal }) {
+function ProposalView({
+	proposal,
+	forceCommentsOpen = false,
+}: {
+	proposal: Proposal
+	forceCommentsOpen?: boolean
+}) {
 	const [recordView] = useMutation(RecordProposalViewDocument)
 	const { user } = useCurrentUser()
 	const hasRecordedView = useRef(false)
@@ -124,7 +175,10 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
 
 	return (
 		<>
-			<ProposalMobileView proposal={proposal} />
+			<ProposalMobileView
+				proposal={proposal}
+				forceCommentsOpen={forceCommentsOpen}
+			/>
 			<ProposalDesktopView proposal={proposal} />
 		</>
 	)

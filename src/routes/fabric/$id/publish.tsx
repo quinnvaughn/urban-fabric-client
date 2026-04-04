@@ -39,6 +39,7 @@ function RouteComponent() {
 		navigate({
 			to: "/proposal/$slug",
 			params: { slug: proposalData.proposalByFabricId.slug },
+			search: { tab: undefined, comment: undefined, parent: undefined },
 		})
 		return null
 	}
@@ -91,7 +92,11 @@ function PublishRoute({ fabric }: { fabric: Fabric }) {
 				initialValues: { title: "", description: "", categories: [] },
 			}}
 			onPublishSuccess={(slug, title) => {
-				navigate({ to: "/proposal/$slug", params: { slug } }).then(() => {
+				navigate({
+					to: "/proposal/$slug",
+					params: { slug },
+					search: { tab: undefined, comment: undefined, parent: undefined },
+				}).then(() => {
 					setTimeout(() => {
 						openModal("shareProposal", {
 							link: `${window.location.origin}/proposal/${slug}`,

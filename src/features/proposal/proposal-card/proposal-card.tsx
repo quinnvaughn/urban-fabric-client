@@ -79,6 +79,7 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 			<Link
 				to="/proposal/$slug"
 				params={{ slug: proposal.slug }}
+				search={{ tab: undefined, comment: undefined, parent: undefined }}
 				className={css({
 					position: "absolute",
 					inset: "0",

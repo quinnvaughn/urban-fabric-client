@@ -18,7 +18,9 @@ type ActiveCommentLocation = {
 	lat: number
 	lng: number
 }
-const activeCommentLocationStore = createStore<ActiveCommentLocation | null>(null)
+const activeCommentLocationStore = createStore<ActiveCommentLocation | null>(
+	null,
+)
 
 // Derived — unique descriptors for the element types actually present
 const activeElementTypesStore = createStore(() => {
@@ -45,6 +47,12 @@ const togglePanel = () =>
 	panelStore.setState((s) => ({
 		isPanelOpen: !s.isPanelOpen,
 		activeTab: !s.isPanelOpen ? s.activeTab : "about",
+	}))
+
+const openPanel = () =>
+	panelStore.setState((s) => ({
+		...s,
+		isPanelOpen: true,
 	}))
 
 const setActiveTab = (tab: "about" | "legend" | "comments") =>
@@ -74,6 +82,7 @@ export function useProposalStore() {
 		selectedInstanceId,
 		activeElementTypes,
 		togglePanel,
+		openPanel,
 		setActiveTab,
 		initElements,
 		setSelectedInstanceId,

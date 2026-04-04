@@ -71,17 +71,17 @@ export function NotFoundView() {
 										<path
 											d="M24 2C11.85 2 2 11.85 2 24c0 15.4 22 34 22 34s22-18.6 22-34C46 11.85 36.15 2 24 2z"
 											stroke="#1a6b5a"
-											stroke-width="1.5"
+											strokeWidth="1.5"
 											fill="#d9f0ea"
 										></path>
 										<text
 											x="24"
 											y="30"
-											text-anchor="middle"
-											font-size="18"
-											font-weight="600"
+											textAnchor="middle"
+											fontSize="18"
+											fontWeight="600"
 											fill="#1a6b5a"
-											font-family="sans-serif"
+											fontFamily="sans-serif"
 										>
 											?
 										</text>

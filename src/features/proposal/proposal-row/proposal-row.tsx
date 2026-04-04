@@ -244,6 +244,11 @@ export function ProposalRow({
 							<Link
 								to="/proposal/$slug"
 								params={{ slug }}
+								search={{
+									tab: undefined,
+									comment: undefined,
+									parent: undefined,
+								}}
 								className={actionButton({ type: "view" })}
 								aria-label={`View ${title}`}
 							>

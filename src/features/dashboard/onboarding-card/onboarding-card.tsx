@@ -139,7 +139,7 @@ export function OnboardingCard() {
 						r="10"
 						fill="#d9d2c4"
 						stroke="#c8c4ba"
-						stroke-width="1.5"
+						strokeWidth="1.5"
 					></circle>
 					<circle cx="90" cy="69" r="4.5" fill="#b2e0d5"></circle>
 					<circle cx="38" cy="50" r="7" fill="#1a6b5a" opacity="0.45"></circle>
