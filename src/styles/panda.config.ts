@@ -1524,12 +1524,31 @@ export default defineConfig({
 			"2xl": "1536px",
 		},
 		keyframes: {
+			spin: {
+				to: {
+					transform: "rotate(360deg)",
+				},
+			},
 			shimmer: {
 				"0%": {
 					backgroundPosition: "-600px 0",
 				},
 				"100%": {
 					backgroundPosition: "600px 0",
+				},
+			},
+			commentPinPulse: {
+				"0%": {
+					transform: "translateX(-50%) scale(0.95)",
+					opacity: "0.75",
+				},
+				"70%": {
+					transform: "translateX(-50%) scale(2.4)",
+					opacity: "0",
+				},
+				"100%": {
+					transform: "translateX(-50%) scale(2.4)",
+					opacity: "0",
 				},
 			},
 			fadeInLeft: {

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cx } from "@/styles/styled-system/css"
+import { css, cx } from "@/styles/styled-system/css"
 import {
 	type ButtonVariantProps,
 	button as buttonRecipe,
@@ -73,7 +73,7 @@ function Spinner() {
 			height="14"
 			viewBox="0 0 14 14"
 			fill="none"
-			style={{ animation: "spin 0.7s linear infinite" }}
+			className={css({ animation: "spin 0.7s linear infinite" })}
 		>
 			<circle
 				cx="7"
@@ -86,7 +86,6 @@ function Spinner() {
 				strokeDashoffset="10"
 				opacity="0.85"
 			/>
-			<style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 		</svg>
 	)
 }
