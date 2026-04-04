@@ -5,6 +5,7 @@ import { Attribution } from "#/features/fabric/attribution"
 import { PublicNavActions } from "#/features/navigation"
 import {
 	ProposalCommentLocationPicker,
+	ProposalCommentLocationHighlight,
 	useCommentComposerStore,
 } from "#/features/proposal-comment"
 import { Box, HStack, Logo, Typography } from "#/features/ui"
@@ -116,6 +117,7 @@ export function ProposalMobileView({ proposal }: { proposal: Proposal }) {
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
 				>
+					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
 					{/*

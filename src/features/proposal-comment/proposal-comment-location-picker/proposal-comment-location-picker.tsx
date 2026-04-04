@@ -1,20 +1,32 @@
+import { useLazyQuery } from "@apollo/client/react"
 import { MapPin } from "lucide-react"
-import maplibregl from "maplibre-gl"
+import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { useMap } from "#/features/fabric"
+import { useProposalStore } from "#/features/proposal/proposal-store"
 import { Box, Button, HStack, Typography } from "#/features/ui"
+import { ReverseGeocodeLocationDocument } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
-import { useCommentComposerStore } from "./comment-composer-store"
+import { useCommentComposerStore } from "../comment-composer-store"
+import { createProposalCommentLocationMarker } from "../proposal-comment-location-marker"
 
 export function ProposalCommentLocationPicker() {
 	const map = useMap()
+	const [getLocation] = useLazyQuery(ReverseGeocodeLocationDocument)
 	const markerRef = useRef<maplibregl.Marker | null>(null)
+	const { setActiveCommentLocation } = useProposalStore()
 	const {
 		isPickingLocation,
 		pendingLocation,
 		setPendingLocation,
 		cancelPickingLocation,
 	} = useCommentComposerStore()
+
+	useEffect(() => {
+		if (isPickingLocation || pendingLocation) {
+			setActiveCommentLocation(null)
+		}
+	}, [isPickingLocation, pendingLocation, setActiveCommentLocation])
 
 	useEffect(() => {
 		if (!pendingLocation) {
@@ -25,10 +37,7 @@ export function ProposalCommentLocationPicker() {
 
 		const marker =
 			markerRef.current ??
-			new maplibregl.Marker({
-				color: "var(--colors-brand-default)",
-				scale: 1.15,
-			})
+			createProposalCommentLocationMarker({ pulse: true, scale: 1.15 })
 
 		marker.setLngLat([pendingLocation.lng, pendingLocation.lat]).addTo(map)
 		markerRef.current = marker
@@ -44,10 +53,13 @@ export function ProposalCommentLocationPicker() {
 
 		map.getCanvas().style.cursor = "crosshair"
 
-		const handleClick = (e: maplibregl.MapMouseEvent) => {
+		const handleClick = async (e: maplibregl.MapMouseEvent) => {
+			const { lat, lng } = e.lngLat
+			const { data } = await getLocation({ variables: { lat, lng } })
 			setPendingLocation({
 				lat: e.lngLat.lat,
 				lng: e.lngLat.lng,
+				name: data?.reverseGeocodeLocation ?? "Selected location",
 			})
 		}
 
@@ -65,7 +77,13 @@ export function ProposalCommentLocationPicker() {
 			map.off("click", handleClick)
 			window.removeEventListener("keydown", handleKeyDown)
 		}
-	}, [cancelPickingLocation, isPickingLocation, map, setPendingLocation])
+	}, [
+		cancelPickingLocation,
+		isPickingLocation,
+		map,
+		setPendingLocation,
+		getLocation,
+	])
 
 	if (!isPickingLocation) return null
 

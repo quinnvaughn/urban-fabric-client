@@ -37,7 +37,7 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 	const { user } = useCurrentUser()
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to like this proposal",
-		"like",
+		"like proposal",
 	)
 	const isOwner = user?.id === proposal.creator.id
 

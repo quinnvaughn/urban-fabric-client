@@ -1,19 +1,25 @@
-import { MapPin, X } from "lucide-react"
-import { type MouseEvent, useState } from "react"
+import { useMutation } from "@apollo/client/react"
+import {
+	type KeyboardEvent,
+	useEffect,
+	useRef,
+	useState,
+	useTransition,
+} from "react"
 import { Box, Button } from "#/features/ui"
+import {
+	CreateProposalCommentDocument,
+	GetProposalDocument,
+	ProposalCommentRepliesDocument,
+	ProposalCommentsDocument,
+} from "#/graphql/generated"
 import { useCurrentUser, useRequireAuth } from "#/lib/graphql"
 import { sva } from "@/styles/styled-system/css"
 import { useCommentComposerStore } from "../comment-composer-store"
+import { AddLocationButton } from "./add-location-button"
 
 const composer = sva({
-	slots: [
-		"root",
-		"textarea",
-		"footer",
-		"locationGroup",
-		"locationChip",
-		"clearLocationButton",
-	],
+	slots: ["root", "inputWrap", "mentionChip", "textarea", "footer"],
 	base: {
 		root: {
 			borderRadius: "lg",
@@ -32,6 +38,33 @@ const composer = sva({
 				_hover: { borderColor: "border.strong" },
 			},
 		},
+		inputWrap: {
+			position: "relative",
+			px: "3",
+			pt: "2.5",
+			pb: "2.5",
+		},
+		mentionChip: {
+			display: "inline-flex",
+			alignItems: "center",
+			maxWidth: "full",
+			borderRadius: "full",
+			bg: "teal.50",
+			borderWidth: "1",
+			borderStyle: "solid",
+			borderColor: "teal.200",
+			color: "teal.700",
+			fontSize: "sm",
+			fontWeight: "medium",
+			pl: "2.5",
+			pr: "2.5",
+			py: "0.5",
+			position: "absolute",
+			top: "2.5",
+			left: "3",
+			pointerEvents: "none",
+			zIndex: 1,
+		},
 		textarea: {
 			width: "full",
 			minHeight: "16",
@@ -44,8 +77,8 @@ const composer = sva({
 			fontSize: "md",
 			lineHeight: "relaxed",
 			color: "fg.default",
-			py: "2.5",
-			px: "3",
+			py: "0",
+			px: "0",
 			_placeholder: { color: "stone.400" },
 		},
 		footer: {
@@ -60,80 +93,32 @@ const composer = sva({
 			borderTopStyle: "solid",
 			borderTopColor: "stone.100",
 		},
-		locationGroup: {
-			display: "inline-flex",
-			alignItems: "center",
-			borderRadius: "full",
-			border: "1px solid",
-			borderColor: "stone.300",
-			background: "white",
-			paddingLeft: "2",
-			paddingRight: "1",
-			height: "7",
-			transition: "all 150ms",
-			"&:not([data-has-location=true]):hover": {
-				background: "stone.100",
-				borderColor: "stone.400",
-			},
-			"&[data-has-location=true]": {
-				background: "teal.100",
-				borderColor: "teal.300",
-			},
-		},
-		locationChip: {
-			display: "inline-flex",
-			alignItems: "center",
-			gap: "1",
-			height: "full",
-			paddingRight: "1",
-			border: "none",
-			transition: "all 150ms",
-			whiteSpace: "nowrap",
-			background: "transparent",
-			fontSize: "xs",
-			fontWeight: "medium",
-			color: "stone.700",
-			cursor: "pointer",
-			outline: "none",
-			"&:not([data-has-location=true]):hover": {
-				color: "stone.800",
-			},
-			"&[data-has-location=true]": {
-				color: "teal.700",
-			},
-		},
-		clearLocationButton: {
-			display: "inline-flex",
-			alignItems: "center",
-			justifyContent: "center",
-			width: "5",
-			height: "5",
-			border: "none",
-			borderRadius: "full",
-			color: "stone.700",
-			cursor: "pointer",
-			background: "rgba(255,255,255,0.45)",
-			transition: "all 150ms",
-			"&:not([data-has-location=true]):hover": {
-				background: "rgba(255,255,255,0.7)",
-				color: "stone.800",
-			},
-			"&[data-has-location=true]": {
-				background: "teal.200",
-				color: "teal.700",
-			},
-		},
 	},
 })
 
-export function CommentComposer() {
+type Props = {
+	slug: string
+}
+
+export function CommentComposer({ slug }: Props) {
 	const { user } = useCurrentUser()
-	const { startPickingLocation, pendingLocation, clearPendingLocation } =
-		useCommentComposerStore()
+	const {
+		replyTarget,
+		draftBody,
+		setDraftBody,
+		pendingLocation,
+		setReplyTarget,
+		setPendingScrollTarget,
+		clearCommentComposer,
+	} = useCommentComposerStore()
+	const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+	const mentionChipRef = useRef<HTMLDivElement | null>(null)
+	const [createComment] = useMutation(CreateProposalCommentDocument)
+	const [isPending, startTransition] = useTransition()
+	const [mentionIndent, setMentionIndent] = useState(0)
 
 	const isSignedIn = Boolean(user)
 	const [focused, setFocused] = useState(false)
-	const [text, setText] = useState("")
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to comment",
 		"comment",
@@ -144,16 +129,130 @@ export function CommentComposer() {
 		return requireAuth(() => {})
 	}
 
-	function handleStartPickingLocation(e: MouseEvent<HTMLButtonElement>) {
-		e.stopPropagation()
-		requireAuth(() => {
-			startPickingLocation()
-		})
+	function handleTextareaKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+		if (
+			event.key === "Backspace" &&
+			!draftBody &&
+			replyTarget?.replyToUser &&
+			event.currentTarget.selectionStart === 0 &&
+			event.currentTarget.selectionEnd === 0
+		) {
+			event.preventDefault()
+			setReplyTarget(null)
+		}
 	}
 
-	function handleClearLocation(e: MouseEvent<HTMLButtonElement>) {
-		e.stopPropagation()
-		clearPendingLocation()
+	useEffect(() => {
+		if (replyTarget && textAreaRef.current) textAreaRef.current.focus()
+	}, [replyTarget])
+
+	useEffect(() => {
+		if (!replyTarget?.replyToUser) {
+			setMentionIndent(0)
+			return
+		}
+
+		function updateMentionIndent() {
+			const chipWidth = mentionChipRef.current?.offsetWidth ?? 0
+			setMentionIndent(chipWidth > 0 ? chipWidth + 8 : 0)
+		}
+
+		updateMentionIndent()
+		window.addEventListener("resize", updateMentionIndent)
+
+		return () => {
+			window.removeEventListener("resize", updateMentionIndent)
+		}
+	}, [replyTarget])
+
+	async function handleSubmit() {
+		if (!draftBody.trim()) return
+		const currentReplyTarget = replyTarget
+		const isReply = currentReplyTarget !== null
+		const { data } = await createComment({
+			variables: {
+				input: {
+					body: draftBody,
+					proposalSlug: slug,
+					location: pendingLocation ?? undefined,
+					parentId: currentReplyTarget?.commentId,
+				},
+			},
+			refetchQueries: isReply ? [] : [ProposalCommentsDocument],
+			update: (cache, { data }) => {
+				const result = data?.createProposalComment
+				if (result?.__typename !== "ProposalComment") return
+
+				cache.updateQuery(
+					{
+						query: GetProposalDocument,
+						variables: { slug },
+					},
+					(existing) => {
+						if (
+							!existing ||
+							existing.proposalBySlug.__typename !== "Proposal"
+						) {
+							return existing
+						}
+
+						return {
+							...existing,
+							proposalBySlug: {
+								...existing.proposalBySlug,
+								commentCount: existing.proposalBySlug.commentCount + 1,
+							},
+						}
+					},
+				)
+
+				if (!result.parent) return
+
+				const replyResult = {
+					...result,
+					replyToUser: currentReplyTarget?.replyToUser ?? null,
+				}
+				cache.updateQuery(
+					{
+						query: ProposalCommentRepliesDocument,
+						variables: { parentId: result.parent.id },
+					},
+					(existing) => {
+						if (!existing) return existing
+						return {
+							...existing,
+							proposalCommentReplies: [
+								...existing.proposalCommentReplies,
+								replyResult,
+							],
+						}
+					},
+				)
+				cache.modify({
+					id: cache.identify({
+						__typename: "ProposalComment",
+						id: result.parent.id,
+					}),
+					fields: {
+						replyCount: (count: number) => count + 1,
+					},
+				})
+			},
+		})
+		const createdComment = data?.createProposalComment
+		if (createdComment?.__typename === "ProposalComment") {
+			setPendingScrollTarget({
+				commentId: createdComment.id,
+				parentId: createdComment.parent?.id,
+			})
+		}
+		clearCommentComposer()
+	}
+
+	function handleSubmitClick() {
+		startTransition(async () => {
+			await handleSubmit()
+		})
 	}
 
 	return (
@@ -163,48 +262,42 @@ export function CommentComposer() {
 			data-auth-gate={!isSignedIn || undefined}
 			onClick={handleClick}
 		>
-			<textarea
-				className={slots.textarea}
-				placeholder={
-					isSignedIn
-						? "Share your thoughts on this proposal..."
-						: "Sign in to comment..."
-				}
-				readOnly={!isSignedIn}
-				value={text}
-				onChange={(e) => setText(e.target.value)}
-				onFocus={() => setFocused(true)}
-				onBlur={() => setFocused(false)}
-			/>
+			<Box className={slots.inputWrap}>
+				{replyTarget?.replyToUser && (
+					<Box ref={mentionChipRef} className={slots.mentionChip}>
+						<span>{`@${replyTarget.replyToUser.name}`}</span>
+					</Box>
+				)}
+				<textarea
+					className={slots.textarea}
+					style={{
+						textIndent: replyTarget?.replyToUser
+							? `${mentionIndent}px`
+							: undefined,
+					}}
+					placeholder={
+						isSignedIn
+							? "Share your thoughts on this proposal..."
+							: "Sign in to comment..."
+					}
+					readOnly={!isSignedIn}
+					value={draftBody}
+					ref={textAreaRef}
+					onChange={(e) => setDraftBody(e.target.value)}
+					onKeyDown={handleTextareaKeyDown}
+					onFocus={() => setFocused(true)}
+					onBlur={() => setFocused(false)}
+				/>
+			</Box>
 			<Box className={slots.footer}>
-				<div
-					className={slots.locationGroup}
-					data-has-location={Boolean(pendingLocation)}
+				<AddLocationButton requireAuth={requireAuth} />
+				<Button
+					type="button"
+					onClick={handleSubmitClick}
+					size="xs"
+					loading={isPending}
+					disabled={!draftBody.trim()}
 				>
-					<button
-						type="button"
-						className={slots.locationChip}
-						data-has-location={Boolean(pendingLocation)}
-						onClick={handleStartPickingLocation}
-					>
-						{pendingLocation ? (
-							<MapPin size={11} color="var(--colors-teal-600)" />
-						) : null}
-						{pendingLocation ? "Location attached" : "Add location"}
-					</button>
-					{pendingLocation && (
-						<button
-							type="button"
-							className={slots.clearLocationButton}
-							data-has-location="true"
-							aria-label="Clear selected location"
-							onClick={handleClearLocation}
-						>
-							<X size={11} />
-						</button>
-					)}
-				</div>
-				<Button type="submit" size="xs" disabled={!text.trim()}>
 					Post
 				</Button>
 			</Box>

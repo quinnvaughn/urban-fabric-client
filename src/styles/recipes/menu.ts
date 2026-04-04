@@ -58,11 +58,7 @@ export const menu = defineSlotRecipe({
 				},
 			},
 			"& [data-slot=icon]": {
-				color: "fg.subtle",
 				flexShrink: "0",
-			},
-			"&:hover [data-slot=icon]": {
-				color: "fg.muted",
 			},
 			"& [data-slot=kbd]": {
 				marginLeft: "auto",
@@ -179,12 +175,6 @@ export const menu = defineSlotRecipe({
 					color: "danger.default",
 					_hover: {
 						bg: "danger.subtle",
-						color: "danger.emphasis",
-					},
-					"& [data-slot=icon]": {
-						color: "danger.default",
-					},
-					"&:hover [data-slot=icon]": {
 						color: "danger.emphasis",
 					},
 				},

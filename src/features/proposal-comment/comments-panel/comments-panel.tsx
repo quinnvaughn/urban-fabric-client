@@ -46,7 +46,7 @@ export function CommentsPanel({ slug }: Props) {
 			>
 				<CommentsList slug={slug} sort={sort} />
 			</Suspense>
-			<ComposeArea />
+			<ComposeArea slug={slug} />
 		</VStack>
 	)
 }

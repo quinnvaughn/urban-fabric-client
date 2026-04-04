@@ -1,0 +1,3 @@
+query ReverseGeocodeLocation($lat: Float!, $lng: Float!) {
+	reverseGeocodeLocation(lat: $lat, lng: $lng)
+}

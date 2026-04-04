@@ -1,0 +1,16 @@
+mutation UpdateProposalComment($input: UpdateProposalCommentInput!) {
+	updateProposalComment(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on ProposalComment {
+			...ReplyCard
+		}
+	}
+}

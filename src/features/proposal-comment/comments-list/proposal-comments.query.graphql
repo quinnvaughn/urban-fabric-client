@@ -20,11 +20,18 @@ query ProposalComments(
 
 fragment CommentCard on ProposalComment {
 	id
+	parent {
+		id
+	}
 	editedAt
 	deletedAt
 	isLikedByMe
 	likeCount
-	locationName
+	location {
+		name
+		lat
+		lng
+	}
 	replyCount
 	createdAt
 	body

@@ -1,0 +1,13 @@
+mutation CreateProposalComment($input: CreateProposalCommentInput!) {
+	createProposalComment(input: $input) {
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on ProposalComment {
+			...CommentCard
+		}
+	}
+}

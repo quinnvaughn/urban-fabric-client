@@ -1,11 +1,11 @@
 import { useCallback } from "react"
-import { useAnalytics } from "#/lib/analytics"
+import { type AuthSource, useAnalytics } from "#/lib/analytics"
 import { closeModal, openModal } from "#/stores"
 import { useCurrentUser } from "./use-current-user"
 
 export function useRequireAuth(
 	title?: string,
-	analyticsSource?: "like" | "comment",
+	analyticsSource?: Exclude<AuthSource, "google">,
 ) {
 	const { user } = useCurrentUser()
 	const { capture } = useAnalytics()

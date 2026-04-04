@@ -3,7 +3,8 @@ import { useCallback } from "react"
 
 export type AuthSource =
 	| "comment"
-	| "like"
+	| "like proposal"
+	| "like comment"
 	| "sign_in"
 	| "save_draft"
 	| "publish"

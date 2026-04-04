@@ -12,6 +12,13 @@ const panelStore = createStore({
 
 const elementsStore = createStore<ElementInstance[]>([])
 const selectedInstanceIdStore = createStore<string | undefined>(undefined)
+type ActiveCommentLocation = {
+	commentId: string
+	name: string
+	lat: number
+	lng: number
+}
+const activeCommentLocationStore = createStore<ActiveCommentLocation | null>(null)
 
 // Derived — unique descriptors for the element types actually present
 const activeElementTypesStore = createStore(() => {
@@ -49,10 +56,14 @@ const initElements = (elements: ElementInstance[]) =>
 const setSelectedInstanceId = (id: string) =>
 	selectedInstanceIdStore.setState(() => id)
 
+const setActiveCommentLocation = (location: ActiveCommentLocation | null) =>
+	activeCommentLocationStore.setState(() => location)
+
 export function useProposalStore() {
 	const { isPanelOpen, activeTab } = useStore(panelStore, (s) => s)
 	const elements = useStore(elementsStore, (s) => s)
 	const selectedInstanceId = useStore(selectedInstanceIdStore, (s) => s)
+	const activeCommentLocation = useStore(activeCommentLocationStore, (s) => s)
 	const activeElementTypes = useStore(activeElementTypesStore, (s) => s)
 	const selectedInstance = useStore(selectedInstanceStore, (s) => s)
 
@@ -66,6 +77,10 @@ export function useProposalStore() {
 		setActiveTab,
 		initElements,
 		setSelectedInstanceId,
+		activeCommentLocation,
+		setActiveCommentLocation,
 		selectedInstance,
 	}
 }
+
+export type { ActiveCommentLocation }

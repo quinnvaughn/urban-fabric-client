@@ -24,7 +24,7 @@ export function CommentsList({ slug, sort }: Props) {
 	return (
 		<VStack gap="0" className={css({ overflowY: "auto", flex: 1 })}>
 			{data.proposalComments.comments.map((comment) => (
-				<ProposalComment key={comment.id} comment={comment} />
+				<ProposalComment key={comment.id} comment={comment} slug={slug} />
 			))}
 		</VStack>
 	)

@@ -1,0 +1,15 @@
+mutation ToggleProposalCommentLike($input: ToggleProposalCommentLikeInput!) {
+	toggleProposalCommentLike(input: $input) {
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on ProposalComment {
+			id
+			likeCount
+			isLikedByMe
+		}
+	}
+}

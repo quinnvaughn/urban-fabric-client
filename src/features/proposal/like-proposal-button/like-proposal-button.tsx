@@ -26,7 +26,7 @@ export function LikeProposalButton({ isMobile, proposal }: Props) {
 	const { capture } = useAnalytics()
 	const requireAuth = useRequireAuth(
 		"Create an account or sign in to like this proposal",
-		"like",
+		"like proposal",
 	)
 	const isOwner = user?.id === proposal.creator.id
 	function handleLike() {

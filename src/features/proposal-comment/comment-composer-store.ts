@@ -3,12 +3,22 @@ import { createStore, useStore } from "@tanstack/react-store"
 type ReplyTarget = {
 	commentId: string
 	displayName: string
+	replyToUser?: {
+		__typename: "User"
+		id: string
+		name: string
+	} | null
 }
 
 type PendingLocation = {
 	lat: number
 	lng: number
-	label?: string
+	name: string
+}
+
+type PendingScrollTarget = {
+	commentId: string
+	parentId?: string
 }
 
 type CommentComposerState = {
@@ -16,6 +26,7 @@ type CommentComposerState = {
 	draftBody: string
 	isPickingLocation: boolean
 	pendingLocation: PendingLocation | null
+	pendingScrollTarget: PendingScrollTarget | null
 }
 
 const initialState: CommentComposerState = {
@@ -23,6 +34,7 @@ const initialState: CommentComposerState = {
 	draftBody: "",
 	isPickingLocation: false,
 	pendingLocation: null,
+	pendingScrollTarget: null,
 }
 
 const commentComposerStore = createStore(initialState)
@@ -58,8 +70,28 @@ const cancelPickingLocation = () =>
 		isPickingLocation: false,
 	}))
 
+const setPendingScrollTarget = (
+	pendingScrollTarget: PendingScrollTarget | null,
+) =>
+	commentComposerStore.setState((state) => ({
+		...state,
+		pendingScrollTarget,
+	}))
+
+const clearPendingScrollTarget = () =>
+	commentComposerStore.setState((state) => ({
+		...state,
+		pendingScrollTarget: null,
+	}))
+
 const clearCommentComposer = () =>
-	commentComposerStore.setState(() => initialState)
+	commentComposerStore.setState((state) => ({
+		...state,
+		replyTarget: null,
+		draftBody: "",
+		isPickingLocation: false,
+		pendingLocation: null,
+	}))
 
 export function useCommentComposerStore() {
 	const state = useStore(commentComposerStore, (state) => state)
@@ -72,8 +104,10 @@ export function useCommentComposerStore() {
 		setPendingLocation,
 		clearPendingLocation,
 		cancelPickingLocation,
+		setPendingScrollTarget,
+		clearPendingScrollTarget,
 		clearCommentComposer,
 	}
 }
 
-export type { PendingLocation, ReplyTarget }
+export type { PendingLocation, PendingScrollTarget, ReplyTarget }

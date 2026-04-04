@@ -23,12 +23,12 @@ const composer = sva({
 			gap: "1.5",
 			px: "2.5",
 			py: "1.5",
-			bg: "teal.50",
+			bg: "stone.100",
 			border: "1px solid",
-			borderColor: "teal.200",
+			borderColor: "stone.200",
 			borderRadius: "md",
 			fontSize: "xs",
-			color: "teal.700",
+			color: "stone.600",
 		},
 		replyText: {
 			fontWeight: "semibold",
@@ -37,7 +37,11 @@ const composer = sva({
 	},
 })
 
-export function ComposeArea() {
+type Props = {
+	slug: string
+}
+
+export function ComposeArea({ slug }: Props) {
 	const { user } = useCurrentUser()
 	const { replyTarget, setReplyTarget } = useCommentComposerStore()
 	const slots = composer()
@@ -63,6 +67,7 @@ export function ComposeArea() {
 							size="xs"
 							onClick={onCancelReply}
 							appearance="ghost"
+							intent="neutral"
 							aria-label="Cancel reply"
 						>
 							<X size={12} />
@@ -79,7 +84,7 @@ export function ComposeArea() {
 						Add a comment
 					</Typography.Text>
 				</HStack>
-				<CommentComposer />
+				<CommentComposer slug={slug} />
 			</VStack>
 		</Box>
 	)

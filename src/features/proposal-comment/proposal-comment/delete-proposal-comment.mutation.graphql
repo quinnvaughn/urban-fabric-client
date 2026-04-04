@@ -1,0 +1,18 @@
+mutation DeleteProposalComment($input: DeleteProposalCommentInput!) {
+	deleteProposalComment(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+		... on ProposalComment {
+			id
+			deletedAt
+			replyCount
+		}
+	}
+}

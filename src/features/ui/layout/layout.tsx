@@ -16,11 +16,24 @@ type GridCols = SystemProperties["gridTemplateColumns"]
 
 export interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
 	as?: React.ElementType
+	ref?: React.Ref<HTMLElement>
 	sx?: SystemStyleObject
 }
 
-export function Box({ as: Tag = "div", sx, className, ...rest }: BoxProps) {
-	return <Tag className={cx(sx ? css(sx) : undefined, className)} {...rest} />
+export function Box({
+	as: Tag = "div",
+	sx,
+	className,
+	ref,
+	...rest
+}: BoxProps) {
+	return (
+		<Tag
+			ref={ref}
+			className={cx(sx ? css(sx) : undefined, className)}
+			{...rest}
+		/>
+	)
 }
 
 // ---------- VStack ----------

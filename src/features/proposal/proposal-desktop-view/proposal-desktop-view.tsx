@@ -2,7 +2,10 @@ import { EllipsisVertical } from "lucide-react"
 import { useState } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
-import { ProposalCommentLocationPicker } from "#/features/proposal-comment"
+import {
+	ProposalCommentLocationHighlight,
+	ProposalCommentLocationPicker,
+} from "#/features/proposal-comment"
 import { Box, NudgeWizard, Tooltip } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
@@ -157,6 +160,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
 				>
+					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
 					<Box
