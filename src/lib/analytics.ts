@@ -63,6 +63,7 @@ type EventMap = {
 
 	// Mobile unsupported screen
 	editor_mobile_wall_viewed: undefined
+	editor_mobile_explore_clicked: undefined
 	editor_mobile_link_copied: undefined
 	editor_mobile_email_sent: undefined
 	editor_mobile_go_back: undefined

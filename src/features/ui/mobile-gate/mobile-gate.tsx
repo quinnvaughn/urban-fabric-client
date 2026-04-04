@@ -1,5 +1,5 @@
-import { useRouter } from "@tanstack/react-router"
-import { Copy, Mail } from "lucide-react"
+import { Link, useRouter } from "@tanstack/react-router"
+import { Compass, Copy, Mail } from "lucide-react"
 import { useEffect } from "react"
 import { useAnalytics } from "#/lib/analytics"
 import { useCurrentUser } from "#/lib/graphql"
@@ -36,6 +36,8 @@ export function MobileGate({ children, size = "sm" }: Props) {
 			description: "You can now paste it anywhere you like.",
 		})
 	}
+
+	const exploreRoute = user ? "/dashboard/explore" : "/explore"
 
 	if (isMobile) {
 		return (
@@ -103,6 +105,18 @@ export function MobileGate({ children, size = "sm" }: Props) {
 						align="stretch"
 						className={css({ maxW: "280px", width: "100%" })}
 					>
+						<Link
+							to={exploreRoute}
+							className={button({
+								appearance: "outline",
+								intent: "neutral",
+								size: "md",
+							})}
+							onClick={() => capture("editor_mobile_explore_clicked")}
+						>
+							<Compass size={12} />
+							Explore proposals instead
+						</Link>
 						<a
 							className={button({
 								appearance: "solid",
