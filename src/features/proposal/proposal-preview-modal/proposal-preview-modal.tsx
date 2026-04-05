@@ -18,7 +18,6 @@ import {
 	Divider,
 	HStack,
 	Logo,
-	Swatch,
 	Tabs,
 	Tooltip,
 	Typography,
@@ -259,8 +258,7 @@ function PreviewPanel({
 	data: ProposalPreviewData
 	locationString: string
 }) {
-	const { activeTab, setActiveTab, activeElementTypes, elements } =
-		useProposalStore()
+	const { activeTab, setActiveTab, elements } = useProposalStore()
 
 	return (
 		<Box
@@ -366,11 +364,13 @@ function PreviewPanel({
 					<Tabs
 						stretch
 						value={activeTab}
-						onValueChange={(value) => setActiveTab(value as "about" | "legend")}
+						onValueChange={(value) =>
+							setActiveTab(value as "about" | "comments")
+						}
 					>
 						<Tabs.List>
 							<Tabs.Trigger value="about">About</Tabs.Trigger>
-							<Tabs.Trigger value="legend">Legend</Tabs.Trigger>
+							<Tabs.Trigger value="comments">Comments</Tabs.Trigger>
 						</Tabs.List>
 					</Tabs>
 				</VStack>
@@ -395,17 +395,7 @@ function PreviewPanel({
 							<FabricComposition elements={elements} />
 						</VStack>
 					) : (
-						<VStack>
-							<Divider label="Element Types" />
-							{activeElementTypes.map((type) => (
-								<HStack key={type.id} gap="3">
-									<Swatch size="3.5" color={type.baseMapStyle.color} />
-									<Typography.Text size="sm" color="stone.800">
-										{type.title}
-									</Typography.Text>
-								</HStack>
-							))}
-						</VStack>
+						<div>Comments will appear here.</div>
 					)}
 				</VStack>
 			</Box>
