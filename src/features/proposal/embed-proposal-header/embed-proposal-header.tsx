@@ -1,4 +1,5 @@
-import { Box, Logo, Typography } from "#/features/ui"
+import { MapPin } from "lucide-react"
+import { Box, HStack, Logo, Typography } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 
@@ -61,13 +62,16 @@ export function EmbedProposalHeader({ proposal }: Props) {
 					background: "rgba(255, 255, 255, 0.25)",
 				})}
 			/>
-			<Typography.Text
-				size="sm"
-				className={css({ color: "rgba(255,255,255,0.75)" })}
-				truncate
+			<HStack
+				gap="1"
+				align="center"
+				className={css({ flexShrink: 0, color: "rgba(255,255,255,0.75)" })}
 			>
-				{locationLabel}
-			</Typography.Text>
+				<MapPin size={10} />
+				<Typography.Text size="xs" className={css({ color: "inherit" })}>
+					{locationLabel}
+				</Typography.Text>
+			</HStack>
 		</Box>
 	)
 }
