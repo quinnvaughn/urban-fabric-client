@@ -13,11 +13,18 @@ import { CommentsEmptyState } from "./comments-empty-state"
 type Props = {
 	slug: string
 	sort: CommentSortBy
+	readOnly?: boolean
+	completeLabel?: string
 }
 
 const COMMENTS_PAGE_SIZE = 20
 
-export function CommentsList({ slug, sort }: Props) {
+export function CommentsList({
+	slug,
+	sort,
+	readOnly = false,
+	completeLabel,
+}: Props) {
 	const [isPending, startTransition] = useTransition()
 	const { data, fetchMore } = useSuspenseQuery(ProposalCommentsDocument, {
 		variables: {
@@ -53,7 +60,12 @@ export function CommentsList({ slug, sort }: Props) {
 		.otherwise((items) => (
 			<VStack gap="0" className={css({ overflowY: "auto", flex: 1, minH: 0 })}>
 				{items.map((comment) => (
-					<ProposalComment key={comment.id} comment={comment} slug={slug} />
+					<ProposalComment
+						key={comment.id}
+						comment={comment}
+						slug={slug}
+						readOnly={readOnly}
+					/>
 				))}
 				<LoadMore
 					total={total}
@@ -61,6 +73,7 @@ export function CommentsList({ slug, sort }: Props) {
 					hasMore={hasMore}
 					loading={isPending}
 					onLoadMore={handleLoadMore}
+					completeLabel={completeLabel}
 					className={css({ paddingTop: "4", paddingBottom: "6" })}
 				/>
 			</VStack>

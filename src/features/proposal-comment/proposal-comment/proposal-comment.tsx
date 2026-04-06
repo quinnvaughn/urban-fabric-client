@@ -21,9 +21,10 @@ import { useUpdateProposalComment } from "./use-update-proposal-comment"
 type Props = {
 	comment: CommentCardFragment
 	slug: string
+	readOnly?: boolean
 }
 
-export function ProposalComment({ comment, slug }: Props) {
+export function ProposalComment({ comment, slug, readOnly = false }: Props) {
 	const [showReplies, setShowReplies] = useState(false)
 	const [isFreshlyAdded, setIsFreshlyAdded] = useState(false)
 	const commentRef = useRef<HTMLDivElement | null>(null)
@@ -114,7 +115,7 @@ export function ProposalComment({ comment, slug }: Props) {
 									</Typography.Text>
 								)}
 							</HStack>
-							{!isDeleted && comment.user.id === user?.id && (
+							{!readOnly && !isDeleted && comment.user.id === user?.id && (
 								<CommentActions
 									onEdit={() =>
 										startEditing(
@@ -159,8 +160,8 @@ export function ProposalComment({ comment, slug }: Props) {
 					)}
 				</Box>
 				<HStack gap="3" align="center" className={css({ paddingLeft: "8" })}>
-					{!isDeleted && <LikeCommentButton comment={comment} />}
-					{!isDeleted && (
+					{!readOnly && !isDeleted && <LikeCommentButton comment={comment} />}
+					{!readOnly && !isDeleted && (
 						<Button
 							size="xs"
 							appearance="ghost"
@@ -204,7 +205,10 @@ export function ProposalComment({ comment, slug }: Props) {
 				</HStack>
 				{showReplies && (
 					<Suspense fallback={<CommentsLoadingState count={2} isReplies />}>
-						<ProposalCommentReplies commentId={comment.id} />
+						<ProposalCommentReplies
+							commentId={comment.id}
+							readOnly={readOnly}
+						/>
 					</Suspense>
 				)}
 			</VStack>

@@ -23,6 +23,7 @@ import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_aut
 import { Route as ProposalSlugIndexRouteImport } from './routes/proposal/$slug/index'
 import { Route as FabricIdIndexRouteImport } from './routes/fabric/$id/index'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
+import { Route as ProposalSlugEmbedRouteImport } from './routes/proposal/$slug/embed'
 import { Route as ProposalSlugEditRouteImport } from './routes/proposal/$slug/edit'
 import { Route as FabricIdPublishRouteImport } from './routes/fabric/$id/publish'
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
@@ -96,6 +97,11 @@ const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ProposalSlugEmbedRoute = ProposalSlugEmbedRouteImport.update({
+  id: '/proposal/$slug/embed',
+  path: '/proposal/$slug/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProposalSlugEditRoute = ProposalSlugEditRouteImport.update({
   id: '/proposal/$slug/edit',
   path: '/proposal/$slug/edit',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof MarketingAuthRegisterRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
+  '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/fabric/$id/': typeof FabricIdIndexRoute
   '/proposal/$slug/': typeof ProposalSlugIndexRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/register': typeof MarketingAuthRegisterRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
+  '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/fabric/$id': typeof FabricIdIndexRoute
   '/proposal/$slug': typeof ProposalSlugIndexRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/_marketing/_auth/register': typeof MarketingAuthRegisterRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
+  '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/fabric/$id/': typeof FabricIdIndexRoute
   '/proposal/$slug/': typeof ProposalSlugIndexRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
+    | '/proposal/$slug/embed'
     | '/dashboard/settings/'
     | '/fabric/$id/'
     | '/proposal/$slug/'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
+    | '/proposal/$slug/embed'
     | '/dashboard/settings'
     | '/fabric/$id'
     | '/proposal/$slug'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/_marketing/_auth/register'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
+    | '/proposal/$slug/embed'
     | '/dashboard/settings/'
     | '/fabric/$id/'
     | '/proposal/$slug/'
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   FabricIdRouteRoute: typeof FabricIdRouteRouteWithChildren
   FabricNewRoute: typeof FabricNewRoute
   ProposalSlugEditRoute: typeof ProposalSlugEditRoute
+  ProposalSlugEmbedRoute: typeof ProposalSlugEmbedRoute
   ProposalSlugIndexRoute: typeof ProposalSlugIndexRoute
 }
 
@@ -339,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/proposal/$slug/embed': {
+      id: '/proposal/$slug/embed'
+      path: '/proposal/$slug/embed'
+      fullPath: '/proposal/$slug/embed'
+      preLoaderRoute: typeof ProposalSlugEmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/proposal/$slug/edit': {
       id: '/proposal/$slug/edit'
       path: '/proposal/$slug/edit'
@@ -438,6 +458,7 @@ const rootRouteChildren: RootRouteChildren = {
   FabricIdRouteRoute: FabricIdRouteRouteWithChildren,
   FabricNewRoute: FabricNewRoute,
   ProposalSlugEditRoute: ProposalSlugEditRoute,
+  ProposalSlugEmbedRoute: ProposalSlugEmbedRoute,
   ProposalSlugIndexRoute: ProposalSlugIndexRoute,
 }
 export const routeTree = rootRouteImport

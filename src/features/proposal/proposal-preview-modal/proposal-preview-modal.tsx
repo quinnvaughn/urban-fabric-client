@@ -1,29 +1,33 @@
-import { ChevronLeft, Eye, MapPin } from "lucide-react"
+import { ChevronLeft, MapPin } from "lucide-react"
 import { DateTime } from "luxon"
 import { useEffect } from "react"
 import * as ReactDOM from "react-dom"
-import { FabricComposition, FabricMap } from "#/features/fabric"
+import { FabricMap } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { MapControls } from "#/features/fabric/map-controls"
+import {
+	ProposalAboutTab,
+	ProposalPanelAuthor,
+	ProposalPanelCategories,
+	ProposalPanelHeader,
+	ProposalPanelMeta,
+	ProposalPanelTabs,
+} from "#/features/proposal/proposal-content"
 import { ProposalElementsLayer } from "#/features/proposal/proposal-elements-layer"
 import { ProposalSelectLayer } from "#/features/proposal/proposal-select-layer"
 import { useProposalStore } from "#/features/proposal/proposal-store"
 import { SelectedInstancePanel } from "#/features/proposal/selected-instance-panel"
 import {
-	Avatar,
 	Badge,
 	Box,
 	Button,
-	Divider,
 	HStack,
 	Logo,
-	Tabs,
 	Tooltip,
 	Typography,
 	VStack,
 } from "#/features/ui"
-import { enumValueToReadableLabel } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 export type ProposalPreviewData = {
@@ -277,128 +281,37 @@ function PreviewPanel({
 				zIndex: "floating",
 			})}
 		>
-			<Box
-				className={css({
-					flexShrink: 0,
-					px: "5",
-					paddingTop: "5",
-				})}
-			>
-				<VStack gap="3">
-					<VStack gap="1">
-						<Typography.Text
-							size="xxs"
-							color="coral.500"
-							weight="semibold"
-							transform="uppercase"
-							letterSpacing="wider"
-						>
-							Proposal
-						</Typography.Text>
-						<Typography.Heading
-							as="h1"
-							font="serif"
-							size="md"
-							weight="light"
-							lineHeight="tight"
-							letterSpacing="snug"
-							fontStyle="italic"
-						>
-							{data.title}
-						</Typography.Heading>
+			<VStack gap="3">
+				<ProposalPanelHeader title={data.title} paddingTop="5" />
+				<Box className={css({ px: "5" })}>
+					<VStack gap="3">
+						<ProposalPanelAuthor name={data.creatorName} />
+						<ProposalPanelMeta
+							dateLabel={DateTime.now().toLocaleString(DateTime.DATE_MED)}
+							locationLabel={locationString}
+							viewCount={0}
+						/>
+						<ProposalPanelCategories categories={data.categories} />
+						<ProposalPanelTabs
+							activeTab={activeTab}
+							onValueChange={setActiveTab}
+						/>
 					</VStack>
-					<HStack align="center" gap="2" wrap>
-						<Avatar size="xs" name={data.creatorName} />
-						<Typography.Text size="sm" color="stone.700" weight="medium">
-							{data.creatorName}
-						</Typography.Text>
-					</HStack>
-					<HStack gap="2" wrap>
-						<Typography.Text size="sm" color="stone.500">
-							{DateTime.now().toLocaleString(DateTime.DATE_MED)}
-						</Typography.Text>
-						<Box
-							className={css({
-								width: "3px",
-								height: "3px",
-								background: "stone.300",
-								borderRadius: "full",
-							})}
-						/>
-						<Typography.Text size="sm" color="stone.500">
-							{locationString}
-						</Typography.Text>
-						<Box
-							className={css({
-								width: "3px",
-								height: "3px",
-								background: "stone.300",
-								borderRadius: "full",
-							})}
-						/>
-						<Box
-							className={css({
-								display: "flex",
-								alignItems: "center",
-								gap: "1",
-								color: "stone.500",
-								fontSize: "sm",
-							})}
-						>
-							<Eye
-								size={12}
-								className={css({ display: "inline-block", marginLeft: "2px" })}
-							/>
-							0
-						</Box>
-					</HStack>
-					{data.categories.length > 0 && (
-						<HStack gap="1" wrap>
-							{data.categories.map((category) => (
-								<Badge key={category} size="xs" tone="accent">
-									{enumValueToReadableLabel(category)}
-								</Badge>
-							))}
-						</HStack>
-					)}
-					<Tabs
-						stretch
-						value={activeTab}
-						onValueChange={(value) =>
-							setActiveTab(value as "about" | "comments")
-						}
-					>
-						<Tabs.List>
-							<Tabs.Trigger value="about">About</Tabs.Trigger>
-							<Tabs.Trigger value="comments">Comments</Tabs.Trigger>
-						</Tabs.List>
-					</Tabs>
-				</VStack>
-			</Box>
-			<Box className={css({ flex: 1, overflowY: "auto", px: "5", py: "4" })}>
-				<VStack gap="0">
-					{activeTab === "about" ? (
-						<VStack gap="2.5">
-							<Divider label="Description" />
-							<Typography.Text
-								color="stone.700"
-								size="md"
-								lineHeight="relaxed"
-								className={css({ whiteSpace: "pre-wrap" })}
-							>
-								{data.description || (
-									<Typography.Inline color="stone.400" fontStyle="italic">
-										No description yet.
-									</Typography.Inline>
-								)}
-							</Typography.Text>
-							<FabricComposition elements={elements} />
-						</VStack>
-					) : (
-						<div>Comments will appear here.</div>
-					)}
-				</VStack>
-			</Box>
+				</Box>
+			</VStack>
+			{activeTab === "about" ? (
+				<ProposalAboutTab
+					description={data.description}
+					elements={elements}
+					emptyDescriptionText="No description yet."
+				/>
+			) : (
+				<Box className={css({ flex: 1, overflowY: "auto", px: "5", py: "4" })}>
+					<Typography.Text size="sm" color="stone.500">
+						Comments will appear here.
+					</Typography.Text>
+				</Box>
+			)}
 			<Box
 				className={css({
 					flexShrink: 0,

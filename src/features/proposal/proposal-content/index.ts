@@ -1,1 +1,7 @@
+export * from "./proposal-about-tab"
 export * from "./proposal-content"
+export * from "./proposal-panel-author"
+export * from "./proposal-panel-categories"
+export * from "./proposal-panel-header"
+export * from "./proposal-panel-meta"
+export * from "./proposal-panel-tabs"

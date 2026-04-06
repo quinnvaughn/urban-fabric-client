@@ -16,9 +16,10 @@ import { useUpdateProposalComment } from "./use-update-proposal-comment"
 
 type Props = {
 	reply: ReplyCardFragment
+	readOnly?: boolean
 }
 
-export function CommentReply({ reply }: Props) {
+export function CommentReply({ reply, readOnly = false }: Props) {
 	const [isFreshlyAdded, setIsFreshlyAdded] = useState(false)
 	const replyRef = useRef<HTMLDivElement | null>(null)
 	const { pendingScrollTarget, setReplyTarget, clearPendingScrollTarget } =
@@ -104,7 +105,7 @@ export function CommentReply({ reply }: Props) {
 									</Typography.Text>
 								)}
 							</HStack>
-							{!isDeleted && reply.user.id === user?.id && (
+							{!readOnly && !isDeleted && reply.user.id === user?.id && (
 								<CommentActions
 									onEdit={() =>
 										startEditing(
@@ -150,8 +151,8 @@ export function CommentReply({ reply }: Props) {
 					)}
 				</Box>
 				<HStack gap="3" align="center" className={css({ paddingLeft: "8" })}>
-					{!isDeleted && <LikeCommentButton comment={reply} />}
-					{!isDeleted && (
+					{!readOnly && !isDeleted && <LikeCommentButton comment={reply} />}
+					{!readOnly && !isDeleted && (
 						<Button
 							size="xs"
 							appearance="ghost"

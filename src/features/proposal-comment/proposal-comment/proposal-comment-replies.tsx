@@ -6,9 +6,10 @@ import { CommentReply } from "./comment-reply"
 
 type Props = {
 	commentId: string
+	readOnly?: boolean
 }
 
-export function ProposalCommentReplies({ commentId }: Props) {
+export function ProposalCommentReplies({ commentId, readOnly = false }: Props) {
 	const { data } = useSuspenseQuery(ProposalCommentRepliesDocument, {
 		variables: {
 			parentId: commentId,
@@ -25,7 +26,7 @@ export function ProposalCommentReplies({ commentId }: Props) {
 			})}
 		>
 			{data.proposalCommentReplies.map((reply) => (
-				<CommentReply key={reply.id} reply={reply} />
+				<CommentReply key={reply.id} reply={reply} readOnly={readOnly} />
 			))}
 		</Box>
 	)

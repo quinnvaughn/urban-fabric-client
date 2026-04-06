@@ -11,6 +11,7 @@ type LoadMoreProps = {
 	onLoadMore: () => void
 	emptyLabel?: string
 	hideEmpty?: boolean
+	completeLabel?: string
 	className?: string
 }
 
@@ -22,6 +23,7 @@ export function LoadMore({
 	onLoadMore,
 	emptyLabel = "No results",
 	hideEmpty = false,
+	completeLabel = "You're all caught up",
 	className,
 }: LoadMoreProps) {
 	if (hideEmpty && total === 0) return null
@@ -30,7 +32,7 @@ export function LoadMore({
 		? `Showing ${showing} of ${total}`
 		: total === 0
 			? emptyLabel
-			: "You're all caught up"
+			: completeLabel
 
 	return (
 		<VStack

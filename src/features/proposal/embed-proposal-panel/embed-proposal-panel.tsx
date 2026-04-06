@@ -3,37 +3,32 @@ import { Fragment } from "react/jsx-runtime"
 import { Box, VStack } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
-import { CommentsPanel } from "../../proposal-comment"
+import {
+	ProposalAboutTab,
+	ProposalPanelAuthor,
+	ProposalPanelCategories,
+	ProposalPanelHeader,
+	ProposalPanelMeta,
+	ProposalPanelTabs,
+} from "../proposal-content"
+import { ProposalPanelShell } from "../proposal-panel"
 import { useProposalStore } from "../proposal-store"
-import { ProposalAboutTab } from "./proposal-about-tab"
-import { ProposalActionsFooter } from "./proposal-actions-footer"
-import { ProposalPanelAuthor } from "./proposal-panel-author"
-import { ProposalPanelCategories } from "./proposal-panel-categories"
-import { ProposalPanelHeader } from "./proposal-panel-header"
-import { ProposalPanelMeta } from "./proposal-panel-meta"
-import { ProposalPanelTabs } from "./proposal-panel-tabs"
+import { EmbedCommentsPanel } from "./embed-comments-panel"
+import { EmbedProposalFooter } from "./embed-proposal-footer"
 
 type Proposal = Extract<
 	GetProposalQuery["proposalBySlug"],
 	{ __typename: "Proposal" }
 >
 
-type Props = {
-	proposal: Proposal
-	isMobile?: boolean
-}
-
-export function ProposalContent({ proposal, isMobile }: Props) {
-	const { togglePanel, setActiveTab, activeTab, elements } = useProposalStore()
+export function EmbedProposalPanel({ proposal }: { proposal: Proposal }) {
+	const { activeTab, elements, setActiveTab, togglePanel } = useProposalStore()
 	const locationLabel = `${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`
 
 	return (
-		<Fragment>
+		<ProposalPanelShell>
 			<VStack gap="3">
-				<ProposalPanelHeader
-					title={proposal.title}
-					onClose={isMobile ? undefined : togglePanel}
-				/>
+				<ProposalPanelHeader title={proposal.title} onClose={togglePanel} />
 				<Box className={css({ px: "5" })}>
 					<VStack gap="3">
 						<ProposalPanelAuthor name={proposal.creator.name} />
@@ -42,7 +37,6 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 								proposal.publishedAt as string,
 							).toLocaleString(DateTime.DATE_MED)}
 							locationLabel={locationLabel}
-							viewCount={proposal.viewCount}
 						/>
 						<ProposalPanelCategories categories={proposal.categories} />
 						<ProposalPanelTabs
@@ -59,11 +53,17 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 						description={proposal.description}
 						elements={elements}
 					/>
-					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
+					<EmbedProposalFooter proposal={proposal} />
 				</Fragment>
 			) : (
-				<CommentsPanel slug={proposal.slug} />
+				<Fragment>
+					<EmbedCommentsPanel
+						slug={proposal.slug}
+						commentCount={proposal.commentCount}
+					/>
+					<EmbedProposalFooter proposal={proposal} />
+				</Fragment>
 			)}
-		</Fragment>
+		</ProposalPanelShell>
 	)
 }
