@@ -17,7 +17,7 @@ export function EmbedProposalFooter({ proposal }: { proposal: Proposal }) {
 				borderTop: "1px solid",
 				borderTopColor: "border.subtle",
 				px: "5",
-				py: "3.5",
+				py: "2",
 				display: "flex",
 				alignItems: "center",
 				justify: "between",
