@@ -1,11 +1,18 @@
 import { Box, Logo, Typography } from "#/features/ui"
+import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 
+type Proposal = Extract<
+	GetProposalQuery["proposalBySlug"],
+	{ __typename: "Proposal" }
+>
+
 type Props = {
-	title: string
+	proposal: Proposal
 }
 
-export function EmbedProposalHeader({ title }: Props) {
+export function EmbedProposalHeader({ proposal }: Props) {
+	const locationLabel = `${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`
 	return (
 		<Box
 			as="header"
@@ -31,7 +38,35 @@ export function EmbedProposalHeader({ title }: Props) {
 				className={css({ color: "rgba(255,255,255,0.75)" })}
 				truncate
 			>
-				{title}
+				{proposal.title}
+			</Typography.Text>
+			<Box
+				className={css({
+					height: "4.5",
+					w: "px",
+					background: "rgba(255, 255, 255, 0.25)",
+				})}
+			/>
+			<Typography.Text
+				size="sm"
+				className={css({ color: "rgba(255,255,255,0.75)" })}
+				truncate
+			>
+				by {proposal.creator.name}
+			</Typography.Text>
+			<Box
+				className={css({
+					height: "4.5",
+					w: "px",
+					background: "rgba(255, 255, 255, 0.25)",
+				})}
+			/>
+			<Typography.Text
+				size="sm"
+				className={css({ color: "rgba(255,255,255,0.75)" })}
+				truncate
+			>
+				{locationLabel}
 			</Typography.Text>
 		</Box>
 	)

@@ -7,6 +7,7 @@ type Props = {
 	onClose?: () => void
 	closeLabel?: string
 	paddingTop?: string
+	clamp?: boolean
 }
 
 export function ProposalPanelHeader({
@@ -14,6 +15,7 @@ export function ProposalPanelHeader({
 	onClose,
 	closeLabel = "Close panel",
 	paddingTop = "4",
+	clamp,
 }: Props) {
 	return (
 		<Box
@@ -47,6 +49,7 @@ export function ProposalPanelHeader({
 							lineHeight="tight"
 							letterSpacing="snug"
 							fontStyle="italic"
+							clamp={clamp ? "2" : undefined}
 						>
 							{title}
 						</Typography.Heading>

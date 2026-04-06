@@ -85,7 +85,7 @@ function ProposalView({ proposal }: Props) {
 				w: "screen",
 			})}
 		>
-			<EmbedProposalHeader title={proposal.title} />
+			<EmbedProposalHeader proposal={proposal} />
 			<Box
 				id="shell"
 				className={css({

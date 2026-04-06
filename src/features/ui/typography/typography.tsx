@@ -136,6 +136,7 @@ export interface HeadingProps
 	color?: Color
 	fontStyle?: FontStyle
 	truncate?: boolean
+	clamp?: Clamp
 }
 
 function TypographyHeading({
@@ -152,6 +153,7 @@ function TypographyHeading({
 	truncate,
 	className,
 	style,
+	clamp,
 	...rest
 }: HeadingProps) {
 	const styles = typography({
@@ -164,6 +166,7 @@ function TypographyHeading({
 		transform,
 		fontStyle,
 		truncate,
+		clamp,
 	})
 	const Tag = as ?? HEADING_ELEMENT_MAP[size]
 	return (

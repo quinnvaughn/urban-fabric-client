@@ -60,7 +60,11 @@ export const typography = defineSlotRecipe({
 				text: { fontFamily: "serif" },
 				inline: { fontFamily: "serif" },
 			},
-			mono: { heading: { fontFamily: "mono" }, text: { fontFamily: "mono" }, inline: { fontFamily: "mono" } },
+			mono: {
+				heading: { fontFamily: "mono" },
+				text: { fontFamily: "mono" },
+				inline: { fontFamily: "mono" },
+			},
 		},
 		// ── Weight ────────────────────────────────────────────────────────────
 		weight: {
@@ -197,6 +201,12 @@ export const typography = defineSlotRecipe({
 					WebkitLineClamp: "1",
 					WebkitBoxOrient: "vertical",
 				},
+				heading: {
+					overflow: "hidden",
+					display: "-webkit-box",
+					WebkitLineClamp: "1",
+					WebkitBoxOrient: "vertical",
+				},
 			},
 			2: {
 				text: {
@@ -205,9 +215,21 @@ export const typography = defineSlotRecipe({
 					WebkitLineClamp: "2",
 					WebkitBoxOrient: "vertical",
 				},
+				heading: {
+					overflow: "hidden",
+					display: "-webkit-box",
+					WebkitLineClamp: "2",
+					WebkitBoxOrient: "vertical",
+				},
 			},
 			3: {
 				text: {
+					overflow: "hidden",
+					display: "-webkit-box",
+					WebkitLineClamp: "3",
+					WebkitBoxOrient: "vertical",
+				},
+				heading: {
 					overflow: "hidden",
 					display: "-webkit-box",
 					WebkitLineClamp: "3",
