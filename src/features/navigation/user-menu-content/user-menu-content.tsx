@@ -6,7 +6,7 @@ interface UserMenuContentProps {
 	onBeforeLogout?: () => void
 }
 
-export function UserMenuContent({ onBeforeLogout }: UserMenuContentProps) {
+export function UserMenuItems({ onBeforeLogout }: UserMenuContentProps) {
 	const { logout, isLoggingOut } = useLogout()
 
 	async function handleLogout() {
@@ -14,7 +14,7 @@ export function UserMenuContent({ onBeforeLogout }: UserMenuContentProps) {
 	}
 
 	return (
-		<Menu.Content>
+		<>
 			<Menu.Link to="/dashboard/settings">
 				<Settings size={12} />
 				<span>Settings</span>
@@ -28,6 +28,14 @@ export function UserMenuContent({ onBeforeLogout }: UserMenuContentProps) {
 				<LogOut size={12} />
 				<span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
 			</Menu.Item>
+		</>
+	)
+}
+
+export function UserMenuContent({ onBeforeLogout }: UserMenuContentProps) {
+	return (
+		<Menu.Content>
+			<UserMenuItems onBeforeLogout={onBeforeLogout} />
 		</Menu.Content>
 	)
 }
