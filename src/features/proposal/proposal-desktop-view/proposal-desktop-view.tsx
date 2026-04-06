@@ -109,19 +109,19 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					<NudgeWizard
 						steps={[
 							{
+								title: "The map elements are interactive",
 								description:
-									"The colored lines are interactive — click one to see its properties and note	.",
-								title: "Tap any element on the map",
+									"Tap any colored line or shape to open a panel with its properties and notes.",
 							},
 							{
-								title: "That's the element detail panel",
+								title: "The About tab has the full story",
 								description:
-									"See its properties and any notes the creator left. Hit the X to close it.",
+									"Read the proposal description and see a breakdown of every element type in the fabric.",
 							},
 							{
-								title: "The proposal panel can be hidden too",
+								title: "Comments let you join the conversation",
 								description:
-									"Click the chevron to collapse it — and the handle on the left edge to bring it back",
+									"Switch to the Comments tab to share your feedback. Use \"Add location\" to pin a specific spot on the map to your comment.",
 							},
 						]}
 						onDismiss={dismissWizard}
