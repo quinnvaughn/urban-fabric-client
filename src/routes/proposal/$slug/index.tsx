@@ -159,7 +159,7 @@ function ProposalView({
 		if (!hasRecordedView.current) {
 			capture("proposal_viewed", {
 				proposal_id: proposal.id,
-				category: proposal.categories[0] ?? "none",
+				categories: proposal.categories,
 			})
 			recordView({
 				variables: { input: { proposalId: proposal.id } },

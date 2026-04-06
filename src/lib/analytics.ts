@@ -44,7 +44,7 @@ type EventMap = {
 	explore_sorted: { sort_by: string }
 
 	// Proposal
-	proposal_viewed: { proposal_id: string; category: string }
+	proposal_viewed: { proposal_id: string; categories: string[]; embed?: boolean }
 	proposal_liked: undefined
 	comment_created: {
 		proposal_slug: string

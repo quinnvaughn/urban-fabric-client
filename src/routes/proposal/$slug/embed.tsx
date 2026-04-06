@@ -19,6 +19,7 @@ import {
 } from "#/features/proposal-comment"
 import { Box, Tooltip } from "#/features/ui"
 import { GetProposalDocument, type GetProposalQuery } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/embed")({
@@ -73,8 +74,19 @@ type Props = {
 }
 
 function ProposalView({ proposal }: Props) {
+	const { capture } = useAnalytics()
 	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
 		useProposalStore()
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
+	useEffect(() => {
+		capture("proposal_viewed", {
+			proposal_id: proposal.id,
+			categories: proposal.categories,
+			embed: true,
+		})
+	}, [proposal.id])
+
 	return (
 		<Box
 			className={css({
