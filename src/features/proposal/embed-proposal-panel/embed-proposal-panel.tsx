@@ -21,12 +21,14 @@ type Proposal = Extract<
 	{ __typename: "Proposal" }
 >
 
+const EMBED_PANEL_WIDTH = "280px"
+
 export function EmbedProposalPanel({ proposal }: { proposal: Proposal }) {
 	const { activeTab, elements, setActiveTab, togglePanel } = useProposalStore()
 	const locationLabel = `${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`
 
 	return (
-		<ProposalPanelShell>
+		<ProposalPanelShell width={EMBED_PANEL_WIDTH}>
 			<VStack gap="3">
 				<ProposalPanelHeader title={proposal.title} onClose={togglePanel} />
 				<Box className={css({ px: "5" })}>

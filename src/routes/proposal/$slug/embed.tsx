@@ -140,7 +140,7 @@ function ProposalView({ proposal }: Props) {
 						position: "absolute",
 						top: 0,
 						right: 0,
-						width: "280px",
+						width: "200px",
 						height: "100%",
 						display: "flex",
 						flexDirection: "column",

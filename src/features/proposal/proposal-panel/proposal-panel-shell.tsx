@@ -3,17 +3,23 @@ import { Box } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 import { useProposalStore } from "../proposal-store"
 
-export function ProposalPanelShell({ children }: { children: ReactNode }) {
+export function ProposalPanelShell({
+	children,
+	width = "360px",
+}: {
+	children: ReactNode
+	width?: string
+}) {
 	const { isPanelOpen } = useProposalStore()
 
 	return (
 		<Box
 			id="panel"
+			style={{ width }}
 			className={css({
 				position: "absolute",
 				top: 0,
 				left: 0,
-				width: "360px",
 				height: "100%",
 				display: "flex",
 				flexDirection: "column",

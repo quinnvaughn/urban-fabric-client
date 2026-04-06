@@ -15,7 +15,7 @@ export function EmbedCommentsPanel({
 	const [sort, setSort] = useState<CommentSortBy>(CommentSortBy.MostRecent)
 
 	return (
-		<Suspense fallback={<CommentsLoadingState />}>
+		<Suspense fallback={<CommentsLoadingState count={10} />}>
 			<VStack
 				gap="0"
 				className={css({

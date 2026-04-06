@@ -10,7 +10,10 @@ export function CommentsLoadingState({
 	count = 3,
 	isReplies = false,
 }: CommentsLoadingStateProps) {
-	const skeletonIds = Array.from({ length: count }, (_, idx) => `skeleton-${idx + 1}`)
+	const skeletonIds = Array.from(
+		{ length: count },
+		(_, idx) => `skeleton-${idx + 1}`,
+	)
 
 	const content = skeletonIds.map((id) => (
 		<CommentCardSkeleton
@@ -26,7 +29,11 @@ export function CommentsLoadingState({
 				overflowY: "auto",
 			})}
 		>
-			{isReplies ? <RepliesLoadingState>{content}</RepliesLoadingState> : content}
+			{isReplies ? (
+				<RepliesLoadingState>{content}</RepliesLoadingState>
+			) : (
+				content
+			)}
 		</Box>
 	)
 }
@@ -60,26 +67,44 @@ function CommentCardSkeleton({ isReplies }: { isReplies: boolean }) {
 				},
 			})}
 		>
-				<VStack gap="2">
-					<HStack gap="2" align="start">
-						<Skeleton.Circle
-							size={isReplies ? 24 : 32}
-							className={css({ marginTop: "0.5" })}
-						/>
-						<VStack gap="3" fullWidth>
-							<HStack gap="4" align="center">
-								<Skeleton.Line width={isReplies ? 146 : 178} height={11} />
-								<Skeleton.Line width={90} height={11} />
-							</HStack>
-							<VStack
-								gap="3"
-								className={css({
-									paddingRight: isReplies ? "0" : "4",
-								})}
-							>
-								<Skeleton.Line width="100%" height={22} borderRadius="9999px" />
-								<Skeleton.Line width="82%" height={22} borderRadius="9999px" />
-								<Skeleton.Line width="60%" height={22} borderRadius="9999px" />
+			<VStack gap="2">
+				<HStack gap="2" align="start">
+					<Skeleton.Circle
+						size={isReplies ? 24 : 32}
+						className={css({ marginTop: "0.5" })}
+					/>
+					<VStack gap="3" fullWidth>
+						<HStack gap="4" align="center">
+							<Skeleton.Line
+								width={isReplies ? "46%" : "48%"}
+								height={"11px"}
+							/>
+							<Skeleton.Line
+								width={isReplies ? "28%" : "24%"}
+								height={"11px"}
+							/>
+						</HStack>
+						<VStack
+							gap="3"
+							className={css({
+								paddingRight: isReplies ? "0" : "4",
+							})}
+						>
+							<Skeleton.Line
+								width="100%"
+								height={"14px"}
+								borderRadius="9999px"
+							/>
+							<Skeleton.Line
+								width="82%"
+								height={"14px"}
+								borderRadius="9999px"
+							/>
+							<Skeleton.Line
+								width="60%"
+								height={"14px"}
+								borderRadius="9999px"
+							/>
 						</VStack>
 					</VStack>
 				</HStack>

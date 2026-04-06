@@ -42,7 +42,7 @@ export function CommentsPanel({ slug }: Props) {
 					</Menu.Content>
 				</Menu>
 			</HStack>
-			<Suspense fallback={<CommentsLoadingState />}>
+			<Suspense fallback={<CommentsLoadingState count={10} />}>
 				<CommentsList slug={slug} sort={sort} />
 			</Suspense>
 			<ComposeArea slug={slug} />
