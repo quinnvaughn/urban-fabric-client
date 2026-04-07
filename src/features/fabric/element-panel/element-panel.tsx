@@ -39,7 +39,8 @@ const actions: Action[] = [
 	{ title: "redo", tooltip: "Redo ⌘+⇧+Z", icon: <Redo size={14} /> },
 ]
 
-const SUPPORT_EMAIL_HREF = `mailto:${getClientEnv().VITE_SUPPORT_EMAIL}`
+const SUPPORT_EMAIL = getClientEnv().VITE_SUPPORT_EMAIL
+const REQUEST_ELEMENT_SUBJECT = "Request a new element"
 
 export function ElementPanel() {
 	const {
@@ -56,6 +57,8 @@ export function ElementPanel() {
 		setSelectedInstanceId,
 		openCommandPalette,
 	} = useFabricStore()
+
+	const supportEmailHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(REQUEST_ELEMENT_SUBJECT)}`
 
 	useFabricKeyboardShortcuts({
 		ids: PANEL_SHORTCUT_IDS,
@@ -328,7 +331,7 @@ export function ElementPanel() {
 				<Typography.Text size="xxs">
 					Missing something?{" "}
 					<a
-						href={SUPPORT_EMAIL_HREF}
+						href={supportEmailHref}
 						className={css({
 							fontSize: "inherit",
 							color: "brand.default",
