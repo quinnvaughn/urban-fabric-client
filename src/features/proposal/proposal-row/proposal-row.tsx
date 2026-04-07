@@ -1,6 +1,12 @@
 import { useMutation } from "@apollo/client/react"
 import { Link, useNavigate } from "@tanstack/react-router"
-import { Check, EllipsisVertical, ExternalLink, Trash } from "lucide-react"
+import {
+	Check,
+	Code,
+	EllipsisVertical,
+	ExternalLink,
+	Trash,
+} from "lucide-react"
 import { DateTime } from "luxon"
 import { match } from "ts-pattern"
 import {
@@ -19,6 +25,7 @@ import {
 	clearFabricProposalFromCache,
 	removeProposalFromMyProposalsCache,
 } from "#/lib/apollo"
+import { openModal } from "#/stores"
 import { css, cva, cx } from "#/styles/styled-system/css"
 
 type Props = {
@@ -270,6 +277,18 @@ export function ProposalRow({
 						</button>
 					</Menu.Trigger>
 					<Menu.Content>
+						<Menu.Item
+							disabled={!isPublished}
+							onClick={() =>
+								openModal("embedCode", {
+									title,
+									link: `${window.location.origin}/proposal/${slug}`,
+								})
+							}
+						>
+							<Code size={16} />
+							Get embed code
+						</Menu.Item>
 						<Menu.Item
 							disabled={isPublished}
 							intent="danger"
