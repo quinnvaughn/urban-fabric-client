@@ -59,7 +59,8 @@ export function Greeting({ userName, numLikes, hasFabrics }: Props) {
 			{numLikes > 0 && (
 				<Typography.Text as="p" font="sans" size="sm" color="stone.500">
 					You have {numLikes} {singularOrPlural("like", "likes", numLikes)} new
-					likes on your proposals this week.
+					{singularOrPlural("like", "likes", numLikes)} on your proposals this
+					week.
 				</Typography.Text>
 			)}
 		</VStack>
