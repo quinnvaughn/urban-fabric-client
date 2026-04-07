@@ -6,6 +6,7 @@ import {
 	useFabricKeyboardShortcuts,
 } from "#/features/fabric/keyboard-shortcuts"
 import { Box, Grid, HStack, Tooltip, Typography, VStack } from "#/features/ui"
+import { getClientEnv } from "#/lib/env/client"
 import { css } from "#/styles/styled-system/css"
 import { useFabricStore } from "../fabric-store"
 
@@ -37,6 +38,8 @@ const actions: Action[] = [
 	{ title: "undo", tooltip: "Undo ⌘+Z", icon: <Undo size={14} /> },
 	{ title: "redo", tooltip: "Redo ⌘+⇧+Z", icon: <Redo size={14} /> },
 ]
+
+const SUPPORT_EMAIL_HREF = `mailto:${getClientEnv().VITE_SUPPORT_EMAIL}`
 
 export function ElementPanel() {
 	const {
@@ -325,7 +328,7 @@ export function ElementPanel() {
 				<Typography.Text size="xxs">
 					Missing something?{" "}
 					<a
-						href="mailto:quinn@urbanfabric.app"
+						href={SUPPORT_EMAIL_HREF}
 						className={css({
 							fontSize: "inherit",
 							color: "brand.default",

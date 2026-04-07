@@ -9,10 +9,13 @@ import {
 	Typography,
 	VStack,
 } from "#/features/ui"
+import { getClientEnv } from "#/lib/env/client"
 import { useCurrentUser } from "#/lib/graphql"
 import { css } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 import { BackgroundGrid } from "../background-grid"
+
+const SUPPORT_EMAIL_HREF = `mailto:${getClientEnv().VITE_SUPPORT_EMAIL}`
 
 export function ForbiddenView() {
 	const { user } = useCurrentUser()
@@ -173,7 +176,7 @@ export function ForbiddenView() {
 											})}
 										>
 											Think this is a mistake?{" "}
-											<ExternalLink href="mailto:quinn@urbanfabric.app">
+											<ExternalLink href={SUPPORT_EMAIL_HREF}>
 												Let us know.
 											</ExternalLink>
 										</Typography.Text>
