@@ -1,4 +1,4 @@
-import { MousePointer2, PencilLine, Redo, Undo } from "lucide-react"
+import { MousePointer2, MoveRight, PencilLine, Redo, Undo } from "lucide-react"
 import { ELEMENT_CATEGORIES } from "#/features/fabric/element-types"
 import type { ElementDescriptor } from "#/features/fabric/element-types/types"
 import {
@@ -315,6 +315,46 @@ export function ElementPanel() {
 					</VStack>
 				))}
 			</VStack>
+			<Box
+				className={css({
+					borderTop: "1px solid",
+					borderTopColor: "border.subtle",
+					padding: "3",
+				})}
+			>
+				<Typography.Text size="xxs">
+					Missing something?{" "}
+					<a
+						href="mailto:quinn@urbanfabric.app"
+						className={css({
+							fontSize: "inherit",
+							color: "brand.default",
+							textDecoration: "none",
+							_hover: {
+								color: "brand.default",
+								textDecoration: "underline",
+								"& [data-part='request-tail']": {
+									boxShadow: "inset 0 -1px 0 currentColor",
+								},
+							},
+						})}
+					>
+						<span>Request an </span>
+						<span
+							data-part="request-tail"
+							className={css({
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "1",
+								whiteSpace: "nowrap",
+							})}
+						>
+							<span>element</span>
+							<MoveRight size={12} />
+						</span>
+					</a>
+				</Typography.Text>
+			</Box>
 		</Box>
 	)
 }
