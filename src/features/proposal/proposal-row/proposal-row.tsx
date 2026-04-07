@@ -282,7 +282,7 @@ export function ProposalRow({
 							onClick={() =>
 								openModal("embedCode", {
 									title,
-									link: `${window.location.origin}/proposal/${slug}`,
+									link: `${window.location.origin}/proposal/${slug}/embed`,
 								})
 							}
 						>

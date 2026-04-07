@@ -100,6 +100,12 @@ function buildShareUrl(link: string, utmSource: string, source: string) {
 	return url.toString()
 }
 
+function buildEmbedUrl(link: string) {
+	const url = new URL(link)
+	url.pathname = `${url.pathname.replace(/\/$/, "")}/embed`
+	return url.toString()
+}
+
 const readonlyField = css({
 	flex: 1,
 	display: "flex",
@@ -146,7 +152,7 @@ export function ShareProposalModal({
 		capture("proposal_shared", { method: "copy_link", source })
 	}
 
-	const embedCode = `<iframe src="${link}" width="100%" height="500" frameborder="0" />`
+	const embedCode = `<iframe src="${buildEmbedUrl(link)}" width="100%" height="500" frameborder="0" />`
 
 	function handleCopyEmbed() {
 		navigator.clipboard.writeText(embedCode).then(activateCopyEmbed)
