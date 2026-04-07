@@ -62,9 +62,9 @@ export function HeroSection() {
 							</Typography.Heading>
 							<Box className={css({ maxW: "md" })}>
 								<Typography.Text tone="muted" lineHeight="loose">
-									Urban Fabric lets you redesign streets, intersections, and
-									neighborhoods on a real map — then share your proposal where
-									it'll actually be seen.
+									Urban Fabric lets you fix streets, intersections, and
+									neighborhoods on a real map — then make the case where it'll
+									actually be seen.
 								</Typography.Text>
 							</Box>
 						</VStack>
