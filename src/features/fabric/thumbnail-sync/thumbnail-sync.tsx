@@ -6,19 +6,14 @@ const VIEWPORT_EVENTS = ["moveend", "zoomend", "rotateend"] as const
 const VIEWPORT_DEBOUNCE_MS = 600
 
 type Props = {
-	onThumbnail: (thumbnail: string) => Promise<void>
+	onThumbnail: (thumbnail: Blob) => Promise<string>
 	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
 	captureOnMount?: boolean
 }
 
-function getCanvasBase64(canvas: HTMLCanvasElement): Promise<string> {
+function getCanvasBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
 	return new Promise((resolve) => {
-		canvas.toBlob((blob) => {
-			if (!blob) return resolve("")
-			const reader = new FileReader()
-			reader.onloadend = () => resolve(reader.result as string)
-			reader.readAsDataURL(blob)
-		}, "image/webp")
+		canvas.toBlob(resolve, "image/webp")
 	})
 }
 
@@ -37,9 +32,13 @@ export function ThumbnailSync({
 		() =>
 			new Promise<string>((resolve) => {
 				map.once("render", async () => {
-					const thumbnail = await getCanvasBase64(map.getCanvas())
-					await onThumbnail(thumbnail)
-					resolve(thumbnail)
+					const thumbnail = await getCanvasBlob(map.getCanvas())
+					if (!thumbnail) {
+						resolve("")
+						return
+					}
+					const publicUrl = await onThumbnail(thumbnail)
+					resolve(publicUrl)
 				})
 				map.triggerRepaint()
 			}),

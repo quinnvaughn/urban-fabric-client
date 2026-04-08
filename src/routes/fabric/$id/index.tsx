@@ -28,6 +28,7 @@ import {
 } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
+import { uploadFabricThumbnail } from "#/lib/upload/thumbnail-upload"
 
 export const Route = createFileRoute("/fabric/$id/")({
 	component: RouteComponent,
@@ -137,9 +138,19 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 				onThumbnail={
 					isOwner
 						? async (thumbnail) => {
-								await updateThumbnail({
-									variables: { input: { id: fabric.id, thumbnail } },
-								})
+								try {
+									const publicUrl = await uploadFabricThumbnail(
+										client,
+										fabric.id,
+										thumbnail,
+									)
+									await updateThumbnail({
+										variables: { input: { id: fabric.id, thumbnail: publicUrl } },
+									})
+									return publicUrl
+								} catch {
+									return fabric.thumbnail ?? ""
+								}
 							}
 						: undefined
 				}

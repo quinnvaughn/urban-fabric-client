@@ -26,7 +26,7 @@ type Props = {
 		center: { lng: number; lat: number }
 		zoom: number
 	}) => Promise<void>
-	onThumbnail?: (thumbnail: string) => Promise<void>
+	onThumbnail?: (thumbnail: Blob) => Promise<string>
 	onPublish?: () => void
 	onSave?: () => void
 	nudge?: ReactNode

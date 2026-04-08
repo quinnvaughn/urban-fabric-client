@@ -126,6 +126,15 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 		}
 	}, [handler, initElements])
 
+	function blobToDataUrl(blob: Blob) {
+		return new Promise<string>((resolve, reject) => {
+			const reader = new FileReader()
+			reader.onloadend = () => resolve((reader.result as string) ?? "")
+			reader.onerror = () => reject(reader.error)
+			reader.readAsDataURL(blob)
+		})
+	}
+
 	async function migrateGuestFabric() {
 		const guest = readGuestFabric(GUEST_FABRIC_KEY)
 		if (!guest) return null
@@ -203,10 +212,12 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 				)
 			}}
 			onThumbnail={async (thumbnail) => {
+				const thumbnailDataUrl = await blobToDataUrl(thumbnail)
 				updateGuestFabric(
-					(existing) => ({ ...existing, thumbnail }),
+					(existing) => ({ ...existing, thumbnail: thumbnailDataUrl }),
 					GUEST_FABRIC_KEY,
 				)
+				return thumbnailDataUrl
 			}}
 			onPublish={() => openAuthModal("publish")}
 			onSave={() => openAuthModal("save")}

@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/react"
+import { useApolloClient, useMutation } from "@apollo/client/react"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, EyeOff, Save, Send } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
@@ -53,6 +53,10 @@ import {
 } from "#/lib/geo"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { enumValueToReadableLabel } from "#/lib/string"
+import {
+	uploadFabricThumbnail,
+	uploadProposalThumbnail,
+} from "#/lib/upload/thumbnail-upload"
 import { css } from "#/styles/styled-system/css"
 
 const TITLE_MAX_LENGTH = 80
@@ -116,8 +120,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const { data } = props
 	const { elements } = data
 	const { toast } = useToast()
+	const client = useApolloClient()
 	const [isSaving, setIsSaving] = useState(false)
 	const [thumbnail, setThumbnail] = useState(data.initialThumbnail)
+	const [hasProposalUploadTarget, setHasProposalUploadTarget] = useState(
+		props.mode === "edit",
+	)
 	const captureThumbnailRef = useRef<(() => Promise<string>) | null>(null)
 
 	const [viewport, setViewport] = useState<Viewport>({
@@ -143,10 +151,29 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const getThumbnailForSubmit = useCallback(async () => {
 		const capture = captureThumbnailRef.current
 		if (!capture) return thumbnail
-		const freshThumbnail = await capture()
-		setThumbnail(freshThumbnail)
-		return freshThumbnail
-	}, [thumbnail])
+		try {
+			const freshThumbnail = await capture()
+			setThumbnail(freshThumbnail)
+			return freshThumbnail
+		} catch {
+			toast({
+				title: "Could not upload the latest map image, using the current one instead",
+				intent: "error",
+			})
+			return thumbnail
+		}
+	}, [thumbnail, toast])
+
+	const uploadThumbnail = useCallback(
+		async (blob: Blob) => {
+			if (hasProposalUploadTarget) {
+				return uploadProposalThumbnail(client, data.fabricId, blob)
+			}
+
+			return uploadFabricThumbnail(client, data.fabricId, blob)
+		},
+		[client, data.fabricId, hasProposalUploadTarget],
+	)
 
 	async function saveDraft(values: FormValues) {
 		const currentThumbnail = await getThumbnailForSubmit()
@@ -207,6 +234,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
 			.with({ __typename: "Proposal" }, () => {
+				setHasProposalUploadTarget(true)
 				capture("draft_saved")
 				toast({ title: "Draft saved", intent: "success" })
 			})
@@ -280,6 +308,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
 			.with({ __typename: "Proposal" }, ({ slug, title }) => {
+				setHasProposalUploadTarget(true)
 				capture("proposal_published")
 				if (props.mode === "create") {
 					props.onPublishSuccess(slug, title)
@@ -752,7 +781,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					>
 						<StaticElementsLayer elements={elements} />
 						<ThumbnailSync
-							onThumbnail={async (t) => setThumbnail(t)}
+							onThumbnail={uploadThumbnail}
 							onCaptureReady={(capture) => {
 								captureThumbnailRef.current = capture
 							}}
