@@ -8,7 +8,7 @@ import {
 	ProposalPanelTabs,
 } from "../proposal-content"
 import { ProposalPanelShell } from "../proposal-panel"
-import { useProposalStore } from "../proposal-store"
+import { ProposalPanelTab, useProposalStore } from "../proposal-store"
 import { EmbedCommentsPanel } from "./embed-comments-panel"
 import { EmbedProposalFooter } from "./embed-proposal-footer"
 
@@ -40,7 +40,7 @@ export function EmbedProposalPanel({ proposal }: { proposal: Proposal }) {
 					</VStack>
 				</Box>
 			</VStack>
-			{activeTab === "about" ? (
+			{activeTab === ProposalPanelTab.About ? (
 				<Fragment>
 					<ProposalAboutTab
 						description={proposal.description}

@@ -10,17 +10,27 @@ import { useProposalStore } from "../proposal-store"
 
 export function ProposalElementsLayer() {
 	const map = useMap()
-	const { elements, setSelectedInstanceId } = useProposalStore()
+	const { visibleElements, selectedInstance, setSelectedInstanceId } =
+		useProposalStore()
 	const { isPickingLocation } = useCommentComposerStore()
 	const elementLayerIds = useRef<Set<string>>(new Set())
 
 	useEffect(() => {
 		syncElementsToMap({
 			map,
-			elements,
+			elements: visibleElements,
 			elementLayerIds: elementLayerIds.current,
 		})
-	}, [elements, map])
+	}, [visibleElements, map])
+
+	useEffect(() => {
+		if (
+			selectedInstance &&
+			!visibleElements.some((el) => el.id === selectedInstance.id)
+		) {
+			setSelectedInstanceId("")
+		}
+	}, [selectedInstance, setSelectedInstanceId, visibleElements])
 
 	useEffect(() => {
 		return () => {
@@ -36,6 +46,7 @@ export function ProposalElementsLayer() {
 			const layerIds = [...elementLayerIds.current].map((id) =>
 				elementsLayerIds.mainLayerId(id),
 			)
+			if (layerIds.length === 0) return
 			const isTouch = e.originalEvent instanceof TouchEvent
 			const r = isTouch ? 20 : 4
 			const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
@@ -58,6 +69,10 @@ export function ProposalElementsLayer() {
 			const layerIds = [...elementLayerIds.current].map((id) =>
 				elementsLayerIds.mainLayerId(id),
 			)
+			if (layerIds.length === 0) {
+				map.getCanvas().style.cursor = ""
+				return
+			}
 			const features = map.queryRenderedFeatures(e.point, { layers: layerIds })
 			map.getCanvas().style.cursor = features.length > 0 ? "pointer" : ""
 		}

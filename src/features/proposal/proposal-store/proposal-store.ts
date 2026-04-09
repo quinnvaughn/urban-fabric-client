@@ -5,12 +5,19 @@ import type {
 	ElementInstance,
 } from "#/features/fabric/element-types/types"
 
+export enum ProposalPanelTab {
+	About = "about",
+	Layers = "layers",
+	Comments = "comments",
+}
+
 const panelStore = createStore({
 	isPanelOpen: true,
-	activeTab: "about" as "about" | "comments",
+	activeTab: ProposalPanelTab.About,
 })
 
 const elementsStore = createStore<ElementInstance[]>([])
+const hiddenTypeIdsStore = createStore<string[]>([])
 const selectedInstanceIdStore = createStore<string | undefined>(undefined)
 type ActiveCommentLocation = {
 	commentId: string
@@ -42,11 +49,16 @@ const selectedInstanceStore = createStore(() => {
 	return elementsStore.state.find((el) => el.id === id)
 })
 
+const visibleElementsStore = createStore(() => {
+	const hiddenTypeIds = new Set(hiddenTypeIdsStore.state)
+	return elementsStore.state.filter((el) => !hiddenTypeIds.has(el.typeId))
+})
+
 // Actions
 const togglePanel = () =>
 	panelStore.setState((s) => ({
 		isPanelOpen: !s.isPanelOpen,
-		activeTab: !s.isPanelOpen ? s.activeTab : "about",
+		activeTab: !s.isPanelOpen ? s.activeTab : ProposalPanelTab.About,
 	}))
 
 const openPanel = () =>
@@ -55,14 +67,34 @@ const openPanel = () =>
 		isPanelOpen: true,
 	}))
 
-const setActiveTab = (tab: "about" | "comments") =>
+const setActiveTab = (tab: ProposalPanelTab) =>
 	panelStore.setState((s) => ({ ...s, activeTab: tab }))
 
-const initElements = (elements: ElementInstance[]) =>
+const initElements = (elements: ElementInstance[]) => {
 	elementsStore.setState(() => elements)
+	hiddenTypeIdsStore.setState(() => [])
+}
 
 const setSelectedInstanceId = (id: string) =>
 	selectedInstanceIdStore.setState(() => id)
+
+const toggleTypeVisibility = (typeId: string) =>
+	hiddenTypeIdsStore.setState((hiddenTypeIds) =>
+		hiddenTypeIds.includes(typeId)
+			? hiddenTypeIds.filter((id) => id !== typeId)
+			: [...hiddenTypeIds, typeId],
+	)
+
+const setTypesVisibility = (typeIds: string[], isVisible: boolean) =>
+	hiddenTypeIdsStore.setState((hiddenTypeIds) => {
+		const typeIdSet = new Set(typeIds)
+
+		if (isVisible) {
+			return hiddenTypeIds.filter((id) => !typeIdSet.has(id))
+		}
+
+		return [...new Set([...hiddenTypeIds, ...typeIds])]
+	})
 
 const setActiveCommentLocation = (location: ActiveCommentLocation | null) =>
 	activeCommentLocationStore.setState(() => location)
@@ -70,15 +102,19 @@ const setActiveCommentLocation = (location: ActiveCommentLocation | null) =>
 export function useProposalStore() {
 	const { isPanelOpen, activeTab } = useStore(panelStore, (s) => s)
 	const elements = useStore(elementsStore, (s) => s)
+	const hiddenTypeIds = useStore(hiddenTypeIdsStore, (s) => s)
 	const selectedInstanceId = useStore(selectedInstanceIdStore, (s) => s)
 	const activeCommentLocation = useStore(activeCommentLocationStore, (s) => s)
 	const activeElementTypes = useStore(activeElementTypesStore, (s) => s)
 	const selectedInstance = useStore(selectedInstanceStore, (s) => s)
+	const visibleElements = useStore(visibleElementsStore, (s) => s)
 
 	return {
 		isPanelOpen,
 		activeTab,
 		elements,
+		hiddenTypeIds,
+		visibleElements,
 		selectedInstanceId,
 		activeElementTypes,
 		togglePanel,
@@ -86,6 +122,8 @@ export function useProposalStore() {
 		setActiveTab,
 		initElements,
 		setSelectedInstanceId,
+		toggleTypeVisibility,
+		setTypesVisibility,
 		activeCommentLocation,
 		setActiveCommentLocation,
 		selectedInstance,

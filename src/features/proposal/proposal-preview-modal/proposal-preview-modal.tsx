@@ -16,7 +16,10 @@ import {
 } from "#/features/proposal/proposal-content"
 import { ProposalElementsLayer } from "#/features/proposal/proposal-elements-layer"
 import { ProposalSelectLayer } from "#/features/proposal/proposal-select-layer"
-import { useProposalStore } from "#/features/proposal/proposal-store"
+import {
+	ProposalPanelTab,
+	useProposalStore,
+} from "#/features/proposal/proposal-store"
 import { SelectedInstancePanel } from "#/features/proposal/selected-instance-panel"
 import {
 	Badge,
@@ -299,7 +302,7 @@ function PreviewPanel({
 					</VStack>
 				</Box>
 			</VStack>
-			{activeTab === "about" ? (
+			{activeTab === ProposalPanelTab.About ? (
 				<ProposalAboutTab
 					description={data.description}
 					elements={elements}

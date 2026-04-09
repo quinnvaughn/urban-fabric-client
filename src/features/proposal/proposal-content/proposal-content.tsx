@@ -4,9 +4,10 @@ import { Box, VStack } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
 import { CommentsPanel } from "../../proposal-comment"
-import { useProposalStore } from "../proposal-store"
+import { ProposalPanelTab, useProposalStore } from "../proposal-store"
 import { ProposalAboutTab } from "./proposal-about-tab"
 import { ProposalActionsFooter } from "./proposal-actions-footer"
+import { ProposalLayersTab } from "./proposal-layers-tab"
 import { ProposalPanelAuthor } from "./proposal-panel-author"
 import { ProposalPanelCategories } from "./proposal-panel-categories"
 import { ProposalPanelHeader } from "./proposal-panel-header"
@@ -53,12 +54,17 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 					</VStack>
 				</Box>
 			</VStack>
-			{activeTab === "about" ? (
+			{activeTab === ProposalPanelTab.About ? (
 				<Fragment>
 					<ProposalAboutTab
 						description={proposal.description}
 						elements={elements}
 					/>
+					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
+				</Fragment>
+			) : activeTab === ProposalPanelTab.Layers ? (
+				<Fragment>
+					<ProposalLayersTab elements={elements} />
 					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
 				</Fragment>
 			) : (

@@ -6,6 +6,7 @@ import {
 	ProposalDesktopView,
 	ProposalMobileView,
 	ProposalPageSkeleton,
+	ProposalPanelTab,
 	useProposalStore,
 } from "#/features/proposal"
 import {
@@ -102,7 +103,7 @@ function RouteComponent() {
 		if (search.tab !== "comments") return
 
 		openPanel()
-		setActiveTab("comments")
+		setActiveTab(ProposalPanelTab.Comments)
 	}, [openPanel, search.tab, setActiveTab])
 
 	useEffect(() => {
