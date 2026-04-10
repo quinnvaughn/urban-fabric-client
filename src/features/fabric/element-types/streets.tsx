@@ -51,6 +51,12 @@ export const STREETS_CATEGORY: ElementCategory = {
 					dasharray: [8, 6],
 					lineCap: "round",
 				},
+
+				lineSymbol: {
+					src: "/icons/elements/bike-lane.svg",
+					spacing: 200,
+					size: 32,
+				},
 			} satisfies LineLayerStyle,
 
 			properties: [
@@ -233,6 +239,12 @@ export const STREETS_CATEGORY: ElementCategory = {
 					dasharray: [6, 5],
 					lineCap: "round",
 				},
+
+				lineSymbol: {
+					src: "/icons/elements/sharrow.svg",
+					spacing: 200,
+					size: 32,
+				},
 			} satisfies LineLayerStyle,
 
 			properties: [
@@ -247,7 +259,8 @@ export const STREETS_CATEGORY: ElementCategory = {
 							{
 								label: "Bike + Car",
 								value: "bike-car",
-								description: "Cyclists and general vehicle traffic share the lane",
+								description:
+									"Cyclists and general vehicle traffic share the lane",
 							},
 							{
 								label: "Bike + Bus",
@@ -748,7 +761,8 @@ export const STREETS_CATEGORY: ElementCategory = {
 				{
 					key: "at-expense-of",
 					label: "At the Expense Of",
-					description: "What is giving up space to make room for the wider sidewalk",
+					description:
+						"What is giving up space to make room for the wider sidewalk",
 					input: {
 						kind: "select",
 						options: [

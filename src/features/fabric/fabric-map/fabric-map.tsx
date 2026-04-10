@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl"
 import { Fragment, useEffect, useRef, useState } from "react"
 import { MapStyle } from "#/graphql/generated"
 import { getClientEnv } from "#/lib/env/client"
+import { preloadLineSymbolIcons } from "../elements-layer/map-icon-loader"
 import { MapProvider } from "./map-context"
 
 const STYLE_NAMES: Record<MapStyle, string> = {
@@ -54,7 +55,8 @@ export function FabricMap({
 			attributionControl: false,
 		})
 
-		mapRef.current.once("load", () => {
+		mapRef.current.once("load", async () => {
+			if (mapRef.current) await preloadLineSymbolIcons(mapRef.current)
 			setStyleLoaded(true)
 			setStyleVersion((v) => v + 1)
 			isMounted.current = true
@@ -78,7 +80,8 @@ export function FabricMap({
 		if (!isMounted.current || !mapRef.current) return
 		setStyleLoaded(false)
 		mapRef.current.setStyle(styleUrl(mapStyle))
-		mapRef.current.once("style.load", () => {
+		mapRef.current.once("style.load", async () => {
+			if (mapRef.current) await preloadLineSymbolIcons(mapRef.current)
 			setStyleLoaded(true)
 			setStyleVersion((v) => v + 1)
 		})

@@ -116,6 +116,16 @@ export type LineLayerStyle = {
 		dasharray: number[]
 		lineCap: "butt" | "round" | "square"
 	}
+
+	// Line symbol — an SVG icon stamped at regular intervals along the line.
+	// src is a path to an SVG file in /public (e.g. "/icons/elements/bike-lane.svg").
+	// The SVG should be square and designed at the size it will be displayed —
+	// color is baked in by the designer, not overridden at runtime.
+	lineSymbol?: {
+		src: string
+		spacing?: number  // px between icons, default 200
+		size?: number     // canvas px to render the SVG at, default 32
+	}
 }
 
 // ── Element instance — what gets persisted ───────────────────────────────────

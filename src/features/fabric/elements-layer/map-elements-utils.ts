@@ -1,7 +1,12 @@
 import type maplibregl from "maplibre-gl"
 import type { LinePaint } from "../element-types"
 import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
-import type { ElementDescriptor, ElementInstance, LineLayerStyle } from "../element-types/types"
+import type {
+	ElementDescriptor,
+	ElementInstance,
+	LineLayerStyle,
+} from "../element-types/types"
+import { lineSymbolImageId } from "./map-icon-loader"
 
 function arrowImageId(color: string) {
 	return `urban-fabric-arrow-${color.replace("#", "")}`
@@ -36,6 +41,7 @@ function ensureArrowImage(map: maplibregl.Map, color: string): string {
 	})
 	return id
 }
+
 import {
 	hasLayer,
 	hasSource,
@@ -47,6 +53,7 @@ export const elementsLayerIds = {
 	casingLayerId: (id: string) => `el-${id}-casing`,
 	mainLayerId: (id: string) => `el-${id}`,
 	arrowLayerId: (id: string) => `el-${id}-arrows`,
+	lineSymbolLayerId: (id: string) => `el-${id}-symbol`,
 	casingSourceId: (id: string) => `el-${id}-casing`,
 	mainSourceId: (id: string) => `el-${id}`,
 }
@@ -82,6 +89,7 @@ function removeElementLayers(map: maplibregl.Map, id: string) {
 		elementsLayerIds.casingLayerId(id),
 		elementsLayerIds.mainLayerId(id),
 		elementsLayerIds.arrowLayerId(id),
+		elementsLayerIds.lineSymbolLayerId(id),
 	]
 	const sources = [
 		elementsLayerIds.casingSourceId(id),
@@ -97,7 +105,35 @@ function getDirection(
 ): string | null {
 	const prop = descriptor.properties.find((p) => p.key === "direction")
 	if (!prop) return null
-	return (el.properties.direction as string | undefined) ?? (prop.default as string)
+	return (
+		(el.properties.direction as string | undefined) ?? (prop.default as string)
+	)
+}
+
+function addLineSymbolLayer(
+	map: maplibregl.Map,
+	el: ElementInstance,
+	descriptor: ElementDescriptor,
+) {
+	const { lineSymbol } = descriptor.baseMapStyle
+	if (!lineSymbol) return
+	const imageId = lineSymbolImageId(descriptor.id)
+	if (!map.hasImage(imageId)) return // icon didn't load — skip silently
+	map.addLayer({
+		id: elementsLayerIds.lineSymbolLayerId(el.id),
+		type: "symbol",
+		source: elementsLayerIds.mainSourceId(el.id),
+		layout: {
+			"symbol-placement": "line",
+			"icon-image": imageId,
+			"icon-size": 1,
+			"symbol-spacing": lineSymbol.spacing ?? 200,
+			"icon-keep-upright": true,
+			"icon-rotation-alignment": "viewport",
+			"icon-pitch-alignment": "viewport",
+		},
+		paint: { "icon-opacity": 0.9 },
+	})
 }
 
 function addArrowLayer(
@@ -246,6 +282,10 @@ export function syncElementsToMap(params: {
 
 		if (getDirection(descriptor, el) === "one-way") {
 			addArrowLayer(map, el, descriptor)
+		}
+
+		if (descriptor.baseMapStyle.lineSymbol) {
+			addLineSymbolLayer(map, el, descriptor)
 		}
 
 		elementLayerIds.add(el.id)
