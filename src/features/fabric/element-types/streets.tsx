@@ -235,7 +235,30 @@ export const STREETS_CATEGORY: ElementCategory = {
 				},
 			} satisfies LineLayerStyle,
 
-			properties: [],
+			properties: [
+				{
+					key: "shared-with",
+					label: "Shared With",
+					description: "Which types of users share this lane",
+					default: "bike-car",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Bike + Car",
+								value: "bike-car",
+								description: "Cyclists and general vehicle traffic share the lane",
+							},
+							{
+								label: "Bike + Bus",
+								value: "bike-bus",
+								description: "Cyclists and buses share a transit corridor",
+							},
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
 
 			calculated: [
 				{ key: "length", label: "Length", unit: "ft" },
