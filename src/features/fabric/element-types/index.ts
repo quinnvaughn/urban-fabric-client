@@ -1,4 +1,5 @@
 import { STREETS_CATEGORY } from "./streets"
+import { TRANSIT_CATEGORY } from "./transit"
 import type {
 	ElementCategory,
 	ElementDescriptor,
@@ -32,7 +33,7 @@ export function computeBasePaint(
 }
 
 // All categories in render order — add INTERSECTIONS_CATEGORY etc here in v2
-export const ELEMENT_CATEGORIES: ElementCategory[] = [STREETS_CATEGORY]
+export const ELEMENT_CATEGORIES: ElementCategory[] = [STREETS_CATEGORY, TRANSIT_CATEGORY]
 
 // Flat lookup by id for when you have a typeId and need the descriptor
 export const ELEMENT_TYPE_MAP: Record<string, ElementDescriptor> =

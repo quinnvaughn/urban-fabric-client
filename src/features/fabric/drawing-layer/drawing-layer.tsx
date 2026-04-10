@@ -177,9 +177,12 @@ export function DrawingLayer() {
 			}
 
 			const prev = waypoints[waypoints.length - 1]
-			const routed = await routeBetween(prev, snapped)
+			const segment =
+				element.draw === "straight-line-points"
+					? [prev, snapped]
+					: await routeBetween(prev, snapped)
 			waypointsRef.current = [...waypoints, snapped]
-			segmentsRef.current = [...segmentsRef.current, routed]
+			segmentsRef.current = [...segmentsRef.current, segment]
 			updateActiveLine()
 		}
 

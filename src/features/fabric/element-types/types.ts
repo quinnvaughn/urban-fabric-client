@@ -255,7 +255,7 @@ export type ElementDescriptor = {
 	description?: string
 	geometry: "line"
 	excludes?: string[]
-	draw: "click-to-place-points"
+	draw: "click-to-place-points" | "straight-line-points"
 	baseMapStyle: LineLayerStyle
 	properties: PropertyDescriptor[]
 	calculated: CalculatedField[]
