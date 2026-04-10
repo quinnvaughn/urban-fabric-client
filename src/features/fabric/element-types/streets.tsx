@@ -453,6 +453,12 @@ export const STREETS_CATEGORY: ElementCategory = {
 					dasharray: [8, 6],
 					lineCap: "round",
 				},
+
+				lineSymbol: {
+					src: "/icons/elements/pedestrian-street.svg",
+					spacing: 200,
+					size: 32,
+				},
 			} satisfies LineLayerStyle,
 
 			properties: [
@@ -552,6 +558,12 @@ export const STREETS_CATEGORY: ElementCategory = {
 					opacity: 0.45,
 					dasharray: [6, 5],
 					lineCap: "round",
+				},
+
+				lineSymbol: {
+					src: "/icons/elements/street-parking-removal.svg",
+					spacing: 200,
+					size: 32,
 				},
 			} satisfies LineLayerStyle,
 
