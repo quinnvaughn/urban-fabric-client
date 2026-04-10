@@ -144,7 +144,7 @@ export function SelectLayer() {
 				"circle-radius": 13,
 				"circle-color": "transparent",
 				"circle-stroke-color": "#000000",
-				"circle-strokeWidth": 1.5,
+				"circle-stroke-width": 1.5,
 				"circle-opacity": 0,
 				"circle-stroke-opacity": 0,
 				"circle-color-transition": { duration: 0, delay: 0 },
@@ -173,7 +173,7 @@ export function SelectLayer() {
 				"circle-radius": 5.5,
 				"circle-color": "#ffffff",
 				"circle-stroke-color": "#000000",
-				"circle-strokeWidth": 2,
+				"circle-stroke-width": 2,
 				"circle-opacity": 0,
 				"circle-stroke-opacity": 0,
 				"circle-color-transition": { duration: 0, delay: 0 },
@@ -315,7 +315,7 @@ export function SelectLayer() {
 			)
 			map.setPaintProperty(
 				"select-endpoints-node",
-				"circle-strokeWidth",
+				"circle-stroke-width",
 				ep.strokeWidth,
 			)
 			map.setPaintProperty(
@@ -345,7 +345,7 @@ export function SelectLayer() {
 			)
 			map.setPaintProperty(
 				"select-endpoints-snap-ring",
-				"circle-strokeWidth",
+				"circle-stroke-width",
 				ep.snapRingWidth,
 			)
 		} else {
