@@ -1,7 +1,41 @@
 import type maplibregl from "maplibre-gl"
 import type { LinePaint } from "../element-types"
 import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
-import type { ElementInstance, LineLayerStyle } from "../element-types/types"
+import type { ElementDescriptor, ElementInstance, LineLayerStyle } from "../element-types/types"
+
+function arrowImageId(color: string) {
+	return `urban-fabric-arrow-${color.replace("#", "")}`
+}
+
+function ensureArrowImage(map: maplibregl.Map, color: string): string {
+	const id = arrowImageId(color)
+	if (map.hasImage(id)) return id
+	const size = 20
+	const canvas = document.createElement("canvas")
+	canvas.width = size
+	canvas.height = size
+	const ctx = canvas.getContext("2d")
+	if (!ctx) return id
+	// White fill with colored outline
+	ctx.lineJoin = "round"
+	ctx.fillStyle = "#ffffff"
+	ctx.beginPath()
+	ctx.moveTo(2, 2)
+	ctx.lineTo(size - 2, size / 2)
+	ctx.lineTo(2, size - 2)
+	ctx.closePath()
+	ctx.fill()
+	ctx.strokeStyle = color
+	ctx.lineWidth = 2
+	ctx.stroke()
+	const imageData = ctx.getImageData(0, 0, size, size)
+	map.addImage(id, {
+		width: size,
+		height: size,
+		data: new Uint8Array(imageData.data.buffer),
+	})
+	return id
+}
 import {
 	hasLayer,
 	hasSource,
@@ -12,6 +46,7 @@ import {
 export const elementsLayerIds = {
 	casingLayerId: (id: string) => `el-${id}-casing`,
 	mainLayerId: (id: string) => `el-${id}`,
+	arrowLayerId: (id: string) => `el-${id}-arrows`,
 	casingSourceId: (id: string) => `el-${id}-casing`,
 	mainSourceId: (id: string) => `el-${id}`,
 }
@@ -46,6 +81,7 @@ function removeElementLayers(map: maplibregl.Map, id: string) {
 	const layers = [
 		elementsLayerIds.casingLayerId(id),
 		elementsLayerIds.mainLayerId(id),
+		elementsLayerIds.arrowLayerId(id),
 	]
 	const sources = [
 		elementsLayerIds.casingSourceId(id),
@@ -53,6 +89,41 @@ function removeElementLayers(map: maplibregl.Map, id: string) {
 	]
 	removeLayersIfPresent(map, layers)
 	removeSourcesIfPresent(map, sources)
+}
+
+function getDirection(
+	descriptor: ElementDescriptor,
+	el: ElementInstance,
+): string | null {
+	const prop = descriptor.properties.find((p) => p.key === "direction")
+	if (!prop) return null
+	return (el.properties.direction as string | undefined) ?? (prop.default as string)
+}
+
+function addArrowLayer(
+	map: maplibregl.Map,
+	el: ElementInstance,
+	descriptor: ElementDescriptor,
+) {
+	const imageId = ensureArrowImage(map, descriptor.baseMapStyle.color)
+	// No beforeId — arrow layer must render above the line layers
+	map.addLayer({
+		id: elementsLayerIds.arrowLayerId(el.id),
+		type: "symbol",
+		source: elementsLayerIds.mainSourceId(el.id),
+		layout: {
+			"symbol-placement": "line",
+			"icon-image": imageId,
+			"icon-size": 1,
+			"symbol-spacing": 150,
+			"icon-keep-upright": false,
+			"icon-rotation-alignment": "map",
+			"icon-pitch-alignment": "viewport",
+		},
+		paint: {
+			"icon-opacity": 1,
+		},
+	})
 }
 
 export function syncElementsToMap(params: {
@@ -126,6 +197,14 @@ export function syncElementsToMap(params: {
 				)
 			}
 
+			const direction = getDirection(descriptor, el)
+			const arrowId = elementsLayerIds.arrowLayerId(el.id)
+			if (direction === "one-way" && !hasLayer(map, arrowId)) {
+				addArrowLayer(map, el, descriptor)
+			} else if (direction !== "one-way" && hasLayer(map, arrowId)) {
+				removeLayersIfPresent(map, [arrowId])
+			}
+
 			continue
 		}
 
@@ -164,6 +243,10 @@ export function syncElementsToMap(params: {
 			},
 			belowLayerId,
 		)
+
+		if (getDirection(descriptor, el) === "one-way") {
+			addArrowLayer(map, el, descriptor)
+		}
 
 		elementLayerIds.add(el.id)
 	}
