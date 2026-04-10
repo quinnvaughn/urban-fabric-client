@@ -325,6 +325,12 @@ export const STREETS_CATEGORY: ElementCategory = {
 					dasharray: [8, 6],
 					lineCap: "round",
 				},
+
+				lineSymbol: {
+					src: "/icons/elements/bus-lane.svg",
+					spacing: 200,
+					size: 32,
+				},
 			} satisfies LineLayerStyle,
 
 			properties: [

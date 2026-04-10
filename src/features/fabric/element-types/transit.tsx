@@ -68,6 +68,12 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 					dasharray: [8, 6],
 					lineCap: "round",
 				},
+
+				lineSymbol: {
+					src: "/icons/elements/tram.svg",
+					spacing: 200,
+					size: 32,
+				},
 			} satisfies LineLayerStyle,
 
 			properties: [
@@ -140,6 +146,12 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 					opacity: 0.5,
 					dasharray: [8, 6],
 					lineCap: "round",
+				},
+
+				lineSymbol: {
+					src: "/icons/elements/light-rail.svg",
+					spacing: 200,
+					size: 32,
 				},
 			} satisfies LineLayerStyle,
 
