@@ -14,12 +14,3 @@ mutation GoogleLogin($input: GoogleLoginInput!) {
 		}
 	}
 }
-
-fragment Me on User {
-	id
-	name
-	role
-	hasPassword
-	email
-	authProviders
-}

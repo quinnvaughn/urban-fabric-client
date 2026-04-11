@@ -124,9 +124,17 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 					</Box>
 					<HStack gap="1" align="center">
 						<Avatar size="xxs" name={proposal.creator.name} />
-						<Typography.Text size="xs" color="stone.500">
+						<Link
+							className={css({
+								fontSize: "xs",
+								color: { base: "stone.500", _hover: "brand.default" },
+								position: "relative",
+							})}
+							to={user ? "/dashboard/user/$username" : "/user/$username"}
+							params={{ username: proposal.creator.username }}
+						>
 							{proposal.creator.name}
-						</Typography.Text>
+						</Link>
 					</HStack>
 					<HStack
 						gap="1"
@@ -142,7 +150,11 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 			</Card.Body>
 			<Card.Footer>
 				<HStack gap="4" justify="space-between" className={css({ w: "full" })}>
-					<HStack gap="4" align="center" className={css({ color: "stone.400" })}>
+					<HStack
+						gap="4"
+						align="center"
+						className={css({ color: "stone.400" })}
+					>
 						<HStack gap="1" align="center">
 							<Eye size={12} />
 							<Typography.Text size="sm" color="stone.400">

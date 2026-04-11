@@ -3,3 +3,13 @@ query Me {
 		...Me
 	}
 }
+
+fragment Me on User {
+	id
+	name
+	role
+	hasPassword
+	email
+	authProviders
+	username
+}

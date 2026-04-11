@@ -1,6 +1,6 @@
-import { LogOut, Settings } from "lucide-react"
+import { LogOut, Settings, Users } from "lucide-react"
 import { Menu } from "#/features/ui"
-import { useLogout } from "#/lib/graphql"
+import { useCurrentUser, useLogout } from "#/lib/graphql"
 
 interface UserMenuContentProps {
 	onBeforeLogout?: () => void
@@ -8,6 +8,7 @@ interface UserMenuContentProps {
 
 export function UserMenuItems({ onBeforeLogout }: UserMenuContentProps) {
 	const { logout, isLoggingOut } = useLogout()
+	const { user } = useCurrentUser()
 
 	async function handleLogout() {
 		await logout({ onBeforeLogout })
@@ -15,6 +16,15 @@ export function UserMenuItems({ onBeforeLogout }: UserMenuContentProps) {
 
 	return (
 		<>
+			{user && (
+				<Menu.Link
+					to="/dashboard/user/$username"
+					params={{ username: user.username }}
+				>
+					<Users size={12} />
+					<span>Profile</span>
+				</Menu.Link>
+			)}
 			<Menu.Link to="/dashboard/settings">
 				<Settings size={12} />
 				<span>Settings</span>

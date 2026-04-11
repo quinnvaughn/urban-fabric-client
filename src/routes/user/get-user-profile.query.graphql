@@ -1,0 +1,13 @@
+query GetUserProfile($username: String!) {
+	user(username: $username) {
+		... on NotFoundError {
+			message
+		}
+		... on User {
+			id
+			proposals {
+				...ProposalCard
+			}
+		}
+	}
+}

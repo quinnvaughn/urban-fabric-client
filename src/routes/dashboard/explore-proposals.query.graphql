@@ -42,6 +42,7 @@ fragment ProposalCard on Proposal {
 	creator {
 		id
 		name
+		username
 	}
 	categories
 }

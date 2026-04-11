@@ -14,6 +14,7 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as UserUsernameRouteImport } from './routes/user/$username'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
@@ -26,6 +27,7 @@ import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/s
 import { Route as ProposalSlugEmbedRouteImport } from './routes/proposal/$slug/embed'
 import { Route as ProposalSlugEditRouteImport } from './routes/proposal/$slug/edit'
 import { Route as FabricIdPublishRouteImport } from './routes/fabric/$id/publish'
+import { Route as DashboardUserUsernameRouteImport } from './routes/dashboard/user/$username'
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
 import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
 
@@ -52,6 +54,11 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
+} as any)
+const UserUsernameRoute = UserUsernameRouteImport.update({
+  id: '/user/$username',
+  path: '/user/$username',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const FabricNewRoute = FabricNewRouteImport.update({
   id: '/fabric/new',
@@ -112,6 +119,11 @@ const FabricIdPublishRoute = FabricIdPublishRouteImport.update({
   path: '/publish',
   getParentRoute: () => FabricIdRouteRoute,
 } as any)
+const DashboardUserUsernameRoute = DashboardUserUsernameRouteImport.update({
+  id: '/user/$username',
+  path: '/user/$username',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const MarketingAuthRegisterRoute = MarketingAuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -132,9 +144,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
+  '/user/$username': typeof UserUsernameRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
+  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -149,9 +163,11 @@ export interface FileRoutesByTo {
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
+  '/user/$username': typeof UserUsernameRoute
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
+  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -170,10 +186,12 @@ export interface FileRoutesById {
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
+  '/user/$username': typeof UserUsernameRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
   '/_marketing/_auth/register': typeof MarketingAuthRegisterRoute
+  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -192,9 +210,11 @@ export interface FileRouteTypes {
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
+    | '/user/$username'
     | '/dashboard/'
     | '/login'
     | '/register'
+    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -209,9 +229,11 @@ export interface FileRouteTypes {
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
+    | '/user/$username'
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -229,10 +251,12 @@ export interface FileRouteTypes {
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
+    | '/user/$username'
     | '/_marketing/'
     | '/dashboard/'
     | '/_marketing/_auth/login'
     | '/_marketing/_auth/register'
+    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -247,6 +271,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   FabricIdRouteRoute: typeof FabricIdRouteRouteWithChildren
   FabricNewRoute: typeof FabricNewRoute
+  UserUsernameRoute: typeof UserUsernameRoute
   ProposalSlugEditRoute: typeof ProposalSlugEditRoute
   ProposalSlugEmbedRoute: typeof ProposalSlugEmbedRoute
   ProposalSlugIndexRoute: typeof ProposalSlugIndexRoute
@@ -288,6 +313,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
+    }
+    '/user/$username': {
+      id: '/user/$username'
+      path: '/user/$username'
+      fullPath: '/user/$username'
+      preLoaderRoute: typeof UserUsernameRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/fabric/new': {
       id: '/fabric/new'
@@ -373,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FabricIdPublishRouteImport
       parentRoute: typeof FabricIdRouteRoute
     }
+    '/dashboard/user/$username': {
+      id: '/dashboard/user/$username'
+      path: '/user/$username'
+      fullPath: '/dashboard/user/$username'
+      preLoaderRoute: typeof DashboardUserUsernameRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/_marketing/_auth/register': {
       id: '/_marketing/_auth/register'
       path: '/register'
@@ -422,6 +461,7 @@ interface DashboardRouteRouteChildren {
   DashboardFabricsRoute: typeof DashboardFabricsRoute
   DashboardProposalsRoute: typeof DashboardProposalsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardUserUsernameRoute: typeof DashboardUserUsernameRoute
   DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
 
@@ -430,6 +470,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardFabricsRoute: DashboardFabricsRoute,
   DashboardProposalsRoute: DashboardProposalsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardUserUsernameRoute: DashboardUserUsernameRoute,
   DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
 }
 
@@ -457,6 +498,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   FabricIdRouteRoute: FabricIdRouteRouteWithChildren,
   FabricNewRoute: FabricNewRoute,
+  UserUsernameRoute: UserUsernameRoute,
   ProposalSlugEditRoute: ProposalSlugEditRoute,
   ProposalSlugEmbedRoute: ProposalSlugEmbedRoute,
   ProposalSlugIndexRoute: ProposalSlugIndexRoute,
