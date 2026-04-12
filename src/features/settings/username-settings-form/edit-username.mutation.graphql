@@ -1,0 +1,20 @@
+mutation EditUsername($input: EditUsernameInput!) {
+	editUsername(input: $input) {
+		... on UnauthorizedError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on User {
+			username
+			id
+		}
+		... on ValidationError {
+			errors {
+				message
+				field
+			}
+		}
+	}
+}
