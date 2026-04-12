@@ -19,6 +19,7 @@ export function ProfileBody({ user }: Props) {
 				px: "7",
 				paddingBottom: "20",
 				bg: "stone.100",
+				flex: 1,
 			})}
 		>
 			<VStack gap="5">

@@ -13,6 +13,7 @@ export function ProfileContent({ user }: Props) {
 	return (
 		<Box
 			className={css({
+				minHeight: "calc(100vh - var(--uf-header-height)",
 				flex: 1,
 				overflowY: "auto",
 				display: "flex",
