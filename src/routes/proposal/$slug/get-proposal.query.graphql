@@ -14,6 +14,7 @@ query GetProposal($slug: String!) {
 			creator {
 				id
 				name
+				username
 			}
 			categories
 			likeCount

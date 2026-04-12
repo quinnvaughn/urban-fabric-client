@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import { ChevronRight, ChevronUp, Trash } from "lucide-react"
 import { DateTime } from "luxon"
 import { Suspense, useEffect, useRef, useState } from "react"
@@ -102,9 +103,18 @@ export function ProposalComment({ comment, slug, readOnly = false }: Props) {
 								gap: "2",
 							})}
 						>
-							<Typography.Text size="sm" weight="semibold" color="stone.800">
+							<Link
+								to={user?.id ? "/dashboard/user/$username" : "/user/$username"}
+								params={{ username: comment.user.username }}
+								className={css({
+									fontSize: "sm",
+									fontWeight: "semibold",
+									color: { base: "stone.800", _hover: "brand.default" },
+									_hover: { textDecoration: "underline" },
+								})}
+							>
 								{comment.user.name}
-							</Typography.Text>
+							</Link>
 							<HStack gap="1.5" className={css({ flex: 1 })}>
 								<Typography.Text size="xs" color="stone.400">
 									{DateTime.fromISO(comment.createdAt).toRelative()}

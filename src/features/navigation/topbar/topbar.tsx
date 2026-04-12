@@ -40,7 +40,7 @@ export function Topbar() {
 				gap: "3",
 				px: "7",
 				borderBottom: "1px solid",
-				borderBottomColor: "bg.subtle",
+				borderBottomColor: "border.subtle",
 				background: "stone.50",
 				animation: "fadeDown 0.4s var(--easings-spring) both",
 			})}

@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import { Trash } from "lucide-react"
 import { DateTime } from "luxon"
 import { useEffect, useRef, useState } from "react"
@@ -92,9 +93,18 @@ export function CommentReply({ reply, readOnly = false }: Props) {
 								width: "full",
 							})}
 						>
-							<Typography.Text size="sm" weight="semibold" color="stone.800">
+							<Link
+								to={user?.id ? "/dashboard/user/$username" : "/user/$username"}
+								params={{ username: reply.user.username }}
+								className={css({
+									fontSize: "sm",
+									fontWeight: "semibold",
+									color: { base: "stone.800", _hover: "brand.default" },
+									_hover: { textDecoration: "underline" },
+								})}
+							>
 								{reply.user.name}
-							</Typography.Text>
+							</Link>
 							<HStack gap="1.5" className={css({ flex: 1 })}>
 								<Typography.Text size="xs" color="stone.400">
 									{DateTime.fromISO(reply.createdAt).toRelative()}

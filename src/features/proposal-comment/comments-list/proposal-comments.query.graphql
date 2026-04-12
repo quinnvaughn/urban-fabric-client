@@ -38,5 +38,6 @@ fragment CommentCard on ProposalComment {
 	user {
 		id
 		name
+		username
 	}
 }

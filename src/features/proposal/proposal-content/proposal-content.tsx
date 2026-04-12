@@ -37,7 +37,10 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 				/>
 				<Box className={css({ px: "5" })}>
 					<VStack gap="3">
-						<ProposalPanelAuthor name={proposal.creator.name} />
+						<ProposalPanelAuthor
+							name={proposal.creator.name}
+							username={proposal.creator.username}
+						/>
 						<ProposalPanelMeta
 							dateLabel={DateTime.fromISO(
 								proposal.publishedAt as string,

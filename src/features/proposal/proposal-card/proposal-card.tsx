@@ -129,6 +129,7 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 								fontSize: "xs",
 								color: { base: "stone.500", _hover: "brand.default" },
 								position: "relative",
+								_hover: { textDecoration: "underline" },
 							})}
 							to={user ? "/dashboard/user/$username" : "/user/$username"}
 							params={{ username: proposal.creator.username }}
