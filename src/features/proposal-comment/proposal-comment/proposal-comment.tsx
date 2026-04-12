@@ -108,7 +108,7 @@ export function ProposalComment({ comment, slug, readOnly = false }: Props) {
 							})}
 						>
 							<Link
-								to={user?.id ? "/dashboard/user/$username" : "/user/$username"}
+								to="/user/$username"
 								params={{ username: comment.user.username }}
 								className={css({
 									fontSize: "sm",

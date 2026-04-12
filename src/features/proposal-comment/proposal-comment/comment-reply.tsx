@@ -98,7 +98,7 @@ export function CommentReply({ reply, readOnly = false }: Props) {
 							})}
 						>
 							<Link
-								to={user?.id ? "/dashboard/user/$username" : "/user/$username"}
+								to="/user/$username"
 								params={{ username: reply.user.username }}
 								className={css({
 									fontSize: "sm",

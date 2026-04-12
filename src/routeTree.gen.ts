@@ -18,7 +18,6 @@ import { Route as UserUsernameRouteImport } from './routes/user/$username'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
-import { Route as DashboardExploreRouteImport } from './routes/dashboard/explore'
 import { Route as FabricIdRouteRouteImport } from './routes/fabric/$id/route'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
 import { Route as ProposalSlugIndexRouteImport } from './routes/proposal/$slug/index'
@@ -27,7 +26,6 @@ import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/s
 import { Route as ProposalSlugEmbedRouteImport } from './routes/proposal/$slug/embed'
 import { Route as ProposalSlugEditRouteImport } from './routes/proposal/$slug/edit'
 import { Route as FabricIdPublishRouteImport } from './routes/fabric/$id/publish'
-import { Route as DashboardUserUsernameRouteImport } from './routes/dashboard/user/$username'
 import { Route as MarketingAuthRegisterRouteImport } from './routes/_marketing/_auth/register'
 import { Route as MarketingAuthLoginRouteImport } from './routes/_marketing/_auth/login'
 
@@ -75,11 +73,6 @@ const DashboardFabricsRoute = DashboardFabricsRouteImport.update({
   path: '/fabrics',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardExploreRoute = DashboardExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
 const FabricIdRouteRoute = FabricIdRouteRouteImport.update({
   id: '/fabric/$id',
   path: '/fabric/$id',
@@ -119,11 +112,6 @@ const FabricIdPublishRoute = FabricIdPublishRouteImport.update({
   path: '/publish',
   getParentRoute: () => FabricIdRouteRoute,
 } as any)
-const DashboardUserUsernameRoute = DashboardUserUsernameRouteImport.update({
-  id: '/user/$username',
-  path: '/user/$username',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
 const MarketingAuthRegisterRoute = MarketingAuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -140,7 +128,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/explore': typeof ExploreRoute
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
-  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -148,7 +135,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
-  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -159,7 +145,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/': typeof MarketingIndexRoute
-  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -167,7 +152,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof MarketingAuthLoginRoute
   '/register': typeof MarketingAuthRegisterRoute
-  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -182,7 +166,6 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
-  '/dashboard/explore': typeof DashboardExploreRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
@@ -191,7 +174,6 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/_marketing/_auth/login': typeof MarketingAuthLoginRoute
   '/_marketing/_auth/register': typeof MarketingAuthRegisterRoute
-  '/dashboard/user/$username': typeof DashboardUserUsernameRoute
   '/fabric/$id/publish': typeof FabricIdPublishRoute
   '/proposal/$slug/edit': typeof ProposalSlugEditRoute
   '/proposal/$slug/embed': typeof ProposalSlugEmbedRoute
@@ -206,7 +188,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/fabric/$id'
-    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -214,7 +195,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/login'
     | '/register'
-    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -225,7 +205,6 @@ export interface FileRouteTypes {
   to:
     | '/explore'
     | '/'
-    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -233,7 +212,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
-    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -247,7 +225,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/_marketing/_auth'
     | '/fabric/$id'
-    | '/dashboard/explore'
     | '/dashboard/fabrics'
     | '/dashboard/proposals'
     | '/fabric/new'
@@ -256,7 +233,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/_marketing/_auth/login'
     | '/_marketing/_auth/register'
-    | '/dashboard/user/$username'
     | '/fabric/$id/publish'
     | '/proposal/$slug/edit'
     | '/proposal/$slug/embed'
@@ -342,13 +318,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFabricsRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/explore': {
-      id: '/dashboard/explore'
-      path: '/explore'
-      fullPath: '/dashboard/explore'
-      preLoaderRoute: typeof DashboardExploreRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
     '/fabric/$id': {
       id: '/fabric/$id'
       path: '/fabric/$id'
@@ -405,13 +374,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FabricIdPublishRouteImport
       parentRoute: typeof FabricIdRouteRoute
     }
-    '/dashboard/user/$username': {
-      id: '/dashboard/user/$username'
-      path: '/user/$username'
-      fullPath: '/dashboard/user/$username'
-      preLoaderRoute: typeof DashboardUserUsernameRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
     '/_marketing/_auth/register': {
       id: '/_marketing/_auth/register'
       path: '/register'
@@ -457,20 +419,16 @@ const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
-  DashboardExploreRoute: typeof DashboardExploreRoute
   DashboardFabricsRoute: typeof DashboardFabricsRoute
   DashboardProposalsRoute: typeof DashboardProposalsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardUserUsernameRoute: typeof DashboardUserUsernameRoute
   DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardExploreRoute: DashboardExploreRoute,
   DashboardFabricsRoute: DashboardFabricsRoute,
   DashboardProposalsRoute: DashboardProposalsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardUserUsernameRoute: DashboardUserUsernameRoute,
   DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
 }
 

@@ -18,7 +18,7 @@ export function UserMenuItems({ onBeforeLogout }: UserMenuContentProps) {
 		<>
 			{user && (
 				<Menu.Link
-					to="/dashboard/user/$username"
+					to="/user/$username"
 					params={{ username: user.username }}
 				>
 					<Users size={12} />

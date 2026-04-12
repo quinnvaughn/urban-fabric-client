@@ -131,7 +131,7 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 								position: "relative",
 								_hover: { textDecoration: "underline" },
 							})}
-							to={user ? "/dashboard/user/$username" : "/user/$username"}
+							to="/user/$username"
 							params={{ username: proposal.creator.username }}
 						>
 							{proposal.creator.name}

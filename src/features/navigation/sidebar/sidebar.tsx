@@ -101,7 +101,7 @@ export function Sidebar() {
 				<SidebarSectionLabel>Community</SidebarSectionLabel>
 				<SidebarLink
 					icon={<Search size={16} />}
-					to="/dashboard/explore"
+					to="/explore"
 					preload="intent"
 				>
 					Explore
