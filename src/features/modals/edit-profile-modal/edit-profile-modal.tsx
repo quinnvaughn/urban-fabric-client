@@ -240,30 +240,11 @@ export function EditProfileModal({ open, onClose, user }: Props) {
 										e.target.value = ""
 									}}
 								/>
-								<div
-									className={css({
-										width: "68px",
-										height: "68px",
-										borderRadius: "full",
-										flexShrink: 0,
-										overflow: "hidden",
-									})}
-								>
-									{profilePicturePreview ? (
-										<img
-											src={profilePicturePreview}
-											// biome-ignore lint/a11y/noRedundantAlt: shut the fuck up
-											alt="profile picture preview"
-											className={css({
-												width: "full",
-												height: "full",
-												objectFit: "cover",
-											})}
-										/>
-									) : (
-										<Avatar name={user.name} size="lg" />
-									)}
-								</div>
+								<Avatar
+									name={user.name}
+									size="lg"
+									profilePictureUrl={profilePicturePreview}
+								/>
 								<VStack gap="0.5" className={css({ flex: 1 })}>
 									<Typography.Text size="sm" weight="medium" color="stone.900">
 										Profile picture
