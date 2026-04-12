@@ -13,7 +13,14 @@ export function ProfileBody({ user }: Props) {
 	const { user: me } = useCurrentUser()
 	const [tab, setTab] = useState<"proposals" | "liked">("proposals")
 	return (
-		<Box className={css({ paddingTop: "5", px: "7", paddingBottom: "20" })}>
+		<Box
+			className={css({
+				paddingTop: "5",
+				px: "7",
+				paddingBottom: "20",
+				bg: "stone.100",
+			})}
+		>
 			<VStack gap="5">
 				<Tabs
 					size="md"

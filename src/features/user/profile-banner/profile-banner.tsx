@@ -7,7 +7,28 @@ type Props = {
 
 export function ProfileBanner({ bannerImageUrl }: Props) {
 	return bannerImageUrl ? (
-		<div>Hi</div>
+		<Box
+			className={css({
+				width: "100%",
+				bg: "stone.100",
+				height: "100%",
+				display: "flex",
+				justify: "center",
+			})}
+		>
+			<img
+				src={bannerImageUrl}
+				alt=""
+				className={css({
+					height: "200px",
+					width: "100%",
+					objectFit: "cover",
+					objectPosition: "center",
+					display: "block",
+					flexShrink: 0,
+				})}
+			/>
+		</Box>
 	) : (
 		<Box
 			className={css({

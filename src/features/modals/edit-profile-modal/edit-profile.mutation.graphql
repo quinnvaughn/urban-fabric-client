@@ -1,0 +1,13 @@
+mutation EditProfile($input: EditProfileInput!) {
+	editProfile(input: $input) {
+		... on UnauthorizedError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on User {
+			...UserProfile
+		}
+	}
+}

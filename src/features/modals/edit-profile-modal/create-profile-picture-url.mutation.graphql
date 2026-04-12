@@ -1,0 +1,13 @@
+mutation CreateUserProfilePictureUploadUrl(
+	$input: CreateUserProfilePictureUploadUrlInput!
+) {
+	createUserProfilePictureUploadUrl(input: $input) {
+		... on PresignedUploadResult {
+			publicUrl
+			uploadUrl
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

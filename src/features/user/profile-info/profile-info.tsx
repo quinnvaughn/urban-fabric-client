@@ -4,6 +4,7 @@ import { Box, Button, HStack, Typography, VStack } from "#/features/ui"
 import type { UserProfileFragment } from "#/graphql/generated"
 import { useCurrentUser } from "#/lib/graphql"
 import { getInitials } from "#/lib/string"
+import { useModalStore } from "#/stores"
 import { css } from "#/styles/styled-system/css"
 import { ProfileStat } from "../profile-stat"
 
@@ -21,6 +22,7 @@ const metaItem = css({
 
 export function ProfileInfo({ user }: Props) {
 	const { user: me } = useCurrentUser()
+	const { open } = useModalStore()
 
 	const isUser = me?.id === user.id
 	return (
@@ -36,14 +38,28 @@ export function ProfileInfo({ user }: Props) {
 			<VStack gap="7">
 				<VStack gap="2.5">
 					<VStack gap="2">
-						<Box className={css({ marginTop: "-34px" })}>
+						<Box className={css({ marginTop: "-65px" })}>
 							{user.profilePictureUrl ? (
-								<img src={user.profilePictureUrl} alt="user profile" />
+								<img
+									src={user.profilePictureUrl}
+									alt=""
+									className={css({
+										width: "130px",
+										height: "130px",
+										borderRadius: "full",
+										objectFit: "cover",
+										objectPosition: "center",
+										border: "3px solid",
+										borderColor: "white",
+										boxShadow: "md",
+										display: "block",
+									})}
+								/>
 							) : (
 								<Box
 									className={css({
-										width: "68px",
-										height: "68px",
+										width: "130px",
+										height: "130px",
 										borderRadius: "full",
 										background: "accent.default",
 										color: "white",
@@ -76,7 +92,12 @@ export function ProfileInfo({ user }: Props) {
 								</Typography.Text>
 							</Box>
 							{isUser && (
-								<Button appearance="outline" size="sm" intent="neutral">
+								<Button
+									onClick={() => open("editProfile", { user })}
+									appearance="outline"
+									size="sm"
+									intent="neutral"
+								>
 									Edit profile
 								</Button>
 							)}

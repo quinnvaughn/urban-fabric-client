@@ -1,6 +1,7 @@
 import type * as React from "react"
 import { AuthModal } from "./auth-modal"
 import { DeleteAccountModal } from "./delete-account-modal"
+import { EditProfileModal } from "./edit-profile-modal"
 import { EmbedCodeModal } from "./embed-code-modal"
 import { GettingStartedModal } from "./getting-started-modal"
 import { ShareProposalModal } from "./share-proposal-modal"
@@ -15,6 +16,7 @@ export const modalRegistry = {
 	toolRef: ToolRefModal,
 	shareProposal: ShareProposalModal,
 	gettingStarted: GettingStartedModal,
+	editProfile: EditProfileModal,
 } as const
 
 /** Props a modal component needs beyond the injected `open` / `onClose`. */

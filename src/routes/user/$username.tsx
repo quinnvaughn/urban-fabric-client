@@ -1,6 +1,7 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { NotFoundView } from "#/features/errors"
+import { Navbar } from "#/features/navigation"
 import { ProfileContent } from "#/features/user"
 import { GetUserProfileDocument } from "#/graphql/generated"
 
@@ -22,5 +23,10 @@ function RouteComponent() {
 	if (data.user.__typename === "NotFoundError") {
 		return <NotFoundView />
 	}
-	return <ProfileContent user={data.user} />
+	return (
+		<>
+			<Navbar />
+			<ProfileContent user={data.user} />
+		</>
+	)
 }

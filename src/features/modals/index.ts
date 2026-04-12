@@ -1,4 +1,5 @@
 export * from "./delete-account-modal"
+export * from "./edit-profile-modal"
 export * from "./embed-code-modal"
 export * from "./getting-started-modal"
 export * from "./registry"

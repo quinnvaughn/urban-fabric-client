@@ -1,0 +1,11 @@
+mutation CreateUserBannerUploadUrl($input: CreateUserBannerUploadUrlInput!) {
+	createUserBannerUploadUrl(input: $input) {
+		... on PresignedUploadResult {
+			publicUrl
+			uploadUrl
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}
