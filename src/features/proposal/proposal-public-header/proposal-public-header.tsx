@@ -63,8 +63,8 @@ export function ProposalPublicHeader({
 				>
 					<MapPin size={10} />
 					<Typography.Text
-						size="xs"
-						className={css({ color: "inherit" })}
+						color="stone.500"
+						size="sm"
 					>{`${city}, ${region}`}</Typography.Text>
 				</HStack>
 			</HStack>

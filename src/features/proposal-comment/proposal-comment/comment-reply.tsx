@@ -82,7 +82,11 @@ export function CommentReply({ reply, readOnly = false }: Props) {
 		>
 			<VStack gap="2">
 				<HStack gap="2" align="start">
-					<Avatar name={reply.user.name} size="xs" />
+					<Avatar
+						profilePictureUrl={reply.user.profilePictureUrl}
+						name={reply.user.name}
+						size="sm"
+					/>
 					<VStack gap="1" align="start" fullWidth>
 						<Box
 							className={css({

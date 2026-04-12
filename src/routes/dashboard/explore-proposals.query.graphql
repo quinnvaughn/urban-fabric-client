@@ -43,6 +43,7 @@ fragment ProposalCard on Proposal {
 		id
 		name
 		username
+		profilePictureUrl
 	}
 	categories
 }

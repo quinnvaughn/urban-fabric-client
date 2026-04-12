@@ -7,6 +7,7 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 	size?: AvatarVariantProps["size"]
 	tone?: AvatarVariantProps["tone"]
 	appearance?: AvatarVariantProps["appearance"]
+	profilePictureUrl?: string | null
 }
 
 export function Avatar({
@@ -15,6 +16,7 @@ export function Avatar({
 	tone,
 	appearance,
 	className,
+	profilePictureUrl,
 	...rest
 }: AvatarProps) {
 	return (
@@ -22,7 +24,15 @@ export function Avatar({
 			className={cx(avatar({ size, tone, appearance }), className)}
 			{...rest}
 		>
-			{getInitials(name)}
+			{profilePictureUrl ? (
+				<img
+					src={profilePictureUrl}
+					alt={name}
+					style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
+				/>
+			) : (
+				getInitials(name)
+			)}
 		</div>
 	)
 }

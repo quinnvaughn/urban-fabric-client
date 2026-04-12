@@ -92,7 +92,11 @@ export function ProposalComment({ comment, slug, readOnly = false }: Props) {
 		>
 			<VStack gap="2">
 				<HStack gap="2" align="start">
-					<Avatar name={comment.user.name} size="xs" />
+					<Avatar
+						profilePictureUrl={comment.user.profilePictureUrl}
+						name={comment.user.name}
+						size="sm"
+					/>
 					<VStack gap="1" align="start" fullWidth>
 						<Box
 							className={css({

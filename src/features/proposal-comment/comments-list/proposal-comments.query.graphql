@@ -39,5 +39,6 @@ fragment CommentCard on ProposalComment {
 		id
 		name
 		username
+		profilePictureUrl
 	}
 }

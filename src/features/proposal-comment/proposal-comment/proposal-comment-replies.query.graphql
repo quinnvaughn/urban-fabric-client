@@ -11,7 +11,6 @@ fragment ReplyCard on ProposalComment {
 		user {
 			id
 			name
-			username
 		}
 	}
 }

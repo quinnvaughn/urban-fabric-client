@@ -12,4 +12,5 @@ fragment Me on User {
 	email
 	authProviders
 	username
+	profilePictureUrl
 }

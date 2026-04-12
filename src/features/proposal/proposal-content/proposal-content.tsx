@@ -40,6 +40,7 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 						<ProposalPanelAuthor
 							name={proposal.creator.name}
 							username={proposal.creator.username}
+							profilePictureUrl={proposal.creator.profilePictureUrl}
 						/>
 						<ProposalPanelMeta
 							dateLabel={DateTime.fromISO(

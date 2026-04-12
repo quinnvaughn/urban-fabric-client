@@ -15,6 +15,7 @@ query GetProposal($slug: String!) {
 				id
 				name
 				username
+				profilePictureUrl
 			}
 			categories
 			likeCount

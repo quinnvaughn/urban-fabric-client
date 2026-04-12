@@ -6,13 +6,18 @@ import { css } from "#/styles/styled-system/css"
 type Props = {
 	name: string
 	username: string
+	profilePictureUrl?: string | null
 }
 
-export function ProposalPanelAuthor({ name, username }: Props) {
+export function ProposalPanelAuthor({
+	name,
+	username,
+	profilePictureUrl,
+}: Props) {
 	const { user: me } = useCurrentUser()
 	return (
 		<HStack align="center" gap="2" wrap>
-			<Avatar size="xs" name={name} />
+			<Avatar size="md" name={name} profilePictureUrl={profilePictureUrl} />
 			<Link
 				to={me?.id ? "/dashboard/user/$username" : "/user/$username"}
 				params={{ username }}

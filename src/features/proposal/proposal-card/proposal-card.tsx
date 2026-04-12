@@ -123,7 +123,7 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 						</HStack>
 					</Box>
 					<HStack gap="1" align="center">
-						<Avatar size="xxs" name={proposal.creator.name} />
+						<Avatar size="xxs" name={proposal.creator.name} profilePictureUrl={proposal.creator.profilePictureUrl} />
 						<Link
 							className={css({
 								fontSize: "xs",

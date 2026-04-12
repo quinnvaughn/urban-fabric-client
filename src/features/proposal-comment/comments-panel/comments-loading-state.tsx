@@ -70,7 +70,7 @@ function CommentCardSkeleton({ isReplies }: { isReplies: boolean }) {
 			<VStack gap="2">
 				<HStack gap="2" align="start">
 					<Skeleton.Circle
-						size={isReplies ? 24 : 32}
+						size={32}
 						className={css({ marginTop: "0.5" })}
 					/>
 					<VStack gap="3" fullWidth>

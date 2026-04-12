@@ -79,6 +79,7 @@ export function ComposeArea({ slug }: Props) {
 						name={user?.name || ""}
 						tone={user?.id ? "accent" : "neutral"}
 						size="xs"
+						profilePictureUrl={user?.profilePictureUrl}
 					/>
 					<Typography.Text size="sm" weight="medium" color="stone.600">
 						Add a comment

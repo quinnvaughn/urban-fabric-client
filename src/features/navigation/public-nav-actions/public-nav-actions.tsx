@@ -4,7 +4,7 @@ import type { ButtonHTMLAttributes } from "react"
 import { useState } from "react"
 import { match } from "ts-pattern"
 import { Avatar, HStack, Menu } from "#/features/ui"
-import type { User } from "#/graphql/generated"
+import type { MeFragment } from "#/graphql/generated"
 import { useCurrentUser } from "#/lib/graphql"
 import { useIsMobile } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
@@ -15,7 +15,7 @@ type AuthenticatedAction = "dashboard" | "new-fabric"
 type AuthenticatedActionMode = AuthenticatedAction | "dashboard-and-new-fabric"
 type NavViewerState =
 	| { kind: "loading" }
-	| { kind: "authenticated"; user: User }
+	| { kind: "authenticated"; user: MeFragment }
 	| { kind: "guest" }
 
 interface PublicNavActionsProps {
@@ -121,6 +121,7 @@ export function PublicNavActions({
 			({ viewerState }) => (
 				<AuthenticatedMobileNav
 					name={viewerState.user.name}
+					profilePictureUrl={viewerState.user.profilePictureUrl}
 					actions={authenticatedActionConfig[authenticatedAction]}
 					isMenuOpen={isMenuOpen}
 					onMenuOpenChange={setIsMenuOpen}
@@ -133,6 +134,7 @@ export function PublicNavActions({
 				<AuthenticatedDesktopNav
 					actions={authenticatedActionConfig[authenticatedAction]}
 					name={viewerState.user.name}
+					profilePictureUrl={viewerState.user.profilePictureUrl}
 					isMenuOpen={isMenuOpen}
 					onMenuOpenChange={setIsMenuOpen}
 				/>
@@ -153,11 +155,13 @@ export function PublicNavActions({
 
 function AuthenticatedMobileNav({
 	name,
+	profilePictureUrl,
 	actions,
 	isMenuOpen,
 	onMenuOpenChange,
 }: {
 	name: string
+	profilePictureUrl?: string | null
 	actions: AuthenticatedNavAction[]
 	isMenuOpen: boolean
 	onMenuOpenChange: (open: boolean) => void
@@ -170,7 +174,7 @@ function AuthenticatedMobileNav({
 		>
 			<Menu.Trigger>
 				<button type="button" className={css({ cursor: "pointer" })}>
-					<Avatar name={name} size="sm" tone="accent" />
+					<Avatar name={name} size="sm" tone="accent" profilePictureUrl={profilePictureUrl} />
 				</button>
 			</Menu.Trigger>
 			<Menu.Content>
@@ -189,11 +193,13 @@ function AuthenticatedMobileNav({
 function AuthenticatedDesktopNav({
 	actions,
 	name,
+	profilePictureUrl,
 	isMenuOpen,
 	onMenuOpenChange,
 }: {
 	actions: AuthenticatedNavAction[]
 	name: string
+	profilePictureUrl?: string | null
 	isMenuOpen: boolean
 	onMenuOpenChange: (open: boolean) => void
 }) {
@@ -219,7 +225,7 @@ function AuthenticatedDesktopNav({
 			>
 				<Menu.Trigger>
 					<button type="button" className={css({ cursor: "pointer" })}>
-						<Avatar name={name} size="sm" tone="accent" />
+						<Avatar name={name} size="sm" tone="accent" profilePictureUrl={profilePictureUrl} />
 					</button>
 				</Menu.Trigger>
 				<Menu.Content>

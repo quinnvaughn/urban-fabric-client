@@ -143,7 +143,7 @@ export function Sidebar() {
 							})}
 						>
 							<HStack gap="2.5" align="center">
-								<Avatar size="sm" name={user?.name ?? "User"} />
+								<Avatar size="sm" name={user?.name ?? "User"} profilePictureUrl={user?.profilePictureUrl} />
 								<Typography.Text size="sm">
 									{user?.name ?? "User"}
 								</Typography.Text>

@@ -40,7 +40,7 @@ export function EmbedCommentItem({
 							flex: 1,
 						})}
 					>
-						<Avatar name={comment.user.name} size="xs" />
+						<Avatar name={comment.user.name} size="xs" profilePictureUrl={comment.user.profilePictureUrl} />
 						<Typography.Text size="sm" weight="semibold" color="stone.800">
 							{comment.user.name}
 						</Typography.Text>
