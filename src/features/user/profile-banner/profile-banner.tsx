@@ -11,7 +11,6 @@ export function ProfileBanner({ bannerImageUrl }: Props) {
 			className={css({
 				width: "100%",
 				bg: "stone.100",
-				height: "100%",
 				display: "flex",
 				justify: "center",
 			})}
