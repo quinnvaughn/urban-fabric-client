@@ -22,11 +22,9 @@ function RouteComponent() {
 	const { data } = useReadQuery(getUserQuery)
 	const { capture } = useAnalytics()
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
+	// biome-ignore lint/correctness/useExhaustiveDependencies: capture is stable
 	useEffect(() => {
-		if (data.user.__typename !== "NotFoundError") {
-			capture("profile_viewed", { username: data.user.username })
-		}
+		capture("page_viewed", { page: "profile" })
 	}, [])
 
 	if (data.user.__typename === "NotFoundError") {
