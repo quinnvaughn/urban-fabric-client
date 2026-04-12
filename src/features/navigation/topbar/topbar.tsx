@@ -1,33 +1,20 @@
 import { Link, useMatches } from "@tanstack/react-router"
 import { Typography } from "#/features/ui"
-import { useCurrentUser } from "#/lib/graphql"
 import { css, cx } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 
 export function Topbar() {
 	const matches = useMatches()
-	const { user } = useCurrentUser()
 
 	const routeNames: Record<string, string> = {
 		"/dashboard/": "Dashboard",
 		"/dashboard/fabrics": "Fabrics",
 		"/dashboard/proposals": "Proposals",
-		"/dashboard/explore": "Explore",
 		"/dashboard/settings/": "Settings",
 	}
 
 	const currentMatch = matches[matches.length - 1]
-	const profileUsername =
-		currentMatch.routeId === "/dashboard/user/$username"
-			? (currentMatch.params as { username?: string }).username
-			: null
-
-	const name =
-		profileUsername != null && user?.username === profileUsername
-			? "My Profile"
-			: profileUsername != null
-				? `@${profileUsername}`
-				: (routeNames[currentMatch.routeId] ?? null)
+	const name = routeNames[currentMatch.routeId] ?? null
 
 	return (
 		<header
