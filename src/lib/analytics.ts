@@ -54,6 +54,7 @@ type EventMap = {
 	proposal_share_modal_opened: { source: string }
 	proposal_shared: { method: string; source: string }
 	proposal_share_modal_dismissed: { source: string }
+	profile_viewed: { username: string }
 
 	// Editor
 	editor_element_added: { element_type: string }
