@@ -1,3 +1,4 @@
+import { getInitials } from "#/lib/string"
 import { cx } from "#/styles/styled-system/css"
 import { type AvatarVariantProps, avatar } from "#/styles/styled-system/recipes"
 
@@ -6,15 +7,6 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 	size?: AvatarVariantProps["size"]
 	tone?: AvatarVariantProps["tone"]
 	appearance?: AvatarVariantProps["appearance"]
-}
-
-function getInitials(name: string) {
-	return name
-		.split(" ")
-		.map((n) => n[0])
-		.join("")
-		.slice(0, 2)
-		.toUpperCase()
 }
 
 export function Avatar({

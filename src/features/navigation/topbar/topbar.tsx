@@ -1,11 +1,12 @@
 import { Link, useMatches } from "@tanstack/react-router"
 import { Typography } from "#/features/ui"
+import { useCurrentUser } from "#/lib/graphql"
 import { css, cx } from "#/styles/styled-system/css"
 import { button } from "#/styles/styled-system/recipes"
 
 export function Topbar() {
-	// get route name
 	const matches = useMatches()
+	const { user } = useCurrentUser()
 
 	const routeNames: Record<string, string> = {
 		"/dashboard/": "Dashboard",
@@ -16,7 +17,17 @@ export function Topbar() {
 	}
 
 	const currentMatch = matches[matches.length - 1]
-	const name = routeNames[currentMatch.routeId] || null
+	const profileUsername =
+		currentMatch.routeId === "/dashboard/user/$username"
+			? (currentMatch.params as { username?: string }).username
+			: null
+
+	const name =
+		profileUsername != null && user?.username === profileUsername
+			? "My Profile"
+			: profileUsername != null
+				? `@${profileUsername}`
+				: (routeNames[currentMatch.routeId] ?? null)
 
 	return (
 		<header
@@ -29,8 +40,8 @@ export function Topbar() {
 				gap: "3",
 				px: "7",
 				borderBottom: "1px solid",
-				borderBottomColor: "stone.200",
-				background: "bg.base",
+				borderBottomColor: "bg.subtle",
+				background: "stone.50",
 				animation: "fadeDown 0.4s var(--easings-spring) both",
 			})}
 		>

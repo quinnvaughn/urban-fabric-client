@@ -4,10 +4,27 @@ query GetUserProfile($username: String!) {
 			message
 		}
 		... on User {
-			id
-			proposals {
-				...ProposalCard
-			}
+			...UserProfile
 		}
+	}
+}
+
+fragment UserProfile on User {
+	id
+	bannerImageUrl
+	profilePictureUrl
+	bio
+	location
+	name
+	createdAt
+	username
+	numProposals
+	numLikes
+	numViews
+	proposals {
+		...ProposalCard
+	}
+	likedProposals {
+		...ProposalCard
 	}
 }
