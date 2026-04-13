@@ -14,6 +14,7 @@ import {
 	type FollowingProposalsQuery,
 } from "#/graphql/generated"
 import { usePaginatedQuery } from "#/lib/hooks"
+import { singularOrPlural } from "#/lib/string"
 import { css } from "#/styles/styled-system/css"
 
 type Props = {
@@ -48,7 +49,8 @@ export function FollowingList({ initialData }: Props) {
 			<VStack gap="4">
 				{initialData.total > 0 && (
 					<Typography.Text size="sm" color="stone.400">
-						{initialData.total} proposals
+						{initialData.total}{" "}
+						{singularOrPlural("proposal", "proposals", initialData.total)}
 					</Typography.Text>
 				)}
 				{match(initialData.items)
