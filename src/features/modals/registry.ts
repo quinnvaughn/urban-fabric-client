@@ -4,6 +4,7 @@ import { DeleteAccountModal } from "./delete-account-modal"
 import { EditProfileModal } from "./edit-profile-modal"
 import { EmbedCodeModal } from "./embed-code-modal"
 import { GettingStartedModal } from "./getting-started-modal"
+import { ShareProfileModal } from "./share-profile-modal"
 import { ShareProposalModal } from "./share-proposal-modal"
 import { ShortcutsModal } from "./shortcuts-modal"
 import { ToolRefModal } from "./tool-ref-modal"
@@ -15,6 +16,7 @@ export const modalRegistry = {
 	shortcuts: ShortcutsModal,
 	toolRef: ToolRefModal,
 	shareProposal: ShareProposalModal,
+	shareProfile: ShareProfileModal,
 	gettingStarted: GettingStartedModal,
 	editProfile: EditProfileModal,
 } as const

@@ -14,7 +14,7 @@ export type AuthSource =
 
 // ── Event map ─────────────────────────────────────────────────────────────────
 
-type EventMap = {
+export type EventMap = {
 	// Acquisition / Auth
 	page_viewed: {
 		page:
@@ -56,6 +56,11 @@ type EventMap = {
 	proposal_share_modal_opened: { source: string }
 	proposal_shared: { method: string; source: string }
 	proposal_share_modal_dismissed: { source: string }
+
+	// Profile
+	profile_share_modal_opened: { source: string }
+	profile_shared: { method: string; source: string }
+	profile_share_modal_dismissed: { source: string }
 
 	// Editor
 	editor_element_added: { element_type: string }

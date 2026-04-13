@@ -1,4 +1,4 @@
-import { Calendar, MapPin } from "lucide-react"
+import { Calendar, MapPin, Share2 } from "lucide-react"
 import { DateTime } from "luxon"
 import { Box, Button, HStack, Typography, VStack } from "#/features/ui"
 import type { UserProfileFragment } from "#/graphql/generated"
@@ -6,6 +6,7 @@ import { useCurrentUser } from "#/lib/graphql"
 import { getInitials } from "#/lib/string"
 import { useModalStore } from "#/stores"
 import { css } from "#/styles/styled-system/css"
+import { FollowButton } from "../follow-button"
 import { ProfileStat } from "../profile-stat"
 
 type Props = {
@@ -33,6 +34,9 @@ export function ProfileInfo({ user }: Props) {
 				backgroundColor: "white",
 				borderBottom: "1px solid",
 				borderBottomColor: "border.subtle",
+				maxWidth: "700px",
+				margin: "0 auto",
+				width: "100%",
 			})}
 		>
 			<VStack gap="7">
@@ -91,16 +95,40 @@ export function ProfileInfo({ user }: Props) {
 									@{user.username}
 								</Typography.Text>
 							</Box>
-							{isUser && (
+							<HStack gap="2">
 								<Button
-									onClick={() => open("editProfile", { user })}
-									appearance="outline"
+									type="button"
 									size="sm"
 									intent="neutral"
+									appearance="outline"
+									startIcon={<Share2 size={14} />}
+									onClick={() =>
+										open("shareProfile", {
+											name: user.name,
+											link: window.location.href,
+											source: "share_button",
+										})
+									}
 								>
-									Edit profile
+									Share
 								</Button>
-							)}
+								{isUser ? (
+									<Button
+										onClick={() => open("editProfile", { user })}
+										appearance="outline"
+										size="sm"
+										intent="neutral"
+									>
+										Edit profile
+									</Button>
+								) : (
+									<FollowButton
+										userId={user.id}
+										isFollowedByMe={user.isFollowedByMe}
+										size="sm"
+									/>
+								)}
+							</HStack>
 						</HStack>
 						{user.bio && (
 							<Typography.Text

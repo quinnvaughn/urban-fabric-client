@@ -21,6 +21,7 @@ fragment UserProfile on User {
 	numProposals
 	numLikes
 	numViews
+	isFollowedByMe
 	proposals {
 		...ProposalCard
 	}

@@ -15,14 +15,20 @@ export function ProfileBody({ user }: Props) {
 	return (
 		<Box
 			className={css({
-				paddingTop: "5",
-				px: "7",
 				paddingBottom: "20",
 				bg: "stone.100",
 				flex: 1,
 			})}
 		>
-			<VStack gap="5">
+			<VStack
+				gap="5"
+				className={css({
+					maxWidth: "700px",
+					margin: "0 auto",
+					px: "7",
+					paddingTop: "5",
+				})}
+			>
 				<Tabs
 					size="md"
 					value={tab}
