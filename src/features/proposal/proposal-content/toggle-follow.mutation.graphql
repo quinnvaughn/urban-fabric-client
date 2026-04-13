@@ -1,0 +1,13 @@
+mutation ToggleFollow($userId: String!) {
+	toggleFollow(userId: $userId) {
+		... on NotFoundError {
+			message
+		}
+		... on ToggleFollowResponse {
+			data
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

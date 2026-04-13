@@ -41,6 +41,8 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 							name={proposal.creator.name}
 							username={proposal.creator.username}
 							profilePictureUrl={proposal.creator.profilePictureUrl}
+							creatorId={proposal.creator.id}
+							isFollowedByMe={proposal.creator.isFollowedByMe}
 						/>
 						<ProposalPanelMeta
 							dateLabel={DateTime.fromISO(

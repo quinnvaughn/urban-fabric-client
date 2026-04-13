@@ -16,6 +16,7 @@ query GetProposal($slug: String!) {
 				name
 				username
 				profilePictureUrl
+				isFollowedByMe
 			}
 			categories
 			likeCount

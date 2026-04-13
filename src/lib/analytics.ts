@@ -10,6 +10,7 @@ export type AuthSource =
 	| "publish"
 	| "google"
 	| "nudge"
+	| "follow creator"
 
 // ── Event map ─────────────────────────────────────────────────────────────────
 
