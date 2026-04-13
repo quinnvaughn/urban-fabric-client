@@ -6,7 +6,7 @@ import { css } from "#/styles/styled-system/css"
 export function ExploreNudge() {
 	return (
 		<Link
-			to="/dashboard/explore"
+			to="/explore"
 			className={css({
 				background:
 					"linear-gradient(135deg, var(--colors-teal-700) 0%, var(--colors-teal-600) 100%)",
