@@ -17,6 +17,7 @@ import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as UserUsernameRouteImport } from './routes/user/$username'
 import { Route as FabricNewRouteImport } from './routes/fabric/new'
 import { Route as DashboardProposalsRouteImport } from './routes/dashboard/proposals'
+import { Route as DashboardFollowingRouteImport } from './routes/dashboard/following'
 import { Route as DashboardFabricsRouteImport } from './routes/dashboard/fabrics'
 import { Route as FabricIdRouteRouteImport } from './routes/fabric/$id/route'
 import { Route as MarketingAuthRouteRouteImport } from './routes/_marketing/_auth/route'
@@ -66,6 +67,11 @@ const FabricNewRoute = FabricNewRouteImport.update({
 const DashboardProposalsRoute = DashboardProposalsRouteImport.update({
   id: '/proposals',
   path: '/proposals',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardFollowingRoute = DashboardFollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardFabricsRoute = DashboardFabricsRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/following': typeof DashboardFollowingRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
   '/user/$username': typeof UserUsernameRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/': typeof MarketingIndexRoute
   '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/following': typeof DashboardFollowingRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
   '/user/$username': typeof UserUsernameRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/_marketing/_auth': typeof MarketingAuthRouteRouteWithChildren
   '/fabric/$id': typeof FabricIdRouteRouteWithChildren
   '/dashboard/fabrics': typeof DashboardFabricsRoute
+  '/dashboard/following': typeof DashboardFollowingRoute
   '/dashboard/proposals': typeof DashboardProposalsRoute
   '/fabric/new': typeof FabricNewRoute
   '/user/$username': typeof UserUsernameRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/fabric/$id'
     | '/dashboard/fabrics'
+    | '/dashboard/following'
     | '/dashboard/proposals'
     | '/fabric/new'
     | '/user/$username'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/'
     | '/dashboard/fabrics'
+    | '/dashboard/following'
     | '/dashboard/proposals'
     | '/fabric/new'
     | '/user/$username'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/_marketing/_auth'
     | '/fabric/$id'
     | '/dashboard/fabrics'
+    | '/dashboard/following'
     | '/dashboard/proposals'
     | '/fabric/new'
     | '/user/$username'
@@ -309,6 +321,13 @@ declare module '@tanstack/react-router' {
       path: '/proposals'
       fullPath: '/dashboard/proposals'
       preLoaderRoute: typeof DashboardProposalsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/following': {
+      id: '/dashboard/following'
+      path: '/following'
+      fullPath: '/dashboard/following'
+      preLoaderRoute: typeof DashboardFollowingRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/fabrics': {
@@ -420,6 +439,7 @@ const MarketingRouteRouteWithChildren = MarketingRouteRoute._addFileChildren(
 
 interface DashboardRouteRouteChildren {
   DashboardFabricsRoute: typeof DashboardFabricsRoute
+  DashboardFollowingRoute: typeof DashboardFollowingRoute
   DashboardProposalsRoute: typeof DashboardProposalsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
@@ -427,6 +447,7 @@ interface DashboardRouteRouteChildren {
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardFabricsRoute: DashboardFabricsRoute,
+  DashboardFollowingRoute: DashboardFollowingRoute,
   DashboardProposalsRoute: DashboardProposalsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,

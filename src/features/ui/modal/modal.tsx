@@ -3,7 +3,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { cx } from "@/styles/styled-system/css"
 import { modal as modalRecipe } from "@/styles/styled-system/recipes"
-import type { ColorToken } from "@/styles/styled-system/tokens"
+import { Eyebrow } from "../eyebrow"
 import { type TextProps, Typography } from "../typography"
 
 // ---------- Types ----------
@@ -187,22 +187,10 @@ ModalFooter.displayName = "Modal.Footer"
 
 // ---------- Eyebrow ----------
 
-export interface ModalEyebrowProps
-	extends React.HTMLAttributes<HTMLSpanElement> {
-	color?: ColorToken
-}
-
-function ModalEyebrow({ color, ...rest }: ModalEyebrowProps) {
-	return (
-		<Typography.Text
-			size="xxs"
-			weight="semibold"
-			transform="uppercase"
-			letterSpacing="wider"
-			color={color}
-			{...rest}
-		/>
-	)
+function ModalEyebrow(
+	props: Omit<React.ComponentProps<typeof Eyebrow>, "size">,
+) {
+	return <Eyebrow size="xxs" {...props} />
 }
 ModalEyebrow.displayName = "Modal.Eyebrow"
 

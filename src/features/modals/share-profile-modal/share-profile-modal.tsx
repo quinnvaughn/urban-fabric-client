@@ -41,7 +41,7 @@ export function ShareProfileModal({
 		>
 			<Modal.Header>
 				<VStack gap="1">
-					<Modal.Eyebrow color="coral.500">Profile</Modal.Eyebrow>
+					<Modal.Eyebrow>Profile</Modal.Eyebrow>
 					<Modal.Title
 						font="serif"
 						color="stone.900"

@@ -1,0 +1,9 @@
+query FollowingProposals($offset: Int, $limit: Int) {
+	followingProposals(offset: $offset, limit: $limit) {
+		hasMore
+		total
+		proposals {
+			...ProposalCard
+		}
+	}
+}

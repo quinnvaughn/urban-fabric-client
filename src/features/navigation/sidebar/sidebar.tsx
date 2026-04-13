@@ -1,4 +1,10 @@
-import { ChevronDown, Layers, LayoutGrid, Search } from "lucide-react"
+import {
+	ChevronDown,
+	Layers,
+	LayoutGrid,
+	Search,
+	UsersRound,
+} from "lucide-react"
 import { useState } from "react"
 import {
 	Avatar,
@@ -100,10 +106,13 @@ export function Sidebar() {
 				</SidebarLink>
 				<SidebarSectionLabel>Community</SidebarSectionLabel>
 				<SidebarLink
-					icon={<Search size={16} />}
-					to="/explore"
 					preload="intent"
+					icon={<UsersRound size={16} />}
+					to="/dashboard/following"
 				>
+					Following
+				</SidebarLink>
+				<SidebarLink icon={<Search size={16} />} to="/explore" preload="intent">
 					Explore
 				</SidebarLink>
 			</Box>
@@ -143,7 +152,11 @@ export function Sidebar() {
 							})}
 						>
 							<HStack gap="2.5" align="center">
-								<Avatar size="sm" name={user?.name ?? "User"} profilePictureUrl={user?.profilePictureUrl} />
+								<Avatar
+									size="sm"
+									name={user?.name ?? "User"}
+									profilePictureUrl={user?.profilePictureUrl}
+								/>
 								<Typography.Text size="sm">
 									{user?.name ?? "User"}
 								</Typography.Text>

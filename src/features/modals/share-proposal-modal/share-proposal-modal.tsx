@@ -13,12 +13,12 @@ import { useAnalytics } from "#/lib/analytics"
 import { useTransientText } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 import {
-	ShareLink,
-	ShareURL,
 	blueskyDest,
 	facebookDest,
 	linkedinDest,
 	redditDest,
+	ShareLink,
+	ShareURL,
 	twitterDest,
 	whatsappDest,
 } from "../share"
@@ -94,7 +94,7 @@ export function ShareProposalModal({
 		>
 			<Modal.Header>
 				<VStack gap="1">
-					<Modal.Eyebrow color="coral.500">{eyebrow}</Modal.Eyebrow>
+					<Modal.Eyebrow>{eyebrow}</Modal.Eyebrow>
 					<Modal.Title
 						font="serif"
 						color="stone.900"

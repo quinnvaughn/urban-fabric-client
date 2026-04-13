@@ -39,7 +39,7 @@ export function EmbedCodeModal({
 		<Modal open={open} onClose={onClose} size="sm">
 			<Modal.Header>
 				<VStack gap="1">
-					<Modal.Eyebrow color="coral.500">Embed proposal</Modal.Eyebrow>
+					<Modal.Eyebrow>Embed proposal</Modal.Eyebrow>
 					<Modal.Title
 						font="serif"
 						color="stone.900"

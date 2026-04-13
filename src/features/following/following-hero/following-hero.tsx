@@ -1,7 +1,7 @@
 import { Box, Eyebrow, Typography, VStack } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
 
-export function ExploreHero() {
+export function FollowingHero() {
 	return (
 		<Box
 			className={css({
@@ -15,7 +15,7 @@ export function ExploreHero() {
 			})}
 		>
 			<VStack gap="2.5">
-				<Eyebrow size="xs">Community</Eyebrow>
+				<Eyebrow size="xs">Your Feed</Eyebrow>
 				<Typography.Heading
 					as="h1"
 					size="xl"
@@ -26,11 +26,10 @@ export function ExploreHero() {
 					lineHeight="tight"
 					className={css({ maxWidth: "500px", textWrap: "stable" })}
 				>
-					Street design,{" "}
+					Proposals from people{" "}
 					<Typography.Inline fontStyle="normal" color="coral.500">
-						proposed
-					</Typography.Inline>{" "}
-					by people who actually use them.
+						you follow.
+					</Typography.Inline>
 				</Typography.Heading>
 				<Typography.Text
 					size="md"
@@ -38,8 +37,8 @@ export function ExploreHero() {
 					lineHeight="relaxed"
 					className={css({ maxWidth: "460px" })}
 				>
-					Browse proposals from urbanists, planners, and neighbors rethinking
-					how streets work. Like what you see. Share it with your city council.
+					New proposals from the urbanists, planners, and neighbors you're
+					following.
 				</Typography.Text>
 			</VStack>
 		</Box>
