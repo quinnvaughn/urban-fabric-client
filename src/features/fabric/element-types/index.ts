@@ -11,6 +11,15 @@ import type {
 
 export type { LinePaint }
 
+function sortElementsAlphabetically(category: ElementCategory): ElementCategory {
+	return {
+		...category,
+		elements: [...category.elements].sort((a, b) =>
+			a.title.localeCompare(b.title),
+		),
+	}
+}
+
 export function computeBasePaint(
 	descriptor: ElementDescriptor,
 	instance: ElementInstance,
@@ -39,7 +48,7 @@ export const ELEMENT_CATEGORIES: ElementCategory[] = [
 	BIKING_CATEGORY,
 	TRANSIT_CATEGORY,
 	STREETS_CATEGORY,
-]
+].map(sortElementsAlphabetically)
 
 // Flat lookup by id for when you have a typeId and need the descriptor
 export const ELEMENT_TYPE_MAP: Record<string, ElementDescriptor> =

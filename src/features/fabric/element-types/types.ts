@@ -259,13 +259,27 @@ type CalculatedField = {
 	unit?: string
 }
 
+export type DrawingConstraints = {
+	maxLengthFeet?: number
+	lockPerpendicularToStreet?: {
+		searchRadiusPx?: number
+	}
+}
+
+export type PlacementBehavior = "single-click" | "multi-step"
+
 export type ElementDescriptor = {
 	id: string
 	title: string
 	description?: string
 	geometry: "line"
 	excludes?: string[]
-	draw: "click-to-place-points" | "straight-line-points"
+	draw:
+		| "click-to-place-points"
+		| "straight-line-points"
+		| "single-segment-perpendicular"
+	placement?: PlacementBehavior
+	drawingConstraints?: DrawingConstraints
 	baseMapStyle: LineLayerStyle
 	properties: PropertyDescriptor[]
 	calculated: CalculatedField[]

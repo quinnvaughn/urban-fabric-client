@@ -162,9 +162,8 @@ export function PropertiesPanel() {
 				for (const constraint of prop.constraints ?? []) {
 					const siblingVal = Number(
 						selectedInstance?.properties[constraint.sibling] ??
-							descriptor?.properties.find(
-								(p) => p.key === constraint.sibling,
-							)?.default,
+							descriptor?.properties.find((p) => p.key === constraint.sibling)
+								?.default,
 					)
 					if (!Number.isFinite(siblingVal)) continue
 					if (constraint.kind === "max-sibling") {
@@ -233,7 +232,7 @@ export function PropertiesPanel() {
 				position: "fixed",
 				top: "calc(var(--uf-header-height) + 20px)",
 				right: "20px",
-				width: "272px",
+				width: "290px",
 				zIndex: "panel",
 				maxHeight: "calc(100vh - var(--uf-header-height) - 120px)",
 				display: "flex",

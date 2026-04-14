@@ -5,6 +5,145 @@ export const WALKING_CATEGORY: ElementCategory = {
 	title: "Walking",
 	elements: [
 		{
+			id: "pedestrian-crossing",
+			title: "Pedestrian Crossing",
+			description:
+				"Click once on a street to place a pedestrian crossing.",
+			geometry: "line",
+			draw: "single-segment-perpendicular",
+			placement: "single-click",
+			drawingConstraints: {
+				lockPerpendicularToStreet: {
+					searchRadiusPx: 24,
+				},
+			},
+			excludes: [],
+			baseMapStyle: {
+				color: "#00a9ff",
+				width: 10,
+				lineCap: "butt",
+				lineJoin: "round",
+				dasharray: [1.2, 0.8],
+
+				casingWidth: 14,
+				casingOpacity: 0.24,
+
+				selected: {
+					width: 11.5,
+					lineCap: "round",
+					outlineOpacity: 0.85,
+					outlineDasharray: [4, 3],
+					outlineOffset: 12,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: {
+					radius: 5.5,
+					fillColor: "#ffffff",
+					strokeWidth: 2,
+					glowRadius: 9,
+					glowOpacity: 0.12,
+					snapRingRadius: 13,
+					snapRingOpacity: 0.45,
+					snapRingDasharray: [3, 2],
+					snapRingWidth: 1.5,
+				},
+				drawPreview: {
+					color: "#00a9ff",
+					width: 6,
+					opacity: 0.75,
+					dasharray: [1.2, 0.8],
+					lineCap: "butt",
+				},
+			} satisfies LineLayerStyle,
+
+			properties: [
+				{
+					key: "marking",
+					label: "Marking Type",
+					description: "How the crossing is striped on the street",
+					default: "continental",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Continental",
+								value: "continental",
+								description: "Bold ladder-style bars",
+							},
+							{
+								label: "Standard",
+								value: "standard",
+								description: "Conventional painted crossing",
+							},
+							{
+								label: "Raised",
+								value: "raised",
+								description: "Crossing is elevated to sidewalk level",
+							},
+						],
+					},
+					toMapStyle: (value) => {
+						if (value === "standard") {
+							return {
+								"line-dasharray": [0.6, 0.8],
+								"line-width": 8,
+							}
+						}
+						if (value === "raised") {
+							return {
+								"line-dasharray": [1.8, 0.4],
+								"line-width": 12,
+								"line-casing-opacity": 0.28,
+							}
+						}
+						return {
+							"line-dasharray": [1.2, 0.8],
+							"line-width": 10,
+						}
+					},
+				},
+				{
+					key: "lighting",
+					label: "Lighting",
+					description:
+						"Extra lighting focused on the crossing to improve nighttime visibility.",
+					default: "none",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "None", value: "none" },
+							{ label: "Added", value: "added" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "width",
+					label: "Crossing Width",
+					default: 12,
+					input: {
+						kind: "slider",
+						min: 6,
+						max: 24,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: (value) => {
+						const width = typeof value === "number" ? value : Number(value)
+						if (!Number.isFinite(width)) return {}
+						return { "line-width": width }
+					},
+				},
+			],
+
+			calculated: [
+				{ key: "length", label: "Length", unit: "ft" },
+				{ key: "from", label: "From" },
+				{ key: "to", label: "To" },
+			],
+		},
+		{
 			id: "pedestrian-street",
 			title: "Pedestrian / Shared Street",
 			description:

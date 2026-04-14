@@ -23,6 +23,16 @@ describe("ELEMENT_CATEGORIES", () => {
 		expect(ids.length).toBe(new Set(ids).size)
 	})
 
+	it("orders elements alphabetically by title within each category", () => {
+		for (const category of ELEMENT_CATEGORIES) {
+			const titles = category.elements.map((element) => element.title)
+			const sortedTitles = [...titles].sort((a, b) => a.localeCompare(b))
+			expect(titles, `${category.id} elements should be alphabetized`).toEqual(
+				sortedTitles,
+			)
+		}
+	})
+
 	it("every element has required fields", () => {
 		for (const category of ELEMENT_CATEGORIES) {
 			for (const el of category.elements) {
@@ -30,7 +40,11 @@ describe("ELEMENT_CATEGORIES", () => {
 				expect(el.title, `${el.id}: missing title`).toBeTruthy()
 				expect(el.geometry, `${el.id}: missing geometry`).toBe("line")
 				expect(
-					["click-to-place-points", "straight-line-points"],
+					[
+						"click-to-place-points",
+						"straight-line-points",
+						"single-segment-perpendicular",
+					],
 					`${el.id}: unknown draw mode`,
 				).toContain(el.draw)
 				expect(el.baseMapStyle, `${el.id}: missing baseMapStyle`).toBeTruthy()

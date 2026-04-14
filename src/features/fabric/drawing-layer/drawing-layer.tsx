@@ -1,6 +1,7 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { useAnalytics } from "#/lib/analytics"
+import { useToast } from "#/features/ui"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import { syncElementsToMap } from "../elements-layer/map-elements-utils"
 import {
@@ -18,6 +19,14 @@ import {
 	useFabricStore,
 } from "../fabric-store"
 import { flattenSegments, useRouteBetween } from "../osrm-utils"
+import { validateDrawingConstraints } from "./drawing-constraints"
+import {
+	findNearestRoadLock,
+	offsetPointAlongBearing,
+	perpendicularBearing,
+	projectPointOntoBearing,
+	signedDistanceAlongBearing,
+} from "./street-lock"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -44,12 +53,16 @@ export function DrawingLayer() {
 	const { activeTool, activeElement, elements, addElement } = useFabricStore()
 	const routeBetween = useRouteBetween()
 	const { capture } = useAnalytics()
+	const toast = useToast()
 	const captureRef = useRef(capture)
 	captureRef.current = capture
 
 	// Mutable drawing state — lives in refs so map event handlers never go stale
 	const waypointsRef = useRef<[number, number][]>([])
 	const segmentsRef = useRef<[number, number][][]>([])
+	const lockedStreetBearingRef = useRef<number | null>(null)
+	const lockedMaxLengthFeetRef = useRef<number | null>(null)
+	const lockedStreetCenterRef = useRef<[number, number] | null>(null)
 
 	// Track which element IDs have layers on the map for diffing
 	const elementLayerIds = useRef<Set<string>>(new Set())
@@ -88,6 +101,7 @@ export function DrawingLayer() {
 	useEffect(() => {
 		if (activeTool !== "draw" || !activeElement) return
 		const element = activeElement
+		const placement = element.placement ?? "multi-step"
 		const style = element.baseMapStyle
 		const dp = style.drawPreview
 
@@ -116,6 +130,92 @@ export function DrawingLayer() {
 		const previewSource = () =>
 			map.getSource("draw-preview") as maplibregl.GeoJSONSource | undefined
 
+		function ensureStreetLock(
+			point: maplibregl.MapMouseEvent["point"],
+			lngLat: [number, number],
+		) {
+			const perpendicularLock =
+				element.drawingConstraints?.lockPerpendicularToStreet
+			if (!perpendicularLock || lockedStreetBearingRef.current != null) return true
+
+			const searchRadiusPx = Math.max(perpendicularLock.searchRadiusPx ?? 0, 48)
+			const lock = findNearestRoadLock({
+				map,
+				point,
+				lngLat,
+				searchRadiusPx,
+				fallbackMaxLengthFeet: element.drawingConstraints?.maxLengthFeet,
+			})
+			if (lock == null) return false
+			lockedStreetBearingRef.current = lock.bearing
+			lockedMaxLengthFeetRef.current = lock.suggestedMaxLengthFeet
+			lockedStreetCenterRef.current = lock.centerPoint
+			return true
+		}
+
+		function applyDrawingConstraints(
+			start: [number, number],
+			cursor: [number, number],
+		): [number, number] {
+			if (
+				element.draw === "single-segment-perpendicular" &&
+				lockedStreetBearingRef.current != null &&
+				lockedStreetCenterRef.current != null
+			) {
+				const perp = perpendicularBearing(lockedStreetBearingRef.current)
+				const center = lockedStreetCenterRef.current
+				const halfLength =
+					(lockedMaxLengthFeetRef.current ??
+						element.drawingConstraints?.maxLengthFeet ??
+						160) / 2
+				const startSide = signedDistanceAlongBearing(center, start, perp)
+				const cursorSide = signedDistanceAlongBearing(center, cursor, perp)
+				const sign =
+					Math.abs(startSide) > 1
+						? Math.sign(startSide)
+						: Math.sign(cursorSide) || 1
+				return offsetPointAlongBearing(center, perp, -sign * halfLength)
+			}
+
+			const perpendicularLock =
+				element.drawingConstraints?.lockPerpendicularToStreet
+			const projected =
+				perpendicularLock && lockedStreetBearingRef.current != null
+					? projectPointOntoBearing(
+							start,
+							cursor,
+							perpendicularBearing(lockedStreetBearingRef.current),
+					  )
+					: cursor
+			return projected
+		}
+
+		function currentCrossingStart(
+			anchor: [number, number],
+			cursor: [number, number],
+		): [number, number] {
+			if (
+				element.draw === "single-segment-perpendicular" &&
+				lockedStreetBearingRef.current != null &&
+				lockedStreetCenterRef.current != null
+			) {
+				const perp = perpendicularBearing(lockedStreetBearingRef.current)
+				const center = lockedStreetCenterRef.current
+				const halfLength =
+					(lockedMaxLengthFeetRef.current ??
+						element.drawingConstraints?.maxLengthFeet ??
+						160) / 2
+				const anchorSide = signedDistanceAlongBearing(center, anchor, perp)
+				const cursorSide = signedDistanceAlongBearing(center, cursor, perp)
+				const sign =
+					Math.abs(anchorSide) > 1
+						? Math.sign(anchorSide)
+						: Math.sign(cursorSide) || 1
+				return offsetPointAlongBearing(center, perp, sign * halfLength)
+			}
+			return anchor
+		}
+
 		function updateActiveLine() {
 			activeSource()?.setData(
 				makeLineFeature(flattenSegments(segmentsRef.current)),
@@ -125,6 +225,9 @@ export function DrawingLayer() {
 		function reset() {
 			waypointsRef.current = []
 			segmentsRef.current = []
+			lockedStreetBearingRef.current = null
+			lockedMaxLengthFeetRef.current = null
+			lockedStreetCenterRef.current = null
 			updateActiveLine()
 			previewSource()?.setData(EMPTY_LINE)
 		}
@@ -137,6 +240,13 @@ export function DrawingLayer() {
 			}
 
 			const descriptor = ELEMENT_TYPE_MAP[element.id]
+			const validation = validateDrawingConstraints(descriptor, coords)
+			if (!validation.isValid) {
+				toast.warning("Unable to draw element", {
+					description: validation.message,
+				})
+				return
+			}
 			const newId = crypto.randomUUID()
 			captureRef.current("editor_element_added", { element_type: element.id })
 			addElement({
@@ -160,28 +270,59 @@ export function DrawingLayer() {
 		}
 
 		async function handleClick(e: maplibregl.MapMouseEvent) {
-			const now = Date.now()
-			if (now - lastClickTimeRef.current < 300) {
-				lastClickTimeRef.current = 0
+			if (placement === "single-click") {
+				const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
+				if (!ensureStreetLock(e.point, snapped)) {
+					toast.warning("Unable to place crossing", {
+						description:
+							"Click on or near a street to place a crossing.",
+					})
+					return
+				}
+				const startPoint = currentCrossingStart(snapped, snapped)
+				const endPoint = applyDrawingConstraints(snapped, snapped)
+				waypointsRef.current = [startPoint, endPoint]
+				segmentsRef.current = [[startPoint, endPoint]]
+				updateActiveLine()
 				commit()
 				return
 			}
-			lastClickTimeRef.current = now
+
+			if (placement !== "single-click") {
+				const now = Date.now()
+				if (now - lastClickTimeRef.current < 300) {
+					lastClickTimeRef.current = 0
+					commit()
+					return
+				}
+				lastClickTimeRef.current = now
+			}
 
 			const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
 			const waypoints = waypointsRef.current
 
 			if (waypoints.length === 0) {
+				ensureStreetLock(e.point, snapped)
 				waypointsRef.current = [snapped]
 				return
 			}
 
-			const prev = waypoints[waypoints.length - 1]
+			const anchor = waypoints[waypoints.length - 1]
+			if (!ensureStreetLock(e.point, snapped)) {
+				toast.warning("Unable to place crossing", {
+					description:
+						"Draw the crossing over a street so it can lock perpendicular.",
+				})
+				return
+			}
+			const startPoint = currentCrossingStart(anchor, snapped)
+			const constrained = applyDrawingConstraints(anchor, snapped)
 			const segment =
-				element.draw === "straight-line-points"
-					? [prev, snapped]
-					: await routeBetween(prev, snapped)
-			waypointsRef.current = [...waypoints, snapped]
+				element.draw === "straight-line-points" ||
+				element.draw === "single-segment-perpendicular"
+					? [startPoint, constrained]
+					: await routeBetween(anchor, constrained)
+			waypointsRef.current = [startPoint, constrained]
 			segmentsRef.current = [...segmentsRef.current, segment]
 			updateActiveLine()
 		}
@@ -189,14 +330,18 @@ export function DrawingLayer() {
 		function handleMouseMove(e: maplibregl.MapMouseEvent) {
 			if (waypointsRef.current.length === 0) return
 			const last = waypointsRef.current[waypointsRef.current.length - 1]
-			previewSource()?.setData(
-				makeLineFeature([last, [e.lngLat.lng, e.lngLat.lat]]),
-			)
+			const cursor: [number, number] = [e.lngLat.lng, e.lngLat.lat]
+			ensureStreetLock(e.point, cursor)
+			const previewStart = currentCrossingStart(last, cursor)
+			const previewEnd = applyDrawingConstraints(last, cursor)
+			previewSource()?.setData(makeLineFeature([previewStart, previewEnd]))
 		}
 
 		function handleKeyDown(e: KeyboardEvent) {
 			if (e.key === "Escape") reset()
-			if (e.key === "Enter") commit()
+			if (e.key === "Enter" && placement !== "single-click") {
+				commit()
+			}
 		}
 
 		map.on("click", handleClick)
@@ -211,7 +356,7 @@ export function DrawingLayer() {
 			window.removeEventListener("keydown", handleKeyDown)
 			reset()
 		}
-	}, [activeTool, activeElement, map, addElement, routeBetween])
+	}, [activeTool, activeElement, map, addElement, routeBetween, toast])
 
 	// ── Sync committed elements to map ─────────────────────────────────────
 	useEffect(() => {
