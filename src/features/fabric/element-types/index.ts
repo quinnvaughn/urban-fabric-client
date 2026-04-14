@@ -1,5 +1,7 @@
+import { BIKING_CATEGORY } from "./biking"
 import { STREETS_CATEGORY } from "./streets"
 import { TRANSIT_CATEGORY } from "./transit"
+import { WALKING_CATEGORY } from "./walking"
 import type {
 	ElementCategory,
 	ElementDescriptor,
@@ -32,8 +34,12 @@ export function computeBasePaint(
 	return paint
 }
 
-// All categories in render order — add INTERSECTIONS_CATEGORY etc here in v2
-export const ELEMENT_CATEGORIES: ElementCategory[] = [STREETS_CATEGORY, TRANSIT_CATEGORY]
+export const ELEMENT_CATEGORIES: ElementCategory[] = [
+	WALKING_CATEGORY,
+	BIKING_CATEGORY,
+	TRANSIT_CATEGORY,
+	STREETS_CATEGORY,
+]
 
 // Flat lookup by id for when you have a typeId and need the descriptor
 export const ELEMENT_TYPE_MAP: Record<string, ElementDescriptor> =

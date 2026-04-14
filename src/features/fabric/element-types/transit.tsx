@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowLeftRight, ArrowRight } from "lucide-react"
 import type { ElementCategory, LineLayerStyle } from "./types"
 
 const BASE_ENDPOINTS = {
@@ -32,6 +33,123 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 	id: "transit",
 	title: "Transit",
 	elements: [
+		{
+			id: "bus-lane",
+			title: "Dedicated Bus Lane",
+			description:
+				"A lane reserved for buses so they can move faster without getting stuck in car traffic.",
+			geometry: "line",
+			draw: "click-to-place-points",
+			excludes: [],
+			baseMapStyle: {
+				color: "#d4901e",
+				width: 5,
+				lineCap: "square",
+				lineJoin: "round",
+
+				casingWidth: 11,
+				casingOpacity: 0.16,
+
+				selected: {
+					width: 6.5,
+					lineCap: "round",
+					outlineOpacity: 0.85,
+					outlineDasharray: [5, 3],
+					outlineOffset: 10,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: BASE_ENDPOINTS,
+				drawPreview: {
+					color: "#d4901e",
+					width: 3,
+					opacity: 0.5,
+					dasharray: [8, 6],
+					lineCap: "round",
+				},
+
+				lineSymbol: {
+					src: "/icons/elements/bus-lane.svg",
+					spacing: 200,
+					size: 32,
+				},
+			} satisfies LineLayerStyle,
+
+			properties: [
+				{
+					key: "direction",
+					label: "Direction",
+					description: "Which direction buses travel in this lane",
+					default: "one-way-with",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Two-way",
+								value: "two-way",
+								icon: <ArrowLeftRight size={14} />,
+							},
+							{
+								label: "With",
+								value: "one-way-with",
+								icon: <ArrowRight size={14} />,
+							},
+							{
+								label: "Against",
+								value: "one-way-against",
+								icon: <ArrowLeft size={14} />,
+							},
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "transit-only",
+					label: "Transit Only",
+					description:
+						"Whether the lane is restricted to buses only or shared with other vehicles during off-peak hours",
+					default: "exclusive",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Exclusive",
+								value: "exclusive",
+								description: "Buses only at all times",
+							},
+							{
+								label: "Peak-only",
+								value: "peak-only",
+								description: "Bus-only during rush hours",
+							},
+						],
+					},
+					toMapStyle: (value) => {
+						if (value === "peak-only") return { "line-dasharray": [8, 3] }
+						return { "line-dasharray": [1, 0] }
+					},
+				},
+				{
+					key: "width",
+					label: "Width",
+					default: 11,
+					input: {
+						kind: "slider",
+						min: 10,
+						max: 16,
+						step: 0.5,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [
+				{ key: "length", label: "Length", unit: "ft" },
+				{ key: "from", label: "From" },
+				{ key: "to", label: "To" },
+			],
+		},
 		{
 			id: "tram",
 			title: "Tram",
