@@ -7,8 +7,7 @@ export const WALKING_CATEGORY: ElementCategory = {
 		{
 			id: "pedestrian-crossing",
 			title: "Pedestrian Crossing",
-			description:
-				"Click once on a street to place a pedestrian crossing.",
+			description: "Click once on a street to place a pedestrian crossing.",
 			geometry: "line",
 			draw: "single-segment-perpendicular",
 			placement: "single-click",
@@ -54,6 +53,11 @@ export const WALKING_CATEGORY: ElementCategory = {
 					opacity: 0.75,
 					dasharray: [1.2, 0.8],
 					lineCap: "butt",
+				},
+				lineSymbol: {
+					src: "/icons/elements/pedestrian-crossing.svg",
+					placement: "line-center",
+					size: 32,
 				},
 			} satisfies LineLayerStyle,
 

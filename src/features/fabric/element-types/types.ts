@@ -123,7 +123,8 @@ export type LineLayerStyle = {
 	// color is baked in by the designer, not overridden at runtime.
 	lineSymbol?: {
 		src: string
-		spacing?: number  // px between icons, default 200
+		placement?: "line" | "line-center"  // default "line"
+		spacing?: number  // px between icons, default 200 (ignored when placement is "line-center")
 		size?: number     // canvas px to render the SVG at, default 32
 	}
 }

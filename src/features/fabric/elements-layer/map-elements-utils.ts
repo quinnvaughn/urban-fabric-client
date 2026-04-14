@@ -124,7 +124,7 @@ function addLineSymbolLayer(
 		type: "symbol",
 		source: elementsLayerIds.mainSourceId(el.id),
 		layout: {
-			"symbol-placement": "line",
+			"symbol-placement": lineSymbol.placement ?? "line",
 			"icon-image": imageId,
 			"icon-size": 1,
 			"symbol-spacing": lineSymbol.spacing ?? 200,
