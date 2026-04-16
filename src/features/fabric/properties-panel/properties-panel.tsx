@@ -1,5 +1,6 @@
 import { Info, Trash, X } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
+import { ElementPhotos } from "./element-photos"
 import { match, P } from "ts-pattern"
 import {
 	Box,
@@ -335,6 +336,7 @@ export function PropertiesPanel() {
 								}
 							/>
 						</Textarea>
+						<ElementPhotos element={selectedInstance} />
 						{match(descriptor.properties)
 							.with([], () => (
 								<Typography.Text

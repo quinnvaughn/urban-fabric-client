@@ -1,0 +1,19 @@
+mutation CreateFabricElementPhotoUploadUrl(
+	$input: CreateFabricElementPhotoUploadUrlInput!
+) {
+	createFabricElementPhotoUploadUrl(input: $input) {
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on PresignedUploadResult {
+			uploadUrl
+			publicUrl
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

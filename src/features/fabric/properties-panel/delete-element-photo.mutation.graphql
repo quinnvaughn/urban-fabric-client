@@ -1,0 +1,16 @@
+mutation DeleteFabricElementPhoto($input: DeleteFabricElementPhotoInput!) {
+	deleteFabricElementPhoto(input: $input) {
+		... on Fabric {
+			id
+		}
+		... on NotFoundError {
+			message
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

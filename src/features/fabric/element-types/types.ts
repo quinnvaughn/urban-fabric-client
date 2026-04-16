@@ -1,7 +1,10 @@
 // ── Property panel inputs ────────────────────────────────────────────────────
 
 import type { ApolloClient } from "@apollo/client"
-import { type MapStyle, UpdateFabricElementsDocument } from "#/graphql/generated"
+import {
+	type MapStyle,
+	UpdateFabricElementsDocument,
+} from "#/graphql/generated"
 
 type SliderInput = {
 	kind: "slider"
@@ -123,9 +126,9 @@ export type LineLayerStyle = {
 	// color is baked in by the designer, not overridden at runtime.
 	lineSymbol?: {
 		src: string
-		placement?: "line" | "line-center"  // default "line"
-		spacing?: number  // px between icons, default 200 (ignored when placement is "line-center")
-		size?: number     // canvas px to render the SVG at, default 32
+		placement?: "line" | "line-center" // default "line"
+		spacing?: number // px between icons, default 200 (ignored when placement is "line-center")
+		size?: number // canvas px to render the SVG at, default 32
 	}
 }
 
@@ -146,6 +149,20 @@ export type ElementInstance = {
 	properties: Record<string, unknown>
 	title?: string
 	note?: string
+	photos?: ElementPhoto[]
+}
+
+export type ElementPhoto =
+	| string
+	| {
+			url: string
+			caption?: string
+	  }
+
+export function normalizeElementPhoto(photo: ElementPhoto) {
+	return typeof photo === "string"
+		? { url: photo, caption: "" }
+		: { url: photo.url, caption: photo.caption ?? "" }
 }
 
 export type GuestFabric = {

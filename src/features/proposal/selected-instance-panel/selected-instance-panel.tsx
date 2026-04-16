@@ -1,13 +1,19 @@
 import { X } from "lucide-react"
+import { useState } from "react"
 import { Fragment } from "react/jsx-runtime"
+import { ElementPhotoCard } from "#/features/fabric"
 import { ELEMENT_TYPE_MAP } from "#/features/fabric/element-types"
-import type { ElementInstance } from "#/features/fabric/element-types/types"
+import {
+	type ElementInstance,
+	normalizeElementPhoto,
+} from "#/features/fabric/element-types/types"
 import { useCalculatedRows } from "#/features/fabric/use-calculated-rows"
 import {
 	Box,
 	Button,
 	Divider,
 	HStack,
+	Lightbox,
 	Swatch,
 	Typography,
 	VStack,
@@ -23,6 +29,8 @@ type Props = {
 export function SelectedInstancePanel({ instance, onClose }: Props) {
 	const elementType = ELEMENT_TYPE_MAP[instance.typeId]
 	const calculatedRows = useCalculatedRows(instance, elementType ?? null)
+	const photos = (instance.photos ?? []).map(normalizeElementPhoto)
+	const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
 	const propertyRows =
 		elementType?.properties
@@ -107,6 +115,32 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 							No note for this element.
 						</Typography.Text>
 					)}
+					{photos.length > 0 && (
+						<VStack gap="2">
+							<Divider label="Photos" />
+							<Box
+								className={css({
+									display: "grid",
+									gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+									gap: "2",
+								})}
+							>
+								{photos.map((photo, index) => (
+									<ElementPhotoCard
+										key={photo.url}
+										url={photo.url}
+										alt={
+											instance.title
+												? `${instance.title} photo`
+												: "Element photo"
+										}
+										caption={photo.caption}
+										onCaptionClick={() => setLightboxIndex(index)}
+									/>
+								))}
+							</Box>
+						</VStack>
+					)}
 					<VStack gap="2">
 						<Divider label="Properties" />
 						<div>
@@ -143,6 +177,17 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 					</VStack>
 				</VStack>
 			</Box>
+			{lightboxIndex != null && (
+				<Lightbox
+					photos={photos.map((photo) => ({
+						src: photo.url,
+						caption: photo.caption,
+						alt: instance.title ? `${instance.title} photo` : "Element photo",
+					}))}
+					initialIndex={lightboxIndex}
+					onClose={() => setLightboxIndex(null)}
+				/>
+			)}
 		</Fragment>
 	)
 }
