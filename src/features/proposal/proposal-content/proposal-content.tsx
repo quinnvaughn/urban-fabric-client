@@ -1,4 +1,5 @@
 import { DateTime } from "luxon"
+import { useEffect } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { Box, VStack } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
@@ -13,6 +14,7 @@ import { ProposalPanelCategories } from "./proposal-panel-categories"
 import { ProposalPanelHeader } from "./proposal-panel-header"
 import { ProposalPanelMeta } from "./proposal-panel-meta"
 import { ProposalPanelTabs } from "./proposal-panel-tabs"
+import { ProposalPhotosTab } from "./proposal-photos-tab"
 
 type Proposal = Extract<
 	GetProposalQuery["proposalBySlug"],
@@ -27,6 +29,17 @@ type Props = {
 export function ProposalContent({ proposal, isMobile }: Props) {
 	const { togglePanel, setActiveTab, activeTab, elements } = useProposalStore()
 	const locationLabel = `${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion}`
+	const photoCount = proposal.numPhotos
+	const visibleActiveTab =
+		activeTab === ProposalPanelTab.Photos && photoCount === 0
+			? ProposalPanelTab.About
+			: activeTab
+
+	useEffect(() => {
+		if (activeTab === ProposalPanelTab.Photos && photoCount === 0) {
+			setActiveTab(ProposalPanelTab.About)
+		}
+	}, [activeTab, photoCount, setActiveTab])
 
 	return (
 		<Fragment>
@@ -53,14 +66,15 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 						/>
 						<ProposalPanelCategories categories={proposal.categories} />
 						<ProposalPanelTabs
-							activeTab={activeTab}
+							activeTab={visibleActiveTab}
 							onValueChange={setActiveTab}
 							commentCount={proposal.commentCount}
+							photoCount={photoCount}
 						/>
 					</VStack>
 				</Box>
 			</VStack>
-			{activeTab === ProposalPanelTab.About ? (
+			{visibleActiveTab === ProposalPanelTab.About ? (
 				<Fragment>
 					<ProposalAboutTab
 						description={proposal.description}
@@ -68,9 +82,17 @@ export function ProposalContent({ proposal, isMobile }: Props) {
 					/>
 					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
 				</Fragment>
-			) : activeTab === ProposalPanelTab.Layers ? (
+			) : visibleActiveTab === ProposalPanelTab.Layers ? (
 				<Fragment>
 					<ProposalLayersTab elements={elements} />
+					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
+				</Fragment>
+			) : visibleActiveTab === ProposalPanelTab.Photos && photoCount > 0 ? (
+				<Fragment>
+					<ProposalPhotosTab
+						existingConditionPhotos={proposal.existingConditionPhotos}
+						inspirationPhotos={proposal.inspirationPhotos}
+					/>
 					<ProposalActionsFooter proposal={proposal} isMobile={isMobile} />
 				</Fragment>
 			) : (

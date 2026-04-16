@@ -34,6 +34,8 @@ import {
 	type MapStyle,
 	ProposalByFabricIdDocument,
 	ProposalCategory,
+	ProposalPhotoGroup,
+	type ProposalPhotoInput,
 	PublishProposalDocument,
 	SaveDraftProposalDocument,
 	UnpublishProposalDocument,
@@ -58,9 +60,19 @@ import {
 	uploadProposalThumbnail,
 } from "#/lib/upload/thumbnail-upload"
 import { css } from "#/styles/styled-system/css"
+import {
+	type ProposalFormPhoto,
+	ProposalPhotoField,
+} from "./proposal-photo-field"
 
 const TITLE_MAX_LENGTH = 80
 const DESCRIPTION_MAX_LENGTH = 1500
+
+const proposalPhotoSchema = z.object({
+	id: z.string().optional(),
+	url: z.string(),
+	caption: z.string().optional(),
+})
 
 const schema = z.object({
 	title: z
@@ -77,6 +89,8 @@ const schema = z.object({
 			`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters`,
 		),
 	categories: z.array(z.string()),
+	existingConditionPhotos: z.array(proposalPhotoSchema),
+	inspirationPhotos: z.array(proposalPhotoSchema),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -96,6 +110,8 @@ export type ProposalFormData = {
 		title: string
 		description: string
 		categories: string[]
+		existingConditionPhotos?: ProposalFormPhoto[]
+		inspirationPhotos?: ProposalFormPhoto[]
 	}
 }
 
@@ -123,6 +139,9 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const client = useApolloClient()
 	const [isSaving, setIsSaving] = useState(false)
 	const [thumbnail, setThumbnail] = useState(data.initialThumbnail)
+	const [currentProposalId, setCurrentProposalId] = useState<string | null>(
+		props.mode === "edit" ? props.proposalId : null,
+	)
 	const [hasProposalUploadTarget, setHasProposalUploadTarget] = useState(
 		props.mode === "edit",
 	)
@@ -148,6 +167,21 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const [unpublishProposalMutation] = useMutation(UnpublishProposalDocument)
 	const { capture } = useAnalytics()
 
+	function buildPhotoInputs(values: FormValues): ProposalPhotoInput[] {
+		return [
+			...values.existingConditionPhotos.map((photo) => ({
+				url: photo.url,
+				caption: photo.caption || undefined,
+				group: ProposalPhotoGroup.ExistingConditions,
+			})),
+			...values.inspirationPhotos.map((photo) => ({
+				url: photo.url,
+				caption: photo.caption || undefined,
+				group: ProposalPhotoGroup.Inspirations,
+			})),
+		]
+	}
+
 	const getThumbnailForSubmit = useCallback(async () => {
 		const capture = captureThumbnailRef.current
 		if (!capture) return thumbnail
@@ -157,7 +191,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			return freshThumbnail
 		} catch {
 			toast({
-				title: "Could not upload the latest map image, using the current one instead",
+				title:
+					"Could not upload the latest map image, using the current one instead",
 				intent: "error",
 			})
 			return thumbnail
@@ -189,6 +224,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						? (values.categories as ProposalCategory[])
 						: undefined,
 					elements: elements,
+					photos: buildPhotoInputs(values),
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
 					mapStyle: data.mapStyle,
@@ -233,7 +269,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			.with({ __typename: "NotFoundError" }, () => {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
-			.with({ __typename: "Proposal" }, () => {
+			.with({ __typename: "Proposal" }, (proposal) => {
+				setCurrentProposalId(proposal.id)
 				setHasProposalUploadTarget(true)
 				capture("draft_saved")
 				toast({ title: "Draft saved", intent: "success" })
@@ -255,6 +292,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					description: values.description,
 					categories: values.categories as ProposalCategory[],
 					elements: elements,
+					photos: buildPhotoInputs(values),
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
 					mapStyle: data.mapStyle,
@@ -307,7 +345,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			.with({ __typename: "NotFoundError" }, () => {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
-			.with({ __typename: "Proposal" }, ({ slug, title }) => {
+			.with({ __typename: "Proposal" }, ({ id, slug, title }) => {
+				setCurrentProposalId(id)
 				setHasProposalUploadTarget(true)
 				capture("proposal_published")
 				if (props.mode === "create") {
@@ -355,6 +394,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			title: data.initialValues.title,
 			description: data.initialValues.description,
 			categories: data.initialValues.categories,
+			existingConditionPhotos: data.initialValues.existingConditionPhotos ?? [],
+			inspirationPhotos: data.initialValues.inspirationPhotos ?? [],
 		},
 		schema,
 		onSubmit: async (values) => {
@@ -655,6 +696,53 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								</ChipGroup>
 							)}
 						</form.Field>
+						<Divider label="Photos (optional)" />
+						<VStack gap="2">
+							<VStack gap="1.5" justify="center">
+								<HStack justify="space-between" fullWidth>
+									<FieldLabel>Existing conditions</FieldLabel>
+									<Typography.Text color="stone.400" size="xxs">
+										What's there now
+									</Typography.Text>
+								</HStack>
+								<Typography.Text size="xxs" color="stone.500">
+									Street-level photos that show the current problem — the
+									missing sidewalk, the dangerous intersection, the empty lot.
+								</Typography.Text>
+								<form.Field name="existingConditionPhotos">
+									{(field) => (
+										<ProposalPhotoField
+											uploadTargetId={currentProposalId ?? data.fabricId}
+											group={ProposalPhotoGroup.ExistingConditions}
+											value={field.value}
+											onChange={field.onChange}
+										/>
+									)}
+								</form.Field>
+							</VStack>
+							<VStack gap="1.5" justify="center">
+								<HStack justify="space-between" fullWidth>
+									<FieldLabel>Inspiration & references</FieldLabel>
+									<Typography.Text color="stone.400" size="xxs">
+										What it could look like
+									</Typography.Text>
+								</HStack>
+								<Typography.Text size="xxs" color="stone.500">
+									Photos from other cities, before/afters, renders, or advocacy
+									graphics that show this has been done before.
+								</Typography.Text>
+								<form.Field name="inspirationPhotos">
+									{(field) => (
+										<ProposalPhotoField
+											uploadTargetId={currentProposalId ?? data.fabricId}
+											group={ProposalPhotoGroup.Inspirations}
+											value={field.value}
+											onChange={field.onChange}
+										/>
+									)}
+								</form.Field>
+							</VStack>
+						</VStack>
 						<Divider label="Map view" />
 						<VStack gap="1" justify="center">
 							<FieldLabel>Default view center</FieldLabel>

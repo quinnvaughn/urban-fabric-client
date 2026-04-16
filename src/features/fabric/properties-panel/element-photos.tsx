@@ -1,8 +1,8 @@
 import { useApolloClient } from "@apollo/client/react"
 import { useParams } from "@tanstack/react-router"
-import { Info, Plus } from "lucide-react"
-import { useRef, useState } from "react"
-import { Box, Button, Tooltip } from "#/features/ui"
+import { Info } from "lucide-react"
+import { useState } from "react"
+import { Box, PhotoUploadButton, Tooltip } from "#/features/ui"
 import { FieldLabel } from "#/features/ui/field"
 import {
 	CreateFabricElementPhotoUploadUrlDocument,
@@ -30,7 +30,6 @@ type Props = {
 export function ElementPhotos({ element }: Props) {
 	const client = useApolloClient()
 	const { id: fabricId } = useParams({ strict: false })
-	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [uploading, setUploading] = useState<UploadingPhoto[]>([])
 	const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(
 		null,
@@ -80,12 +79,9 @@ export function ElementPhotos({ element }: Props) {
 		}
 	}
 
-	function handleFiles(files: FileList) {
+	function handleFiles(files: File[]) {
 		if (!fabricId) return
-		const imageFiles = Array.from(files).filter((f) =>
-			f.type.startsWith("image/"),
-		)
-		for (const file of imageFiles) {
+		for (const file of files) {
 			uploadOne(file, fabricId)
 		}
 	}
@@ -230,32 +226,7 @@ export function ElementPhotos({ element }: Props) {
 				/>
 			)}
 			{canUpload && (
-				<>
-					<Button
-						appearance="outline"
-						intent="neutral"
-						size="sm"
-						fullWidth
-						startIcon={<Plus size={12} />}
-						onClick={() => fileInputRef.current?.click()}
-						className={css({ borderStyle: "dashed" })}
-					>
-						Add photos
-					</Button>
-					<input
-						ref={fileInputRef}
-						type="file"
-						accept="image/*"
-						multiple
-						className={css({ display: "none" })}
-						onChange={(e) => {
-							if (e.target.files?.length) {
-								handleFiles(e.target.files)
-								e.target.value = ""
-							}
-						}}
-					/>
-				</>
+				<PhotoUploadButton onFiles={handleFiles}>Add photos</PhotoUploadButton>
 			)}
 		</Box>
 	)

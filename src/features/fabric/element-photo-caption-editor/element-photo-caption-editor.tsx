@@ -66,7 +66,7 @@ export function ElementPhotoCaptionEditor({
 					maxLength={140}
 					minRows={3}
 					resize="vertical"
-					placeholder="Add a caption... (optional)"
+					placeholder="Add a caption..."
 					onChange={(e) => setDraftCaption(e.target.value)}
 					onKeyDown={(e) => {
 						if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -84,7 +84,7 @@ export function ElementPhotoCaptionEditor({
 			>
 				<Button
 					appearance="solid"
-					intent="primary"
+					intent="brand"
 					size="sm"
 					onClick={() => onDone(draftCaption.trim())}
 				>

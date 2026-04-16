@@ -86,6 +86,18 @@ function EditProposalForm({
 						title: proposal.title,
 						description: proposal.description ?? "",
 						categories: proposal.categories,
+						existingConditionPhotos: proposal.existingConditionPhotos.map(
+							(photo) => ({
+								id: photo.id,
+								url: photo.url,
+								caption: photo.caption ?? "",
+							}),
+						),
+						inspirationPhotos: proposal.inspirationPhotos.map((photo) => ({
+							id: photo.id,
+							url: photo.url,
+							caption: photo.caption ?? "",
+						})),
 					},
 				}}
 				onPublishSuccess={(slug, title) => {

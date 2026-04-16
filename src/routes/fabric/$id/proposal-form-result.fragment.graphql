@@ -6,6 +6,18 @@ fragment ProposalFormResult on Proposal {
 	title
 	description
 	categories
+	existingConditionPhotos {
+		id
+		url
+		group
+		caption
+	}
+	inspirationPhotos {
+		id
+		url
+		group
+		caption
+	}
 	snapshotElements
 	snapshotCenter {
 		lat

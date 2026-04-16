@@ -11,6 +11,7 @@ query GetProposal($slug: String!) {
 			publishedAt
 			slug
 			commentCount
+			numPhotos
 			creator {
 				id
 				name
@@ -19,6 +20,18 @@ query GetProposal($slug: String!) {
 				isFollowedByMe
 			}
 			categories
+			existingConditionPhotos {
+				id
+				group
+				url
+				caption
+			}
+			inspirationPhotos {
+				id
+				group
+				url
+				caption
+			}
 			likeCount
 			snapshotCenter {
 				lat

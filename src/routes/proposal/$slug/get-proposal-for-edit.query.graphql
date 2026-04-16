@@ -10,6 +10,18 @@ query GetProposalForEdit($slug: String!) {
 			title
 			description
 			categories
+			existingConditionPhotos {
+				id
+				url
+				group
+				caption
+			}
+			inspirationPhotos {
+				id
+				url
+				group
+				caption
+			}
 		}
 	}
 }
