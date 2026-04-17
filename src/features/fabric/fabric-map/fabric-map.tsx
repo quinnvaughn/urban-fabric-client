@@ -22,6 +22,7 @@ type Props = {
 	zoom?: number
 	bearing?: number
 	mapStyle?: MapStyle
+	onMapChange?: (map: maplibregl.Map | null) => void
 	children?: React.ReactNode
 }
 
@@ -30,6 +31,7 @@ export function FabricMap({
 	zoom = 15,
 	bearing = 0,
 	mapStyle = MapStyle.Default,
+	onMapChange,
 	children,
 }: Props) {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -62,12 +64,14 @@ export function FabricMap({
 			isMounted.current = true
 		})
 		setMap(mapRef.current)
+		onMapChange?.(mapRef.current)
 
 		return () => {
 			isMounted.current = false
 			const mapToRemove = mapRef.current
 			mapRef.current = null
 			setMap(null)
+			onMapChange?.(null)
 			setStyleLoaded(false)
 			window.setTimeout(() => {
 				mapToRemove?.remove()

@@ -46,7 +46,11 @@ export type EventMap = {
 	explore_sorted: { sort_by: string }
 
 	// Proposal
-	proposal_viewed: { proposal_id: string; categories: string[]; embed?: boolean }
+	proposal_viewed: {
+		proposal_id: string
+		categories: string[]
+		embed?: boolean
+	}
 	proposal_liked: undefined
 	comment_created: {
 		proposal_slug: string
@@ -56,6 +60,7 @@ export type EventMap = {
 	proposal_share_modal_opened: { source: string }
 	proposal_shared: { method: string; source: string }
 	proposal_share_modal_dismissed: { source: string }
+	proposal_image_downloaded: { proposal_id: string; source: string }
 
 	// Profile
 	profile_share_modal_opened: { source: string }

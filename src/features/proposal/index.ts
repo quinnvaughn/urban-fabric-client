@@ -1,6 +1,7 @@
 export * from "./embed-proposal-header"
 export * from "./embed-proposal-panel"
 export * from "./like-proposal-button"
+export * from "./proposal-brand-menu"
 export * from "./proposal-card"
 export * from "./proposal-content/"
 export * from "./proposal-desktop-view"

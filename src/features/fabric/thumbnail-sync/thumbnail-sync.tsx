@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react"
 import { useMap } from "../fabric-map"
 import { fabricStore, useFabricStore } from "../fabric-store"
+import { captureMapCanvasBlob } from "./map-canvas-capture"
 
 const VIEWPORT_EVENTS = ["moveend", "zoomend", "rotateend"] as const
 const VIEWPORT_DEBOUNCE_MS = 600
@@ -9,12 +10,6 @@ type Props = {
 	onThumbnail: (thumbnail: Blob) => Promise<string>
 	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
 	captureOnMount?: boolean
-}
-
-function getCanvasBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
-	return new Promise((resolve) => {
-		canvas.toBlob(resolve, "image/webp")
-	})
 }
 
 export function ThumbnailSync({
@@ -28,22 +23,11 @@ export function ThumbnailSync({
 	const pendingCapture = useRef(false)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-	const captureThumbnail = useCallback(
-		() =>
-			new Promise<string>((resolve) => {
-				map.once("render", async () => {
-					const thumbnail = await getCanvasBlob(map.getCanvas())
-					if (!thumbnail) {
-						resolve("")
-						return
-					}
-					const publicUrl = await onThumbnail(thumbnail)
-					resolve(publicUrl)
-				})
-				map.triggerRepaint()
-			}),
-		[map, onThumbnail],
-	)
+	const captureThumbnail = useCallback(async () => {
+		const thumbnail = await captureMapCanvasBlob(map)
+		if (!thumbnail) return ""
+		return onThumbnail(thumbnail)
+	}, [map, onThumbnail])
 
 	const captureAndSync = useCallback(() => {
 		void captureThumbnail()

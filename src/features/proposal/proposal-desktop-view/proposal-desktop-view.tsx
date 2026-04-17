@@ -1,4 +1,5 @@
 import { EllipsisVertical } from "lucide-react"
+import type maplibregl from "maplibre-gl"
 import { useState } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
@@ -9,6 +10,7 @@ import {
 import { Box, NudgeWizard, Tooltip } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
+import { downloadProposalMapImage } from "../download-proposal-map-image"
 import { ProposalElementsLayer } from "../proposal-elements-layer"
 import { ProposalPanel } from "../proposal-panel"
 import { ProposalPublicHeader } from "../proposal-public-header"
@@ -26,6 +28,7 @@ const WIZARD_SEEN_KEY = "proposal_wizard_seen"
 export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
 		useProposalStore()
+	const [map, setMap] = useState<maplibregl.Map | null>(null)
 	const [showWizard, setShowWizard] = useState(
 		() =>
 			typeof localStorage !== "undefined" &&
@@ -50,11 +53,17 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 			})}
 		>
 			<ProposalPublicHeader
+				proposalId={proposal.id}
 				title={proposal.title}
 				city={proposal.snapshotLocationCity}
 				region={
 					proposal.snapshotLocationRegionAbbr ?? proposal.snapshotLocationRegion
 				}
+				downloadDisabled={!map}
+				onDownloadImage={() => {
+					if (!map) return Promise.reject(new Error("Map is not ready"))
+					return downloadProposalMapImage({ map, title: proposal.title })
+				}}
 			/>
 			<Box
 				id="shell"
@@ -121,7 +130,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 							{
 								title: "Comments let you join the conversation",
 								description:
-									"Switch to the Comments tab to share your feedback. Use \"Add location\" to pin a specific spot on the map to your comment.",
+									'Switch to the Comments tab to share your feedback. Use "Add location" to pin a specific spot on the map to your comment.',
 							},
 						]}
 						onDismiss={dismissWizard}
@@ -159,6 +168,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					center={[proposal.snapshotCenter.lng, proposal.snapshotCenter.lat]}
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
+					onMapChange={setMap}
 				>
 					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />

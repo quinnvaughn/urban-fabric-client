@@ -1,19 +1,25 @@
-import { Link } from "@tanstack/react-router"
 import { MapPin } from "lucide-react"
 import { PublicNavActions } from "#/features/navigation"
-import { Box, HStack, Logo, Typography } from "#/features/ui"
+import { Box, HStack, Typography } from "#/features/ui"
 import { css } from "#/styles/styled-system/css"
+import { ProposalBrandMenu } from "../proposal-brand-menu"
 
 interface ProposalPublicHeaderProps {
+	proposalId: string
 	title: string
 	city: string
 	region: string
+	onDownloadImage: () => Promise<void>
+	downloadDisabled?: boolean
 }
 
 export function ProposalPublicHeader({
+	proposalId,
 	title,
 	city,
 	region,
+	onDownloadImage,
+	downloadDisabled,
 }: ProposalPublicHeaderProps) {
 	return (
 		<Box
@@ -42,9 +48,12 @@ export function ProposalPublicHeader({
 				className={css({ flex: 1, minWidth: 0 })}
 				align="center"
 			>
-				<Link to="/">
-					<Logo />
-				</Link>
+				<ProposalBrandMenu
+					proposalId={proposalId}
+					source="proposal_desktop_header_menu"
+					onDownloadImage={onDownloadImage}
+					downloadDisabled={downloadDisabled}
+				/>
 				<Box
 					className={css({
 						width: "px",
@@ -68,7 +77,7 @@ export function ProposalPublicHeader({
 					>{`${city}, ${region}`}</Typography.Text>
 				</HStack>
 			</HStack>
-			<PublicNavActions authenticatedAction="dashboard-and-new-fabric" />
+			<PublicNavActions authenticatedAction="new-fabric" />
 		</Box>
 	)
 }

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import type maplibregl from "maplibre-gl"
 import { useEffect, useRef, useState } from "react"
 import { FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
@@ -8,10 +8,12 @@ import {
 	ProposalCommentLocationPicker,
 	useCommentComposerStore,
 } from "#/features/proposal-comment"
-import { Box, HStack, Logo, Typography } from "#/features/ui"
+import { Box, HStack, Typography } from "#/features/ui"
 import type { GetProposalQuery } from "#/graphql/generated"
 import { css } from "#/styles/styled-system/css"
+import { downloadProposalMapImage } from "../download-proposal-map-image"
 import { LikeProposalButton } from "../like-proposal-button"
+import { ProposalBrandMenu } from "../proposal-brand-menu"
 import { ProposalContent } from "../proposal-content"
 import { ProposalElementsLayer } from "../proposal-elements-layer"
 import { ProposalSelectLayer } from "../proposal-select-layer"
@@ -34,6 +36,7 @@ export function ProposalMobileView({
 }) {
 	const { selectedInstance, setSelectedInstanceId } = useProposalStore()
 	const { isPickingLocation } = useCommentComposerStore()
+	const [map, setMap] = useState<maplibregl.Map | null>(null)
 	const [sheetOpen, setSheetOpen] = useState(false)
 	const sheetOpenBeforeSelection = useRef(false)
 	const wasPickingLocation = useRef(false)
@@ -110,10 +113,16 @@ export function ProposalMobileView({
 					zIndex: "floating",
 				})}
 			>
-				<Link to="/">
-					<Logo />
-				</Link>
-				<PublicNavActions authenticatedAction="dashboard-and-new-fabric" />
+				<ProposalBrandMenu
+					proposalId={proposal.id}
+					source="proposal_mobile_header_menu"
+					downloadDisabled={!map}
+					onDownloadImage={() => {
+						if (!map) return Promise.reject(new Error("Map is not ready"))
+						return downloadProposalMapImage({ map, title: proposal.title })
+					}}
+				/>
+				<PublicNavActions authenticatedAction="new-fabric" />
 			</Box>
 
 			{/* Map — fills remaining space; sheet overlays it from below */}
@@ -129,6 +138,7 @@ export function ProposalMobileView({
 					center={[proposal.snapshotCenter.lng, proposal.snapshotCenter.lat]}
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
+					onMapChange={setMap}
 				>
 					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
