@@ -43,6 +43,20 @@ function closestWaypointIndex(
 	return minIdx
 }
 
+function shouldRouteAlongRoads(typeId: string): boolean {
+	return ELEMENT_TYPE_MAP[typeId]?.draw === "click-to-place-points"
+}
+
+function straightSegmentsFromWaypoints(
+	waypoints: [number, number][],
+): [number, number][][] {
+	const segments: [number, number][][] = []
+	for (let i = 0; i < waypoints.length - 1; i++) {
+		segments.push([waypoints[i], waypoints[i + 1]])
+	}
+	return segments
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function SelectLayer() {
@@ -538,6 +552,21 @@ export function SelectLayer() {
 				properties: {},
 			})
 
+			if (!shouldRouteAlongRoads(el.typeId)) {
+				if (routeDebounce.current) {
+					clearTimeout(routeDebounce.current)
+					routeDebounce.current = null
+				}
+				const straightSegments = straightSegmentsFromWaypoints(previewWaypoints)
+				previewSrc?.setData(EMPTY_LINE)
+				updateElement(el.id, {
+					waypoints: previewWaypoints,
+					segments: straightSegments,
+					coordinates: flattenSegments(straightSegments),
+				})
+				return
+			}
+
 			// ── OSRM routing (debounced) ──────────────────────────────────────
 			// Fires 80 ms after the last mousemove so rapid movement only triggers
 			// one route call per "pause" rather than on every frame.
@@ -663,6 +692,16 @@ export function SelectLayer() {
 				number,
 				number,
 			][]
+
+			if (!shouldRouteAlongRoads(el.typeId)) {
+				const newSegments = straightSegmentsFromWaypoints(newWaypoints)
+				updateElement(el.id, {
+					waypoints: newWaypoints,
+					segments: newSegments,
+					coordinates: flattenSegments(newSegments),
+				})
+				return
+			}
 
 			if (idx === 0) {
 				const newSegments = segs.slice(1)
