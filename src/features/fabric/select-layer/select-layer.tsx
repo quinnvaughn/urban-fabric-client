@@ -1,6 +1,7 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
+import type { ElementInstance } from "../element-types/types"
 import {
 	removeLayersIfPresent,
 	removeSourcesIfPresent,
@@ -55,6 +56,29 @@ function straightSegmentsFromWaypoints(
 		segments.push([waypoints[i], waypoints[i + 1]])
 	}
 	return segments
+}
+
+function waypointsFromSegments(
+	segments: [number, number][][],
+): [number, number][] {
+	const firstSegment = segments[0]
+	if (!firstSegment?.length) return []
+
+	const waypoints: [number, number][] = [firstSegment[0]]
+	for (const segment of segments) {
+		const last = segment[segment.length - 1]
+		if (last) waypoints.push(last)
+	}
+	return waypoints
+}
+
+function editableWaypoints(el: ElementInstance): [number, number][] {
+	if (shouldRouteAlongRoads(el.typeId)) return el.waypoints
+
+	const waypointsFromSavedSegments = waypointsFromSegments(el.segments ?? [])
+	return waypointsFromSavedSegments.length > el.waypoints.length
+		? waypointsFromSavedSegments
+		: el.waypoints
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -382,7 +406,7 @@ export function SelectLayer() {
 		})
 		pointSource.setData({
 			type: "Feature",
-			geometry: { type: "MultiPoint", coordinates: el.waypoints },
+			geometry: { type: "MultiPoint", coordinates: editableWaypoints(el) },
 			properties: {},
 		})
 
@@ -468,7 +492,7 @@ export function SelectLayer() {
 				layers: ["select-endpoints-node"],
 			})
 			if (endpointHit.length > 0) {
-				const idx = closestWaypointIndex(el.waypoints, [
+				const idx = closestWaypointIndex(editableWaypoints(el), [
 					e.lngLat.lng,
 					e.lngLat.lat,
 				])
@@ -525,7 +549,7 @@ export function SelectLayer() {
 			// ── Immediate preview ─────────────────────────────────────────────
 			// Move the endpoint circle to the cursor right away so the drag feels
 			// responsive before OSRM resolves.
-			const waypoints = [...el.waypoints] as [number, number][]
+			const waypoints = editableWaypoints(el)
 			const previewCoords: [number, number][] = []
 			if (waypointIndex > 0) previewCoords.push(waypoints[waypointIndex - 1])
 			previewCoords.push(cursorPos)
@@ -660,7 +684,10 @@ export function SelectLayer() {
 				actual
 					? {
 							type: "Feature",
-							geometry: { type: "MultiPoint", coordinates: actual.waypoints },
+							geometry: {
+								type: "MultiPoint",
+								coordinates: editableWaypoints(actual),
+							},
 							properties: {},
 						}
 					: EMPTY_MULTIPOINT,
@@ -679,19 +706,14 @@ export function SelectLayer() {
 			const { selectedInstanceId, elements } = fabricStore.state
 			if (!selectedInstanceId) return
 			const el = elements.find((el) => el.id === selectedInstanceId)
-			if (!el || el.waypoints.length <= 2) return
+			if (!el || editableWaypoints(el).length <= 2) return
 
 			snapshot() // ← capture before any mutation
 
-			const idx = closestWaypointIndex(el.waypoints, [
-				e.lngLat.lng,
-				e.lngLat.lat,
-			])
+			const waypoints = editableWaypoints(el)
+			const idx = closestWaypointIndex(waypoints, [e.lngLat.lng, e.lngLat.lat])
 			const segs = el.segments?.length ? el.segments : [el.coordinates]
-			const newWaypoints = el.waypoints.filter((_, i) => i !== idx) as [
-				number,
-				number,
-			][]
+			const newWaypoints = waypoints.filter((_, i) => i !== idx)
 
 			if (!shouldRouteAlongRoads(el.typeId)) {
 				const newSegments = straightSegmentsFromWaypoints(newWaypoints)
@@ -710,7 +732,7 @@ export function SelectLayer() {
 					segments: newSegments,
 					coordinates: flattenSegments(newSegments),
 				})
-			} else if (idx === el.waypoints.length - 1) {
+			} else if (idx === waypoints.length - 1) {
 				const newSegments = segs.slice(0, -1)
 				updateElement(el.id, {
 					waypoints: newWaypoints,
@@ -718,20 +740,18 @@ export function SelectLayer() {
 					coordinates: flattenSegments(newSegments),
 				})
 			} else {
-				routeBetween(el.waypoints[idx - 1], el.waypoints[idx + 1]).then(
-					(merged) => {
-						const newSegments: [number, number][][] = [
-							...segs.slice(0, idx - 1),
-							merged,
-							...segs.slice(idx + 1),
-						]
-						updateElement(el.id, {
-							waypoints: newWaypoints,
-							segments: newSegments,
-							coordinates: flattenSegments(newSegments),
-						})
-					},
-				)
+				routeBetween(waypoints[idx - 1], waypoints[idx + 1]).then((merged) => {
+					const newSegments: [number, number][][] = [
+						...segs.slice(0, idx - 1),
+						merged,
+						...segs.slice(idx + 1),
+					]
+					updateElement(el.id, {
+						waypoints: newWaypoints,
+						segments: newSegments,
+						coordinates: flattenSegments(newSegments),
+					})
+				})
 			}
 		}
 

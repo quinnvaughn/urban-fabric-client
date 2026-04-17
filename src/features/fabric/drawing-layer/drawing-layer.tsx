@@ -1,7 +1,7 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { useAnalytics } from "#/lib/analytics"
 import { useToast } from "#/features/ui"
+import { useAnalytics } from "#/lib/analytics"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import { syncElementsToMap } from "../elements-layer/map-elements-utils"
 import {
@@ -136,7 +136,8 @@ export function DrawingLayer() {
 		) {
 			const perpendicularLock =
 				element.drawingConstraints?.lockPerpendicularToStreet
-			if (!perpendicularLock || lockedStreetBearingRef.current != null) return true
+			if (!perpendicularLock || lockedStreetBearingRef.current != null)
+				return true
 
 			const searchRadiusPx = Math.max(perpendicularLock.searchRadiusPx ?? 0, 48)
 			const lock = findNearestRoadLock({
@@ -185,7 +186,7 @@ export function DrawingLayer() {
 							start,
 							cursor,
 							perpendicularBearing(lockedStreetBearingRef.current),
-					  )
+						)
 					: cursor
 			return projected
 		}
@@ -274,8 +275,7 @@ export function DrawingLayer() {
 				const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
 				if (!ensureStreetLock(e.point, snapped)) {
 					toast.warning("Unable to place crossing", {
-						description:
-							"Click on or near a street to place a crossing.",
+						description: "Click on or near a street to place a crossing.",
 					})
 					return
 				}
@@ -322,7 +322,10 @@ export function DrawingLayer() {
 				element.draw === "single-segment-perpendicular"
 					? [startPoint, constrained]
 					: await routeBetween(anchor, constrained)
-			waypointsRef.current = [startPoint, constrained]
+			waypointsRef.current =
+				element.draw === "single-segment-perpendicular"
+					? [startPoint, constrained]
+					: [...waypoints, constrained]
 			segmentsRef.current = [...segmentsRef.current, segment]
 			updateActiveLine()
 		}
