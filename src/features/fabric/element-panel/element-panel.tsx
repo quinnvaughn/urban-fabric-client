@@ -118,6 +118,7 @@ export function ElementPanel() {
 				left: "5",
 				zIndex: "panel",
 				width: "200px",
+				maxHeight: "calc(100dvh - var(--uf-header-height) - 80px)",
 				display: "flex",
 				flexDirection: "column",
 				overflow: "hidden",
@@ -230,7 +231,14 @@ export function ElementPanel() {
 				))}
 			</Grid>
 
-			<VStack gap="0" className={css({ paddingBottom: "2" })}>
+			<VStack
+				gap="0"
+				className={css({
+					minHeight: 0,
+					overflowY: "auto",
+					paddingBottom: "2",
+				})}
+			>
 				{ELEMENT_CATEGORIES.map((category) => (
 					<VStack key={category.id} gap="0">
 						<HStack
@@ -326,6 +334,7 @@ export function ElementPanel() {
 					borderTop: "1px solid",
 					borderTopColor: "border.subtle",
 					padding: "3",
+					flexShrink: 0,
 				})}
 			>
 				<Typography.Text size="xxs">

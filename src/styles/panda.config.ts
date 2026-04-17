@@ -10,7 +10,6 @@ import { input } from "./recipes/input"
 import { link } from "./recipes/link"
 import { menu } from "./recipes/menu"
 import { modal } from "./recipes/modal"
-import { segmented } from "./recipes/segmented"
 import { select } from "./recipes/select"
 import { stepper } from "./recipes/stepper"
 import { tabs } from "./recipes/tabs"
@@ -47,7 +46,6 @@ export default defineConfig({
 			toast: ["*"],
 			badge: ["*"],
 			avatar: ["*"],
-			segmented: ["*"],
 			stepper: ["*"],
 			select: ["*"],
 			menu: ["*"],
@@ -1901,7 +1899,6 @@ export default defineConfig({
 			tabs,
 			card,
 			typography,
-			segmented,
 			stepper,
 			select,
 			menu,

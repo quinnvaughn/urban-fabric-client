@@ -23,8 +23,8 @@ const tools: Tool[] = [
 		keyboardShortcut: "D",
 		description: (
 			<>
-				Click to place waypoints along a road. Press <Kbd>↵</Kbd> to finish or{" "}
-				<Kbd>Esc</Kbd> to cancel. Snaps to the road network automatically.
+				Click to place waypoints. Press <Kbd>↵</Kbd> to finish or <Kbd>Esc</Kbd>{" "}
+				to cancel. Road-based elements follow the street network.
 			</>
 		),
 	},

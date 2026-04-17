@@ -1,17 +1,20 @@
 import { BIKING_CATEGORY } from "./biking"
 import { STREETS_CATEGORY } from "./streets"
+import { TRAILS_AND_PATHS_CATEGORY } from "./trails-and-paths"
 import { TRANSIT_CATEGORY } from "./transit"
-import { WALKING_CATEGORY } from "./walking"
 import type {
 	ElementCategory,
 	ElementDescriptor,
 	ElementInstance,
 	LinePaint,
 } from "./types"
+import { WALKING_CATEGORY } from "./walking"
 
 export type { LinePaint }
 
-function sortElementsAlphabetically(category: ElementCategory): ElementCategory {
+function sortElementsAlphabetically(
+	category: ElementCategory,
+): ElementCategory {
 	return {
 		...category,
 		elements: [...category.elements].sort((a, b) =>
@@ -45,6 +48,7 @@ export function computeBasePaint(
 
 export const ELEMENT_CATEGORIES: ElementCategory[] = [
 	WALKING_CATEGORY,
+	TRAILS_AND_PATHS_CATEGORY,
 	BIKING_CATEGORY,
 	TRANSIT_CATEGORY,
 	STREETS_CATEGORY,

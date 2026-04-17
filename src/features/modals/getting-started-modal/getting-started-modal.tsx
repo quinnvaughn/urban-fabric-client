@@ -263,8 +263,8 @@ const steps: React.ReactNode[] = [
 				click the Draw tool (or press <Kbd>D</Kbd>).
 			</Typography.Text>
 			<Typography.Text size="sm" color="stone.700" lineHeight="relaxed">
-				Click along a road to place waypoints. The editor snaps each point to
-				the road network, so you're always drawing on real geometry.
+				Click to place waypoints. Road-based elements follow the street network,
+				while paths can be drawn wherever they belong.
 			</Typography.Text>
 			<Callout type="accent">
 				<Typography.Text size="sm" color="stone.700" lineHeight="relaxed">

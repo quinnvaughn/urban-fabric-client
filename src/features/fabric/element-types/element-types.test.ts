@@ -66,6 +66,17 @@ describe("ELEMENT_CATEGORIES", () => {
 		}
 	})
 
+	it("keeps shared-use paths independent of road routing", () => {
+		const category = ELEMENT_CATEGORIES.find((c) => c.id === "trails-and-paths")
+		const descriptor = ELEMENT_TYPE_MAP["shared-use-path"]
+
+		expect(category?.title).toBe("Trails & Paths")
+		expect(category?.elements).toContain(descriptor)
+		expect(descriptor.title).toBe("Shared-Use Path")
+		expect(descriptor.draw).toBe("straight-line-points")
+		expect(descriptor.drawingConstraints).toBeUndefined()
+	})
+
 	it("every property has a toMapStyle function", () => {
 		for (const category of ELEMENT_CATEGORIES) {
 			for (const el of category.elements) {
@@ -109,7 +120,7 @@ describe("computeBasePaint", () => {
 
 	it("includes baseMapStyle color in output", () => {
 		// Use sharrow — it has no properties that override color
-		const descriptor = ELEMENT_TYPE_MAP["sharrow"]
+		const descriptor = ELEMENT_TYPE_MAP.sharrow
 		const instance: ElementInstance = {
 			id: "test",
 			typeId: "sharrow",

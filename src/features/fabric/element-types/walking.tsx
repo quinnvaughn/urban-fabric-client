@@ -149,9 +149,9 @@ export const WALKING_CATEGORY: ElementCategory = {
 		},
 		{
 			id: "pedestrian-street",
-			title: "Pedestrian / Shared Street",
+			title: "Pedestrian Street",
 			description:
-				"A street redesigned to prioritize people walking, with limited or no car access.",
+				"A street corridor redesigned to prioritize people walking, with limited or no car access.",
 			geometry: "line",
 			draw: "click-to-place-points",
 			excludes: [],
