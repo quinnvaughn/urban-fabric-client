@@ -81,6 +81,15 @@ function editableWaypoints(el: ElementInstance): [number, number][] {
 		: el.waypoints
 }
 
+export function elementInstanceIdFromLayerId(layerId: string): string | null {
+	if (!layerId.startsWith("el-") || layerId.endsWith("-casing")) return null
+
+	const id = layerId.replace(/^el-/, "")
+	if (id.endsWith("-symbol")) return id.slice(0, -"-symbol".length)
+	if (id.endsWith("-arrows")) return id.slice(0, -"-arrows".length)
+	return id
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function SelectLayer() {
@@ -477,8 +486,10 @@ export function SelectLayer() {
 				setSelectedInstanceId(null)
 				return
 			}
-			const instanceId = features[0].layer.id.replace(/^el-/, "")
-			setSelectedInstanceId(instanceId)
+			const instanceId = features
+				.map((feature) => elementInstanceIdFromLayerId(feature.layer.id))
+				.find((id): id is string => Boolean(id))
+			setSelectedInstanceId(instanceId ?? null)
 		}
 
 		function handleMouseDown(e: maplibregl.MapMouseEvent) {

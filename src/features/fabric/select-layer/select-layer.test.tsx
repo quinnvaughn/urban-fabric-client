@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { MockMap } from "#/test/mocks/maplibre"
-import { SelectLayer } from "./select-layer"
+import { elementInstanceIdFromLayerId, SelectLayer } from "./select-layer"
 
 // ── Module mocks ──────────────────────────────────────────────────────────────
 
@@ -43,6 +43,14 @@ vi.mock("../element-types", async (importOriginal) => {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("SelectLayer", () => {
+	it("resolves selectable line, arrow, and SVG symbol layers to the owning element id", () => {
+		expect(elementInstanceIdFromLayerId("el-abc-123")).toBe("abc-123")
+		expect(elementInstanceIdFromLayerId("el-abc-123-arrows")).toBe("abc-123")
+		expect(elementInstanceIdFromLayerId("el-abc-123-symbol")).toBe("abc-123")
+		expect(elementInstanceIdFromLayerId("el-abc-123-casing")).toBeNull()
+		expect(elementInstanceIdFromLayerId("road-label")).toBeNull()
+	})
+
 	it("adds all circle and line layers with valid MapLibre paint property names", () => {
 		// MockMap.addLayer and MockMap.setPaintProperty throw if an invalid
 		// property name is used (e.g. "circle-strokeWidth" instead of
