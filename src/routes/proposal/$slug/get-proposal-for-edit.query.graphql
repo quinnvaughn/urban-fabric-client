@@ -10,6 +10,15 @@ query GetProposalForEdit($slug: String!) {
 			title
 			description
 			categories
+			snapshotElements
+			snapshotCenter {
+				lat
+				lng
+			}
+			snapshotZoom
+			snapshotMapStyle
+			snapshotIsIn3DMode
+			snapshotThumbnail
 			existingConditionPhotos {
 				id
 				url

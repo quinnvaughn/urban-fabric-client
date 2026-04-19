@@ -1,4 +1,5 @@
 export * from "./back-button"
+export * from "./buildings-3d-layer/buildings-3d-layer"
 export * from "./drawing-layer"
 export * from "./editor-command-palette"
 export * from "./editor-hud"

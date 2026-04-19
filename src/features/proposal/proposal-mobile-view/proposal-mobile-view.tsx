@@ -1,6 +1,6 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef, useState } from "react"
-import { FabricMap, MapControls } from "#/features/fabric"
+import { Buildings3DLayer, FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import { PublicNavActions } from "#/features/navigation"
 import {
@@ -37,6 +37,7 @@ export function ProposalMobileView({
 	const { selectedInstance, setSelectedInstanceId } = useProposalStore()
 	const { isPickingLocation } = useCommentComposerStore()
 	const [map, setMap] = useState<maplibregl.Map | null>(null)
+	const [is3DMode, setIs3DMode] = useState(proposal.snapshotIsIn3DMode)
 	const [sheetOpen, setSheetOpen] = useState(false)
 	const sheetOpenBeforeSelection = useRef(false)
 	const wasPickingLocation = useRef(false)
@@ -140,6 +141,7 @@ export function ProposalMobileView({
 					mapStyle={proposal.snapshotMapStyle}
 					onMapChange={setMap}
 				>
+					<Buildings3DLayer enabled={is3DMode} />
 					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
@@ -160,7 +162,12 @@ export function ProposalMobileView({
 						})}
 					>
 						<Attribution />
-						<MapControls showHelp={false} showGetCurrentLocation={false} />
+						<MapControls
+							showHelp={false}
+							showGetCurrentLocation={false}
+							is3DMode={is3DMode}
+							onToggle3DMode={() => setIs3DMode((value) => !value)}
+						/>
 					</Box>
 					<ProposalElementsLayer />
 				</FabricMap>

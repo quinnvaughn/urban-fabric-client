@@ -82,6 +82,7 @@ function PublishRoute({ fabric }: { fabric: Fabric }) {
 				center: { lat: fabric.center.lat, lng: fabric.center.lng },
 				zoom: fabric.zoom,
 				mapStyle: fabric.mapStyle,
+				isIn3DMode: fabric.isIn3DMode,
 				initialThumbnail: fabric.thumbnail ?? "",
 				location: {
 					city: fabric.locationCity,

@@ -1,3 +1,4 @@
+import type { ApolloCache } from "@apollo/client"
 import { useApolloClient, useMutation } from "@apollo/client/react"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight, ExternalLink, EyeOff, Save, Send } from "lucide-react"
@@ -6,6 +7,7 @@ import { match } from "ts-pattern"
 import z from "zod"
 import {
 	BackButton,
+	Buildings3DLayer,
 	FabricComposition,
 	FabricMap,
 	StaticElementsLayer,
@@ -44,6 +46,7 @@ import { useAnalytics } from "#/lib/analytics"
 import {
 	addProposalToMyProposalsCache,
 	adjustMyDashboardStatsCache,
+	evictFabricListCaches,
 	setFabricProposalInCache,
 } from "#/lib/apollo"
 import { useForm } from "#/lib/form"
@@ -102,6 +105,7 @@ export type ProposalFormData = {
 	center: { lat: number; lng: number }
 	zoom: number
 	mapStyle: MapStyle
+	isIn3DMode: boolean
 	initialThumbnail: string
 	location?: { city: string; region: string; regionAbbr?: string | null }
 	/** Link back to the fabric editor shown in the panel header. */
@@ -151,6 +155,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 		zoom: data.zoom,
 		center: { lat: data.center.lat, lng: data.center.lng },
 	})
+	const [snapshotIsIn3DMode, setSnapshotIsIn3DMode] = useState(data.isIn3DMode)
 
 	const handleViewportChange = useCallback((next: Viewport) => {
 		setViewport((prev) => (isSameViewport(prev, next) ? prev : next))
@@ -166,6 +171,13 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const [publishProposalMutation] = useMutation(PublishProposalDocument)
 	const [unpublishProposalMutation] = useMutation(UnpublishProposalDocument)
 	const { capture } = useAnalytics()
+
+	function evictProposalListCaches(cache: ApolloCache) {
+		cache.evict({ fieldName: "exploreProposals" })
+		cache.evict({ fieldName: "followingProposals" })
+		cache.evict({ fieldName: "myProposals" })
+		evictFabricListCaches(cache)
+	}
 
 	function buildPhotoInputs(values: FormValues): ProposalPhotoInput[] {
 		return [
@@ -228,6 +240,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
 					mapStyle: data.mapStyle,
+					isIn3DMode: snapshotIsIn3DMode,
 					thumbnail: currentThumbnail,
 				},
 			},
@@ -257,6 +270,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						},
 					})
 				}
+				evictProposalListCaches(cache)
 			},
 		})
 		match(response.data?.saveDraftProposal)
@@ -296,6 +310,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 					center: { lat: viewport.center.lat, lng: viewport.center.lng },
 					zoom: viewport.zoom,
 					mapStyle: data.mapStyle,
+					isIn3DMode: snapshotIsIn3DMode,
 					thumbnail: currentThumbnail,
 				},
 			},
@@ -328,8 +343,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						unpublishedProposalDelta: -1,
 					})
 				}
-				cache.evict({ fieldName: "exploreProposals" })
-				cache.gc()
+				evictProposalListCaches(cache)
 			},
 		})
 		match(response.data?.publishProposal)
@@ -787,6 +801,37 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								they first open this proposal.
 							</Typography.Text>
 						</VStack>
+						<label
+							className={css({
+								display: "flex",
+								alignItems: "start",
+								gap: "3",
+								cursor: "pointer",
+								userSelect: "none",
+							})}
+						>
+							<input
+								type="checkbox"
+								checked={snapshotIsIn3DMode}
+								onChange={(event) =>
+									setSnapshotIsIn3DMode(event.currentTarget.checked)
+								}
+								className={css({
+									width: "4",
+									height: "4",
+									marginTop: "0.5",
+									accentColor: "brand.default",
+									flexShrink: 0,
+								})}
+							/>
+							<VStack gap="0.5">
+								<FieldLabel>Open proposal in 3D mode</FieldLabel>
+								<Typography.Text size="xxs" color="stone.500">
+									Viewers will still be able to switch modes after opening the
+									proposal.
+								</Typography.Text>
+							</VStack>
+						</label>
 						<FabricComposition elements={elements} />
 					</Box>
 					<Box
@@ -867,12 +912,14 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						zoom={viewport.zoom}
 						mapStyle={data.mapStyle}
 					>
+						<Buildings3DLayer enabled={snapshotIsIn3DMode} />
 						<StaticElementsLayer elements={elements} />
 						<ThumbnailSync
 							onThumbnail={uploadThumbnail}
 							onCaptureReady={(capture) => {
 								captureThumbnailRef.current = capture
 							}}
+							captureSignal={snapshotIsIn3DMode}
 						/>
 						<ViewportSync
 							viewport={viewport}
@@ -880,6 +927,8 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						/>
 						<PublishProposalMapTopbar />
 						<PublishProposalMapHud
+							is3DMode={snapshotIsIn3DMode}
+							onToggle3DMode={() => setSnapshotIsIn3DMode((value) => !value)}
 							currentViewport={{
 								center: [viewport.center.lng, viewport.center.lat],
 								zoom: viewport.zoom,
@@ -904,6 +953,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 							elements,
 							center: viewport.center,
 							zoom: viewport.zoom,
+							isIn3DMode: snapshotIsIn3DMode,
 							location: data.location,
 							creatorName,
 						}}

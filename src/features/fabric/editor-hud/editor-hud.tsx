@@ -3,7 +3,12 @@ import { css } from "#/styles/styled-system/css"
 import { Attribution } from "../attribution"
 import { MapControls } from "../map-controls"
 
-export function EditorHUD() {
+type Props = {
+	is3DMode?: boolean
+	onToggle3DMode?: () => void
+}
+
+export function EditorHUD({ is3DMode, onToggle3DMode }: Props) {
 	return (
 		<Box
 			className={css({
@@ -20,7 +25,7 @@ export function EditorHUD() {
 			})}
 		>
 			<Attribution />
-			<MapControls />
+			<MapControls is3DMode={is3DMode} onToggle3DMode={onToggle3DMode} />
 		</Box>
 	)
 }

@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react"
 import {
+	Buildings3DLayer,
 	DrawingLayer,
 	EditorCommandPalette,
 	EditorHUD,
@@ -19,9 +20,11 @@ type Props = {
 	center: [number, number]
 	zoom: number
 	initialMapStyle: MapStyle
+	initialIsIn3DMode?: boolean
 	captureOnMount?: boolean
 	onTitleSave?: (title: string) => Promise<void>
 	onMapStyleChange?: (style: MapStyle) => void
+	onIsIn3DModeChange?: (isIn3DMode: boolean) => void
 	onViewportChange?: (viewport: {
 		center: { lng: number; lat: number }
 		zoom: number
@@ -38,9 +41,11 @@ export function FabricEditor({
 	center,
 	zoom,
 	initialMapStyle,
+	initialIsIn3DMode = false,
 	captureOnMount,
 	onTitleSave,
 	onMapStyleChange,
+	onIsIn3DModeChange,
 	onViewportChange,
 	onThumbnail,
 	onPublish,
@@ -50,6 +55,12 @@ export function FabricEditor({
 	slug,
 }: Props) {
 	const [mapStyle, setMapStyle] = useState(initialMapStyle)
+	const [is3DMode, setIs3DMode] = useState(initialIsIn3DMode)
+
+	function updateIsIn3DMode(next: boolean) {
+		setIs3DMode(next)
+		onIsIn3DModeChange?.(next)
+	}
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -73,6 +84,7 @@ export function FabricEditor({
 			<EditorCommandPalette />
 			{nudge}
 			<FabricMap center={center} zoom={zoom} bearing={0} mapStyle={mapStyle}>
+				<Buildings3DLayer enabled={is3DMode} />
 				<DrawingLayer />
 				<SelectLayer />
 				{onViewportChange && (
@@ -82,9 +94,13 @@ export function FabricEditor({
 					<ThumbnailSync
 						onThumbnail={onThumbnail}
 						captureOnMount={captureOnMount}
+						captureSignal={is3DMode}
 					/>
 				)}
-				<EditorHUD />
+				<EditorHUD
+					is3DMode={is3DMode}
+					onToggle3DMode={() => updateIsIn3DMode(!is3DMode)}
+				/>
 			</FabricMap>
 		</div>
 	)

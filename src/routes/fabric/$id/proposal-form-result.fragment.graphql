@@ -25,6 +25,7 @@ fragment ProposalFormResult on Proposal {
 	}
 	snapshotZoom
 	snapshotMapStyle
+	snapshotIsIn3DMode
 	snapshotThumbnail
 	snapshotLocationCity
 	snapshotLocationRegion

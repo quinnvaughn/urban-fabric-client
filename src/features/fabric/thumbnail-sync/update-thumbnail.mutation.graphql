@@ -12,6 +12,7 @@ mutation UpdateFabricThumbnail($input: UpdateFabricThumbnailInput!) {
 		... on Fabric {
 			id
 			thumbnail
+			updatedAt
 		}
 	}
 }

@@ -1,8 +1,8 @@
 import { ChevronLeft, MapPin } from "lucide-react"
 import { DateTime } from "luxon"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import * as ReactDOM from "react-dom"
-import { FabricMap } from "#/features/fabric"
+import { Buildings3DLayer, FabricMap } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import type { ElementInstance } from "#/features/fabric/element-types/types"
 import { MapControls } from "#/features/fabric/map-controls"
@@ -40,6 +40,7 @@ export type ProposalPreviewData = {
 	elements: ElementInstance[]
 	center: { lat: number; lng: number }
 	zoom: number
+	isIn3DMode: boolean
 	location?: { city: string; region: string; regionAbbr?: string | null }
 	creatorName: string
 }
@@ -52,12 +53,14 @@ type Props = {
 
 export function ProposalPreviewModal({ open, onClose, data }: Props) {
 	const { initElements } = useProposalStore()
+	const [is3DMode, setIs3DMode] = useState(data.isIn3DMode)
 
 	useEffect(() => {
 		if (open) {
 			initElements(data.elements)
+			setIs3DMode(data.isIn3DMode)
 		}
-	}, [open, data.elements, initElements])
+	}, [open, data.elements, data.isIn3DMode, initElements])
 
 	// Close on Escape
 	useEffect(() => {
@@ -200,6 +203,7 @@ export function ProposalPreviewModal({ open, onClose, data }: Props) {
 						center={[data.center.lng, data.center.lat]}
 						zoom={data.zoom}
 					>
+						<Buildings3DLayer enabled={is3DMode} />
 						<ProposalSelectLayer />
 						<Box
 							className={css({
@@ -214,7 +218,11 @@ export function ProposalPreviewModal({ open, onClose, data }: Props) {
 							})}
 						>
 							<Attribution />
-							<MapControls showHelp={false} />
+							<MapControls
+								showHelp={false}
+								is3DMode={is3DMode}
+								onToggle3DMode={() => setIs3DMode((value) => !value)}
+							/>
 						</Box>
 						<ProposalElementsLayer />
 					</FabricMap>

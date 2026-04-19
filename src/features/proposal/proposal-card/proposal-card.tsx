@@ -17,6 +17,7 @@ import {
 	ToggleProposalLikeDocument,
 } from "#/graphql/generated"
 import { adjustMyDashboardEngagementCache } from "#/lib/apollo"
+import { cacheBustedUrl } from "#/lib/cache-busted-url"
 import { useRequireAuth } from "#/lib/graphql"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { enumValueToReadableLabel } from "#/lib/string"
@@ -87,7 +88,10 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 				})}
 			/>
 			<Card.Media>
-				<img src={proposal.snapshotThumbnail} alt="Proposal Snapshot" />
+				<img
+					src={cacheBustedUrl(proposal.snapshotThumbnail, proposal.updatedAt)}
+					alt="Proposal Snapshot"
+				/>
 			</Card.Media>
 			<Card.Body>
 				<Box
@@ -123,7 +127,11 @@ export function ProposalCard({ proposal: proposalRef }: Props) {
 						</HStack>
 					</Box>
 					<HStack gap="1" align="center">
-						<Avatar size="xxs" name={proposal.creator.name} profilePictureUrl={proposal.creator.profilePictureUrl} />
+						<Avatar
+							size="xxs"
+							name={proposal.creator.name}
+							profilePictureUrl={proposal.creator.profilePictureUrl}
+						/>
 						<Link
 							className={css({
 								fontSize: "xs",

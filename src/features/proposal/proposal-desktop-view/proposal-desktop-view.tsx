@@ -1,7 +1,7 @@
 import { EllipsisVertical } from "lucide-react"
 import type maplibregl from "maplibre-gl"
 import { useState } from "react"
-import { FabricMap, MapControls } from "#/features/fabric"
+import { Buildings3DLayer, FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import {
 	ProposalCommentLocationHighlight,
@@ -29,6 +29,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
 		useProposalStore()
 	const [map, setMap] = useState<maplibregl.Map | null>(null)
+	const [is3DMode, setIs3DMode] = useState(proposal.snapshotIsIn3DMode)
 	const [showWizard, setShowWizard] = useState(
 		() =>
 			typeof localStorage !== "undefined" &&
@@ -170,6 +171,7 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 					mapStyle={proposal.snapshotMapStyle}
 					onMapChange={setMap}
 				>
+					<Buildings3DLayer enabled={is3DMode} />
 					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
@@ -186,7 +188,12 @@ export function ProposalDesktopView({ proposal }: { proposal: Proposal }) {
 						})}
 					>
 						<Attribution />
-						<MapControls showHelp={false} showGetCurrentLocation={false} />
+						<MapControls
+							showHelp={false}
+							showGetCurrentLocation={false}
+							is3DMode={is3DMode}
+							onToggle3DMode={() => setIs3DMode((value) => !value)}
+						/>
 					</Box>
 					<ProposalElementsLayer />
 				</FabricMap>

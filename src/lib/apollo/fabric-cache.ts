@@ -132,6 +132,11 @@ export function adjustMyDashboardFabricCountCache(
 	})
 }
 
+export function evictFabricListCaches(cache: ApolloCache) {
+	cache.evict({ fieldName: "myFabrics" })
+	cache.gc()
+}
+
 /**
  * Null out the proposal field on a cached Fabric so that the fabric
  * appears as having no proposal after its proposal is deleted.

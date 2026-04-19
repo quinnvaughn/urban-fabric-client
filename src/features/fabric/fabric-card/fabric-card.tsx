@@ -22,6 +22,7 @@ import {
 	adjustMyDashboardFabricCountCache,
 	removeFabricFromMyFabricsCache,
 } from "#/lib/apollo"
+import { cacheBustedUrl } from "#/lib/cache-busted-url"
 import { css, cx } from "#/styles/styled-system/css"
 
 type Props = {
@@ -213,7 +214,7 @@ export function FabricCard({
 				</Menu.Content>
 			</Menu>
 			<Card.Media>
-				<img src={thumbnail ?? ""} alt={`${title} map`} />
+				<img src={cacheBustedUrl(thumbnail, updatedAt)} alt={`${title} map`} />
 			</Card.Media>
 			<Card.Body>
 				<VStack gap="1">

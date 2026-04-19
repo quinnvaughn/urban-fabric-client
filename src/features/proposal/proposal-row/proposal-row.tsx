@@ -25,6 +25,7 @@ import {
 	clearFabricProposalFromCache,
 	removeProposalFromMyProposalsCache,
 } from "#/lib/apollo"
+import { cacheBustedUrl } from "#/lib/cache-busted-url"
 import { openModal } from "#/stores"
 import { css, cva, cx } from "#/styles/styled-system/css"
 
@@ -32,6 +33,7 @@ type Props = {
 	id: string
 	fabricId: string
 	mapImage: string
+	mapImageVersion?: string | number | null
 	isPublished: boolean
 	title: string
 	location: string
@@ -85,6 +87,7 @@ export function ProposalRow({
 	id,
 	fabricId,
 	mapImage,
+	mapImageVersion,
 	isPublished,
 	title,
 	location,
@@ -187,7 +190,7 @@ export function ProposalRow({
 				})}
 			>
 				<img
-					src={mapImage}
+					src={cacheBustedUrl(mapImage, mapImageVersion)}
 					alt={title}
 					className={css({ width: "100%", height: "100%", objectFit: "cover" })}
 				/>

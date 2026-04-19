@@ -1,7 +1,6 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect } from "react"
-import { useAnalytics } from "#/lib/analytics"
 import {
 	DashboardContainer,
 	EmptySection,
@@ -26,6 +25,7 @@ import {
 	RecentFabricsDocument,
 	RecentProposalsDocument,
 } from "#/graphql/generated"
+import { useAnalytics } from "#/lib/analytics"
 
 export const Route = createFileRoute("/dashboard/")({
 	component: RouteComponent,
@@ -198,6 +198,7 @@ function DashboardContent({
 										likes={proposal.likeCount}
 										slug={proposal.slug}
 										mapImage={proposal.snapshotThumbnail}
+										mapImageVersion={proposal.updatedAt}
 										key={proposal.id}
 									/>
 								))}

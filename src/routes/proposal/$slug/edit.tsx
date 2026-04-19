@@ -62,7 +62,9 @@ function EditProposalForm({
 	proposal: Proposal
 	fabric: Fabric
 }) {
-	const elements = fabric.elements as ElementInstance[]
+	const elements = Array.isArray(proposal.snapshotElements)
+		? (proposal.snapshotElements as ElementInstance[])
+		: (fabric.elements as ElementInstance[])
 	const navigate = Route.useNavigate()
 
 	return (
@@ -76,12 +78,13 @@ function EditProposalForm({
 					fabricId: proposal.fabricId,
 					elements,
 					center: {
-						lat: fabric.center.lat,
-						lng: fabric.center.lng,
+						lat: proposal.snapshotCenter.lat,
+						lng: proposal.snapshotCenter.lng,
 					},
-					zoom: fabric.zoom,
-					mapStyle: fabric.mapStyle,
-					initialThumbnail: "",
+					zoom: proposal.snapshotZoom,
+					mapStyle: proposal.snapshotMapStyle,
+					isIn3DMode: proposal.snapshotIsIn3DMode ?? fabric.isIn3DMode,
+					initialThumbnail: proposal.snapshotThumbnail,
 					initialValues: {
 						title: proposal.title,
 						description: proposal.description ?? "",

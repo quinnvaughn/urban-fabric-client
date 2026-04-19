@@ -173,6 +173,7 @@ export type GuestFabric = {
 	elements: ElementInstance[]
 	thumbnail?: string
 	mapStyle?: MapStyle
+	isIn3DMode?: boolean
 	nudgeDismissed?: boolean
 }
 

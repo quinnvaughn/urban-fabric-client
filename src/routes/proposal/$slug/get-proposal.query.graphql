@@ -42,6 +42,7 @@ query GetProposal($slug: String!) {
 			snapshotLocationRegion
 			snapshotLocationRegionAbbr
 			snapshotMapStyle
+			snapshotIsIn3DMode
 			snapshotThumbnail
 			snapshotZoom
 			title

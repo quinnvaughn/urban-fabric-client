@@ -22,11 +22,13 @@ import {
 	GetFabricDocument,
 	type GetFabricQuery,
 	SyncViewportDocument,
+	UpdateFabric3DModeDocument,
 	UpdateFabricMapStyleDocument,
 	UpdateFabricThumbnailDocument,
 	UpdateFabricTitleDocument,
 } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
+import { evictFabricListCaches } from "#/lib/apollo"
 import { useCurrentUser } from "#/lib/graphql/hooks/use-current-user"
 import { uploadFabricThumbnail } from "#/lib/upload/thumbnail-upload"
 
@@ -74,6 +76,7 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 	const [syncViewport] = useMutation(SyncViewportDocument)
 	const [updateThumbnail] = useMutation(UpdateFabricThumbnailDocument)
 	const [updateMapStyle] = useMutation(UpdateFabricMapStyleDocument)
+	const [updateIsIn3DMode] = useMutation(UpdateFabric3DModeDocument)
 	const { capture } = useAnalytics()
 	useFabricPersistence(apiHandler(fabric.id, client))
 	const { user } = useCurrentUser()
@@ -104,6 +107,7 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 				center={[fabric.center.lng, fabric.center.lat]}
 				zoom={fabric.zoom}
 				initialMapStyle={fabric.mapStyle}
+				initialIsIn3DMode={fabric.isIn3DMode}
 				{...(fabric.proposal
 					? { hasProposal: true, slug: fabric.proposal.slug }
 					: { hasProposal: false })}
@@ -122,6 +126,17 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 						? (style) => {
 								updateMapStyle({
 									variables: { input: { id: fabric.id, mapStyle: style } },
+								})
+							}
+						: undefined
+				}
+				onIsIn3DModeChange={
+					isOwner
+						? (isIn3DMode) => {
+								updateIsIn3DMode({
+									variables: {
+										input: { id: fabric.id, isIn3DMode },
+									},
 								})
 							}
 						: undefined
@@ -145,7 +160,15 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 										thumbnail,
 									)
 									await updateThumbnail({
-										variables: { input: { id: fabric.id, thumbnail: publicUrl } },
+										variables: {
+											input: { id: fabric.id, thumbnail: publicUrl },
+										},
+										update(cache, { data }) {
+											if (data?.updateFabricThumbnail.__typename !== "Fabric") {
+												return
+											}
+											evictFabricListCaches(cache)
+										},
 									})
 									return publicUrl
 								} catch {

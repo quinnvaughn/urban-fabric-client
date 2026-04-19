@@ -6,32 +6,100 @@ import {
 } from "#/features/fabric/keyboard-shortcuts"
 import { Box, Menu, Tooltip, useToast } from "#/features/ui"
 import { useModalStore } from "#/stores"
-import { css, cx } from "#/styles/styled-system/css"
+import { css, cva, cx } from "#/styles/styled-system/css"
 import { useMap } from "../fabric-map"
 
-const controlButton = css({
-	width: "40px",
-	height: "40px",
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	border: "none",
-	background: { base: "transparent", _hover: "stone.100" },
-	color: { base: "stone.600", _hover: "stone.900" },
-	cursor: "pointer",
-	transition:
-		"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
-	flexShrink: 0,
+const controlButton = cva({
+	base: {
+		width: "40px",
+		height: "40px",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		border: "none",
+		background: { base: "transparent", _hover: "stone.100" },
+		color: { base: "stone.600", _hover: "stone.900" },
+		cursor: "pointer",
+		transition:
+			"background 150ms var(--easings-in-out), color 150ms var(--easings-in-out)",
+		flexShrink: 0,
+		"& [data-cuboid-face='top']": {
+			fill: "white",
+		},
+		"& [data-cuboid-face='front']": {
+			fill: "stone.100",
+		},
+		"& [data-cuboid-face='side']": {
+			fill: "stone.200",
+		},
+		_pressed: {
+			background: "transparent",
+			color: "brand.emphasis",
+			"& [data-cuboid-face='top']": {
+				fill: "brand.subtle",
+			},
+			"& [data-cuboid-face='front']": {
+				fill: "brand.default",
+			},
+			"& [data-cuboid-face='side']": {
+				fill: "brand.muted",
+			},
+			_hover: {
+				background: "stone.100",
+				color: "brand.emphasis",
+			},
+		},
+	},
 })
 
 type Props = {
 	showHelp?: boolean
 	showGetCurrentLocation?: boolean
+	show3DMode?: boolean
+	is3DMode?: boolean
+	onToggle3DMode?: () => void
+}
+
+function CuboidIcon() {
+	return (
+		<svg
+			aria-hidden="true"
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+		>
+			<path
+				data-cuboid-face="top"
+				d="M5 8.5 12 4l7 4.5-7 4.5L5 8.5Z"
+				stroke="currentColor"
+				strokeLinejoin="round"
+				strokeWidth="1.6"
+			/>
+			<path
+				data-cuboid-face="front"
+				d="M5 8.5v7L12 20v-7L5 8.5Z"
+				stroke="currentColor"
+				strokeLinejoin="round"
+				strokeWidth="1.6"
+			/>
+			<path
+				data-cuboid-face="side"
+				d="M19 8.5v7L12 20v-7l7-4.5Z"
+				stroke="currentColor"
+				strokeLinejoin="round"
+				strokeWidth="1.6"
+			/>
+		</svg>
+	)
 }
 
 export function MapControls({
 	showHelp = true,
 	showGetCurrentLocation = true,
+	show3DMode = true,
+	is3DMode = false,
+	onToggle3DMode,
 }: Props) {
 	const map = useMap()
 	const { open } = useModalStore()
@@ -97,7 +165,7 @@ export function MapControls({
 					<Tooltip.Trigger>
 						<button
 							type="button"
-							className={controlButton}
+							className={controlButton()}
 							onClick={handleGetLocation}
 						>
 							<LocateFixed size={20} />
@@ -120,7 +188,7 @@ export function MapControls({
 				<Tooltip.Trigger>
 					<button
 						type="button"
-						className={controlButton}
+						className={controlButton()}
 						onClick={() => map.zoomOut()}
 					>
 						<Minus size={20} />
@@ -140,7 +208,7 @@ export function MapControls({
 				<Tooltip.Trigger>
 					<button
 						type="button"
-						className={controlButton}
+						className={controlButton()}
 						onClick={() => map.zoomIn()}
 					>
 						<Plus size={20} />
@@ -148,14 +216,43 @@ export function MapControls({
 				</Tooltip.Trigger>
 				<Tooltip.Content>Zoom in</Tooltip.Content>
 			</Tooltip>
-			<div
-				className={css({
-					width: "px",
-					height: "4",
-					background: "stone.200",
-					flexShrink: 0,
-				})}
-			/>
+			{show3DMode && onToggle3DMode && (
+				<>
+					<div
+						className={css({
+							width: "px",
+							height: "4",
+							background: "stone.200",
+							flexShrink: 0,
+						})}
+					/>
+					<Tooltip placement="top-end">
+						<Tooltip.Trigger>
+							<button
+								type="button"
+								aria-pressed={is3DMode}
+								className={controlButton()}
+								onClick={onToggle3DMode}
+							>
+								<CuboidIcon />
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							{is3DMode ? "Hide 3D" : "Show 3D"}
+						</Tooltip.Content>
+					</Tooltip>
+				</>
+			)}
+			{showHelp && (
+				<div
+					className={css({
+						width: "px",
+						height: "4",
+						background: "stone.200",
+						flexShrink: 0,
+					})}
+				/>
+			)}
 			{showHelp && (
 				<Menu>
 					<Tooltip placement="top-end">
@@ -164,7 +261,7 @@ export function MapControls({
 								<button
 									type="button"
 									className={cx(
-										controlButton,
+										controlButton(),
 										css({ fontSize: "20px", fontWeight: "semibold" }),
 									)}
 								>

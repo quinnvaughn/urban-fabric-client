@@ -62,7 +62,11 @@ function RouteComponent() {
 	return <ProposalsContent myProposals={data.myProposals} />
 }
 
-function ProposalsContent({ myProposals }: { myProposals: MyProposalsPayload }) {
+function ProposalsContent({
+	myProposals,
+}: {
+	myProposals: MyProposalsPayload
+}) {
 	const [selectedCategories, setSelectedCategories] = useState<
 		ProposalCategory[]
 	>([])
@@ -194,6 +198,7 @@ function ProposalsContent({ myProposals }: { myProposals: MyProposalsPayload }) 
 								slug={proposal.slug}
 								location={`${proposal.snapshotLocationCity}, ${proposal.snapshotLocationRegion}`}
 								mapImage={proposal.snapshotThumbnail ?? ""}
+								mapImageVersion={proposal.updatedAt}
 							/>
 						))
 					) : (

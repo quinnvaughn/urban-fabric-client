@@ -14,7 +14,10 @@ import {
 	useFabricPersistence,
 	useFabricStore,
 } from "#/features/fabric/fabric-store"
-import { GettingStartedNudge, useGettingStartedNudge } from "#/features/modals/getting-started-modal"
+import {
+	GettingStartedNudge,
+	useGettingStartedNudge,
+} from "#/features/modals/getting-started-modal"
 import { MobileGate, NudgeCard } from "#/features/ui"
 import { CreateFabricDocument, MapStyle, MeDocument } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
@@ -96,8 +99,12 @@ function RouteComponent() {
 function Editor({ fabric }: { fabric: GuestFabric }) {
 	const handler = useMemo(() => localStorageHandler(GUEST_FABRIC_KEY), [])
 	const { initElements, elements } = useFabricStore()
-	const { showNudge: showGettingStartedNudge, dismissNudge: dismissGettingStartedNudge } = useGettingStartedNudge()
-	const showNudge = elements.length >= 3 && !fabric.nudgeDismissed && !showGettingStartedNudge
+	const {
+		showNudge: showGettingStartedNudge,
+		dismissNudge: dismissGettingStartedNudge,
+	} = useGettingStartedNudge()
+	const showNudge =
+		elements.length >= 3 && !fabric.nudgeDismissed && !showGettingStartedNudge
 	const client = useApolloClient()
 	const navigate = useNavigate()
 	const [createFabric] = useMutation(CreateFabricDocument)
@@ -148,6 +155,7 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 					elements: guest.elements,
 					thumbnail: guest.thumbnail,
 					mapStyle: guest.mapStyle,
+					isIn3DMode: guest.isIn3DMode,
 				},
 			},
 		})
@@ -161,7 +169,12 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	}
 
 	function openAuthModal(intent: "save" | "publish" | "nudge") {
-		const source = intent === "publish" ? "publish" : intent === "nudge" ? "nudge" : "save_draft"
+		const source =
+			intent === "publish"
+				? "publish"
+				: intent === "nudge"
+					? "nudge"
+					: "save_draft"
 		capture("signup_started", { source })
 		openModal("auth", {
 			title:
@@ -185,70 +198,80 @@ function Editor({ fabric }: { fabric: GuestFabric }) {
 	useFabricPersistence(handler)
 	return (
 		<>
-		<GettingStartedNudge show={showGettingStartedNudge} onDismiss={dismissGettingStartedNudge} />
-		<FabricEditor
-			id={fabric.id}
-			title={fabric.title}
-			center={[fabric.center.lng, fabric.center.lat]}
-			zoom={fabric.zoom}
-			initialMapStyle={fabric.mapStyle ?? MapStyle.Default}
-			hasProposal={false}
-			onTitleSave={async (t) => {
-				updateGuestFabric(
-					(existing) => ({ ...existing, title: t }),
-					GUEST_FABRIC_KEY,
-				)
-			}}
-			onMapStyleChange={(style) => {
-				updateGuestFabric(
-					(existing) => ({ ...existing, mapStyle: style }),
-					GUEST_FABRIC_KEY,
-				)
-			}}
-			onViewportChange={async ({ center, zoom }) => {
-				updateGuestFabric(
-					(existing) => ({ ...existing, center, zoom }),
-					GUEST_FABRIC_KEY,
-				)
-			}}
-			onThumbnail={async (thumbnail) => {
-				const thumbnailDataUrl = await blobToDataUrl(thumbnail)
-				updateGuestFabric(
-					(existing) => ({ ...existing, thumbnail: thumbnailDataUrl }),
-					GUEST_FABRIC_KEY,
-				)
-				return thumbnailDataUrl
-			}}
-			onPublish={() => openAuthModal("publish")}
-			onSave={() => openAuthModal("save")}
-			nudge={
-				showNudge ? (
-					<NudgeCard
-						title="Want others to see this?"
-						description="Save your progress and share your ideas with your community."
-						primaryAction={{
-							label: "Create a free account",
-							onClick: () => openAuthModal("save"),
-						}}
-						secondaryAction={{
-							label: "Keep editing",
-							onClick: () => {
+			<GettingStartedNudge
+				show={showGettingStartedNudge}
+				onDismiss={dismissGettingStartedNudge}
+			/>
+			<FabricEditor
+				id={fabric.id}
+				title={fabric.title}
+				center={[fabric.center.lng, fabric.center.lat]}
+				zoom={fabric.zoom}
+				initialMapStyle={fabric.mapStyle ?? MapStyle.Default}
+				initialIsIn3DMode={fabric.isIn3DMode ?? false}
+				hasProposal={false}
+				onTitleSave={async (t) => {
+					updateGuestFabric(
+						(existing) => ({ ...existing, title: t }),
+						GUEST_FABRIC_KEY,
+					)
+				}}
+				onMapStyleChange={(style) => {
+					updateGuestFabric(
+						(existing) => ({ ...existing, mapStyle: style }),
+						GUEST_FABRIC_KEY,
+					)
+				}}
+				onIsIn3DModeChange={(isIn3DMode) => {
+					updateGuestFabric(
+						(existing) => ({ ...existing, isIn3DMode }),
+						GUEST_FABRIC_KEY,
+					)
+				}}
+				onViewportChange={async ({ center, zoom }) => {
+					updateGuestFabric(
+						(existing) => ({ ...existing, center, zoom }),
+						GUEST_FABRIC_KEY,
+					)
+				}}
+				onThumbnail={async (thumbnail) => {
+					const thumbnailDataUrl = await blobToDataUrl(thumbnail)
+					updateGuestFabric(
+						(existing) => ({ ...existing, thumbnail: thumbnailDataUrl }),
+						GUEST_FABRIC_KEY,
+					)
+					return thumbnailDataUrl
+				}}
+				onPublish={() => openAuthModal("publish")}
+				onSave={() => openAuthModal("save")}
+				nudge={
+					showNudge ? (
+						<NudgeCard
+							title="Want others to see this?"
+							description="Save your progress and share your ideas with your community."
+							primaryAction={{
+								label: "Create a free account",
+								onClick: () => openAuthModal("save"),
+							}}
+							secondaryAction={{
+								label: "Keep editing",
+								onClick: () => {
+									updateGuestFabric(
+										(existing) => ({ ...existing, nudgeDismissed: true }),
+										GUEST_FABRIC_KEY,
+									)
+								},
+							}}
+							onDismiss={() => {
 								updateGuestFabric(
 									(existing) => ({ ...existing, nudgeDismissed: true }),
 									GUEST_FABRIC_KEY,
 								)
-							},
-						}}
-						onDismiss={() => {
-							updateGuestFabric(
-								(existing) => ({ ...existing, nudgeDismissed: true }),
-								GUEST_FABRIC_KEY,
-							)
-						}}
-					/>
-				) : null
-			}
-		/>
+							}}
+						/>
+					) : null
+				}
+			/>
 		</>
 	)
 }

@@ -34,6 +34,7 @@ fragment ProposalCard on Proposal {
 	slug
 	likeCount
 	isLikedByMe
+	updatedAt
 	snapshotLocationCity
 	snapshotLocationRegion
 	snapshotLocationRegionAbbr

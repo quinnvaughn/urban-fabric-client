@@ -10,16 +10,19 @@ type Props = {
 	onThumbnail: (thumbnail: Blob) => Promise<string>
 	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
 	captureOnMount?: boolean
+	captureSignal?: unknown
 }
 
 export function ThumbnailSync({
 	onThumbnail,
 	onCaptureReady,
 	captureOnMount,
+	captureSignal,
 }: Props) {
 	const map = useMap()
 	const { saveStatus, selectedInstanceId } = useFabricStore()
 	const prevSaveStatus = useRef(saveStatus)
+	const prevCaptureSignal = useRef(captureSignal)
 	const pendingCapture = useRef(false)
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -76,6 +79,21 @@ export function ThumbnailSync({
 			map.off("idle", onIdle)
 		}
 	}, [captureOnMount, map, captureAndSync])
+
+	// Capture after explicit visual mode changes, such as toggling 3D buildings.
+	useEffect(() => {
+		if (Object.is(prevCaptureSignal.current, captureSignal)) return
+		prevCaptureSignal.current = captureSignal
+		let cancelled = false
+		function onIdle() {
+			if (!cancelled) captureAndSync()
+		}
+		map.once("idle", onIdle)
+		return () => {
+			cancelled = true
+			map.off("idle", onIdle)
+		}
+	}, [captureSignal, map, captureAndSync])
 
 	// Capture on viewport change
 	useEffect(() => {

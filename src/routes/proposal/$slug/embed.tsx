@@ -1,9 +1,9 @@
 import { useReadQuery } from "@apollo/client/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { EllipsisVertical } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { NotFoundView } from "#/features/errors"
-import { FabricMap, MapControls } from "#/features/fabric"
+import { Buildings3DLayer, FabricMap, MapControls } from "#/features/fabric"
 import { Attribution } from "#/features/fabric/attribution"
 import {
 	EmbedProposalHeader,
@@ -77,6 +77,7 @@ function ProposalView({ proposal }: Props) {
 	const { capture } = useAnalytics()
 	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
 		useProposalStore()
+	const [is3DMode, setIs3DMode] = useState(proposal.snapshotIsIn3DMode)
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
@@ -179,6 +180,7 @@ function ProposalView({ proposal }: Props) {
 					zoom={proposal.snapshotZoom}
 					mapStyle={proposal.snapshotMapStyle}
 				>
+					<Buildings3DLayer enabled={is3DMode} />
 					<ProposalCommentLocationHighlight />
 					<ProposalCommentLocationPicker />
 					<ProposalSelectLayer />
@@ -195,7 +197,12 @@ function ProposalView({ proposal }: Props) {
 						})}
 					>
 						<Attribution />
-						<MapControls showHelp={false} showGetCurrentLocation={false} />
+						<MapControls
+							showHelp={false}
+							showGetCurrentLocation={false}
+							is3DMode={is3DMode}
+							onToggle3DMode={() => setIs3DMode((value) => !value)}
+						/>
 					</Box>
 					<ProposalElementsLayer />
 				</FabricMap>

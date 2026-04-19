@@ -1,0 +1,17 @@
+mutation UpdateFabric3DMode($input: UpdateFabric3DModeInput!) {
+	updateFabric3DMode(input: $input) {
+		... on Fabric {
+			id
+			isIn3DMode
+		}
+		... on ForbiddenError {
+			message
+		}
+		... on NotFoundError {
+			message
+		}
+		... on UnauthorizedError {
+			message
+		}
+	}
+}

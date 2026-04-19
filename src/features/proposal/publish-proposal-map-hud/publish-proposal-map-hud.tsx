@@ -12,11 +12,15 @@ type Viewport = {
 type Props = {
 	fabricViewport: Viewport
 	currentViewport: Viewport
+	is3DMode?: boolean
+	onToggle3DMode?: () => void
 }
 
 export function PublishProposalMapHud({
 	fabricViewport,
 	currentViewport,
+	is3DMode,
+	onToggle3DMode,
 }: Props) {
 	const map = useMap()
 	const isResetDisabled =
@@ -83,7 +87,11 @@ export function PublishProposalMapHud({
 				<RotateCcw size={12} />
 				<span>Reset to fabric view</span>
 			</button>
-			<MapControls showHelp={false} />
+			<MapControls
+				showHelp={false}
+				is3DMode={is3DMode}
+				onToggle3DMode={onToggle3DMode}
+			/>
 		</Box>
 	)
 }
