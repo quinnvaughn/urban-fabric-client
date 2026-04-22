@@ -23,14 +23,12 @@ type Props = {
 	group: ProposalPhotoGroup
 	value: ProposalFormPhoto[]
 	onChange: (photos: ProposalFormPhoto[]) => void
-	uploadTargetId: string
 }
 
 export function ProposalPhotoField({
 	group,
 	value,
 	onChange,
-	uploadTargetId,
 }: Props) {
 	const client = useApolloClient()
 	const { toast } = useToast()
@@ -41,10 +39,7 @@ export function ProposalPhotoField({
 	const selectedPhoto =
 		selectedPhotoIndex == null ? null : (value[selectedPhotoIndex] ?? null)
 
-	async function uploadOne(
-		file: File,
-		uploadTargetId: string,
-	): Promise<ProposalFormPhoto | null> {
+	async function uploadOne(file: File): Promise<ProposalFormPhoto | null> {
 		const previewUrl = URL.createObjectURL(file)
 		const id = crypto.randomUUID()
 
@@ -54,7 +49,7 @@ export function ProposalPhotoField({
 			const result = await client.mutate({
 				mutation: CreateProposalPhotoUploadUrlDocument,
 				variables: {
-					input: { proposalId: uploadTargetId, group, contentType: file.type },
+					input: { group, contentType: file.type },
 				},
 			})
 
@@ -83,7 +78,7 @@ export function ProposalPhotoField({
 	async function handleFiles(files: File[]) {
 		let nextPhotos = value
 		for (const file of files) {
-			const uploadedPhoto = await uploadOne(file, uploadTargetId)
+			const uploadedPhoto = await uploadOne(file)
 			if (!uploadedPhoto) continue
 			nextPhotos = [...nextPhotos, uploadedPhoto]
 			onChange(nextPhotos)

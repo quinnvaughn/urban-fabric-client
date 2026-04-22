@@ -2,18 +2,9 @@ mutation CreateProposalPhotoUploadUrl(
 	$input: CreateProposalPhotoUploadUrlInput!
 ) {
 	createProposalPhotoUploadUrl(input: $input) {
-		... on ForbiddenError {
-			message
-		}
-		... on NotFoundError {
-			message
-		}
 		... on PresignedUploadResult {
 			publicUrl
 			uploadUrl
-		}
-		... on UnauthorizedError {
-			message
 		}
 	}
 }

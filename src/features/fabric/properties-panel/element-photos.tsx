@@ -40,7 +40,7 @@ export function ElementPhotos({ element }: Props) {
 	const selectedPhoto =
 		selectedPhotoIndex == null ? null : (photos[selectedPhotoIndex] ?? null)
 
-	async function uploadOne(file: File, fabricId: string) {
+	async function uploadOne(file: File) {
 		const previewUrl = URL.createObjectURL(file)
 		const id = crypto.randomUUID()
 
@@ -50,12 +50,12 @@ export function ElementPhotos({ element }: Props) {
 			const result = await client.mutate({
 				mutation: CreateFabricElementPhotoUploadUrlDocument,
 				variables: {
-					input: { fabricId, elementId: element.id, contentType: file.type },
+					input: { contentType: file.type },
 				},
 			})
 
 			const upload = result.data?.createFabricElementPhotoUploadUrl
-			if (!upload || upload.__typename !== "PresignedUploadResult") {
+			if (!upload) {
 				throw new Error("Failed to get upload URL")
 			}
 
@@ -82,7 +82,7 @@ export function ElementPhotos({ element }: Props) {
 	function handleFiles(files: File[]) {
 		if (!fabricId) return
 		for (const file of files) {
-			uploadOne(file, fabricId)
+			uploadOne(file)
 		}
 	}
 

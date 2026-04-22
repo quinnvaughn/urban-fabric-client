@@ -2,18 +2,7 @@ mutation CreateFabricThumbnailUploadUrl(
 	$input: CreateFabricThumbnailUploadUrlInput!
 ) {
 	createFabricThumbnailUploadUrl(input: $input) {
-		... on ForbiddenError {
-			message
-		}
-		... on NotFoundError {
-			message
-		}
-		... on UnauthorizedError {
-			message
-		}
-		... on PresignedUploadResult {
-			uploadUrl
-			publicUrl
-		}
+		uploadUrl
+		publicUrl
 	}
 }
