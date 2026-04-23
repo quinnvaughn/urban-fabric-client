@@ -10,10 +10,17 @@ import {
 	WhoItIsForSection,
 } from "#/features/landing-page"
 import { useAnalytics } from "#/lib/analytics"
+import { getClientEnv } from "#/lib/env/client"
 
 export const Route = createFileRoute("/_marketing/")({
 	component: App,
 	pendingComponent: HomePageSkeleton,
+	head: () => {
+		const { VITE_SITE_URL: siteUrl } = getClientEnv()
+		return {
+			links: [{ rel: "canonical", href: `${siteUrl}/` }],
+		}
+	},
 })
 
 function App() {

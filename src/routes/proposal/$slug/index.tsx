@@ -80,6 +80,12 @@ export const Route = createFileRoute("/proposal/$slug/")({
 					content: proposal.snapshotThumbnail ?? `${siteUrl}/og-image.png`,
 				},
 			],
+			links: [
+				{
+					rel: "canonical",
+					href: `${siteUrl}/proposal/${proposal.slug}`,
+				},
+			],
 		}
 	},
 })

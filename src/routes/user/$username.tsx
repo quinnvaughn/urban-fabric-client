@@ -10,7 +10,10 @@ import { getClientEnv } from "#/lib/env/client"
 
 export const Route = createFileRoute("/user/$username")({
 	component: RouteComponent,
-	loader: async ({ context: { preloadQuery, apolloClient }, params: { username } }) => {
+	loader: async ({
+		context: { preloadQuery, apolloClient },
+		params: { username },
+	}) => {
 		const getUserQuery = preloadQuery(GetUserProfileDocument, {
 			variables: { username },
 		})
@@ -29,7 +32,8 @@ export const Route = createFileRoute("/user/$username")({
 		}
 		const title = `${user.name} (@${user.username}) | Urban Fabric`
 		const description =
-			user.bio ?? `Check out ${user.name}'s urban design proposals on Urban Fabric.`
+			user.bio ??
+			`Check out ${user.name}'s urban design proposals on Urban Fabric.`
 		const image = user.profilePictureUrl ?? `${siteUrl}/og-image.png`
 		return {
 			meta: [
@@ -43,6 +47,12 @@ export const Route = createFileRoute("/user/$username")({
 				{ name: "twitter:title", content: title },
 				{ name: "twitter:description", content: description },
 				{ name: "twitter:image", content: image },
+			],
+			links: [
+				{
+					rel: "canonical",
+					href: `${siteUrl}/user/${user.username}`,
+				},
 			],
 		}
 	},

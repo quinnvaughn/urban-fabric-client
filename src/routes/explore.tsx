@@ -5,11 +5,18 @@ import { ExploreProposals } from "#/features/explore"
 import { Navbar } from "#/features/navigation"
 import { ExploreProposalsDocument, ExploreSortBy } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
+import { getClientEnv } from "#/lib/env/client"
 import { getLocationFromIp } from "#/lib/geo"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/explore")({
 	component: RouteComponent,
+	head: () => {
+		const { VITE_SITE_URL: siteUrl } = getClientEnv()
+		return {
+			links: [{ rel: "canonical", href: `${siteUrl}/explore` }],
+		}
+	},
 	loader: async ({ context }) => {
 		const exploreProposalsQuery = context.preloadQuery(
 			ExploreProposalsDocument,
