@@ -156,7 +156,6 @@ function FabricEditorRoute({ fabric }: { fabric: Fabric }) {
 								try {
 									const publicUrl = await uploadFabricThumbnail(
 										client,
-										fabric.id,
 										thumbnail,
 									)
 									await updateThumbnail({
