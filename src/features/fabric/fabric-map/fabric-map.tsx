@@ -53,8 +53,8 @@ export function FabricMap({
 			zoom,
 			pitch: 0,
 			bearing,
-			// Remove default controls — you'll add your own HUD
 			attributionControl: false,
+			canvasContextAttributes: { preserveDrawingBuffer: true },
 		})
 
 		mapRef.current.once("load", async () => {
