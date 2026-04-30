@@ -15,7 +15,16 @@ type FabricState = {
 	future: ElementInstance[][]
 	canUndo: boolean
 	canRedo: boolean
+	canUndoDrawing: boolean
+	canRedoDrawing: boolean
 }
+
+type DrawingHistoryControls = {
+	undo: () => void
+	redo: () => void
+}
+
+let drawingHistoryControls: DrawingHistoryControls | null = null
 
 export const fabricStore = createStore<FabricState>({
 	title: "",
@@ -29,6 +38,8 @@ export const fabricStore = createStore<FabricState>({
 	future: [],
 	canUndo: false,
 	canRedo: false,
+	canUndoDrawing: false,
+	canRedoDrawing: false,
 })
 
 // ── Actions ───────────────────────────────────────────────────────────────────
@@ -59,6 +70,38 @@ export const openCommandPalette = () =>
 
 export const closeCommandPalette = () =>
 	fabricStore.setState((s) => ({ ...s, commandPaletteOpen: false }))
+
+export const setDrawingHistoryControls = (
+	controls: DrawingHistoryControls | null,
+) => {
+	drawingHistoryControls = controls
+}
+
+export const setDrawingHistoryAvailability = ({
+	canUndo,
+	canRedo,
+}: {
+	canUndo: boolean
+	canRedo: boolean
+}) =>
+	fabricStore.setState((s) => ({
+		...s,
+		canUndoDrawing: canUndo,
+		canRedoDrawing: canRedo,
+	}))
+
+export const clearDrawingHistoryControls = () => {
+	drawingHistoryControls = null
+	setDrawingHistoryAvailability({ canUndo: false, canRedo: false })
+}
+
+export const undoDrawing = () => {
+	drawingHistoryControls?.undo()
+}
+
+export const redoDrawing = () => {
+	drawingHistoryControls?.redo()
+}
 
 export const addElement = (element: ElementInstance) =>
 	fabricStore.setState((s) => ({
@@ -150,5 +193,10 @@ export function useFabricStore() {
 		snapshot,
 		undo,
 		redo,
+		setDrawingHistoryControls,
+		setDrawingHistoryAvailability,
+		clearDrawingHistoryControls,
+		undoDrawing,
+		redoDrawing,
 	}
 }

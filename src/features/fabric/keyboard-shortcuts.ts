@@ -47,14 +47,14 @@ export const FABRIC_SHORTCUTS: FabricShortcutDefinition[] = [
 	},
 	{
 		id: "undo",
-		label: "Undo",
+		label: "Undo last edit or drawing point",
 		group: "Edit",
 		shortcut: "Meta+z",
 		keys: ["⌘", "Z"],
 	},
 	{
 		id: "redo",
-		label: "Redo",
+		label: "Redo last edit or drawing point",
 		group: "Edit",
 		shortcut: "Meta+Shift+z",
 		keys: ["⌘", "⇧", "Z"],

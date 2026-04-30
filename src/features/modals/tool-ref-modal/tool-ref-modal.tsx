@@ -24,7 +24,9 @@ const tools: Tool[] = [
 		description: (
 			<>
 				Click to place waypoints. Press <Kbd>↵</Kbd> to finish or <Kbd>Esc</Kbd>{" "}
-				to cancel. Road-based elements follow the street network.
+				to cancel. Use <Kbd>⌘</Kbd> + <Kbd>Z</Kbd> and <Kbd>⌘</Kbd> +{" "}
+				<Kbd>⇧</Kbd> + <Kbd>Z</Kbd> to undo and redo placed points before the
+				element is created. Road-based elements follow the street network.
 			</>
 		),
 	},

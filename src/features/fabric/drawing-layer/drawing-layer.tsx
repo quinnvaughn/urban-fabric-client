@@ -13,8 +13,11 @@ import {
 	useMap,
 } from "../fabric-map"
 import {
+	clearDrawingHistoryControls,
 	setActiveElement,
 	setActiveTool,
+	setDrawingHistoryAvailability,
+	setDrawingHistoryControls,
 	setSelectedInstanceId,
 	useFabricStore,
 } from "../fabric-store"
@@ -34,6 +37,14 @@ const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	type: "Feature",
 	geometry: { type: "LineString", coordinates: [] },
 	properties: {},
+}
+
+type DrawingSnapshot = {
+	waypoints: [number, number][]
+	segments: [number, number][][]
+	lockedStreetBearing: number | null
+	lockedMaxLengthFeet: number | null
+	lockedStreetCenter: [number, number] | null
 }
 
 function makeLineFeature(
@@ -129,6 +140,85 @@ export function DrawingLayer() {
 			map.getSource("draw-active") as maplibregl.GeoJSONSource | undefined
 		const previewSource = () =>
 			map.getSource("draw-preview") as maplibregl.GeoJSONSource | undefined
+		const pastDrawingsRef = { current: [] as DrawingSnapshot[] }
+		const futureDrawingsRef = { current: [] as DrawingSnapshot[] }
+
+		function clonePoint(point: [number, number]): [number, number] {
+			return [point[0], point[1]]
+		}
+
+		function cloneSegment(segment: [number, number][]): [number, number][] {
+			return segment.map(clonePoint)
+		}
+
+		function snapshotDrawing(): DrawingSnapshot {
+			return {
+				waypoints: waypointsRef.current.map(clonePoint),
+				segments: segmentsRef.current.map(cloneSegment),
+				lockedStreetBearing: lockedStreetBearingRef.current,
+				lockedMaxLengthFeet: lockedMaxLengthFeetRef.current,
+				lockedStreetCenter: lockedStreetCenterRef.current
+					? clonePoint(lockedStreetCenterRef.current)
+					: null,
+			}
+		}
+
+		function restoreDrawing(snapshot: DrawingSnapshot) {
+			waypointsRef.current = snapshot.waypoints.map(clonePoint)
+			segmentsRef.current = snapshot.segments.map(cloneSegment)
+			lockedStreetBearingRef.current = snapshot.lockedStreetBearing
+			lockedMaxLengthFeetRef.current = snapshot.lockedMaxLengthFeet
+			lockedStreetCenterRef.current = snapshot.lockedStreetCenter
+				? clonePoint(snapshot.lockedStreetCenter)
+				: null
+			updateActiveLine()
+			previewSource()?.setData(EMPTY_LINE)
+		}
+
+		function syncDrawingHistoryAvailability() {
+			setDrawingHistoryAvailability({
+				canUndo: pastDrawingsRef.current.length > 0,
+				canRedo: futureDrawingsRef.current.length > 0,
+			})
+		}
+
+		function pushDrawingHistory() {
+			pastDrawingsRef.current = [
+				...pastDrawingsRef.current.slice(-49),
+				snapshotDrawing(),
+			]
+			futureDrawingsRef.current = []
+			syncDrawingHistoryAvailability()
+		}
+
+		function undoDrawingStep() {
+			const previous = pastDrawingsRef.current.at(-1)
+			if (!previous) return
+			futureDrawingsRef.current = [
+				snapshotDrawing(),
+				...futureDrawingsRef.current,
+			]
+			pastDrawingsRef.current = pastDrawingsRef.current.slice(0, -1)
+			restoreDrawing(previous)
+			syncDrawingHistoryAvailability()
+		}
+
+		function redoDrawingStep() {
+			const next = futureDrawingsRef.current[0]
+			if (!next) return
+			pastDrawingsRef.current = [...pastDrawingsRef.current, snapshotDrawing()]
+			futureDrawingsRef.current = futureDrawingsRef.current.slice(1)
+			restoreDrawing(next)
+			syncDrawingHistoryAvailability()
+		}
+
+		if (placement !== "single-click") {
+			setDrawingHistoryControls({
+				undo: undoDrawingStep,
+				redo: redoDrawingStep,
+			})
+			syncDrawingHistoryAvailability()
+		}
 
 		function ensureStreetLock(
 			point: maplibregl.MapMouseEvent["point"],
@@ -229,8 +319,11 @@ export function DrawingLayer() {
 			lockedStreetBearingRef.current = null
 			lockedMaxLengthFeetRef.current = null
 			lockedStreetCenterRef.current = null
+			pastDrawingsRef.current = []
+			futureDrawingsRef.current = []
 			updateActiveLine()
 			previewSource()?.setData(EMPTY_LINE)
+			syncDrawingHistoryAvailability()
 		}
 
 		function commit() {
@@ -288,21 +381,20 @@ export function DrawingLayer() {
 				return
 			}
 
-			if (placement !== "single-click") {
-				const now = Date.now()
-				if (now - lastClickTimeRef.current < 300) {
-					lastClickTimeRef.current = 0
-					commit()
-					return
-				}
-				lastClickTimeRef.current = now
+			const now = Date.now()
+			if (now - lastClickTimeRef.current < 300) {
+				lastClickTimeRef.current = 0
+				commit()
+				return
 			}
+			lastClickTimeRef.current = now
 
 			const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
 			const waypoints = waypointsRef.current
 
 			if (waypoints.length === 0) {
 				ensureStreetLock(e.point, snapped)
+				pushDrawingHistory()
 				waypointsRef.current = [snapped]
 				return
 			}
@@ -322,6 +414,7 @@ export function DrawingLayer() {
 				element.draw === "single-segment-perpendicular"
 					? [startPoint, constrained]
 					: await routeBetween(anchor, constrained)
+			pushDrawingHistory()
 			waypointsRef.current =
 				element.draw === "single-segment-perpendicular"
 					? [startPoint, constrained]
@@ -357,6 +450,7 @@ export function DrawingLayer() {
 			map.off("click", handleClick)
 			map.off("mousemove", handleMouseMove)
 			window.removeEventListener("keydown", handleKeyDown)
+			clearDrawingHistoryControls()
 			reset()
 		}
 	}, [activeTool, activeElement, map, addElement, routeBetween, toast])

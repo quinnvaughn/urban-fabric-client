@@ -19,7 +19,6 @@ type Tool = {
 
 type Action = {
 	title: "undo" | "redo"
-	tooltip: string
 	icon: React.ReactNode
 }
 
@@ -35,8 +34,8 @@ const tools: Tool[] = [
 
 const actions: Action[] = [
 	// command icon and shift icon. redo is command + shift + z on mac, ctrl + y on windows, so we can show both shortcuts in the tooltip but only one icon
-	{ title: "undo", tooltip: "Undo ⌘+Z", icon: <Undo size={14} /> },
-	{ title: "redo", tooltip: "Redo ⌘+⇧+Z", icon: <Redo size={14} /> },
+	{ title: "undo", icon: <Undo size={14} /> },
+	{ title: "redo", icon: <Redo size={14} /> },
 ]
 
 const SUPPORT_EMAIL = getClientEnv().VITE_SUPPORT_EMAIL
@@ -50,8 +49,12 @@ export function ElementPanel() {
 		setActiveTool,
 		undo,
 		redo,
+		undoDrawing,
+		redoDrawing,
 		canUndo,
 		canRedo,
+		canUndoDrawing,
+		canRedoDrawing,
 		deleteElement,
 		selectedInstanceId,
 		setSelectedInstanceId,
@@ -59,6 +62,32 @@ export function ElementPanel() {
 	} = useFabricStore()
 
 	const supportEmailHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(REQUEST_ELEMENT_SUBJECT)}`
+	const hasDrawingHistory = canUndoDrawing || canRedoDrawing
+	const effectiveCanUndo = hasDrawingHistory ? canUndoDrawing : canUndo
+	const effectiveCanRedo = hasDrawingHistory ? canRedoDrawing : canRedo
+
+	function handleUndo() {
+		if (hasDrawingHistory) {
+			undoDrawing()
+			return
+		}
+		undo()
+	}
+
+	function handleRedo() {
+		if (hasDrawingHistory) {
+			redoDrawing()
+			return
+		}
+		redo()
+	}
+
+	function actionTooltip(action: Action) {
+		if (action.title === "undo") {
+			return hasDrawingHistory ? "Undo point ⌘+Z" : "Undo ⌘+Z"
+		}
+		return hasDrawingHistory ? "Redo point ⌘+⇧+Z" : "Redo ⌘+⇧+Z"
+	}
 
 	useFabricKeyboardShortcuts({
 		ids: PANEL_SHORTCUT_IDS,
@@ -75,8 +104,8 @@ export function ElementPanel() {
 				deleteElement(selectedInstanceId)
 				setSelectedInstanceId(null)
 			},
-			undo,
-			redo,
+			undo: handleUndo,
+			redo: handleRedo,
 			cancelDrawing: () => {
 				if (activeTool === "draw") {
 					setActiveTool("select")
@@ -191,10 +220,10 @@ export function ElementPanel() {
 							<button
 								type="button"
 								disabled={
-									(action.title === "undo" && !canUndo) ||
-									(action.title === "redo" && !canRedo)
+									(action.title === "undo" && !effectiveCanUndo) ||
+									(action.title === "redo" && !effectiveCanRedo)
 								}
-								onClick={action.title === "undo" ? undo : redo}
+								onClick={action.title === "undo" ? handleUndo : handleRedo}
 								className={css({
 									width: "8",
 									height: "8",
@@ -226,7 +255,7 @@ export function ElementPanel() {
 								{action.icon}
 							</button>
 						</Tooltip.Trigger>
-						<Tooltip.Content>{action.tooltip}</Tooltip.Content>
+						<Tooltip.Content>{actionTooltip(action)}</Tooltip.Content>
 					</Tooltip>
 				))}
 			</Grid>
