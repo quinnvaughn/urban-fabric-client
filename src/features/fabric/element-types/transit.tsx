@@ -211,7 +211,8 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 							{
 								label: "Dedicated lane",
 								value: "dedicated-lane",
-								description: "Own lane within the street, separated from traffic",
+								description:
+									"Own lane within the street, separated from traffic",
 							},
 						],
 					},
@@ -285,7 +286,8 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 							{
 								label: "Dedicated corridor",
 								value: "dedicated",
-								description: "At-grade in its own right-of-way, separate from roads",
+								description:
+									"At-grade in its own right-of-way, separate from roads",
 							},
 							{
 								label: "Grade-separated",
@@ -296,7 +298,91 @@ export const TRANSIT_CATEGORY: ElementCategory = {
 					},
 					toMapStyle: (value) => {
 						if (value === "dedicated") return {}
-						if (value === "grade-separated") return { "line-dasharray": [12, 2] }
+						if (value === "grade-separated")
+							return { "line-dasharray": [12, 2] }
+						return {}
+					},
+				},
+				DIRECTION_PROPERTY,
+			],
+
+			calculated: [
+				{ key: "length", label: "Length", unit: "ft" },
+				{ key: "from", label: "From" },
+				{ key: "to", label: "To" },
+			],
+		},
+		{
+			id: "heavy-rail",
+			title: "Heavy Rail",
+			description:
+				"A high-capacity rail line, typically grade-separated from streets and intersections.",
+			geometry: "line",
+			draw: "straight-line-points",
+			excludes: [],
+			baseMapStyle: {
+				color: "#b91c1c",
+				width: 5,
+				lineCap: "butt",
+				lineJoin: "round",
+
+				casingWidth: 11,
+				casingOpacity: 0.18,
+
+				selected: {
+					width: 6.5,
+					lineCap: "round",
+					outlineOpacity: 0.85,
+					outlineDasharray: [5, 3],
+					outlineOffset: 10,
+					outlineWidth: 1.5,
+				},
+
+				endpoints: BASE_ENDPOINTS,
+
+				drawPreview: {
+					color: "#b91c1c",
+					width: 3,
+					opacity: 0.5,
+					dasharray: [8, 6],
+					lineCap: "round",
+				},
+
+				lineSymbol: {
+					src: "/icons/elements/heavy-rail.svg",
+					spacing: 200,
+					size: 32,
+				},
+			} satisfies LineLayerStyle,
+
+			properties: [
+				{
+					key: "alignment",
+					label: "Alignment",
+					description: "How the rail line is separated from the street network",
+					default: "elevated",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Elevated",
+								value: "elevated",
+								description: "Runs above street level on a guideway",
+							},
+							{
+								label: "Subway",
+								value: "subway",
+								description: "Runs below street level in a tunnel",
+							},
+							{
+								label: "At-grade",
+								value: "at-grade",
+								description: "Runs at ground level in a protected right-of-way",
+							},
+						],
+					},
+					toMapStyle: (value) => {
+						if (value === "subway") return { "line-dasharray": [12, 2] }
 						return {}
 					},
 				},
