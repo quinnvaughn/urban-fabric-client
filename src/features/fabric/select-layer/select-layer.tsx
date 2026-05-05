@@ -58,6 +58,108 @@ function straightSegmentsFromWaypoints(
 	return segments
 }
 
+type ClosestEditableSegmentPosition = {
+	segmentIndex: number
+	coordinateIndex: number
+	coordinate: [number, number]
+}
+
+function closestPointOnSegment(
+	map: maplibregl.Map,
+	point: maplibregl.Point,
+	start: [number, number],
+	end: [number, number],
+): { coordinate: [number, number]; distanceSquared: number } {
+	const projectedStart = map.project(start)
+	const projectedEnd = map.project(end)
+	const dx = projectedEnd.x - projectedStart.x
+	const dy = projectedEnd.y - projectedStart.y
+	const lengthSquared = dx * dx + dy * dy
+	const t =
+		lengthSquared === 0
+			? 0
+			: Math.max(
+					0,
+					Math.min(
+						1,
+						((point.x - projectedStart.x) * dx +
+							(point.y - projectedStart.y) * dy) /
+							lengthSquared,
+					),
+				)
+	const closest = { x: projectedStart.x + t * dx, y: projectedStart.y + t * dy }
+	const closestLngLat = map.unproject([closest.x, closest.y])
+	const closestDx = point.x - closest.x
+	const closestDy = point.y - closest.y
+	return {
+		coordinate: [closestLngLat.lng, closestLngLat.lat],
+		distanceSquared: closestDx * closestDx + closestDy * closestDy,
+	}
+}
+
+function closestEditableSegmentPosition(
+	map: maplibregl.Map,
+	el: ElementInstance,
+	pos: maplibregl.LngLat,
+): ClosestEditableSegmentPosition | null {
+	const waypoints = editableWaypoints(el)
+	const waypointSegmentCount = waypoints.length - 1
+	if (waypointSegmentCount <= 0) return null
+
+	const segments =
+		el.segments?.length === waypointSegmentCount
+			? el.segments
+			: straightSegmentsFromWaypoints(waypoints)
+	const projectedPos = map.project(pos)
+	let closest: ClosestEditableSegmentPosition | null = null
+	let closestDistanceSquared = Infinity
+
+	for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++) {
+		const segment = segments[segmentIndex]
+		for (let coordIndex = 0; coordIndex < segment.length - 1; coordIndex++) {
+			const position = closestPointOnSegment(
+				map,
+				projectedPos,
+				segment[coordIndex],
+				segment[coordIndex + 1],
+			)
+			if (position.distanceSquared < closestDistanceSquared) {
+				closestDistanceSquared = position.distanceSquared
+				closest = {
+					segmentIndex,
+					coordinateIndex: coordIndex,
+					coordinate: position.coordinate,
+				}
+			}
+		}
+	}
+
+	return closest
+}
+
+function insertWaypointIntoSegments(
+	segments: [number, number][][],
+	position: ClosestEditableSegmentPosition,
+): [number, number][][] {
+	const segment = segments[position.segmentIndex]
+	if (!segment) return segments
+
+	const before = [
+		...segment.slice(0, position.coordinateIndex + 1),
+		position.coordinate,
+	]
+	const after = [
+		position.coordinate,
+		...segment.slice(position.coordinateIndex + 1),
+	]
+	return [
+		...segments.slice(0, position.segmentIndex),
+		before,
+		after,
+		...segments.slice(position.segmentIndex + 1),
+	]
+}
+
 function waypointsFromSegments(
 	segments: [number, number][][],
 ): [number, number][] {
@@ -707,17 +809,53 @@ export function SelectLayer() {
 
 		// Double-click an endpoint circle to remove that waypoint.
 		// Middle waypoints re-route to merge the two adjacent segments; edge
-		// waypoints simply trim the line.
+		// waypoints simply trim the line. Double-clicking a selected line away from
+		// an endpoint inserts a waypoint into the closest editable segment.
 		function handleDblClick(e: maplibregl.MapMouseEvent) {
 			const endpointHit = map.queryRenderedFeatures(e.point, {
 				layers: ["select-endpoints-node"],
 			})
-			if (endpointHit.length === 0) return
-
 			const { selectedInstanceId, elements } = fabricStore.state
 			if (!selectedInstanceId) return
 			const el = elements.find((el) => el.id === selectedInstanceId)
-			if (!el || editableWaypoints(el).length <= 2) return
+			if (!el) return
+
+			if (endpointHit.length === 0) {
+				const lineHitBbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+					[e.point.x - HIT_RADIUS, e.point.y - HIT_RADIUS],
+					[e.point.x + HIT_RADIUS, e.point.y + HIT_RADIUS],
+				]
+				const selectedLineHit = map.queryRenderedFeatures(lineHitBbox, {
+					layers: [`el-${selectedInstanceId}`],
+				})
+				if (selectedLineHit.length === 0) return
+
+				const insertPosition = closestEditableSegmentPosition(map, el, e.lngLat)
+				if (insertPosition == null) return
+
+				snapshot()
+
+				const waypoints = editableWaypoints(el)
+				const newWaypoint = insertPosition.coordinate
+				const newWaypoints = [
+					...waypoints.slice(0, insertPosition.segmentIndex + 1),
+					newWaypoint,
+					...waypoints.slice(insertPosition.segmentIndex + 1),
+				]
+				const segs =
+					el.segments?.length === waypoints.length - 1
+						? el.segments
+						: straightSegmentsFromWaypoints(waypoints)
+				const newSegments = insertWaypointIntoSegments(segs, insertPosition)
+				updateElement(el.id, {
+					waypoints: newWaypoints,
+					segments: newSegments,
+					coordinates: flattenSegments(newSegments),
+				})
+				return
+			}
+
+			if (editableWaypoints(el).length <= 2) return
 
 			snapshot() // ← capture before any mutation
 
