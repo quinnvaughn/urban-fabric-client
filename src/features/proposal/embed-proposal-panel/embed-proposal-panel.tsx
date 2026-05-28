@@ -17,7 +17,7 @@ type Proposal = Extract<
 	{ __typename: "Proposal" }
 >
 
-const EMBED_PANEL_WIDTH = "280px"
+const EMBED_PANEL_WIDTH = "min(280px, calc(100% - 48px))"
 
 export function EmbedProposalPanel({ proposal }: { proposal: Proposal }) {
 	const { activeTab, elements, setActiveTab, togglePanel } = useProposalStore()

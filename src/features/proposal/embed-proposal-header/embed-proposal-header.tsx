@@ -32,6 +32,7 @@ export function EmbedProposalHeader({ proposal }: Props) {
 					height: "4.5",
 					w: "px",
 					background: "rgba(255, 255, 255, 0.25)",
+					display: { base: "none", sm: "block" },
 				})}
 			/>
 			<Typography.Text
@@ -46,11 +47,15 @@ export function EmbedProposalHeader({ proposal }: Props) {
 					height: "4.5",
 					w: "px",
 					background: "rgba(255, 255, 255, 0.25)",
+					display: { base: "none", md: "block" },
 				})}
 			/>
 			<Typography.Text
 				size="sm"
-				className={css({ color: "rgba(255,255,255,0.75)" })}
+				className={css({
+					color: "rgba(255,255,255,0.75)",
+					display: { base: "none", md: "block" },
+				})}
 				truncate
 			>
 				by {proposal.creator.name}
@@ -60,12 +65,17 @@ export function EmbedProposalHeader({ proposal }: Props) {
 					height: "4.5",
 					w: "px",
 					background: "rgba(255, 255, 255, 0.25)",
+					display: { base: "none", sm: "block" },
 				})}
 			/>
 			<HStack
 				gap="1"
 				align="center"
-				className={css({ flexShrink: 0, color: "rgba(255,255,255,0.75)" })}
+				className={css({
+					flexShrink: 0,
+					color: "rgba(255,255,255,0.75)",
+					display: { base: "none", sm: "flex" },
+				})}
 			>
 				<MapPin size={10} />
 				<Typography.Text size="xs" className={css({ color: "inherit" })}>

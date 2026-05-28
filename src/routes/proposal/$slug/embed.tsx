@@ -20,6 +20,7 @@ import {
 import { Box, Tooltip } from "#/features/ui"
 import { GetProposalDocument, type GetProposalQuery } from "#/graphql/generated"
 import { useAnalytics } from "#/lib/analytics"
+import { useIsMobile } from "#/lib/hooks"
 import { css } from "#/styles/styled-system/css"
 
 export const Route = createFileRoute("/proposal/$slug/embed")({
@@ -75,9 +76,15 @@ type Props = {
 
 function ProposalView({ proposal }: Props) {
 	const { capture } = useAnalytics()
-	const { togglePanel, isPanelOpen, selectedInstance, setSelectedInstanceId } =
-		useProposalStore()
+	const {
+		togglePanel,
+		closePanel,
+		isPanelOpen,
+		selectedInstance,
+		setSelectedInstanceId,
+	} = useProposalStore()
 	const [is3DMode, setIs3DMode] = useState(proposal.snapshotIsIn3DMode)
+	const isNarrowEmbed = useIsMobile("md")
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
 	useEffect(() => {
@@ -88,13 +95,20 @@ function ProposalView({ proposal }: Props) {
 		})
 	}, [proposal.id])
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: stable
+	useEffect(() => {
+		if (isNarrowEmbed) {
+			closePanel()
+		}
+	}, [isNarrowEmbed])
+
 	return (
 		<Box
 			className={css({
-				display: { base: "none", md: "flex" },
+				display: "flex",
 				flexDir: "column",
 				background: "stone.100",
-				h: "screen",
+				h: "100dvh",
 				w: "screen",
 			})}
 		>
@@ -153,7 +167,7 @@ function ProposalView({ proposal }: Props) {
 						position: "absolute",
 						top: 0,
 						right: 0,
-						width: "200px",
+						width: "min(200px, calc(100% - 48px))",
 						height: "100%",
 						display: "flex",
 						flexDirection: "column",
@@ -187,13 +201,15 @@ function ProposalView({ proposal }: Props) {
 					<Box
 						className={css({
 							position: "absolute",
-							bottom: "20px",
-							left: "20px",
-							right: "20px",
+							bottom: { base: "12px", md: "20px" },
+							left: { base: "12px", md: "20px" },
+							right: { base: "12px", md: "20px" },
 							zIndex: "panel",
 							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "end",
+							flexDirection: { base: "column-reverse", sm: "row" },
+							justifyContent: { base: "flex-start", sm: "space-between" },
+							alignItems: { base: "flex-end", sm: "end" },
+							gap: "2",
 						})}
 					>
 						<Attribution />

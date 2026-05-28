@@ -68,6 +68,13 @@ const openPanel = () =>
 		isPanelOpen: true,
 	}))
 
+const closePanel = () =>
+	panelStore.setState((s) => ({
+		...s,
+		isPanelOpen: false,
+		activeTab: ProposalPanelTab.About,
+	}))
+
 const setActiveTab = (tab: ProposalPanelTab) =>
 	panelStore.setState((s) => ({ ...s, activeTab: tab }))
 
@@ -120,6 +127,7 @@ export function useProposalStore() {
 		activeElementTypes,
 		togglePanel,
 		openPanel,
+		closePanel,
 		setActiveTab,
 		initElements,
 		setSelectedInstanceId,
