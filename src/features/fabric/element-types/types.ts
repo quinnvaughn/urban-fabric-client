@@ -57,6 +57,15 @@ export type LinePaint = {
 	"line-casing-opacity"?: number // applied to casing layer, not the main stroke
 }
 
+export type FillPaint = {
+	"fill-color"?: string
+	"fill-opacity"?: number
+	"fill-outline-color"?: string
+	"line-color"?: string
+	"line-width"?: number
+	"line-opacity"?: number
+}
+
 // ── Line layer visual style ───────────────────────────────────────────────────
 //
 // Describes all MapLibre layers needed to render a line element type.
@@ -132,12 +141,41 @@ export type LineLayerStyle = {
 	}
 }
 
+export type AreaLayerStyle = {
+	color: string
+	opacity?: number
+	outlineColor?: string
+	outlineWidth?: number
+	outlineOpacity?: number
+
+	selected?: {
+		color?: string
+		opacity?: number
+		outlineColor?: string
+		outlineWidth?: number
+		outlineOpacity?: number
+	}
+
+	drawPreview?: {
+		color: string
+		opacity: number
+		outlineColor?: string
+		outlineWidth?: number
+	}
+
+	lineSymbol?: {
+		src: string
+		placement?: "point"
+		size?: number
+	}
+}
+
 // ── Element instance — what gets persisted ───────────────────────────────────
 
 export type ElementInstance = {
 	id: string
 	typeId: string
-	geometry: "line" // | "polygon" | "point" in v2
+	geometry: "line" | "area"
 	coordinates: [number, number][]
 	// User-placed waypoints (subset of coordinates used to generate the route)
 	waypoints: [number, number][]
@@ -287,19 +325,29 @@ export type DrawingConstraints = {
 
 export type PlacementBehavior = "single-click" | "multi-step"
 
+export type AreaPlacement = {
+	anchor: "street-center" | "click"
+	requireStreet?: boolean
+}
+
+export type AreaShape = "capsule" | "curb-extension"
+
 export type ElementDescriptor = {
 	id: string
 	title: string
 	description?: string
-	geometry: "line"
+	geometry: "line" | "area"
 	excludes?: string[]
 	draw:
 		| "click-to-place-points"
 		| "straight-line-points"
 		| "single-segment-perpendicular"
+		| "single-click-area"
 	placement?: PlacementBehavior
+	areaPlacement?: AreaPlacement
+	areaShape?: AreaShape
 	drawingConstraints?: DrawingConstraints
-	baseMapStyle: LineLayerStyle
+	baseMapStyle: LineLayerStyle | AreaLayerStyle
 	properties: PropertyDescriptor[]
 	calculated: CalculatedField[]
 }

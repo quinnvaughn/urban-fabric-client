@@ -15,6 +15,7 @@ import {
 } from "#/features/ui"
 import { useAnalytics } from "#/lib/analytics"
 import { css } from "#/styles/styled-system/css"
+import { makeAreaPolygon } from "../area-geometry"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import type { PropertyDescriptor } from "../element-types/types"
 import { useFabricStore } from "../fabric-store"
@@ -71,6 +72,43 @@ export function PropertiesPanel() {
 							updatedProperties[otherProp.key] = String(newMax)
 						}
 					}
+				}
+			}
+
+			if (
+				selectedInstance.geometry === "area" &&
+				(prop.key === "length" || prop.key === "width" || prop.key === "bearing")
+			) {
+				const center = selectedInstance.waypoints[0]
+				const bearing = Number(
+					updatedProperties.bearing ??
+						descriptor?.properties.find((p) => p.key === "bearing")?.default,
+				)
+				const length = Number(
+					updatedProperties.length ??
+						descriptor?.properties.find((p) => p.key === "length")?.default,
+				)
+				const width = Number(
+					updatedProperties.width ??
+						descriptor?.properties.find((p) => p.key === "width")?.default,
+				)
+				if (
+					center &&
+					Number.isFinite(bearing) &&
+					Number.isFinite(length) &&
+					Number.isFinite(width)
+				) {
+					updateElement(selectedInstance.id, {
+						properties: updatedProperties,
+						coordinates: makeAreaPolygon({
+							center,
+							bearing,
+							lengthFeet: length,
+							widthFeet: width,
+							shape: descriptor?.areaShape,
+						}),
+					})
+					return
 				}
 			}
 

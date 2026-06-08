@@ -1,6 +1,13 @@
 import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
-import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
+import { makeAreaPolygon } from "../area-geometry"
+import {
+	computeBaseFillPaint,
+	computeBasePaint,
+	ELEMENT_TYPE_MAP,
+	isAreaStyle,
+	isLineStyle,
+} from "../element-types"
 import type { ElementInstance } from "../element-types/types"
 import {
 	removeLayersIfPresent,
@@ -175,6 +182,7 @@ function waypointsFromSegments(
 }
 
 function editableWaypoints(el: ElementInstance): [number, number][] {
+	if (el.geometry === "area") return el.waypoints
 	if (shouldRouteAlongRoads(el.typeId)) return el.waypoints
 
 	const waypointsFromSavedSegments = waypointsFromSegments(el.segments ?? [])
@@ -352,9 +360,15 @@ export function SelectLayer() {
 		const descriptor = el ? ELEMENT_TYPE_MAP[el.typeId] : undefined
 		const s = descriptor?.baseMapStyle
 		const computedPaint =
-			el && descriptor ? computeBasePaint(descriptor, el) : undefined
+			el && descriptor && isLineStyle(descriptor.baseMapStyle)
+				? computeBasePaint(descriptor, el)
+				: undefined
+		const computedFillPaint =
+			el && descriptor && isAreaStyle(descriptor.baseMapStyle)
+				? computeBaseFillPaint(descriptor, el)
+				: undefined
 		const sel = s?.selected
-		const ep = s?.endpoints
+		const ep = s && isLineStyle(s) ? s.endpoints : undefined
 
 		if (!el || !s || !sel) {
 			lineSource.setData(EMPTY_LINE)
@@ -387,21 +401,22 @@ export function SelectLayer() {
 			"circle-stroke-opacity",
 			0,
 		)
-		map.setPaintProperty(
-			"select-drag-preview",
-			"line-color",
-			sel.color ?? computedPaint?.["line-color"] ?? s.color,
-		)
+		const selectionColor =
+			sel.color ??
+			computedPaint?.["line-color"] ??
+			computedFillPaint?.["line-color"] ??
+			s.color
+		map.setPaintProperty("select-drag-preview", "line-color", selectionColor)
 		const hasDashedMain = Boolean(computedPaint?.["line-dasharray"]?.length)
-		map.setPaintProperty(
-			"select-main",
-			"line-color",
-			sel.color ?? computedPaint?.["line-color"] ?? s.color,
-		)
+		map.setPaintProperty("select-main", "line-color", selectionColor)
 		map.setPaintProperty(
 			"select-main",
 			"line-width",
-			sel.width ?? computedPaint?.["line-width"] ?? s.width,
+			("width" in sel ? sel.width : undefined) ??
+				computedPaint?.["line-width"] ??
+				computedFillPaint?.["line-width"] ??
+				("width" in s ? s.width : undefined) ??
+				3,
 		)
 		map.setPaintProperty(
 			"select-main",
@@ -411,29 +426,39 @@ export function SelectLayer() {
 		map.setLayoutProperty(
 			"select-main",
 			"line-cap",
-			sel.lineCap ?? s.lineCap ?? "round",
+			("lineCap" in sel ? sel.lineCap : undefined) ??
+				("lineCap" in s ? s.lineCap : undefined) ??
+				"round",
 		)
 
 		// Outlines
-		const outlineOpacity = sel.outlineOpacity ?? 0.85
-		const outlineWidth = sel.outlineWidth ?? 1.5
-		const offset = sel.outlineOffset ?? 8
+		const outlineOpacity =
+			("outlineOpacity" in sel ? sel.outlineOpacity : undefined) ?? 0.85
+		const outlineWidth =
+			("outlineWidth" in sel ? sel.outlineWidth : undefined) ?? 1.5
+		const offset = "outlineOffset" in sel ? (sel.outlineOffset ?? 8) : 0
 
 		map.setPaintProperty(
 			"select-outline-above",
 			"line-color",
-			computedPaint?.["line-color"] ?? s.color,
+			computedPaint?.["line-color"] ??
+				computedFillPaint?.["line-color"] ??
+				("outlineColor" in sel ? sel.outlineColor : undefined) ??
+				s.color,
 		)
 		map.setPaintProperty("select-outline-above", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-above", "line-offset", offset)
 		map.setPaintProperty(
 			"select-outline-below",
 			"line-color",
-			computedPaint?.["line-color"] ?? s.color,
+			computedPaint?.["line-color"] ??
+				computedFillPaint?.["line-color"] ??
+				("outlineColor" in sel ? sel.outlineColor : undefined) ??
+				s.color,
 		)
 		map.setPaintProperty("select-outline-below", "line-width", outlineWidth)
 		map.setPaintProperty("select-outline-below", "line-offset", -offset)
-		if (sel.outlineDasharray) {
+		if ("outlineDasharray" in sel && sel.outlineDasharray) {
 			map.setPaintProperty(
 				"select-outline-above",
 				"line-dasharray",
@@ -512,7 +537,10 @@ export function SelectLayer() {
 		// applied before MapLibre renders the new geometry.
 		lineSource.setData({
 			type: "Feature",
-			geometry: { type: "LineString", coordinates: el.coordinates },
+			geometry:
+				el.geometry === "area"
+					? { type: "Polygon", coordinates: [el.coordinates] }
+					: { type: "LineString", coordinates: el.coordinates },
 			properties: {},
 		})
 		pointSource.setData({
@@ -523,7 +551,11 @@ export function SelectLayer() {
 
 		map.setPaintProperty("select-outline-above", "line-opacity", outlineOpacity)
 		map.setPaintProperty("select-outline-below", "line-opacity", outlineOpacity)
-		map.setPaintProperty("select-main", "line-opacity", hasDashedMain ? 0 : 1)
+		map.setPaintProperty(
+			"select-main",
+			"line-opacity",
+			el.geometry === "area" ? 0 : hasDashedMain ? 0 : 1,
+		)
 		if (ep) {
 			map.setPaintProperty("select-endpoints-node", "circle-opacity", 1)
 			map.setPaintProperty("select-endpoints-node", "circle-stroke-opacity", 1)
@@ -658,6 +690,30 @@ export function SelectLayer() {
 
 			const { waypointIndex } = dragging.current
 			hasDragged.current = true
+
+			if (el.geometry === "area") {
+				const descriptor = ELEMENT_TYPE_MAP[el.typeId]
+				const bearing = Number(el.properties.bearing)
+				const length = Number(el.properties.length)
+				const width = Number(el.properties.width)
+				if (
+					Number.isFinite(bearing) &&
+					Number.isFinite(length) &&
+					Number.isFinite(width)
+				) {
+					updateElement(el.id, {
+						waypoints: [cursorPos],
+						coordinates: makeAreaPolygon({
+							center: cursorPos,
+							bearing,
+							lengthFeet: length,
+							widthFeet: width,
+							shape: descriptor?.areaShape,
+						}),
+					})
+				}
+				return
+			}
 
 			// ── Immediate preview ─────────────────────────────────────────────
 			// Move the endpoint circle to the cursor right away so the drag feels
@@ -821,6 +877,7 @@ export function SelectLayer() {
 			if (!el) return
 
 			if (endpointHit.length === 0) {
+				if (el.geometry === "area") return
 				const lineHitBbox: [maplibregl.PointLike, maplibregl.PointLike] = [
 					[e.point.x - HIT_RADIUS, e.point.y - HIT_RADIUS],
 					[e.point.x + HIT_RADIUS, e.point.y + HIT_RADIUS],
@@ -855,6 +912,7 @@ export function SelectLayer() {
 				return
 			}
 
+			if (el.geometry === "area") return
 			if (editableWaypoints(el).length <= 2) return
 
 			snapshot() // ← capture before any mutation

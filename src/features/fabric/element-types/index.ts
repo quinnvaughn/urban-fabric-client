@@ -1,16 +1,32 @@
 import { BIKING_CATEGORY } from "./biking"
+import { INTERSECTIONS_CATEGORY } from "./intersections"
 import { STREETS_CATEGORY } from "./streets"
 import { TRAILS_AND_PATHS_CATEGORY } from "./trails-and-paths"
 import { TRANSIT_CATEGORY } from "./transit"
 import type {
+	AreaLayerStyle,
 	ElementCategory,
 	ElementDescriptor,
 	ElementInstance,
+	FillPaint,
+	LineLayerStyle,
 	LinePaint,
 } from "./types"
 import { WALKING_CATEGORY } from "./walking"
 
-export type { LinePaint }
+export type { FillPaint, LinePaint }
+
+export function isLineStyle(
+	style: ElementDescriptor["baseMapStyle"],
+): style is LineLayerStyle {
+	return "width" in style
+}
+
+export function isAreaStyle(
+	style: ElementDescriptor["baseMapStyle"],
+): style is AreaLayerStyle {
+	return !isLineStyle(style)
+}
 
 function sortElementsAlphabetically(
 	category: ElementCategory,
@@ -28,6 +44,7 @@ export function computeBasePaint(
 	instance: ElementInstance,
 ): LinePaint {
 	const s = descriptor.baseMapStyle
+	if (!isLineStyle(s)) return {}
 
 	const paint: LinePaint = {
 		"line-color": s.color,
@@ -46,8 +63,28 @@ export function computeBasePaint(
 	return paint
 }
 
+export function computeBaseFillPaint(
+	descriptor: ElementDescriptor,
+	_instance: ElementInstance,
+): FillPaint {
+	const s = descriptor.baseMapStyle
+	if (!isAreaStyle(s)) return {}
+
+	const paint: FillPaint = {
+		"fill-color": s.color,
+		"fill-opacity": s.opacity ?? 0.72,
+		"fill-outline-color": s.outlineColor ?? s.color,
+		"line-color": s.outlineColor ?? s.color,
+		"line-width": s.outlineWidth ?? 2,
+		"line-opacity": s.outlineOpacity ?? 0.95,
+	}
+
+	return paint
+}
+
 export const ELEMENT_CATEGORIES: ElementCategory[] = [
 	WALKING_CATEGORY,
+	INTERSECTIONS_CATEGORY,
 	TRAILS_AND_PATHS_CATEGORY,
 	BIKING_CATEGORY,
 	TRANSIT_CATEGORY,

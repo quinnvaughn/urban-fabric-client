@@ -1,6 +1,12 @@
 import type maplibregl from "maplibre-gl"
 import type { LinePaint } from "../element-types"
-import { computeBasePaint, ELEMENT_TYPE_MAP } from "../element-types"
+import {
+	computeBaseFillPaint,
+	computeBasePaint,
+	ELEMENT_TYPE_MAP,
+	isAreaStyle,
+	isLineStyle,
+} from "../element-types"
 import type {
 	ElementDescriptor,
 	ElementInstance,
@@ -84,6 +90,22 @@ function makeLineFeature(
 	}
 }
 
+function makePolygonFeature(
+	coords: [number, number][],
+): GeoJSON.Feature<GeoJSON.Polygon> {
+	const ring =
+		coords.length > 0 &&
+		(coords[0][0] !== coords[coords.length - 1][0] ||
+			coords[0][1] !== coords[coords.length - 1][1])
+			? [...coords, coords[0]]
+			: coords
+	return {
+		type: "Feature",
+		geometry: { type: "Polygon", coordinates: [ring] },
+		properties: {},
+	}
+}
+
 function removeElementLayers(map: maplibregl.Map, id: string) {
 	const layers = [
 		elementsLayerIds.casingLayerId(id),
@@ -136,10 +158,14 @@ function addLineSymbolLayer(
 		type: "symbol",
 		source: elementsLayerIds.mainSourceId(el.id),
 		layout: {
-			"symbol-placement": lineSymbol.placement ?? "line",
+			"symbol-placement":
+				lineSymbol.placement === "point"
+					? "point"
+					: (lineSymbol.placement ?? "line"),
 			"icon-image": imageId,
 			"icon-size": 1,
-			"symbol-spacing": lineSymbol.spacing ?? 200,
+			"symbol-spacing":
+				"spacing" in lineSymbol ? (lineSymbol.spacing ?? 200) : 200,
 			"icon-keep-upright": true,
 			"icon-rotation-alignment": "viewport",
 			"icon-pitch-alignment": "viewport",
@@ -196,7 +222,10 @@ export function syncElementsToMap(params: {
 		const descriptor = ELEMENT_TYPE_MAP[el.typeId]
 		if (!descriptor) continue
 
-		const data = makeLineFeature(el.coordinates)
+		const data =
+			el.geometry === "area"
+				? makePolygonFeature(el.coordinates)
+				: makeLineFeature(el.coordinates)
 
 		if (hasSource(map, elementsLayerIds.mainSourceId(el.id))) {
 			;(
@@ -212,7 +241,48 @@ export function syncElementsToMap(params: {
 				).setData(data)
 			}
 
-			if (hasLayer(map, elementsLayerIds.mainLayerId(el.id))) {
+			if (
+				el.geometry === "area" &&
+				isAreaStyle(descriptor.baseMapStyle) &&
+				hasLayer(map, elementsLayerIds.mainLayerId(el.id))
+			) {
+				const paint = computeBaseFillPaint(descriptor, el)
+				map.setPaintProperty(
+					elementsLayerIds.mainLayerId(el.id),
+					"fill-color",
+					paint["fill-color"],
+				)
+				map.setPaintProperty(
+					elementsLayerIds.mainLayerId(el.id),
+					"fill-opacity",
+					paint["fill-opacity"],
+				)
+				map.setPaintProperty(
+					elementsLayerIds.mainLayerId(el.id),
+					"fill-outline-color",
+					paint["fill-outline-color"],
+				)
+				if (hasLayer(map, elementsLayerIds.casingLayerId(el.id))) {
+					map.setPaintProperty(
+						elementsLayerIds.casingLayerId(el.id),
+						"line-color",
+						paint["line-color"],
+					)
+					map.setPaintProperty(
+						elementsLayerIds.casingLayerId(el.id),
+						"line-width",
+						paint["line-width"],
+					)
+					map.setPaintProperty(
+						elementsLayerIds.casingLayerId(el.id),
+						"line-opacity",
+						paint["line-opacity"],
+					)
+				}
+			} else if (
+				isLineStyle(descriptor.baseMapStyle) &&
+				hasLayer(map, elementsLayerIds.mainLayerId(el.id))
+			) {
 				const paint = toMaplibrePaint(computeBasePaint(descriptor, el))
 				map.setPaintProperty(
 					elementsLayerIds.mainLayerId(el.id),
@@ -236,7 +306,10 @@ export function syncElementsToMap(params: {
 				)
 			}
 
-			if (hasLayer(map, elementsLayerIds.casingLayerId(el.id))) {
+			if (
+				isLineStyle(descriptor.baseMapStyle) &&
+				hasLayer(map, elementsLayerIds.casingLayerId(el.id))
+			) {
 				const paint = computeBasePaint(descriptor, el)
 				map.setPaintProperty(
 					elementsLayerIds.casingLayerId(el.id),
@@ -249,9 +322,16 @@ export function syncElementsToMap(params: {
 
 			const direction = getDirection(descriptor, el)
 			const arrowId = elementsLayerIds.arrowLayerId(el.id)
-			if (isOneWayDirection(direction) && !hasLayer(map, arrowId)) {
+			if (
+				el.geometry !== "area" &&
+				isOneWayDirection(direction) &&
+				!hasLayer(map, arrowId)
+			) {
 				addArrowLayer(map, el, descriptor, direction)
-			} else if (!isOneWayDirection(direction) && hasLayer(map, arrowId)) {
+			} else if (
+				(el.geometry === "area" || !isOneWayDirection(direction)) &&
+				hasLayer(map, arrowId)
+			) {
 				removeLayersIfPresent(map, [arrowId])
 			} else if (hasLayer(map, arrowId)) {
 				map.setLayoutProperty(
@@ -263,6 +343,53 @@ export function syncElementsToMap(params: {
 
 			continue
 		}
+
+		if (el.geometry === "area" && isAreaStyle(descriptor.baseMapStyle)) {
+			const areaPaint = computeBaseFillPaint(descriptor, el)
+			map.addSource(elementsLayerIds.mainSourceId(el.id), {
+				type: "geojson",
+				data,
+			})
+			map.addLayer(
+				{
+					id: elementsLayerIds.mainLayerId(el.id),
+					type: "fill",
+					source: elementsLayerIds.mainSourceId(el.id),
+					paint: {
+						"fill-color":
+							areaPaint["fill-color"] ?? descriptor.baseMapStyle.color,
+						"fill-opacity": areaPaint["fill-opacity"] ?? 0.72,
+						"fill-outline-color":
+							areaPaint["fill-outline-color"] ?? descriptor.baseMapStyle.color,
+					},
+				},
+				belowLayerId,
+			)
+			map.addLayer(
+				{
+					id: elementsLayerIds.casingLayerId(el.id),
+					type: "line",
+					source: elementsLayerIds.mainSourceId(el.id),
+					layout: { "line-join": "round", "line-cap": "round" },
+					paint: {
+						"line-color":
+							areaPaint["line-color"] ?? descriptor.baseMapStyle.color,
+						"line-width": areaPaint["line-width"] ?? 2,
+						"line-opacity": areaPaint["line-opacity"] ?? 0.95,
+					},
+				},
+				belowLayerId,
+			)
+
+			if (descriptor.baseMapStyle.lineSymbol) {
+				addLineSymbolLayer(map, el, descriptor)
+			}
+
+			elementLayerIds.add(el.id)
+			continue
+		}
+
+		if (!isLineStyle(descriptor.baseMapStyle)) continue
 
 		const casingPaint = computeCasingPaint(descriptor.baseMapStyle)
 		if (casingPaint) {

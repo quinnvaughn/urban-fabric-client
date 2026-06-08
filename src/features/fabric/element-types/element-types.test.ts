@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { computeBasePaint, ELEMENT_CATEGORIES, ELEMENT_TYPE_MAP } from "."
+import {
+	computeBasePaint,
+	ELEMENT_CATEGORIES,
+	ELEMENT_TYPE_MAP,
+	isLineStyle,
+} from "."
 import type { ElementInstance } from "./types"
 
 // Valid top-level paint keys that computeBasePaint is allowed to produce
@@ -38,12 +43,15 @@ describe("ELEMENT_CATEGORIES", () => {
 			for (const el of category.elements) {
 				expect(el.id, `${el.id}: missing id`).toBeTruthy()
 				expect(el.title, `${el.id}: missing title`).toBeTruthy()
-				expect(el.geometry, `${el.id}: missing geometry`).toBe("line")
+				expect(["line", "area"], `${el.id}: missing geometry`).toContain(
+					el.geometry,
+				)
 				expect(
 					[
 						"click-to-place-points",
 						"straight-line-points",
 						"single-segment-perpendicular",
+						"single-click-area",
 					],
 					`${el.id}: unknown draw mode`,
 				).toContain(el.draw)
@@ -131,7 +139,10 @@ describe("computeBasePaint", () => {
 		}
 		const paint = computeBasePaint(descriptor, instance)
 		expect(paint["line-color"]).toBe(descriptor.baseMapStyle.color)
-		expect(paint["line-width"]).toBe(descriptor.baseMapStyle.width)
+		expect(isLineStyle(descriptor.baseMapStyle)).toBe(true)
+		if (isLineStyle(descriptor.baseMapStyle)) {
+			expect(paint["line-width"]).toBe(descriptor.baseMapStyle.width)
+		}
 	})
 
 	it("property toMapStyle overrides baseMapStyle values", () => {

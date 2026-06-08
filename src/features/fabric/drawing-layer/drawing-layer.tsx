@@ -2,7 +2,8 @@ import type maplibregl from "maplibre-gl"
 import { useEffect, useRef } from "react"
 import { useToast } from "#/features/ui"
 import { useAnalytics } from "#/lib/analytics"
-import { ELEMENT_TYPE_MAP } from "../element-types"
+import { makeAreaPolygon } from "../area-geometry"
+import { ELEMENT_TYPE_MAP, isLineStyle } from "../element-types"
 import { syncElementsToMap } from "../elements-layer/map-elements-utils"
 import {
 	DRAW_LAYER_IDS,
@@ -54,6 +55,14 @@ function makeLineFeature(
 		type: "Feature",
 		geometry: { type: "LineString", coordinates: coords },
 		properties: {},
+	}
+}
+
+function numericPropertyDefault(key: string, fallback: number) {
+	return (descriptor: (typeof ELEMENT_TYPE_MAP)[string]) => {
+		const prop = descriptor.properties.find((p) => p.key === key)
+		const value = Number(prop?.default)
+		return Number.isFinite(value) ? value : fallback
 	}
 }
 
@@ -114,17 +123,22 @@ export function DrawingLayer() {
 		const element = activeElement
 		const placement = element.placement ?? "multi-step"
 		const style = element.baseMapStyle
-		const dp = style.drawPreview
+		const lineStyle = isLineStyle(style) ? style : null
+		const dp = lineStyle?.drawPreview
 
 		map.getCanvas().style.cursor = "crosshair"
 		map.doubleClickZoom.disable()
 
 		// Update drawing layer paint to match the active element type
-		if (hasLayer(map, "draw-active")) {
-			map.setPaintProperty("draw-active", "line-color", style.color)
-			map.setPaintProperty("draw-active", "line-width", style.width)
-			if (style.dasharray) {
-				map.setPaintProperty("draw-active", "line-dasharray", style.dasharray)
+		if (hasLayer(map, "draw-active") && lineStyle) {
+			map.setPaintProperty("draw-active", "line-color", lineStyle.color)
+			map.setPaintProperty("draw-active", "line-width", lineStyle.width)
+			if (lineStyle.dasharray) {
+				map.setPaintProperty(
+					"draw-active",
+					"line-dasharray",
+					lineStyle.dasharray,
+				)
 			}
 		}
 		if (hasLayer(map, "draw-preview") && dp) {
@@ -364,6 +378,60 @@ export function DrawingLayer() {
 		}
 
 		async function handleClick(e: maplibregl.MapMouseEvent) {
+			if (element.draw === "single-click-area") {
+				const descriptor = ELEMENT_TYPE_MAP[element.id]
+				const clicked: [number, number] = [e.lngLat.lng, e.lngLat.lat]
+				const lock = findNearestRoadLock({
+					map,
+					point: e.point,
+					lngLat: clicked,
+					searchRadiusPx:
+						element.drawingConstraints?.lockPerpendicularToStreet
+							?.searchRadiusPx ?? 32,
+				})
+				if (!lock && element.areaPlacement?.requireStreet !== false) {
+					toast.warning("Unable to place element", {
+						description: "Click on or near a street to place this element.",
+					})
+					return
+				}
+				const center =
+					element.areaPlacement?.anchor === "click"
+						? clicked
+						: (lock?.centerPoint ?? clicked)
+				const bearing = lock?.bearing ?? map.getBearing()
+				const lengthFeet = numericPropertyDefault("length", 24)(descriptor)
+				const widthFeet = numericPropertyDefault("width", 8)(descriptor)
+				const coords = makeAreaPolygon({
+					center,
+					bearing,
+					lengthFeet,
+					widthFeet,
+					shape: descriptor.areaShape,
+				})
+				const newId = crypto.randomUUID()
+				captureRef.current("editor_element_added", { element_type: element.id })
+				addElement({
+					id: newId,
+					typeId: element.id,
+					geometry: "area",
+					coordinates: coords,
+					waypoints: [center],
+					segments: [],
+					properties: {
+						...Object.fromEntries(
+							descriptor.properties.map((p) => [p.key, p.default]),
+						),
+						bearing,
+					},
+				})
+				reset()
+				setActiveTool("select")
+				setActiveElement(null)
+				setSelectedInstanceId(newId)
+				return
+			}
+
 			if (placement === "single-click") {
 				const snapped: [number, number] = [e.lngLat.lng, e.lngLat.lat]
 				if (!ensureStreetLock(e.point, snapped)) {

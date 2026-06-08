@@ -1,7 +1,10 @@
 import { useEffect } from "react"
 import {
+	computeBaseFillPaint,
 	computeBasePaint,
 	ELEMENT_TYPE_MAP,
+	isAreaStyle,
+	isLineStyle,
 } from "#/features/fabric/element-types"
 import {
 	removeLayersIfPresent,
@@ -91,7 +94,13 @@ export function ProposalSelectLayer() {
 		const descriptor = el ? ELEMENT_TYPE_MAP[el.typeId] : undefined
 		const s = descriptor?.baseMapStyle
 		const computedPaint =
-			el && descriptor ? computeBasePaint(descriptor, el) : undefined
+			el && descriptor && isLineStyle(descriptor.baseMapStyle)
+				? computeBasePaint(descriptor, el)
+				: undefined
+		const computedFillPaint =
+			el && descriptor && isAreaStyle(descriptor.baseMapStyle)
+				? computeBaseFillPaint(descriptor, el)
+				: undefined
 		const sel = s?.selected
 
 		if (!el || !s || !sel) {
@@ -103,16 +112,21 @@ export function ProposalSelectLayer() {
 		}
 
 		const hasDashedMain = Boolean(computedPaint?.["line-dasharray"]?.length)
+		const selectionColor =
+			sel.color ??
+			computedPaint?.["line-color"] ??
+			computedFillPaint?.["line-color"] ??
+			s.color
 
-		map.setPaintProperty(
-			"proposal-select-main",
-			"line-color",
-			sel.color ?? computedPaint?.["line-color"] ?? s.color,
-		)
+		map.setPaintProperty("proposal-select-main", "line-color", selectionColor)
 		map.setPaintProperty(
 			"proposal-select-main",
 			"line-width",
-			sel.width ?? computedPaint?.["line-width"] ?? s.width,
+			("width" in sel ? sel.width : undefined) ??
+				computedPaint?.["line-width"] ??
+				computedFillPaint?.["line-width"] ??
+				("width" in s ? s.width : undefined) ??
+				3,
 		)
 		map.setPaintProperty(
 			"proposal-select-main",
@@ -122,17 +136,24 @@ export function ProposalSelectLayer() {
 		map.setLayoutProperty(
 			"proposal-select-main",
 			"line-cap",
-			sel.lineCap ?? s.lineCap ?? "round",
+			("lineCap" in sel ? sel.lineCap : undefined) ??
+				("lineCap" in s ? s.lineCap : undefined) ??
+				"round",
 		)
 
-		const outlineOpacity = sel.outlineOpacity ?? 0.85
-		const outlineWidth = sel.outlineWidth ?? 1.5
-		const offset = sel.outlineOffset ?? 8
+		const outlineOpacity =
+			("outlineOpacity" in sel ? sel.outlineOpacity : undefined) ?? 0.85
+		const outlineWidth =
+			("outlineWidth" in sel ? sel.outlineWidth : undefined) ?? 1.5
+		const offset = "outlineOffset" in sel ? (sel.outlineOffset ?? 8) : 0
 
 		map.setPaintProperty(
 			"proposal-select-outline-above",
 			"line-color",
-			computedPaint?.["line-color"] ?? s.color,
+			computedPaint?.["line-color"] ??
+				computedFillPaint?.["line-color"] ??
+				("outlineColor" in sel ? sel.outlineColor : undefined) ??
+				s.color,
 		)
 		map.setPaintProperty(
 			"proposal-select-outline-above",
@@ -143,7 +164,10 @@ export function ProposalSelectLayer() {
 		map.setPaintProperty(
 			"proposal-select-outline-below",
 			"line-color",
-			computedPaint?.["line-color"] ?? s.color,
+			computedPaint?.["line-color"] ??
+				computedFillPaint?.["line-color"] ??
+				("outlineColor" in sel ? sel.outlineColor : undefined) ??
+				s.color,
 		)
 		map.setPaintProperty(
 			"proposal-select-outline-below",
@@ -156,7 +180,7 @@ export function ProposalSelectLayer() {
 			-offset,
 		)
 
-		if (sel.outlineDasharray) {
+		if ("outlineDasharray" in sel && sel.outlineDasharray) {
 			map.setPaintProperty(
 				"proposal-select-outline-above",
 				"line-dasharray",
@@ -182,7 +206,10 @@ export function ProposalSelectLayer() {
 
 		lineSource.setData({
 			type: "Feature",
-			geometry: { type: "LineString", coordinates: el.coordinates },
+			geometry:
+				el.geometry === "area"
+					? { type: "Polygon", coordinates: [el.coordinates] }
+					: { type: "LineString", coordinates: el.coordinates },
 			properties: {},
 		})
 
@@ -199,7 +226,7 @@ export function ProposalSelectLayer() {
 		map.setPaintProperty(
 			"proposal-select-main",
 			"line-opacity",
-			hasDashedMain ? 0 : 1,
+			el.geometry === "area" ? 0 : hasDashedMain ? 0 : 1,
 		)
 	}, [map, selectedInstanceId, elements])
 

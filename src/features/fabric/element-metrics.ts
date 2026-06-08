@@ -53,7 +53,8 @@ export function summarizeElementsByType(
 
 	for (const element of elements) {
 		const existing = grouped.get(element.typeId)
-		const lengthMiles = lineLengthMiles(element.coordinates)
+		const lengthMiles =
+			element.geometry === "line" ? lineLengthMiles(element.coordinates) : 0
 
 		if (existing) {
 			existing.count += 1
@@ -80,7 +81,8 @@ export function formatMiles(miles: number) {
 export function totalElementLengthMiles(elements: ElementInstance[]): number {
 	let total = 0
 	for (const element of elements) {
-		total += lineLengthMiles(element.coordinates)
+		if (element.geometry === "line")
+			total += lineLengthMiles(element.coordinates)
 	}
 	return total
 }
@@ -91,6 +93,7 @@ export function getCalculatedValue(
 	streetNames?: { from: string | null; to: string | null },
 ): string | number {
 	if (key === "length") {
+		if (instance.geometry !== "line") return "--"
 		return formatLength(lineLengthFeet(instance.coordinates))
 	}
 

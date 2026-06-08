@@ -66,19 +66,19 @@ export const WALKING_CATEGORY: ElementCategory = {
 					key: "marking",
 					label: "Marking Type",
 					description: "How the crossing is striped on the street",
-					default: "continental",
+					default: "high-visibility",
 					input: {
 						kind: "segmented",
 						options: [
 							{
-								label: "Continental",
-								value: "continental",
-								description: "Bold ladder-style bars",
-							},
-							{
 								label: "Standard",
 								value: "standard",
 								description: "Conventional painted crossing",
+							},
+							{
+								label: "High-vis",
+								value: "high-visibility",
+								description: "Bold bars that make the crossing easier to see",
 							},
 							{
 								label: "Raised",
