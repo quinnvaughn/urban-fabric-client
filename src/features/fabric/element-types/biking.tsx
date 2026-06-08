@@ -1,4 +1,35 @@
+import { ArrowLeft, ArrowLeftRight, ArrowRight } from "lucide-react"
 import type { ElementCategory, LineLayerStyle } from "./types"
+
+const BIKE_FLOW_PROPERTY = {
+	key: "direction",
+	label: "Flow",
+	description: "Which direction bikes travel on this segment",
+	default: "two-way",
+	input: {
+		kind: "segmented" as const,
+		options: [
+			{
+				label: "Two-way",
+				value: "two-way",
+				icon: <ArrowLeftRight size={14} />,
+			},
+			{
+				label: "With",
+				value: "one-way-with",
+				icon: <ArrowRight size={14} />,
+				description: "Bikes travel with the drawn direction",
+			},
+			{
+				label: "Contraflow",
+				value: "one-way-against",
+				icon: <ArrowLeft size={14} />,
+				description: "Bikes travel against the drawn direction",
+			},
+		],
+	},
+	toMapStyle: () => ({}),
+}
 
 export const BIKING_CATEGORY: ElementCategory = {
 	id: "biking",
@@ -116,6 +147,7 @@ export const BIKING_CATEGORY: ElementCategory = {
 					},
 					toMapStyle: () => ({}),
 				},
+				BIKE_FLOW_PROPERTY,
 				{
 					key: "width",
 					label: "Width",
@@ -244,6 +276,7 @@ export const BIKING_CATEGORY: ElementCategory = {
 			} satisfies LineLayerStyle,
 
 			properties: [
+				BIKE_FLOW_PROPERTY,
 				{
 					key: "shared-with",
 					label: "Shared With",
@@ -255,7 +288,8 @@ export const BIKING_CATEGORY: ElementCategory = {
 							{
 								label: "Bike + Car",
 								value: "bike-car",
-								description: "Cyclists and general vehicle traffic share the lane",
+								description:
+									"Cyclists and general vehicle traffic share the lane",
 							},
 							{
 								label: "Bike + Bus",

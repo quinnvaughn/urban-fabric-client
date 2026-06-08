@@ -110,6 +110,18 @@ function getDirection(
 	)
 }
 
+function isOneWayDirection(direction: string | null) {
+	return (
+		direction === "one-way" ||
+		direction === "one-way-with" ||
+		direction === "one-way-against"
+	)
+}
+
+function getArrowRotation(direction: string | null) {
+	return direction === "one-way-against" ? 180 : 0
+}
+
 function addLineSymbolLayer(
 	map: maplibregl.Map,
 	el: ElementInstance,
@@ -140,6 +152,7 @@ function addArrowLayer(
 	map: maplibregl.Map,
 	el: ElementInstance,
 	descriptor: ElementDescriptor,
+	direction: string | null,
 ) {
 	const imageId = ensureArrowImage(map, descriptor.baseMapStyle.color)
 	// No beforeId — arrow layer must render above the line layers
@@ -153,6 +166,7 @@ function addArrowLayer(
 			"icon-size": 1,
 			"symbol-spacing": 150,
 			"icon-keep-upright": false,
+			"icon-rotate": getArrowRotation(direction),
 			"icon-rotation-alignment": "map",
 			"icon-pitch-alignment": "viewport",
 		},
@@ -235,10 +249,16 @@ export function syncElementsToMap(params: {
 
 			const direction = getDirection(descriptor, el)
 			const arrowId = elementsLayerIds.arrowLayerId(el.id)
-			if (direction === "one-way" && !hasLayer(map, arrowId)) {
-				addArrowLayer(map, el, descriptor)
-			} else if (direction !== "one-way" && hasLayer(map, arrowId)) {
+			if (isOneWayDirection(direction) && !hasLayer(map, arrowId)) {
+				addArrowLayer(map, el, descriptor, direction)
+			} else if (!isOneWayDirection(direction) && hasLayer(map, arrowId)) {
 				removeLayersIfPresent(map, [arrowId])
+			} else if (hasLayer(map, arrowId)) {
+				map.setLayoutProperty(
+					arrowId,
+					"icon-rotate",
+					getArrowRotation(direction),
+				)
 			}
 
 			continue
@@ -280,8 +300,9 @@ export function syncElementsToMap(params: {
 			belowLayerId,
 		)
 
-		if (getDirection(descriptor, el) === "one-way") {
-			addArrowLayer(map, el, descriptor)
+		const direction = getDirection(descriptor, el)
+		if (isOneWayDirection(direction)) {
+			addArrowLayer(map, el, descriptor, direction)
 		}
 
 		if (descriptor.baseMapStyle.lineSymbol) {
