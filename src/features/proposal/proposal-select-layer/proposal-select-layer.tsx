@@ -101,7 +101,7 @@ export function ProposalSelectLayer() {
 			el && descriptor && isAreaStyle(descriptor.baseMapStyle)
 				? computeBaseFillPaint(descriptor, el)
 				: undefined
-		const sel = s?.selected
+			const sel = s && (isLineStyle(s) || isAreaStyle(s)) ? s.selected : undefined
 
 		if (!el || !s || !sel) {
 			lineSource.setData(EMPTY_LINE)

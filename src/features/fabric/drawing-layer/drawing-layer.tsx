@@ -378,6 +378,29 @@ export function DrawingLayer() {
 		}
 
 		async function handleClick(e: maplibregl.MapMouseEvent) {
+			if (element.draw === "single-click-point") {
+				const descriptor = ELEMENT_TYPE_MAP[element.id]
+				const point: [number, number] = [e.lngLat.lng, e.lngLat.lat]
+				const newId = crypto.randomUUID()
+				captureRef.current("editor_element_added", { element_type: element.id })
+				addElement({
+					id: newId,
+					typeId: element.id,
+					geometry: "point",
+					coordinates: [point],
+					waypoints: [point],
+					segments: [],
+					properties: Object.fromEntries(
+						descriptor.properties.map((p) => [p.key, p.default]),
+					),
+				})
+				reset()
+				setActiveTool("select")
+				setActiveElement(null)
+				setSelectedInstanceId(newId)
+				return
+			}
+
 			if (element.draw === "single-click-area") {
 				const descriptor = ELEMENT_TYPE_MAP[element.id]
 				const clicked: [number, number] = [e.lngLat.lng, e.lngLat.lat]

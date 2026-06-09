@@ -377,7 +377,7 @@ export function SelectLayer() {
 			el && descriptor && isAreaStyle(descriptor.baseMapStyle)
 				? computeBaseFillPaint(descriptor, el)
 				: undefined
-		const sel = s?.selected
+			const sel = s && (isLineStyle(s) || isAreaStyle(s)) ? s.selected : undefined
 		const ep = s && isLineStyle(s) ? s.endpoints : undefined
 
 		if (!el || !s || !sel) {
@@ -999,18 +999,9 @@ export function SelectLayer() {
 				const { selectedInstanceId, elements } = fabricStore.state
 				if (!selectedInstanceId) return
 				const el = elements.find((el) => el.id === selectedInstanceId)
-				if (!el || el.geometry !== "area") return
+				if (!el || (el.geometry !== "area" && el.geometry !== "point")) return
 				const center = el.waypoints[0]
 				if (!center) return
-				const { descriptor, length, width } = areaDimensions(el)
-				const bearing = Number(el.properties.bearing)
-				if (
-					!descriptor ||
-					!Number.isFinite(bearing) ||
-					!Number.isFinite(length) ||
-					!Number.isFinite(width)
-				)
-					return
 
 				e.preventDefault()
 				e.stopPropagation()
@@ -1023,6 +1014,23 @@ export function SelectLayer() {
 				])
 				const nextCenter: [number, number] = [nextLngLat.lng, nextLngLat.lat]
 				snapshot()
+				if (el.geometry === "point") {
+					updateElement(el.id, {
+						waypoints: [nextCenter],
+						coordinates: [nextCenter],
+					})
+					return
+				}
+
+				const { descriptor, length, width } = areaDimensions(el)
+				const bearing = Number(el.properties.bearing)
+				if (
+					!descriptor ||
+					!Number.isFinite(bearing) ||
+					!Number.isFinite(length) ||
+					!Number.isFinite(width)
+				)
+					return
 				updateElement(el.id, {
 					waypoints: [nextCenter],
 					coordinates: makeAreaPolygon({

@@ -171,12 +171,25 @@ export type AreaLayerStyle = {
 	}
 }
 
+export type PointLayerStyle = {
+	color: string
+	lineSymbol: {
+		src: string
+		placement?: "point"
+		size?: number
+	}
+	selected?: {
+		outlineColor?: string
+		outlineWidth?: number
+	}
+}
+
 // ── Element instance — what gets persisted ───────────────────────────────────
 
 export type ElementInstance = {
 	id: string
 	typeId: string
-	geometry: "line" | "area"
+	geometry: "line" | "area" | "point"
 	coordinates: [number, number][]
 	// User-placed waypoints (subset of coordinates used to generate the route)
 	waypoints: [number, number][]
@@ -337,18 +350,19 @@ export type ElementDescriptor = {
 	id: string
 	title: string
 	description?: string
-	geometry: "line" | "area"
+	geometry: "line" | "area" | "point"
 	excludes?: string[]
 	draw:
 		| "click-to-place-points"
 		| "straight-line-points"
 		| "single-segment-perpendicular"
 		| "single-click-area"
+		| "single-click-point"
 	placement?: PlacementBehavior
 	areaPlacement?: AreaPlacement
 	areaShape?: AreaShape
 	drawingConstraints?: DrawingConstraints
-	baseMapStyle: LineLayerStyle | AreaLayerStyle
+	baseMapStyle: LineLayerStyle | AreaLayerStyle | PointLayerStyle
 	properties: PropertyDescriptor[]
 	calculated: CalculatedField[]
 }

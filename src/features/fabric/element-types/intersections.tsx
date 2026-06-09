@@ -1,4 +1,4 @@
-import type { AreaLayerStyle, ElementCategory } from "./types"
+import type { AreaLayerStyle, ElementCategory, PointLayerStyle } from "./types"
 
 export const INTERSECTIONS_CATEGORY: ElementCategory = {
 	id: "intersections",
@@ -477,6 +477,173 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 								value: "planted",
 								description: "Center island with landscaping",
 							},
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "stop-sign",
+			title: "Stop Sign",
+			description: "A stop sign placed on an approach to an intersection.",
+			geometry: "point",
+			draw: "single-click-point",
+			placement: "single-click",
+			excludes: [],
+			baseMapStyle: {
+				color: "#d62828",
+				lineSymbol: {
+					src: "/icons/elements/stop-sign.svg",
+					placement: "point",
+					size: 28,
+				},
+			} satisfies PointLayerStyle,
+
+			properties: [
+				{
+					key: "action",
+					label: "Action",
+					default: "add",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "Add", value: "add" },
+							{ label: "Remove", value: "remove" },
+							{ label: "Existing", value: "existing" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "approach",
+					label: "Approach",
+					default: "unspecified",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Unspecified", value: "unspecified" },
+							{ label: "Northbound", value: "northbound" },
+							{ label: "Southbound", value: "southbound" },
+							{ label: "Eastbound", value: "eastbound" },
+							{ label: "Westbound", value: "westbound" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "traffic-signal",
+			title: "Traffic Signal",
+			description: "A signalized intersection or proposed intersection signal.",
+			geometry: "point",
+			draw: "single-click-point",
+			placement: "single-click",
+			excludes: [],
+			baseMapStyle: {
+				color: "#2d5d8f",
+				lineSymbol: {
+					src: "/icons/elements/traffic-signal.svg",
+					placement: "point",
+					size: 28,
+				},
+			} satisfies PointLayerStyle,
+
+			properties: [
+				{
+					key: "action",
+					label: "Action",
+					default: "add",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "Add", value: "add" },
+							{ label: "Upgrade", value: "upgrade" },
+							{ label: "Retiming", value: "retiming" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "signal-type",
+					label: "Signal Type",
+					default: "standard",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "Standard", value: "standard" },
+							{ label: "Pedestrian", value: "pedestrian" },
+							{ label: "Bike", value: "bike" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "accessible-signals",
+					label: "Accessible Signals",
+					default: "no",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "No", value: "no" },
+							{ label: "Yes", value: "yes" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "yield-sign",
+			title: "Yield Sign",
+			description: "A yield sign placed on an approach to an intersection.",
+			geometry: "point",
+			draw: "single-click-point",
+			placement: "single-click",
+			excludes: [],
+			baseMapStyle: {
+				color: "#d62828",
+				lineSymbol: {
+					src: "/icons/elements/yield-sign.svg",
+					placement: "point",
+					size: 34,
+				},
+			} satisfies PointLayerStyle,
+
+			properties: [
+				{
+					key: "action",
+					label: "Action",
+					default: "add",
+					input: {
+						kind: "segmented",
+						options: [
+							{ label: "Add", value: "add" },
+							{ label: "Remove", value: "remove" },
+							{ label: "Existing", value: "existing" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "approach",
+					label: "Approach",
+					default: "unspecified",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Unspecified", value: "unspecified" },
+							{ label: "Northbound", value: "northbound" },
+							{ label: "Southbound", value: "southbound" },
+							{ label: "Eastbound", value: "eastbound" },
+							{ label: "Westbound", value: "westbound" },
 						],
 					},
 					toMapStyle: () => ({}),

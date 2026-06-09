@@ -6,6 +6,7 @@ import {
 	ELEMENT_TYPE_MAP,
 	isAreaStyle,
 	isLineStyle,
+	isPointStyle,
 } from "../element-types"
 import type {
 	ElementDescriptor,
@@ -102,6 +103,16 @@ function makePolygonFeature(
 	return {
 		type: "Feature",
 		geometry: { type: "Polygon", coordinates: [ring] },
+		properties: {},
+	}
+}
+
+function makePointFeature(
+	coords: [number, number][],
+): GeoJSON.Feature<GeoJSON.Point> {
+	return {
+		type: "Feature",
+		geometry: { type: "Point", coordinates: coords[0] ?? [0, 0] },
 		properties: {},
 	}
 }
@@ -225,6 +236,8 @@ export function syncElementsToMap(params: {
 		const data =
 			el.geometry === "area"
 				? makePolygonFeature(el.coordinates)
+				: el.geometry === "point"
+					? makePointFeature(el.coordinates)
 				: makeLineFeature(el.coordinates)
 
 		if (hasSource(map, elementsLayerIds.mainSourceId(el.id))) {
@@ -280,6 +293,16 @@ export function syncElementsToMap(params: {
 					)
 				}
 			} else if (
+				el.geometry === "point" &&
+				isPointStyle(descriptor.baseMapStyle) &&
+				hasLayer(map, elementsLayerIds.mainLayerId(el.id))
+			) {
+				map.setLayoutProperty(
+					elementsLayerIds.mainLayerId(el.id),
+					"icon-image",
+					lineSymbolImageId(descriptor.id),
+				)
+			} else if (
 				isLineStyle(descriptor.baseMapStyle) &&
 				hasLayer(map, elementsLayerIds.mainLayerId(el.id))
 			) {
@@ -324,12 +347,15 @@ export function syncElementsToMap(params: {
 			const arrowId = elementsLayerIds.arrowLayerId(el.id)
 			if (
 				el.geometry !== "area" &&
+				el.geometry !== "point" &&
 				isOneWayDirection(direction) &&
 				!hasLayer(map, arrowId)
 			) {
 				addArrowLayer(map, el, descriptor, direction)
 			} else if (
-				(el.geometry === "area" || !isOneWayDirection(direction)) &&
+				(el.geometry === "area" ||
+					el.geometry === "point" ||
+					!isOneWayDirection(direction)) &&
 				hasLayer(map, arrowId)
 			) {
 				removeLayersIfPresent(map, [arrowId])
@@ -341,6 +367,34 @@ export function syncElementsToMap(params: {
 				)
 			}
 
+			continue
+		}
+
+		if (el.geometry === "point" && isPointStyle(descriptor.baseMapStyle)) {
+			const imageId = lineSymbolImageId(descriptor.id)
+			if (!map.hasImage(imageId)) continue
+			map.addSource(elementsLayerIds.mainSourceId(el.id), {
+				type: "geojson",
+				data,
+			})
+			map.addLayer(
+				{
+					id: elementsLayerIds.mainLayerId(el.id),
+					type: "symbol",
+					source: elementsLayerIds.mainSourceId(el.id),
+					layout: {
+						"icon-image": imageId,
+						"icon-size": 1,
+						"icon-allow-overlap": true,
+						"icon-ignore-placement": true,
+						"icon-rotation-alignment": "viewport",
+						"icon-pitch-alignment": "viewport",
+					},
+					paint: { "icon-opacity": 0.95 },
+				},
+				belowLayerId,
+			)
+			elementLayerIds.add(el.id)
 			continue
 		}
 

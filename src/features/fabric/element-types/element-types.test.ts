@@ -43,7 +43,7 @@ describe("ELEMENT_CATEGORIES", () => {
 			for (const el of category.elements) {
 				expect(el.id, `${el.id}: missing id`).toBeTruthy()
 				expect(el.title, `${el.id}: missing title`).toBeTruthy()
-				expect(["line", "area"], `${el.id}: missing geometry`).toContain(
+				expect(["line", "area", "point"], `${el.id}: missing geometry`).toContain(
 					el.geometry,
 				)
 				expect(
@@ -52,6 +52,7 @@ describe("ELEMENT_CATEGORIES", () => {
 						"straight-line-points",
 						"single-segment-perpendicular",
 						"single-click-area",
+						"single-click-point",
 					],
 					`${el.id}: unknown draw mode`,
 				).toContain(el.draw)

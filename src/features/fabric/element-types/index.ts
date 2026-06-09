@@ -11,6 +11,7 @@ import type {
 	FillPaint,
 	LineLayerStyle,
 	LinePaint,
+	PointLayerStyle,
 } from "./types"
 import { WALKING_CATEGORY } from "./walking"
 
@@ -25,7 +26,13 @@ export function isLineStyle(
 export function isAreaStyle(
 	style: ElementDescriptor["baseMapStyle"],
 ): style is AreaLayerStyle {
-	return !isLineStyle(style)
+	return !isLineStyle(style) && !isPointStyle(style)
+}
+
+export function isPointStyle(
+	style: ElementDescriptor["baseMapStyle"],
+): style is PointLayerStyle {
+	return !("width" in style) && !("opacity" in style)
 }
 
 function sortElementsAlphabetically(
