@@ -400,8 +400,15 @@ export function DrawingLayer() {
 						? clicked
 						: (lock?.centerPoint ?? clicked)
 				const bearing = lock?.bearing ?? map.getBearing()
-				const lengthFeet = numericPropertyDefault("length", 24)(descriptor)
-				const widthFeet = numericPropertyDefault("width", 8)(descriptor)
+				const diameterFeet = numericPropertyDefault("diameter", 36)(descriptor)
+				const lengthFeet =
+					descriptor.areaShape === "circle"
+						? diameterFeet
+						: numericPropertyDefault("length", 24)(descriptor)
+				const widthFeet =
+					descriptor.areaShape === "circle"
+						? diameterFeet
+						: numericPropertyDefault("width", 8)(descriptor)
 				const coords = makeAreaPolygon({
 					center,
 					bearing,

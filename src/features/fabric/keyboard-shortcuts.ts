@@ -6,6 +6,8 @@ export type FabricShortcutId =
 	| "selectTool"
 	| "drawTool"
 	| "deleteSelected"
+	| "nudgeSelected"
+	| "nudgeSelectedLarge"
 	| "undo"
 	| "redo"
 	| "finishDrawing"
@@ -44,6 +46,20 @@ export const FABRIC_SHORTCUTS: FabricShortcutDefinition[] = [
 		group: "Edit",
 		shortcut: "Delete",
 		keys: ["Del"],
+	},
+	{
+		id: "nudgeSelected",
+		label: "Move selected area",
+		group: "Edit",
+		shortcut: "ArrowUp",
+		keys: ["↑", "↓", "←", "→"],
+	},
+	{
+		id: "nudgeSelectedLarge",
+		label: "Move selected area farther",
+		group: "Edit",
+		shortcut: "Shift+ArrowUp",
+		keys: ["⇧", "↑", "↓", "←", "→"],
 	},
 	{
 		id: "undo",

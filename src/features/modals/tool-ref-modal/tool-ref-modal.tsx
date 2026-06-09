@@ -15,7 +15,8 @@ const tools: Tool[] = [
 			<>
 				Click to select a segment. Drag to move. <Kbd>Del</Kbd> to delete.
 				Double-click the selected line to add a waypoint, or double-click a
-				waypoint to remove it.
+				waypoint to remove it. Some area elements can be nudged with the arrow
+				keys; hold <Kbd>⇧</Kbd> to move them farther.
 			</>
 		),
 	},

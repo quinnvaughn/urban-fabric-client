@@ -44,6 +44,7 @@ export type PropertyDescriptor<T = unknown> = {
 	label: string
 	description?: string
 	default?: T
+	showInProposal?: boolean
 	input: PropertyInput
 	toMapStyle: (value: T) => Partial<LinePaint>
 	constraints?: PropertyConstraint[]
@@ -330,7 +331,7 @@ export type AreaPlacement = {
 	requireStreet?: boolean
 }
 
-export type AreaShape = "capsule" | "curb-extension"
+export type AreaShape = "capsule" | "circle" | "curb-extension" | "rectangle"
 
 export type ElementDescriptor = {
 	id: string

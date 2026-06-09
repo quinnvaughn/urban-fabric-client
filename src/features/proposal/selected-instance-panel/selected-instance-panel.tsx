@@ -34,6 +34,7 @@ export function SelectedInstancePanel({ instance, onClose }: Props) {
 
 	const propertyRows =
 		elementType?.properties
+			.filter((p) => p.showInProposal !== false)
 			.map((p) => {
 				const raw = instance.properties?.[p.key]
 				if (raw == null) return null

@@ -77,20 +77,32 @@ export function PropertiesPanel() {
 
 			if (
 				selectedInstance.geometry === "area" &&
-				(prop.key === "length" || prop.key === "width" || prop.key === "bearing")
+				(prop.key === "length" ||
+					prop.key === "width" ||
+					prop.key === "bearing" ||
+					prop.key === "diameter")
 			) {
 				const center = selectedInstance.waypoints[0]
 				const bearing = Number(
 					updatedProperties.bearing ??
 						descriptor?.properties.find((p) => p.key === "bearing")?.default,
 				)
+				const diameter = Number(
+					updatedProperties.diameter ??
+						descriptor?.properties.find((p) => p.key === "diameter")?.default,
+				)
 				const length = Number(
-					updatedProperties.length ??
-						descriptor?.properties.find((p) => p.key === "length")?.default,
+					descriptor?.areaShape === "circle"
+						? diameter
+						: (updatedProperties.length ??
+								descriptor?.properties.find((p) => p.key === "length")
+									?.default),
 				)
 				const width = Number(
-					updatedProperties.width ??
-						descriptor?.properties.find((p) => p.key === "width")?.default,
+					descriptor?.areaShape === "circle"
+						? diameter
+						: (updatedProperties.width ??
+								descriptor?.properties.find((p) => p.key === "width")?.default),
 				)
 				if (
 					center &&

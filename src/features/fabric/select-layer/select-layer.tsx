@@ -191,6 +191,16 @@ function editableWaypoints(el: ElementInstance): [number, number][] {
 		: el.waypoints
 }
 
+function areaDimensions(el: ElementInstance) {
+	const descriptor = ELEMENT_TYPE_MAP[el.typeId]
+	const diameter = Number(el.properties.diameter)
+	const length =
+		descriptor?.areaShape === "circle" ? diameter : Number(el.properties.length)
+	const width =
+		descriptor?.areaShape === "circle" ? diameter : Number(el.properties.width)
+	return { descriptor, length, width }
+}
+
 export function elementInstanceIdFromLayerId(layerId: string): string | null {
 	if (!layerId.startsWith("el-") || layerId.endsWith("-casing")) return null
 
@@ -694,8 +704,15 @@ export function SelectLayer() {
 			if (el.geometry === "area") {
 				const descriptor = ELEMENT_TYPE_MAP[el.typeId]
 				const bearing = Number(el.properties.bearing)
-				const length = Number(el.properties.length)
-				const width = Number(el.properties.width)
+				const diameter = Number(el.properties.diameter)
+				const length =
+					descriptor?.areaShape === "circle"
+						? diameter
+						: Number(el.properties.length)
+				const width =
+					descriptor?.areaShape === "circle"
+						? diameter
+						: Number(el.properties.width)
 				if (
 					Number.isFinite(bearing) &&
 					Number.isFinite(length) &&
@@ -963,7 +980,6 @@ export function SelectLayer() {
 		}
 
 		function handleKeyDown(e: KeyboardEvent) {
-			if (e.key !== "Delete" && e.key !== "Backspace") return
 			const active = document.activeElement
 			if (
 				active instanceof HTMLInputElement ||
@@ -971,6 +987,56 @@ export function SelectLayer() {
 				(active instanceof HTMLElement && active.isContentEditable)
 			)
 				return
+
+			const arrowDelta: Record<string, [number, number]> = {
+				ArrowUp: [0, -1],
+				ArrowDown: [0, 1],
+				ArrowLeft: [-1, 0],
+				ArrowRight: [1, 0],
+			}
+			const delta = arrowDelta[e.key]
+			if (delta) {
+				const { selectedInstanceId, elements } = fabricStore.state
+				if (!selectedInstanceId) return
+				const el = elements.find((el) => el.id === selectedInstanceId)
+				if (!el || el.geometry !== "area") return
+				const center = el.waypoints[0]
+				if (!center) return
+				const { descriptor, length, width } = areaDimensions(el)
+				const bearing = Number(el.properties.bearing)
+				if (
+					!descriptor ||
+					!Number.isFinite(bearing) ||
+					!Number.isFinite(length) ||
+					!Number.isFinite(width)
+				)
+					return
+
+				e.preventDefault()
+				e.stopPropagation()
+				e.stopImmediatePropagation()
+				const step = e.shiftKey ? 20 : 5
+				const projected = map.project(center)
+				const nextLngLat = map.unproject([
+					projected.x + delta[0] * step,
+					projected.y + delta[1] * step,
+				])
+				const nextCenter: [number, number] = [nextLngLat.lng, nextLngLat.lat]
+				snapshot()
+				updateElement(el.id, {
+					waypoints: [nextCenter],
+					coordinates: makeAreaPolygon({
+						center: nextCenter,
+						bearing,
+						lengthFeet: length,
+						widthFeet: width,
+						shape: descriptor.areaShape,
+					}),
+				})
+				return
+			}
+
+			if (e.key !== "Delete" && e.key !== "Backspace") return
 			const id = fabricStore.state.selectedInstanceId
 			if (!id) return
 			deleteElement(id)
@@ -984,7 +1050,7 @@ export function SelectLayer() {
 		map.on("mousemove", handleMapMouseMove)
 		window.addEventListener("mousemove", handleWindowMouseMove)
 		window.addEventListener("mouseup", handleMouseUp)
-		window.addEventListener("keydown", handleKeyDown)
+			window.addEventListener("keydown", handleKeyDown, { capture: true })
 
 		return () => {
 			map.doubleClickZoom.enable()
@@ -994,7 +1060,7 @@ export function SelectLayer() {
 			map.off("mousemove", handleMapMouseMove)
 			window.removeEventListener("mousemove", handleWindowMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
-			window.removeEventListener("keydown", handleKeyDown)
+			window.removeEventListener("keydown", handleKeyDown, { capture: true })
 			// Clean up any in-progress drag
 			dragging.current = null
 			if (routeDebounce.current) clearTimeout(routeDebounce.current)

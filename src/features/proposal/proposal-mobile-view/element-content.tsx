@@ -16,6 +16,7 @@ export function ElementContent() {
 
 	const propertyRows =
 		elementType?.properties
+			.filter((p) => p.showInProposal !== false)
 			.map((p) => {
 				const raw = selectedInstance.properties?.[p.key]
 				if (raw == null) return null

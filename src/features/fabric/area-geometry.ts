@@ -94,7 +94,36 @@ function makeCapsulePolygon(params: AreaPolygonParams): [number, number][] {
 	return points
 }
 
+function makeCirclePolygon(params: AreaPolygonParams): [number, number][] {
+	const { center } = params
+	const radiusFeet = Math.max(params.widthFeet, params.lengthFeet, 4) / 2
+	const points: [number, number][] = []
+	const steps = 32
+
+	for (let i = 0; i < steps; i += 1) {
+		points.push(offsetPointAlongBearing(center, (360 * i) / steps, radiusFeet))
+	}
+	points.push(points[0])
+	return points
+}
+
+function makeRectanglePolygon(params: AreaPolygonParams): [number, number][] {
+	const { center, bearing } = params
+	const halfLength = Math.max(params.lengthFeet, 2) / 2
+	const halfWidth = Math.max(params.widthFeet, 2) / 2
+	const points: [number, number][] = [
+		offsetLocalPoint(center, bearing, -halfLength, -halfWidth),
+		offsetLocalPoint(center, bearing, halfLength, -halfWidth),
+		offsetLocalPoint(center, bearing, halfLength, halfWidth),
+		offsetLocalPoint(center, bearing, -halfLength, halfWidth),
+	]
+	points.push(points[0])
+	return points
+}
+
 export function makeAreaPolygon(params: AreaPolygonParams): [number, number][] {
+	if (params.shape === "circle") return makeCirclePolygon(params)
 	if (params.shape === "curb-extension") return makeCurbExtensionPolygon(params)
+	if (params.shape === "rectangle") return makeRectanglePolygon(params)
 	return makeCapsulePolygon(params)
 }

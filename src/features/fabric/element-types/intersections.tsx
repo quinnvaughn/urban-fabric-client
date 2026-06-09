@@ -108,6 +108,7 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 					key: "bearing",
 					label: "Rotation",
 					default: 0,
+					showInProposal: false,
 					input: {
 						kind: "slider",
 						min: 0,
@@ -128,6 +129,124 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 							{ label: "Painted", value: "painted" },
 							{ label: "Planters", value: "planters" },
 						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "daylighting",
+			title: "Daylighting",
+			description:
+				"Keeps the space near a corner free of parked cars so people can see and be seen.",
+			geometry: "area",
+			draw: "single-click-area",
+			placement: "single-click",
+			areaShape: "rectangle",
+			areaPlacement: {
+				anchor: "click",
+				requireStreet: false,
+			},
+			drawingConstraints: {
+				lockPerpendicularToStreet: {
+					searchRadiusPx: 36,
+				},
+			},
+			excludes: [],
+			baseMapStyle: {
+				color: "#e8c54a",
+				opacity: 0.68,
+				outlineColor: "#8a6a16",
+				outlineWidth: 2,
+				outlineOpacity: 0.95,
+
+				selected: {
+					opacity: 0.78,
+					outlineColor: "#8a6a16",
+					outlineOpacity: 1,
+					outlineWidth: 3,
+				},
+
+				drawPreview: {
+					color: "#e8c54a",
+					opacity: 0.58,
+					outlineColor: "#8a6a16",
+					outlineWidth: 2,
+				},
+				lineSymbol: {
+					src: "/icons/elements/clear-corner.svg",
+					placement: "point",
+					size: 24,
+				},
+			} satisfies AreaLayerStyle,
+
+			properties: [
+				{
+					key: "treatment",
+					label: "Treatment",
+					description: "How the corner is kept clear",
+					default: "paint",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Paint",
+								value: "paint",
+								description: "Painted no-parking area",
+							},
+							{
+								label: "Posts",
+								value: "posts",
+								description: "Posts or bollards keep vehicles out",
+							},
+							{
+								label: "Planters",
+								value: "planters",
+								description: "Planters define the clear space",
+							},
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "length",
+					label: "Clear Length",
+					default: 30,
+					input: {
+						kind: "slider",
+						min: 10,
+						max: 80,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "width",
+					label: "Clear Width",
+					default: 8,
+					input: {
+						kind: "slider",
+						min: 4,
+						max: 24,
+						step: 0.5,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "bearing",
+					label: "Rotation",
+					default: 0,
+					showInProposal: false,
+					input: {
+						kind: "slider",
+						min: 0,
+						max: 359,
+						step: 15,
+						unit: "deg",
 					},
 					toMapStyle: () => ({}),
 				},
@@ -253,6 +372,7 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 					key: "bearing",
 					label: "Rotation",
 					default: 0,
+					showInProposal: false,
 					input: {
 						kind: "slider",
 						min: 0,
@@ -272,6 +392,91 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 							{ label: "Concrete", value: "concrete" },
 							{ label: "Painted", value: "painted" },
 							{ label: "Landscaped", value: "landscaped" },
+						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "roundabout",
+			title: "Roundabout",
+			description:
+				"A circular intersection design that slows traffic and keeps vehicles moving.",
+			geometry: "area",
+			draw: "single-click-area",
+			placement: "single-click",
+			areaShape: "circle",
+			areaPlacement: {
+				anchor: "click",
+				requireStreet: false,
+			},
+			excludes: [],
+			baseMapStyle: {
+				color: "#8a8f63",
+				opacity: 0.76,
+				outlineColor: "#4f5336",
+				outlineWidth: 2,
+				outlineOpacity: 0.95,
+
+				selected: {
+					opacity: 0.86,
+					outlineColor: "#4f5336",
+					outlineOpacity: 1,
+					outlineWidth: 3,
+				},
+
+				drawPreview: {
+					color: "#8a8f63",
+					opacity: 0.65,
+					outlineColor: "#4f5336",
+					outlineWidth: 2,
+				},
+				lineSymbol: {
+					src: "/icons/elements/roundabout.svg",
+					placement: "point",
+					size: 24,
+				},
+			} satisfies AreaLayerStyle,
+
+			properties: [
+				{
+					key: "diameter",
+					label: "Diameter",
+					default: 36,
+					input: {
+						kind: "slider",
+						min: 12,
+						max: 120,
+						step: 2,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "type",
+					label: "Type",
+					default: "raised",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Raised",
+								value: "raised",
+								description: "A built circular island",
+							},
+							{
+								label: "Painted",
+								value: "painted",
+								description: "Painted circle with no raised island",
+							},
+							{
+								label: "Planted",
+								value: "planted",
+								description: "Center island with landscaping",
+							},
 						],
 					},
 					toMapStyle: () => ({}),
