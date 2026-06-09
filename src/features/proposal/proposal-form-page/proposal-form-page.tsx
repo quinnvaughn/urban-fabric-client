@@ -69,7 +69,6 @@ import {
 } from "./proposal-photo-field"
 
 const TITLE_MAX_LENGTH = 80
-const DESCRIPTION_MAX_LENGTH = 1500
 
 const proposalPhotoSchema = z.object({
 	id: z.string().optional(),
@@ -85,12 +84,7 @@ const schema = z.object({
 			TITLE_MAX_LENGTH,
 			`Title must be at most ${TITLE_MAX_LENGTH} characters`,
 		),
-	description: z
-		.string()
-		.max(
-			DESCRIPTION_MAX_LENGTH,
-			`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters`,
-		),
+	description: z.string(),
 	categories: z.array(z.string()),
 	existingConditionPhotos: z.array(proposalPhotoSchema),
 	inspirationPhotos: z.array(proposalPhotoSchema),
@@ -143,9 +137,6 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const client = useApolloClient()
 	const [isSaving, setIsSaving] = useState(false)
 	const [thumbnail, setThumbnail] = useState(data.initialThumbnail)
-	const [currentProposalId, setCurrentProposalId] = useState<string | null>(
-		props.mode === "edit" ? props.proposalId : null,
-	)
 	const [hasProposalUploadTarget, setHasProposalUploadTarget] = useState(
 		props.mode === "edit",
 	)
@@ -214,12 +205,12 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 	const uploadThumbnail = useCallback(
 		async (blob: Blob) => {
 			if (hasProposalUploadTarget) {
-				return uploadProposalThumbnail(client, data.fabricId, blob)
+				return uploadProposalThumbnail(client, blob)
 			}
 
-			return uploadFabricThumbnail(client, data.fabricId, blob)
+			return uploadFabricThumbnail(client, blob)
 		},
-		[client, data.fabricId, hasProposalUploadTarget],
+		[client, hasProposalUploadTarget],
 	)
 
 	async function saveDraft(values: FormValues) {
@@ -283,8 +274,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			.with({ __typename: "NotFoundError" }, () => {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
-			.with({ __typename: "Proposal" }, (proposal) => {
-				setCurrentProposalId(proposal.id)
+			.with({ __typename: "Proposal" }, () => {
 				setHasProposalUploadTarget(true)
 				capture("draft_saved")
 				toast({ title: "Draft saved", intent: "success" })
@@ -359,8 +349,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 			.with({ __typename: "NotFoundError" }, () => {
 				toast({ title: "Fabric not found", intent: "error" })
 			})
-			.with({ __typename: "Proposal" }, ({ id, slug, title }) => {
-				setCurrentProposalId(id)
+			.with({ __typename: "Proposal" }, ({ slug, title }) => {
 				setHasProposalUploadTarget(true)
 				capture("proposal_published")
 				if (props.mode === "create") {
@@ -673,13 +662,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						<form.Field name="description">
 							{(field) => (
 								<Textarea invalid={!!field.meta.error}>
-									<Textarea.Label>
-										Description{" "}
-										<Textarea.Counter
-											current={field.value.length}
-											max={DESCRIPTION_MAX_LENGTH}
-										/>
-									</Textarea.Label>
+									<Textarea.Label>Description</Textarea.Label>
 									<Textarea.Field
 										rows={6}
 										resize="vertical"
@@ -726,7 +709,6 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								<form.Field name="existingConditionPhotos">
 									{(field) => (
 										<ProposalPhotoField
-											uploadTargetId={currentProposalId ?? data.fabricId}
 											group={ProposalPhotoGroup.ExistingConditions}
 											value={field.value}
 											onChange={field.onChange}
@@ -748,7 +730,6 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								<form.Field name="inspirationPhotos">
 									{(field) => (
 										<ProposalPhotoField
-											uploadTargetId={currentProposalId ?? data.fabricId}
 											group={ProposalPhotoGroup.Inspirations}
 											value={field.value}
 											onChange={field.onChange}
@@ -840,7 +821,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 							px: "7",
 							py: "3.5",
 							display: "flex",
-							justifyContent: "flex",
+							justifyContent: "space-between",
 							alignItems: "center",
 							gap: "2.5",
 						})}
