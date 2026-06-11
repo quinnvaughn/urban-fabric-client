@@ -26,6 +26,7 @@ import { flattenSegments, useRouteBetween } from "../osrm-utils"
 import { validateDrawingConstraints } from "./drawing-constraints"
 import {
 	findNearestRoadLock,
+	normalizeBearing,
 	offsetPointAlongBearing,
 	perpendicularBearing,
 	projectPointOntoBearing,
@@ -39,6 +40,8 @@ const EMPTY_LINE: GeoJSON.Feature<GeoJSON.LineString> = {
 	geometry: { type: "LineString", coordinates: [] },
 	properties: {},
 }
+
+const ROTATION_STEP_DEGREES = 15
 
 type DrawingSnapshot = {
 	waypoints: [number, number][]
@@ -64,6 +67,13 @@ function numericPropertyDefault(key: string, fallback: number) {
 		const value = Number(prop?.default)
 		return Number.isFinite(value) ? value : fallback
 	}
+}
+
+function snappedRotation(bearing: number) {
+	const normalized = normalizeBearing(bearing)
+	return (
+		Math.round(normalized / ROTATION_STEP_DEGREES) * ROTATION_STEP_DEGREES
+	) % 360
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -422,7 +432,7 @@ export function DrawingLayer() {
 					element.areaPlacement?.anchor === "click"
 						? clicked
 						: (lock?.centerPoint ?? clicked)
-				const bearing = lock?.bearing ?? map.getBearing()
+				const bearing = snappedRotation(lock?.bearing ?? map.getBearing())
 				const diameterFeet = numericPropertyDefault("diameter", 36)(descriptor)
 				const lengthFeet =
 					descriptor.areaShape === "circle"

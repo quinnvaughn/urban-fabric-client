@@ -1,6 +1,5 @@
 import { Info, Trash, X } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
-import { ElementPhotos } from "./element-photos"
 import { match, P } from "ts-pattern"
 import {
 	Box,
@@ -16,10 +15,22 @@ import {
 import { useAnalytics } from "#/lib/analytics"
 import { css } from "#/styles/styled-system/css"
 import { makeAreaPolygon } from "../area-geometry"
+import { normalizeBearing } from "../drawing-layer/street-lock"
 import { ELEMENT_TYPE_MAP } from "../element-types"
 import type { PropertyDescriptor } from "../element-types/types"
 import { useFabricStore } from "../fabric-store"
 import { useCalculatedRows } from "../use-calculated-rows"
+import { ElementPhotos } from "./element-photos"
+
+const ROTATION_STEP_DEGREES = 15
+
+function snappedRotation(bearing: number) {
+	const normalized = normalizeBearing(bearing)
+	return (
+		(Math.round(normalized / ROTATION_STEP_DEGREES) * ROTATION_STEP_DEGREES) %
+		360
+	)
+}
 
 export function PropertiesPanel() {
 	const {
@@ -40,9 +51,15 @@ export function PropertiesPanel() {
 	const calculatedRows = useCalculatedRows(selectedInstance, descriptor ?? null)
 
 	function renderComponent(prop: PropertyDescriptor) {
-		const currentValue =
+		let currentValue =
 			(selectedInstance?.properties[prop.key] as string | undefined) ??
 			(prop.default != null ? String(prop.default) : "")
+		if (selectedInstance?.geometry === "area" && prop.key === "bearing") {
+			const numericValue = Number(currentValue)
+			if (Number.isFinite(numericValue)) {
+				currentValue = String(snappedRotation(numericValue))
+			}
+		}
 
 		function handleChange(value: string) {
 			if (!selectedInstance) return

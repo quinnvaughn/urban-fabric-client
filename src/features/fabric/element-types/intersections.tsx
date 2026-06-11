@@ -5,6 +5,127 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 	title: "Intersections",
 	elements: [
 		{
+			id: "bike-box",
+			title: "Bike Box",
+			description:
+				"A marked waiting area for bikes at the front of an intersection approach.",
+			geometry: "area",
+			draw: "single-click-area",
+			placement: "single-click",
+			areaShape: "rectangle",
+			areaPlacement: {
+				anchor: "click",
+				requireStreet: false,
+			},
+			drawingConstraints: {
+				lockPerpendicularToStreet: {
+					searchRadiusPx: 36,
+				},
+			},
+			excludes: [],
+			baseMapStyle: {
+				color: "#3d8b37",
+				opacity: 0.72,
+				outlineColor: "#1f5f22",
+				outlineWidth: 2,
+				outlineOpacity: 0.95,
+
+				selected: {
+					opacity: 0.82,
+					outlineColor: "#1f5f22",
+					outlineOpacity: 1,
+					outlineWidth: 3,
+				},
+
+				drawPreview: {
+					color: "#3d8b37",
+					opacity: 0.58,
+					outlineColor: "#1f5f22",
+					outlineWidth: 2,
+				},
+				lineSymbol: {
+					src: "/icons/elements/bike-box.svg",
+					placement: "point",
+					size: 24,
+				},
+			} satisfies AreaLayerStyle,
+
+			properties: [
+				{
+					key: "paint",
+					label: "Paint",
+					default: "green",
+					input: {
+						kind: "select",
+						options: [
+							{ label: "Green", value: "green" },
+							{ label: "Red", value: "red" },
+							{ label: "Blue", value: "blue" },
+							{ label: "Unpainted", value: "unpainted" },
+						],
+					},
+					toMapStyle: (value) => {
+						const colors: Record<string, string> = {
+							green: "#3d8b37",
+							red: "#c0392b",
+							blue: "#2980b9",
+							unpainted: "#f4f0e5",
+						}
+						const color = colors[value as string]
+						if (!color) return {}
+						return {
+							"fill-color": color,
+							"fill-opacity": value === "unpainted" ? 0.62 : 0.72,
+							"fill-outline-color": color,
+							"line-color": color,
+						}
+					},
+				},
+				{
+					key: "length",
+					label: "Box Width",
+					default: 28,
+					input: {
+						kind: "slider",
+						min: 10,
+						max: 60,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "width",
+					label: "Box Depth",
+					default: 12,
+					input: {
+						kind: "slider",
+						min: 6,
+						max: 24,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "bearing",
+					label: "Rotation",
+					default: 0,
+					showInProposal: false,
+					input: {
+						kind: "slider",
+						min: 0,
+						max: 359,
+						step: 15,
+						unit: "deg",
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
 			id: "curb-extension",
 			title: "Curb Extension",
 			description:
@@ -530,6 +651,130 @@ export const INTERSECTIONS_CATEGORY: ElementCategory = {
 							{ label: "Eastbound", value: "eastbound" },
 							{ label: "Westbound", value: "westbound" },
 						],
+					},
+					toMapStyle: () => ({}),
+				},
+			],
+
+			calculated: [{ key: "from", label: "Location" }],
+		},
+		{
+			id: "speed-table",
+			title: "Speed Table",
+			description:
+				"A raised flat area that slows vehicles through an intersection or crossing.",
+			geometry: "area",
+			draw: "single-click-area",
+			placement: "single-click",
+			areaShape: "rectangle",
+			areaPlacement: {
+				anchor: "street-center",
+			},
+			drawingConstraints: {
+				lockPerpendicularToStreet: {
+					searchRadiusPx: 36,
+				},
+			},
+			excludes: [],
+			baseMapStyle: {
+				color: "#9c6f4a",
+				opacity: 0.7,
+				outlineColor: "#5d4028",
+				outlineWidth: 2,
+				outlineOpacity: 0.95,
+
+				selected: {
+					opacity: 0.8,
+					outlineColor: "#5d4028",
+					outlineOpacity: 1,
+					outlineWidth: 3,
+				},
+
+				drawPreview: {
+					color: "#9c6f4a",
+					opacity: 0.58,
+					outlineColor: "#5d4028",
+					outlineWidth: 2,
+				},
+				lineSymbol: {
+					src: "/icons/elements/speed-table.svg",
+					placement: "point",
+					size: 24,
+				},
+			} satisfies AreaLayerStyle,
+
+			properties: [
+				{
+					key: "type",
+					label: "Type",
+					default: "raised",
+					input: {
+						kind: "segmented",
+						options: [
+							{
+								label: "Raised",
+								value: "raised",
+								description: "A raised traffic calming table",
+							},
+							{
+								label: "Crossing",
+								value: "crossing",
+								description: "A raised table with a crossing on top",
+							},
+							{
+								label: "Painted",
+								value: "painted",
+								description: "Painted markings without vertical change",
+							},
+						],
+					},
+					toMapStyle: (value) => {
+						if (value === "painted") {
+							return {
+								"fill-opacity": 0.48,
+								"line-opacity": 0.85,
+							}
+						}
+						return {}
+					},
+				},
+				{
+					key: "length",
+					label: "Table Length",
+					default: 24,
+					input: {
+						kind: "slider",
+						min: 10,
+						max: 80,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "width",
+					label: "Table Width",
+					default: 40,
+					input: {
+						kind: "slider",
+						min: 10,
+						max: 120,
+						step: 1,
+						unit: "ft",
+					},
+					toMapStyle: () => ({}),
+				},
+				{
+					key: "bearing",
+					label: "Rotation",
+					default: 0,
+					showInProposal: false,
+					input: {
+						kind: "slider",
+						min: 0,
+						max: 359,
+						step: 15,
+						unit: "deg",
 					},
 					toMapStyle: () => ({}),
 				},

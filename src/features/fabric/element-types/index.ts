@@ -72,7 +72,7 @@ export function computeBasePaint(
 
 export function computeBaseFillPaint(
 	descriptor: ElementDescriptor,
-	_instance: ElementInstance,
+	instance: ElementInstance,
 ): FillPaint {
 	const s = descriptor.baseMapStyle
 	if (!isAreaStyle(s)) return {}
@@ -84,6 +84,11 @@ export function computeBaseFillPaint(
 		"line-color": s.outlineColor ?? s.color,
 		"line-width": s.outlineWidth ?? 2,
 		"line-opacity": s.outlineOpacity ?? 0.95,
+	}
+
+	for (const prop of descriptor.properties) {
+		const value = instance.properties[prop.key] ?? prop.default
+		Object.assign(paint, prop.toMapStyle(value))
 	}
 
 	return paint

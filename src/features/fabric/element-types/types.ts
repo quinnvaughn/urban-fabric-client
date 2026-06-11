@@ -46,7 +46,7 @@ export type PropertyDescriptor<T = unknown> = {
 	default?: T
 	showInProposal?: boolean
 	input: PropertyInput
-	toMapStyle: (value: T) => Partial<LinePaint>
+	toMapStyle: (value: T) => Partial<LinePaint & FillPaint>
 	constraints?: PropertyConstraint[]
 }
 
