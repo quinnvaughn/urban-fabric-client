@@ -190,6 +190,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 		if (!capture) return thumbnail
 		try {
 			const freshThumbnail = await capture()
+			if (!freshThumbnail) return thumbnail
 			setThumbnail(freshThumbnail)
 			return freshThumbnail
 		} catch {
@@ -901,6 +902,7 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 								captureThumbnailRef.current = capture
 							}}
 							captureSignal={snapshotIsIn3DMode}
+							elements={elements}
 						/>
 						<ViewportSync
 							viewport={viewport}

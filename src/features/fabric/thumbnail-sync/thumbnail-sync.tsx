@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "react"
+import type { ElementInstance } from "../element-types/types"
 import { useMap } from "../fabric-map"
 import { fabricStore, useFabricStore } from "../fabric-store"
 import { captureMapCanvasBlob } from "./map-canvas-capture"
@@ -11,6 +12,7 @@ type Props = {
 	onCaptureReady?: (capture: (() => Promise<string>) | null) => void
 	captureOnMount?: boolean
 	captureSignal?: unknown
+	elements?: ElementInstance[]
 }
 
 export function ThumbnailSync({
@@ -18,6 +20,7 @@ export function ThumbnailSync({
 	onCaptureReady,
 	captureOnMount,
 	captureSignal,
+	elements,
 }: Props) {
 	const map = useMap()
 	const { saveStatus, selectedInstanceId } = useFabricStore()
@@ -27,10 +30,13 @@ export function ThumbnailSync({
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	const captureThumbnail = useCallback(async () => {
-		const thumbnail = await captureMapCanvasBlob(map)
+		const captureElements = elements ?? fabricStore.state.elements
+		const thumbnail = await captureMapCanvasBlob(map, "image/webp", {
+			expectedLayerIds: captureElements.map((element) => `el-${element.id}`),
+		})
 		if (!thumbnail) return ""
 		return onThumbnail(thumbnail)
-	}, [map, onThumbnail])
+	}, [elements, map, onThumbnail])
 
 	const captureAndSync = useCallback(() => {
 		void captureThumbnail()
