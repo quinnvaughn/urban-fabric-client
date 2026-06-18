@@ -6,6 +6,12 @@ import { getClientEnv } from "#/lib/env/client"
 import { preloadLineSymbolIcons } from "../elements-layer/map-icon-loader"
 import { MapProvider } from "./map-context"
 
+declare global {
+	interface Window {
+		__urbanFabricMaps?: Set<maplibregl.Map>
+	}
+}
+
 const STYLE_NAMES: Record<MapStyle, string> = {
 	[MapStyle.Default]: "osm_bright",
 	[MapStyle.Dark]: "alidade_smooth_dark",
@@ -56,6 +62,8 @@ export function FabricMap({
 			attributionControl: false,
 			canvasContextAttributes: { preserveDrawingBuffer: true },
 		})
+		window.__urbanFabricMaps ??= new Set()
+		window.__urbanFabricMaps.add(mapRef.current)
 
 		mapRef.current.once("load", async () => {
 			if (mapRef.current) await preloadLineSymbolIcons(mapRef.current)
@@ -69,6 +77,7 @@ export function FabricMap({
 		return () => {
 			isMounted.current = false
 			const mapToRemove = mapRef.current
+			if (mapToRemove) window.__urbanFabricMaps?.delete(mapToRemove)
 			mapRef.current = null
 			setMap(null)
 			onMapChange?.(null)
