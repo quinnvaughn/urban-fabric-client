@@ -396,8 +396,7 @@ export function PropertiesPanel() {
 								placeholder="Add a note…"
 								value={selectedInstance.note ?? ""}
 								minRows={2}
-								maxRows={6}
-								resize="none"
+								resize="vertical"
 								onChange={(e) =>
 									updateElement(selectedInstance.id, { note: e.target.value })
 								}
