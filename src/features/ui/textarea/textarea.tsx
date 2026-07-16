@@ -134,31 +134,39 @@ TextareaLabel.displayName = "Textarea.Label"
 export interface TextareaCounterProps
 	extends React.HTMLAttributes<HTMLSpanElement> {
 	current: number
-	max: number
+	min?: number
+	max?: number
 	warnAt?: number
 }
 
 function TextareaCounter({
 	current,
+	min,
 	max,
 	warnAt,
 	className,
 	...rest
 }: TextareaCounterProps) {
 	const { classes } = useTextareaContext()
-	const threshold = warnAt ?? Math.floor(max * 0.9)
-	const isWarn = current >= threshold
-	const isOver = current >= max
+	const threshold = max ? (warnAt ?? Math.floor(max * 0.9)) : undefined
+	const isWarn = threshold ? current >= threshold : false
+	const isOverMax = max ? current >= max : false
+	const isUnderMin = min ? current < min : false
+	const counterText = max
+		? `${current} / ${max}`
+		: min
+			? `${current} / ${min} min`
+			: current
 
 	return (
 		<span
 			className={cx(classes.counter, className)}
 			data-warn={isWarn ? "" : undefined}
-			data-over={isOver ? "" : undefined}
+			data-over={isOverMax || isUnderMin ? "" : undefined}
 			aria-live="polite"
 			{...rest}
 		>
-			{current} / {max}
+			{counterText}
 		</span>
 	)
 }

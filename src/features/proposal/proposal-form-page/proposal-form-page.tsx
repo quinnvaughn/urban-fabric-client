@@ -69,6 +69,7 @@ import {
 } from "./proposal-photo-field"
 
 const TITLE_MAX_LENGTH = 80
+const DESCRIPTION_MIN_LENGTH = 150
 
 const proposalPhotoSchema = z.object({
 	id: z.string().optional(),
@@ -84,7 +85,12 @@ const schema = z.object({
 			TITLE_MAX_LENGTH,
 			`Title must be at most ${TITLE_MAX_LENGTH} characters`,
 		),
-	description: z.string(),
+	description: z
+		.string()
+		.min(
+			DESCRIPTION_MIN_LENGTH,
+			`Description must be at least ${DESCRIPTION_MIN_LENGTH} characters`,
+		),
 	categories: z.array(z.string()),
 	existingConditionPhotos: z.array(proposalPhotoSchema),
 	inspirationPhotos: z.array(proposalPhotoSchema),
@@ -663,7 +669,13 @@ export function ProposalFormPage(props: ProposalFormPageProps) {
 						<form.Field name="description">
 							{(field) => (
 								<Textarea invalid={!!field.meta.error}>
-									<Textarea.Label>Description</Textarea.Label>
+									<Textarea.Label>
+										Description
+										<Textarea.Counter
+											current={field.value.length}
+											min={DESCRIPTION_MIN_LENGTH}
+										/>
+									</Textarea.Label>
 									<Textarea.Field
 										rows={6}
 										resize="vertical"
